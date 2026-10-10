@@ -94,7 +94,7 @@ static void *capture_thread(void *arg)
 /* ================= 手术点 2(你填) =================
  * frame_stats:从 NV12 帧算 Y/U/V 均值
  *   NV12 布局:前 w*h 字节是 Y 平面;接着 w*h/2 字节是 UV 交织(U,Cb 在前;V,Cr 在后)
- *   返回后 *y/*u/*v 填 0~255 的均值。U/V 采样:每 4 对取 1(性能)。
+ *   返回后 y u v (三个出参) 填 0~255 的均值。U/V 采样:每 4 对取 1(性能)。
  *   自测:对着亮处,Y 应明显大于暗处;U/V 都应接近 128(中性)。
  */
 static void frame_stats(const uint8_t *frame, int w, int h,
@@ -220,8 +220,7 @@ int main(int argc, char **argv)
     int opt;
     for (int i = 1; i < argc; i++)
         if (strcmp(argv[i], "--help") == 0) {
-            printf("用法:%s -d /dev/video0 -w 1920 -h 1080 [-v] [--help]
-", argv[0]);
+            printf("用法:%s -d /dev/video0 -w 1920 -h 1080 [-v] [--help]\n", argv[0]);
             return 0;
         }
     while ((opt = getopt(argc, argv, "d:w:h:v")) != -1) {

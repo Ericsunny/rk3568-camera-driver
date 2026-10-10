@@ -218,6 +218,12 @@ static void capture_stop(void)
 int main(int argc, char **argv)
 {
     int opt;
+    for (int i = 1; i < argc; i++)
+        if (strcmp(argv[i], "--help") == 0) {
+            printf("用法:%s -d /dev/video0 -w 1920 -h 1080 [-v] [--help]
+", argv[0]);
+            return 0;
+        }
     while ((opt = getopt(argc, argv, "d:w:h:v")) != -1) {
         switch (opt) {
         case 'd': video_dev = optarg; break;

@@ -131,7 +131,9 @@ int main(int argc, char **argv)
         }
         fill_awb_gain((struct isp21_isp_params_cfg *)mmaps[b.index], gr, gb);
         ((struct isp21_isp_params_cfg *)mmaps[b.index])->frame_id = (uint32_t)n;
-        b.bytesused = sizeof(struct isp21_isp_params_cfg);
+        /* bytesused 保持 0:实测设置 10475 会被拒(EINVAL),
+         * 初始排队(bytesused=0)成功且内核按完整 buffer 应用 */
+        b.bytesused = 0;
         if (xioctl(fd, VIDIOC_QBUF, &b) < 0) { perror("QBUF"); return 1; }
         if (n % 30 == 0) printf("已提交 %ld 帧 params(g_r=0x%X g_b=0x%X)\n", n, gr, gb);
     }

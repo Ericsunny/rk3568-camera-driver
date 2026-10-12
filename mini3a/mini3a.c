@@ -24,6 +24,19 @@
 #include <sys/ioctl.h>
 #include <linux/videodev2.h>
 
+/* vendor UAPI 头使用内核私有 typedef(u8/u32...),用户态需自行补 */
+typedef unsigned char u8; typedef signed char s8;
+typedef unsigned short u16; typedef signed short s16;
+typedef unsigned int u32; typedef signed int s32;
+typedef unsigned long long u64; typedef signed long long s64;
+#ifndef BIT
+#define BIT(x) (1U << (x))
+#endif
+#ifndef BIT_ULL
+#define BIT_ULL(x) (1ULL << (x))
+#endif
+#include <linux/rkisp21-config.h>
+#include <linux/rkisp2-config.h>
 /* ---------------- 配置 ---------------- */
 #define RING_SLOTS   4          /* 环形队列深度(<= REQBUFS 数) */
 #define AE_PERIOD    10         /* 每 N 帧调一次 AE(预测题 2) */
@@ -233,16 +246,53 @@ static int ae_apply_ctrl(void)
  *   clamp 增益到 [0x40, 0x400]。
  */
 static int cur_gain_r = 0x100, cur_gain_b = 0x100; /* 全局变量,记录当前增益 */
-static void write_gain(const char *name, int val) {
-    char path[64];
-    snprintf(path, sizeof(path), "/sys/module/isp_wb/parameters/%s", name);
-    FILE *f = fopen(path, "w");
-    if(!f) {
-        perror(path);
-        return;
-    }
-    fprintf(f, "0x%X\n", val);
-    fclose(f);
+static int awb_apply_params(unsigned int gr, unsigned int gb)
+{
+    int fd = open("/dev/video8", O_RDWR);
+    struct v4l2_format fmt;
+    struct v4l2_requestbuffers req;
+    struct v4l2_buffer b;
+    enum v4l2_buf_type t = V4L2_BUF_TYPE_META_OUTPUT;
+    struct isp21_isp_params_cfg *cfg;
+    void *p;
+
+    if (fd < 0) return -1;
+    memset(&fmt, 0, sizeof(fmt));
+    fmt.type = t;
+    xioctl(fd, VIDIOC_G_FMT, &fmt);              /* sizeimage=10475 由内核提供 */
+
+    memset(&req, 0, sizeof(req));
+    req.count = 1; req.type = t; req.memory = V4L2_MEMORY_MMAP;
+    if (xioctl(fd, VIDIOC_REQBUFS, &req) < 0) { close(fd); return -1; }
+
+    memset(&b, 0, sizeof(b));
+    b.type = t; b.memory = V4L2_MEMORY_MMAP; b.index = 0;
+    if (xioctl(fd, VIDIOC_QUERYBUF, &b) < 0) { close(fd); return -1; }
+    p = mmap(NULL, b.length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, b.m.offset);
+    if (p == MAP_FAILED) { close(fd); return -1; }
+
+    /* 填 params:只动 AWB_GAIN 一个模块,三组增益全填 */
+    cfg = (struct isp21_isp_params_cfg *)p;
+    memset(cfg, 0, sizeof(*cfg));
+    cfg->module_en_update  = ISP2X_MODULE_AWB_GAIN;
+    cfg->module_ens        = ISP2X_MODULE_AWB_GAIN;
+    cfg->module_cfg_update = ISP2X_MODULE_AWB_GAIN;
+    cfg->others.awb_gain_cfg.gain0_red = gr;  cfg->others.awb_gain_cfg.gain0_blue = gb;
+    cfg->others.awb_gain_cfg.gain1_red = gr;  cfg->others.awb_gain_cfg.gain1_blue = gb;
+    cfg->others.awb_gain_cfg.gain2_red = gr;  cfg->others.awb_gain_cfg.gain2_blue = gb;
+    cfg->others.awb_gain_cfg.gain0_green_r = cfg->others.awb_gain_cfg.gain0_green_b = 0x100;
+    cfg->others.awb_gain_cfg.gain1_green_r = cfg->others.awb_gain_cfg.gain1_green_b = 0x100;
+    cfg->others.awb_gain_cfg.gain2_green_r = cfg->others.awb_gain_cfg.gain2_green_b = 0x100;
+
+    memset(&b, 0, sizeof(b));
+    b.type = t; b.memory = V4L2_MEMORY_MMAP; b.index = 0;
+    xioctl(fd, VIDIOC_QBUF, &b);                 /* bytesused 保持 0(实测关键!) */
+    xioctl(fd, VIDIOC_STREAMON, &t);
+    usleep(120000);                              /* 等 1-2 帧让内核应用(15fps) */
+    xioctl(fd, VIDIOC_STREAMOFF, &t);
+    munmap(p, b.length);
+    close(fd);
+    return 0;
 }
 static int awb_step(int u_mean, int v_mean)
 {
@@ -252,14 +302,14 @@ static int awb_step(int u_mean, int v_mean)
         cur_gain_r = cur_gain_r * 128 /v_mean;
         if (cur_gain_r > 0x400) cur_gain_r = 0x400;
         if (cur_gain_r < 0x40) cur_gain_r = 0x40;
-        write_gain("gain_r", cur_gain_r);
+        awb_apply_params(cur_gain_r, cur_gain_b);
         changed = 1;
     }
     if(u_mean < 128 - AWB_UV_TOL / 2 || u_mean > 128 + AWB_UV_TOL / 2) {
         cur_gain_b = cur_gain_b * 128 /u_mean;
         if (cur_gain_b > 0x400) cur_gain_b = 0x400;
         if (cur_gain_b < 0x40) cur_gain_b = 0x40;
-        write_gain("gain_b", cur_gain_b);
+        awb_apply_params(cur_gain_r, cur_gain_b);
         changed = 1;
     }
     return changed;
@@ -329,6 +379,7 @@ static void capture_stop(void)
 int main(int argc, char **argv)
 {
     int opt;
+    setvbuf(stdout, NULL, _IOLBF, 0);
     for (int i = 1; i < argc; i++)
         if (strcmp(argv[i], "--help") == 0) {
             printf("用法:%s -d /dev/video0 -w 1920 -h 1080 [-v] [--help]\n", argv[0]);
@@ -361,7 +412,7 @@ int main(int argc, char **argv)
      *   AE/AWB 各自 LOCKED 后停止调节;全 LOCKED → 打印总结,break
      *   处理完的帧必须 QBUF 归还!(所有权转回采集线程)
      */
-    long f = 0;
+    long f = 0; int saved = 0;
     int y = 0, u = 128, v = 128;
     while (!ae_locked || !awb_locked) {
         int idx = -1;
@@ -405,6 +456,20 @@ int main(int argc, char **argv)
                    awb_locked ? "LOCKED" : "RUNNING");
         }
 
+        /* 收官帧落盘:双锁定这一帧就是闭环结果(此刻 idx 还没归还,像素有效) */
+        if (ae_locked && awb_locked && !saved) {
+            size_t fsz = (size_t)frame_w * frame_h * 3 / 2;      /* NV12 = w*h*1.5 */
+            FILE *fp = fopen("/root/mini3a/final.nv12", "wb");
+        if (fp) {
+        fwrite(bufs[idx].start, 1, fsz, fp);
+        fclose(fp);
+        saved = 1;
+        printf(">>> 收官帧已保存 /root/mini3a/final.nv12 (%lu 字节, 最终增益 g_r=0x%X g_b=0x%X)\n",
+               (unsigned long)fsz, cur_gain_r, cur_gain_b);
+        } else {
+        perror("fopen final.nv12");
+        }
+}
         /* 归还 buffer 给驱动(所有权转回;漏掉这步 → 预测题 1) */
         struct v4l2_buffer b;
         struct v4l2_plane planes[1];

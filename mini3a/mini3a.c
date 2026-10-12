@@ -248,15 +248,17 @@ static int awb_step(int u_mean, int v_mean)
 {
     /* TODO(你):实现;调节成功返回 1 */
     int changed = 0;
-    if(v_mean < 128 - AWB_UV_TOL / 2) {
+    if(v_mean < 128 - AWB_UV_TOL / 2 || v_mean > 128 + AWB_UV_TOL / 2) {
         cur_gain_r = cur_gain_r * 128 /v_mean;
         if (cur_gain_r > 0x400) cur_gain_r = 0x400;
+        if (cur_gain_r < 0x40) cur_gain_r = 0x40;
         write_gain("gain_r", cur_gain_r);
         changed = 1;
     }
-    if(u_mean < 128 - AWB_UV_TOL / 2) {
+    if(u_mean < 128 - AWB_UV_TOL / 2 || u_mean > 128 + AWB_UV_TOL / 2) {
         cur_gain_b = cur_gain_b * 128 /u_mean;
         if (cur_gain_b > 0x400) cur_gain_b = 0x400;
+        if (cur_gain_b < 0x40) cur_gain_b = 0x40;
         write_gain("gain_b", cur_gain_b);
         changed = 1;
     }
@@ -387,15 +389,16 @@ int main(int argc, char **argv)
            
             /* 手术点 5:收敛状态机(注意:ae_hold 逻辑必须在 if(f%10) 块内,
              * 且 else 归属于"是否在带内"这个 if——花括号配对错了计数永远清零) */
-            if (y >= AE_Y_LO && y <= AE_Y_HI){
-                ae_hold++;
-                if (ae_hold >= AE_LOCK_FRM / AE_PERIOD){
+            if (!ae_locked){
+                if (y >= AE_Y_LO && y <= AE_Y_HI){
+                    ae_hold++;
+                    if (ae_hold >= AE_LOCK_FRM / AE_PERIOD){
                     ae_locked = 1;
                     printf(">>> AE LOCKED at f=%ld (y=%d)\n", f, y);
-                }
-            }
-            else{
+                   }
+                } else{
                 ae_hold = 0;
+                }
             }
             printf("f=%ld Y=%d U=%d V=%d AE=%s AWB=%s\n", f, y, u, v,
                    ae_locked ? "LOCKED" : "RUNNING",

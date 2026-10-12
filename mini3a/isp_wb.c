@@ -18,7 +18,12 @@
 #define R_ISP_CTRL      0x0000
 #define R_AWB_GAIN0_G   0x0138
 #define R_AWB_GAIN0_RB  0x013c
+#define R_AWB_GAIN1_G   0x0140
+#define R_AWB_GAIN1_RB  0x0144
+#define R_AWB_GAIN2_G   0x0148
+#define R_AWB_GAIN2_RB  0x014c
 #define B_AWB_ENA       BIT(7)
+#define B_CFG_UPD       BIT(9)   /* 影子寄存器锁存脉冲,帧边界生效(rkisp.c:1536 同款) */
 
 static void __iomem *base;
 static u32 gain_r = 0x100, gain_gr = 0x100, gain_gb = 0x100, gain_b = 0x100;
@@ -32,10 +37,16 @@ static void apply_gains(void)
 	rb = ((gain_b  & 0xffff) << 16) | (gain_r  & 0xffff);
 	writel(g,  base + R_AWB_GAIN0_G);
 	writel(rb, base + R_AWB_GAIN0_RB);
-	/* 使能位置位(ISP_ENABLE 保持不动) */
+	writel(g,  base + R_AWB_GAIN1_G);   /* GAIN1/2: HDR 短/中帧与统计路径同源,
+	                                     * 只写 GAIN0 时部分路径不生效 */
+	writel(rb, base + R_AWB_GAIN1_RB);
+	writel(g,  base + R_AWB_GAIN2_G);
+	writel(rb, base + R_AWB_GAIN2_RB);
+	/* 使能位置位 + 打锁存脉冲(ISP_ENABLE 保持不动)。
+	 * ISP21 模块配置是影子寄存器:不打 CFG_UPD,写的值永远不生效 */
 	ctrl = readl(base + R_ISP_CTRL);
-	if (!(ctrl & B_AWB_ENA))
-		writel(ctrl | B_AWB_ENA, base + R_ISP_CTRL);
+	ctrl |= B_AWB_ENA | B_CFG_UPD;
+	writel(ctrl, base + R_ISP_CTRL);
 	pr_info("isp_wb: gains r=0x%x gr=0x%x gb=0x%x b=0x%x (ctrl=0x%x)\n",
 		gain_r, gain_gr, gain_gb, gain_b, (unsigned int)(ctrl | B_AWB_ENA));
 }

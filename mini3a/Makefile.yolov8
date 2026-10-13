@@ -1,0 +1,30 @@
+# mini3a 步2:yolov8 NPU demo 板上直编 Makefile
+# 用法: make && ./rknn_yolov8_demo model/yolov8n_rk3568_i8.rknn model/bus.jpg
+CXX      ?= g++
+SYSROOT_INC = /usr/include
+NPUDIR   = 3rdparty/rknpu2
+INCS     = -Iexamples/yolov8/cpp -Iexamples/yolov8/cpp/rknpu2 -Iutils \
+           -I$(NPUDIR)/include -I3rdparty/jpeg_turbo/include -I3rdparty/librga/include -I3rdparty/stb_image -I3rdparty/stb_image_write
+CXXFLAGS = -O2 -std=c++14 -Wall $(INCS) -DDISABLE_LIBJPEG
+CFLAGS   = -O2 -Wall $(INCS) -DDISABLE_LIBJPEG
+LDFLAGS  = -O2 -L$(NPUDIR)/Linux/aarch64 -lrknnrt -lrga -lpthread -lm -ldl
+
+SRCS_CPP = examples/yolov8/cpp/main.cc \
+           examples/yolov8/cpp/postprocess.cc \
+           examples/yolov8/cpp/rknpu2/yolov8.cc
+SRCS_C   = utils/image_utils.c utils/image_drawing.c utils/file_utils.c
+OBJS     = $(SRCS_CPP:.cc=.o) $(SRCS_C:.c=.o)
+
+rknn_yolov8_demo: $(OBJS)
+	$(CXX) -o $@ $(OBJS) $(LDFLAGS)
+
+%.o: %.cc
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+clean:
+	rm -f $(OBJS) rknn_yolov8_demo
+
+.PHONY: all clean
+all: rknn_yolov8_demo

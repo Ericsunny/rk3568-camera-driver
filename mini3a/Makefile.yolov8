@@ -28,3 +28,9 @@ clean:
 
 .PHONY: all clean
 all: rknn_yolov8_demo
+
+
+# 实时检测(mini3a 采集 + NPU 推理)
+UTILS_O = utils/image_utils.o utils/image_drawing.o utils/file_utils.o
+realdetect: realdetect.c $(OBJS) $(UTILS_O)
+	$(CXX) -O2 -std=c++14 $(INCS) -DDISABLE_LIBJPEG -o $@ realdetect.c 		examples/yolov8/cpp/postprocess.o examples/yolov8/cpp/rknpu2/yolov8.o 		$(UTILS_O) $(LDFLAGS)

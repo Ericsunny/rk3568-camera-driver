@@ -113,7 +113,86 @@ echo 0x140 > /sys/module/isp_wb/parameters/gain_b
 
 ---
 
-## 4. 复现命令
+## 5. 收尾:修好 mini3a 的 AWB(让它真正闭环)
+
+`mini3a` 的 AWB 之所以"报收敛但不生效",根因有两个,都在 `mini3a.c` 里:
+
+1. **`awb_apply_params()` 硬编码 `/dev/video8`**(和 `params_poke` 同一个坑)。本系统 params 节点是 `/dev/video13`,open 失败 → 增益根本没下发。
+2. **`awb_step()` 先更新 `cur_gain_*` 再调用 apply,且不看返回值** → 即使下发失败也返回"已调整",状态机以为自己调过了。
+
+修法:
+
+```c
+/* 1) 节点自探测:依次试 13/8/9/14/15/16/17/10/11,第一个 G_FMT 成功的就是 params */
+static int params_fd = -2;
+if (params_fd == -2) {
+    int cand[] = {13, 8, 9, 14, 15, 16, 17, 10, 11};
+    for (...) { if (G_FMT 成功) { params_fd = cand[k]; printf(">>> AWB params 节点: /dev/video%d\n"); break; } }
+}
+
+/* 2) 只有真正下发成功才提交增益;并且每步限幅 ±20%,避免 u/v 接近 128 时振荡 */
+if (awb_apply_params(gr, gb) == 0) { cur_gain_r = gr; cur_gain_b = gb; return 1; }
+return 0;
+```
+
+**修复后实测**:
+
+```
+>>> AWB params 节点: /dev/video13 (sizeimage=10475)
+f=10 Y=116 U=106 V=101 AE=RUNNING AWB=RUNNING
+>>> AWB LOCKED at f=20 (u=128 v=128)
+f=20 Y=110 U=128 V=128 AE=RUNNING AWB=LOCKED
+...
+>>> AE LOCKED at f=60 (y=111)
+>>> 收官帧已保存 final.nv12  最终增益 g_r=0x133 g_b=0x133
+```
+
+落盘帧实测:**Y 111.0,U 128.0(+0.0),V 128.0(+0.0)** —— 完全中性,闭环成立。
+
+> 注意增益值(0x133=1.2)比手动调时的 0x1EC 小,因为 AE 同时在改曝光/增益,两者的乘积才决定最终亮度与色度;这也说明**闭环里不能只盯增益绝对值,要看输出 U/V**。
+
+---
+
+## 6. rkaiq 段错误:定位到 AWB 预处理(用 gdb 抓到完整回溯)
+
+在 gdb 里跑 `rkaiq_3A_server`,同时开流触发 3A:
+
+```
+Thread 9 "xc:GrpMsgThrd" received signal SIGSEGV
+#0  interpolation(float const*, float const*, int, float, float*)   from /lib/librkaiq.so
+#1  AwbPreProcV201(rk_aiq_awb_stat_res_v201_s, awb_contex_s*)       from /lib/librkaiq.so
+#2  processing()
+#3  RkCam::RkAiqAwbHandleInt::processing()
+#4  RkCam::RkAiqCore::analyzeInternal(...)
+#5  RkCam::RkAiqCore::groupAnalyze(...)
+...
+```
+
+**崩溃点在 `AwbPreProcV201` 里对 AWB 统计做插值的 `interpolation()`**,而日志早在同一轮里报过:
+
+```
+ANALYZER:E:AWB stats invalid, ignore
+```
+
+即:**统计被判无效,却仍然送进 AWB 预处理**,`interpolation()` 拿到的是未初始化/空的点集 → 段错误。
+
+**排除掉的两个可能**:
+
+- 不是 IQ 文件损坏:三个变体(`.json` / `.bak` / `.bak2`)的 `main_scene` 都是合法 list、`main_scene_len=1` 与实际一致,JSON 都能正常解析
+- 不是我们的 BSP 修复失效:同期 `params_poke` 通过同一节点成功下发并改变画面,说明 params 通路是好的
+
+**结论**:这套 BSP 的 `librkaiq` 在"ISP AWB 统计无效"的路径上没做保护(空指针解引用),属于 **AIQ 库的健壮性缺陷**。可行的出路:
+
+| 方案 | 说明 |
+|---|---|
+| **用 mini3a 做 AWB**(已完成) | 我们自己控制灰世界闭环,已验证 U/V → 128 |
+| 换 AIQ 版本 | 板上有 `/usr/lib/librkaiq.so.bak-2022`,可试旧版是否不崩 |
+| 关掉 IQ 里的 AWB | 让 rkaiq 只跑 AE,不碰 AWB 统计(但那样就没 AWB 了) |
+
+> 这条也解释了为什么 L2-lite 当时最终选择"手写 3A":厂商 rkaiq 在这块 BSP 上不可靠,而 AWB 的核心只是**灰世界 + 两个增益的负反馈**,自己写反而可控。
+
+---
+
 
 ```bash
 # 1) 开流(必须流开着,params 才能提交)
@@ -124,4 +203,22 @@ echo 0x140 > /sys/module/isp_wb/parameters/gain_b
 
 # 3) 校验:U/V 应接近 128
 ./ystat /dev/video5 3840 2160 1
+```
+
+---
+
+## 7. 复现命令
+
+```bash
+# A) 手动施加白平衡(参数通路)
+./grab /dev/video5 200 /tmp/wb.raw 3840 2160 NV12 &
+./params_poke -g 0x1EC -b 0x1F0 -f 800
+
+# B) mini3a 自动闭环(推荐)
+cd /root/mini3a && ./mini3a -d /dev/video5 -w 1920 -h 1080
+#   预期:AWB LOCKED at f≈20,最终 U/V ≈ 128,收官帧 /root/mini3a/final.nv12
+
+# C) 复现 rkaiq 段错误(调试用)
+gdb -batch -ex run -ex "bt 20" --args /usr/bin/rkaiq_3A_server &
+./grab /dev/video5 180 /tmp/g.raw 3840 2160 NV12
 ```

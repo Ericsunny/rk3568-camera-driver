@@ -248,7 +248,10 @@ static int ae_apply_ctrl(void)
 static int cur_gain_r = 0x100, cur_gain_b = 0x100; /* 全局变量,记录当前增益 */
 static int awb_apply_params(unsigned int gr, unsigned int gb)
 {
-    int fd = open("/dev/video8", O_RDWR);
+    /* L2 修复:params 节点号会随后端设备变化(本系统是 /dev/video13,
+     * 不是最早的 /dev/video8)。这里自动探测:第一个 G_FMT 成功的节点即 params。 */
+    static int params_fd = -2;   /* -2=未探测,-1=没找到,>0=已确认 */
+    int fd;
     struct v4l2_format fmt;
     struct v4l2_requestbuffers req;
     struct v4l2_buffer b;
@@ -256,6 +259,26 @@ static int awb_apply_params(unsigned int gr, unsigned int gb)
     struct isp21_isp_params_cfg *cfg;
     void *p;
 
+    if (params_fd == -2) {
+        int cand[] = {13, 8, 9, 14, 15, 16, 17, 10, 11};
+        for (unsigned k = 0; k < sizeof(cand)/sizeof(cand[0]); k++) {
+            char path[32]; snprintf(path, sizeof(path), "/dev/video%d", cand[k]);
+            int f2 = open(path, O_RDWR);
+            if (f2 < 0) continue;
+            struct v4l2_format f3; memset(&f3, 0, sizeof(f3));
+            f3.type = t;
+            if (xioctl(f2, VIDIOC_G_FMT, &f3) == 0) {
+                params_fd = cand[k];
+                printf(">>> AWB params 节点: %s (sizeimage=%u)\n", path, f3.fmt.meta.buffersize);
+                close(f2);
+                break;
+            }
+            close(f2);
+        }
+        if (params_fd == -2) { params_fd = -1; printf(">>> 没找到 params 节点,AWB 无法生效\n"); }
+    }
+    if (params_fd < 0) return -1;
+    { char path[32]; snprintf(path, sizeof(path), "/dev/video%d", params_fd); fd = open(path, O_RDWR); }
     if (fd < 0) return -1;
     memset(&fmt, 0, sizeof(fmt));
     fmt.type = t;
@@ -296,23 +319,37 @@ static int awb_apply_params(unsigned int gr, unsigned int gb)
 }
 static int awb_step(int u_mean, int v_mean)
 {
-    /* TODO(你):实现;调节成功返回 1 */
+    /* 灰世界:V 偏低=红不足 -> 加 gain_r;U 偏低=蓝不足 -> 加 gain_b。
+     * 修了两个坑:
+     *   1) 只在 params 真正下发成功后才更新 cur_gain,否则增益"看起来变了"其实没生效
+     *   2) 每步限幅 ±20%,避免大幅振荡(u/v 越接近 128,除数越敏感) */
     int changed = 0;
-    if(v_mean < 128 - AWB_UV_TOL / 2 || v_mean > 128 + AWB_UV_TOL / 2) {
-        cur_gain_r = cur_gain_r * 128 /v_mean;
-        if (cur_gain_r > 0x400) cur_gain_r = 0x400;
-        if (cur_gain_r < 0x40) cur_gain_r = 0x40;
-        awb_apply_params(cur_gain_r, cur_gain_b);
-        changed = 1;
+    int gr = cur_gain_r, gb = cur_gain_b;
+
+    if (v_mean > 0 && (v_mean < 128 - AWB_UV_TOL / 2 || v_mean > 128 + AWB_UV_TOL / 2)) {
+        int ng = (int)((long)gr * 128 / v_mean);
+        if (ng > gr * 6 / 5) ng = gr * 6 / 5;
+        if (ng < gr * 4 / 5) ng = gr * 4 / 5;
+        if (ng > 0x400) ng = 0x400;
+        if (ng < 0x40) ng = 0x40;
+        gr = ng; changed = 1;
     }
-    if(u_mean < 128 - AWB_UV_TOL / 2 || u_mean > 128 + AWB_UV_TOL / 2) {
-        cur_gain_b = cur_gain_b * 128 /u_mean;
-        if (cur_gain_b > 0x400) cur_gain_b = 0x400;
-        if (cur_gain_b < 0x40) cur_gain_b = 0x40;
-        awb_apply_params(cur_gain_r, cur_gain_b);
-        changed = 1;
+    if (u_mean > 0 && (u_mean < 128 - AWB_UV_TOL / 2 || u_mean > 128 + AWB_UV_TOL / 2)) {
+        int ng = (int)((long)gb * 128 / u_mean);
+        if (ng > gb * 6 / 5) ng = gb * 6 / 5;
+        if (ng < gb * 4 / 5) ng = gb * 4 / 5;
+        if (ng > 0x400) ng = 0x400;
+        if (ng < 0x40) ng = 0x40;
+        gb = ng; changed = 1;
     }
-    return changed;
+    if (!changed) return 0;
+
+    if (awb_apply_params(gr, gb) == 0) {
+        cur_gain_r = gr; cur_gain_b = gb;
+        return 1;
+    }
+    printf(">>> AWB: params 下发失败,本步不生效\n");
+    return 0;
 }
 
 /* ---------------- 采集初始化(已写好,读一遍) ---------------- */

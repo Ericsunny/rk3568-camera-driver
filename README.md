@@ -11,6 +11,7 @@
 | 3 | 定位并修复厂商 BSP 内核缺陷(params 通路结构体尺寸未随 ISP2.1 更新) | `isp_params.c` v21 分支补 `sizeof(struct isp21_isp_params_cfg)`:5813 → 10475 |
 | 4 | 定位"点不亮"真因:物理接口假设错误(而非供电/时钟) | 三次误判修正链 + 物理口↔总线映射表:[`docs/09`](docs/09-L1A-I2C调试复盘-物理口与总线映射.md) |
 | 5 | **按 datasheet 裸写 OV8858 V4L2 subdev 驱动并出图** | 驱动 666 行,双模式 **29.3 fps / 帧结构 100% 有效**;与厂商逐寄存器对照见 [`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md) |
+| 6 | **V4L2 零拷贝:EXPBUF → dmabuf → RGA → NPU** | `memcpy` **13.67 MB/帧 → 0**;延迟 92.5 → **69.9 ms**;CPU **−66%**(38.3 → 13.0 ms/帧);三线程流水线在 2× 负载下 **+25%** 吞吐,见 [`zerocopy/`](zerocopy/) |
 
 ![我们的驱动抓到的第一帧](evidence/2026-10-21-第一帧-我们的驱动-1632x1224.png)
 
@@ -41,14 +42,15 @@ OV8858 模组(24P)      → 野火转接板 → 15P 1.0mm FPC → 板卡 J11(CAM
 | L1-A P3 | mainpath 第一帧 NV12 + RAW10 对照(双 md5 活水验证) | ✅ 2026-10-08 |
 | L2-lite | rkaiq 深水区留档 → 改为手写用户态 3A 闭环(`mini3a/`),AE/AWB 双收敛 | ✅ 2026-10-12 |
 | **L1-B** | **按 OV8858 datasheet 裸写 V4L2 subdev 驱动**:自推时序 + 借用模拟块,完成后与厂商逐寄存器对照 | ✅ 2026-10-21 |
-| 零拷贝 | VB2 EXPBUF 导出 dmabuf fd → RGA 零拷贝缩放 → NPU/DRM 消费;拷贝 vs 零拷贝 perf 对比 | 🚧 进行中 |
-| L2.5 | 相机 → NPU 实时检测(`realdetect` 骨架已通) | 🚧 待并入零拷贝 |
+| **零拷贝** | VB2 EXPBUF 导出 dmabuf fd → RGA 零拷贝缩放 → NPU 消费;三模式 perf 对比 + 多路 + 流水线 | ✅ 2026-10-21 |
+| L2.5 | 相机 → NPU 实时检测 | ✅ 已并入零拷贝链路(`zerocopy/zc_npu`) |
 | L3 | 异构双摄(dphy1 + dphy2 并行) | 排队 |
 
 ## 仓库结构
 
 ```
 driver/ov8858_sm/   从 datasheet 裸写的 OV8858 sensor 驱动(.c/.h/Makefile + 说明)
+zerocopy/           V4L2 零拷贝链路:EXPBUF→dmabuf→RGA→NPU,三模式 perf 对比 + 多路 + 流水线
 mini3a/             用户态 3A 闭环(V4L2 MPLANE 采集线程 + AE/AWB 控制环)
 docs/               任务书、排障复盘、对照报告、陪跑手册
 evidence/           实测证据(第一帧 / 厂商对照 / 1080p / anchor 修复前后)
@@ -63,6 +65,7 @@ evidence/           实测证据(第一帧 / 厂商对照 / 1080p / anchor 修�
 - [docs/12-L2lite-rkaiq点亮任务书](docs/12-L2lite-rkaiq点亮任务书.md) —— rkaiq 点亮任务书(目标/资料/手术点/预测题格式)。
 - [docs/16-模块四动手手册](docs/16-模块四动手手册-一步一步版.md) —— 从 hello-module 到出图的逐步手册,§5.9~§5.14 是 L1-B 与 1080p 的完整记录。
 - [docs/17-L1-B对照报告](docs/17-L1-B对照报告-自写驱动vs厂商.md) —— **交付级报告**:与厂商逐寄存器对照、哪些是自推的、实测数据、诚实清单。
+- [docs/18-阶段二零拷贝任务书](docs/18-阶段二零拷贝任务书.md) —— EXPBUF/dmabuf/RGA/NPU 全链路、perf 指标定义、S1~S5 验收、多路与流水线数据。
 
 ## 环境
 

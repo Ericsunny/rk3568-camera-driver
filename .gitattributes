@@ -1,0 +1,9 @@
+# 统一按 LF 存储：板子是 Linux，shell / C / Python 文件带 CRLF 会直接报
+#   bash: line N: $'\r': command not found
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.raw binary
+*.nv12 binary
+*.rknn binary
+*.ko binary

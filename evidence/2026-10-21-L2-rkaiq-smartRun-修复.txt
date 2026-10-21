@@ -1,0 +1,93 @@
+# rkaiq AWB 段错误:根因与修复记录(2026-10-21)
+
+板卡:YCKJ-RK3568 / kernel 4.19.232 / IMX415(ISP, `/dev/video5`)
+
+## 1. 崩溃现场
+
+```
+AWB:E:lost smartRun para in json
+ANALYZER:E:awb algo processing failed ret -2
+ANALYZER:E:AWB stats invalid, ignore
+Thread 9 "xc:GrpMsgThrd" received signal SIGSEGV
+#0  interpolation(float const*, float const*, int, float, float*)   /lib/librkaiq.so
+#1  AwbPreProcV201(rk_aiq_awb_stat_res_v201_s, awb_contex_s*)       /lib/librkaiq.so
+#2  processing()
+#3  RkCam::RkAiqAwbHandleInt::processing()
+#4  RkCam::RkAiqCore::analyzeInternal(...)
+```
+
+在 `interpolation` 打断点,崩溃那一刻的入参:
+
+```
+ARGS  x0=(nil)  x1=(nil)  len=0  t=599.14
+```
+
+两个空指针 + 长度 0 → 必崩。
+
+## 2. 版本差:库比 IQ 新
+
+| 项 | 值 |
+|---|---|
+| 库版本 | `AIQ v6.0x6.1`,release 2024-03-03(`/usr/lib/librkaiq.so`) |
+| IQ | `imx415_CMK-OT1522-FG3_CS-P1150-IRC-8M-FAU.json`(2022 schema) |
+| 板上 36 个 IQ 里含 `smartRun` 的 | **0 个** |
+| `librkaiq.so.bak-2022` 里 `smartRun` 出现次数 | **0** |
+| 2024 库里的结构名 | `CalibDbV2_Awb_SmartRun_cfg_t` / `CalibDbV2_Awb_SmartRun_t` |
+
+`UpdateAwbCalibV2Para()`(反汇编 `0xdab18`)会检查四组数组长度是否相等且非 0,
+全 0 时打印 `E:lost smartRun para in json` 并直接 return,策略里的数组保持 NULL,
+下一帧 `AwbPreProcV201` 拿 NULL 去插值 → 段错误。
+
+## 3. 正确的 JSON 结构
+
+位置:`main_scene[0].sub_scene[0].scene_isp21.wb_v21.autoExtPara.smartRun`
+
+```json
+"smartRun": {
+  "enable": 0,
+  "cfg": {
+    "offset": 0,
+    "lumaValue":       [0, 1000, 3000, 5000],  "lumaValue_len": 4,
+    "lvVarTh":         [0.9, 0.05, 0.7, 0.04], "lvVarTh_len": 4,
+    "wbgainAlgDiffTh": [0.1, 0.1, 0.1, 0.1],   "wbgainAlgDiffTh_len": 4,
+    "wbgainHwDiffTh":  [0.1, 0.1, 0.1, 0.1],   "wbgainHwDiffTh_len": 4
+  }
+}
+```
+
+## 4. gdb 探针:`UpdateAwbCalibV2Para+0x978` 打印 enable 与四个长度
+
+| 注入写法 | enable | len[4] | 结论 |
+|---|---|---|---|
+| 不加(原厂 IQ) | — | 0,0,0,0 | lost + 段错误 |
+| 放在 `wb_v21` / `autoPara` / `scene_isp21` / 根 | 0 | 0,0,0,0 | 位置不对,没被读 |
+| `"smartRun": [ {...} ], "smartRun_len": 1` | 0 | 0,0,0,0 | 数组形式不认 |
+| `"smartRun": {"enable":1,"lumaValue":[...]...}` | 1 | 0,0,0,0 | 只认 enable |
+| `"smartRun": {"enable":1,"cfg":{...}}` | 1 | **4,4,4,4** | ✅ 正确 |
+
+关键提示就写在报错里:**`smartRun.cfg`**,`cfg` 是一层、而且是对象不是数组。
+
+## 5. 修复后实测
+
+```
+/usr/bin/rkaiq_3A_server &
+./grab /dev/video5 600 /tmp/fix.raw 3840 2160 NV12
+```
+
+- 进程存活,**600 帧 / 40.1 s / 15.0 fps**,`lost smartRun` 出现 **0** 次
+- Y(AE):2.9 → **47.4** 收敛
+- U / V:**126.5(−1.5)/ 125.3(−2.7)** 稳定(修之前无法收敛)
+- `enable=1` 对照(180 帧):U−1.6 / V−2.8,与 `enable=0` 差异在噪声内 → 默认用 0(只补字段)
+
+## 6. 旧库(`.bak-2022`)路线为何不行
+
+```
+# 2024 server + 2022 lib
+undefined symbol: rk_aiq_uapi2_sysctl_setListenStrmStatus, version CODEABI_3.8  (exit 0177)
+
+# 2022 server + 2022 lib
+parse sensor entity name ov8858-sm 5-0036 error → get isp or ispp info fail(更早 abort)
+旧库还不认 CALIB_AWB_BLK_STAT_MODE_AL_V201
+```
+
+旧库只配旧 server,旧 server 不认当前 media 拓扑 → 补 IQ 才是正解。

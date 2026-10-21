@@ -15,6 +15,7 @@
 | 7 | **异构双摄同时开流(IMX415@ISP + OV8858@CIF)** | 两路帧率与单路**完全一致**(15.00 / 30.02 fps,零干扰),总写入 **249.8 MB/s**,CPU ≈6.6% 单核;见 [`docs/19`](docs/19-L3异构双摄报告.md) |
 | 8 | **ISP 白平衡:把绿偏色修掉** | params 通路下发 `gain_r=0x1EC / gain_b=0x1F0`,色度从 `U−21.4/V−27.0` 收敛到 `U−1.4/V−0.9`;四条通路对比见 [`docs/21`](docs/21-L2-AWB.md) |
 | 9 | **驱动补 pm_runtime,suspend/resume 链路恢复** | runtime PM 三态迁移实测通过(probe→suspended / 开流→active / 关流→2s→suspended);系统 suspend/resume 后抓帧正常、uptime 连续;见 [`docs/20`](docs/20-L4电源管理.md) |
+| 10 | **修好 rkaiq 的 AWB:段错误根因是 IQ 缺 `smartRun`** | 2024 的 AIQ 6.0 库 + 2022 的 IQ → `AwbPreProcV201` 拿 `NULL/NULL/len=0` 插值必崩;补 13 行 JSON 后 **600 帧不崩**、AE 收敛 Y≈47、AWB **U−1.5/V−2.7**;见 [`tools/iq_patch_smartrun.py`](tools/iq_patch_smartrun.py)、[`docs/21`](docs/21-L2-AWB.md) |
 
 ![我们的驱动抓到的第一帧](evidence/2026-10-21-第一帧-我们的驱动-1632x1224.png)
 
@@ -56,7 +57,8 @@ driver/ov8858_sm/   从 datasheet 裸写的 OV8858 sensor 驱动(.c/.h/Makefile 
 zerocopy/           V4L2 零拷贝链路:EXPBUF→dmabuf→RGA→NPU,三模式 perf 对比 + 多路 + 流水线
 mini3a/             用户态 3A 闭环(V4L2 MPLANE 采集线程 + AE/AWB 控制环)
 docs/               任务书、排障复盘、对照报告、陪跑手册
-evidence/           实测证据(第一帧 / 厂商对照 / 1080p / anchor 修复前后 / 双路预览)
+evidence/           实测证据(第一帧 / 厂商对照 / 1080p / anchor 修复前后 / 双路预览 / rkaiq 修复)
+tools/              IQ 补丁脚本:给 2022 版 IQ 补上 AIQ 6.0 需要的 smartRun(AWB 段错误修复)
 ```
 
 ## 文档
@@ -70,7 +72,8 @@ evidence/           实测证据(第一帧 / 厂商对照 / 1080p / anchor 修�
 - [docs/17-L1-B对照报告](docs/17-L1-B对照报告-自写驱动vs厂商.md) —— **交付级报告**:与厂商逐寄存器对照、哪些是自推的、实测数据、诚实清单。
 - [docs/18-阶段二零拷贝任务书](docs/18-阶段二零拷贝任务书.md) —— EXPBUF/dmabuf/RGA/NPU 全链路、perf 指标定义、S1~S5 验收、多路与流水线数据。
 - [docs/19-L3异构双摄报告](docs/19-L3异构双摄报告.md) —— 两路同时开流实测、带宽/负载表、NV12 与 RAW10 两套消费者设计,以及"单 ISP 决定了异构是唯一解"的分析。
-- [docs/21-L2-AWB](docs/21-L2-AWB.md) —— ISP 白平衡:四条通路(rkaiq / mini3a / 寄存器直写 / params)实测对比,以及从 U/V 偏差反推增益的方法。
+- [docs/21-L2-AWB](docs/21-L2-AWB.md) —— ISP 白平衡:四条通路(rkaiq / mini3a / 寄存器直写 / params)实测对比,以及从 U/V 偏差反推增益的方法;§6 是 **rkaiq AWB 段错误的根因(2022 IQ 缺 `smartRun`)与修复**。
+- [tools/iq_patch_smartrun.py](tools/iq_patch_smartrun.py) —— 给旧 IQ 补 `wb_v21.autoExtPara.smartRun.cfg` 的脚本(幂等、文本插入、插入后校验),配 [tools/README](tools/README.md)。
 - [docs/20-L4电源管理](docs/20-L4电源管理.md) —— 给 ov8858_sm 补 pm_runtime 的 4 处改动、runtime PM 三态验证、系统 suspend/resume 链路恢复,以及"带流 suspend 会挂死"的已知限制。
 
 ## 环境

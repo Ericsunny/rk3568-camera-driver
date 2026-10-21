@@ -153,43 +153,118 @@ f=20 Y=110 U=128 V=128 AE=RUNNING AWB=LOCKED
 
 ---
 
-## 6. rkaiq 段错误:定位到 AWB 预处理(用 gdb 抓到完整回溯)
+## 6. rkaiq 段错误:根因是 IQ 里缺 `smartRun`(已修好,不再崩)
+
+### 6.1 现象
 
 在 gdb 里跑 `rkaiq_3A_server`,同时开流触发 3A:
 
 ```
+AWB:E:lost smartRun para in json
+ANALYZER:E:awb algo processing failed ret -2
 Thread 9 "xc:GrpMsgThrd" received signal SIGSEGV
 #0  interpolation(float const*, float const*, int, float, float*)   from /lib/librkaiq.so
 #1  AwbPreProcV201(rk_aiq_awb_stat_res_v201_s, awb_contex_s*)       from /lib/librkaiq.so
 #2  processing()
 #3  RkCam::RkAiqAwbHandleInt::processing()
 #4  RkCam::RkAiqCore::analyzeInternal(...)
-#5  RkCam::RkAiqCore::groupAnalyze(...)
-...
 ```
 
-**崩溃点在 `AwbPreProcV201` 里对 AWB 统计做插值的 `interpolation()`**,而日志早在同一轮里报过:
+把断点下在 `interpolation` 上,拿到崩溃那一刻的入参:
 
 ```
-ANALYZER:E:AWB stats invalid, ignore
+ARGS  x0=(nil)  x1=(nil)  len=0  t=599.14
 ```
 
-即:**统计被判无效,却仍然送进 AWB 预处理**,`interpolation()` 拿到的是未初始化/空的点集 → 段错误。
+**两个空指针 + 长度为 0** —— `AwbPreProcV201` 拿着"空点集"去做插值,必崩。
+所以 `AWB stats invalid, ignore` 只是伴随现象,真正的元凶是**AWB 校准里 `smartRun` 这一段根本没被解析出来**。
 
-**排除掉的两个可能**:
+### 6.2 为什么库要 `smartRun`,而这批 IQ 没有
 
-- 不是 IQ 文件损坏:三个变体(`.json` / `.bak` / `.bak2`)的 `main_scene` 都是合法 list、`main_scene_len=1` 与实际一致,JSON 都能正常解析
-- 不是我们的 BSP 修复失效:同期 `params_poke` 通过同一节点成功下发并改变画面,说明 params 通路是好的
-
-**结论**:这套 BSP 的 `librkaiq` 在"ISP AWB 统计无效"的路径上没做保护(空指针解引用),属于 **AIQ 库的健壮性缺陷**。可行的出路:
-
-| 方案 | 说明 |
+| 证据 | 结论 |
 |---|---|
-| **用 mini3a 做 AWB**(已完成) | 我们自己控制灰世界闭环,已验证 U/V → 128 |
-| 换 AIQ 版本 | 板上有 `/usr/lib/librkaiq.so.bak-2022`,可试旧版是否不崩 |
-| 关掉 IQ 里的 AWB | 让 rkaiq 只跑 AE,不碰 AWB 统计(但那样就没 AWB 了) |
+| `strings librkaiq.so` 里有 `CalibDbV2_Awb_SmartRun_cfg_t` / `CalibDbV2_Awb_SmartRun_t` | 这个结构是库的正式成员 |
+| 字段名表(56 字节一条)里 `smartRun` 紧挨着 `lightSourceForFirstFrame` / `tolerance` | `smartRun` 是 **`wb_v21.autoExtPara`** 的兄弟字段 |
+| 子表:`offset` / `lumaValue(_len)` / `lvVarTh(_len)` / `wbgainAlgDiffTh(_len)` / `wbgainHwDiffTh(_len)` / `enable` | `smartRun.cfg` 的内部结构 |
+| 板上 36 个 IQ 文件 **全部** 没有 `smartRun`;`librkaiq.so.bak-2022` 里 **0** 次出现 | 库是 2024-03 的 AIQ 6.0,IQ 是 2022 年的,库比 IQ 新 |
+| `rkaiq_3A_server` 版本串:`AIQ v6.0x6.1, release 2024-03-03` | 同上 |
 
-> 这条也解释了为什么 L2-lite 当时最终选择"手写 3A":厂商 rkaiq 在这块 BSP 上不可靠,而 AWB 的核心只是**灰世界 + 两个增益的负反馈**,自己写反而可控。
+`UpdateAwbCalibV2Para()` 的实际逻辑(反汇编 `0xdab18`):
+
+```
+ldrb w0,[x24,#8]        ; smartRun.enable
+ldr  w0,[x24,#24]       ; lumaValue_len
+cmp  w0, [x24,#40]      ; == lvVarTh_len ?
+cmp  w0, [x24,#56]      ; == wbgainAlgDiffTh_len ?
+cmp  w0, [x24,#72]      ; == wbgainHwDiffTh_len ?
+b.eq  -> cbnz w0 -> JsonPara2SwParaCom()   ; 长度 != 0 才把数组拷进策略
+否则  -> "E:check _len para in smartRun.cfg in json" / "E:lost smartRun para in json" 后直接 return
+```
+
+长度全 0 时:早退 → 策略里的数组仍是 NULL → 下一帧 `AwbPreProcV201` 插值 → 段错误。
+**用 gdb 在 `UpdateAwbCalibV2Para+0x978` 打印这四个长度,就能一眼看出 IQ 到底有没有被吃进去。**
+
+### 6.3 试错记录(JSON 到底该怎么写)
+
+在 IQ 里按不同写法注入,用上面的 gdb 探针读数:
+
+| JSON 写法 | `enable` | 四个 `_len` | 结果 |
+|---|---|---|---|
+| 什么都不加(原厂 IQ) | — | 0,0,0,0 | 报 lost + 段错误 |
+| `smartRun` 放在 `wb_v21` / `autoPara` / `scene_isp21` / 根节点 | 0 | 0,0,0,0 | 完全没被读 |
+| `"smartRun": [ {...} ], "smartRun_len": 1`(数组) | 0 | 0,0,0,0 | 数组形式不认 |
+| `"smartRun": {"enable":1, "lumaValue":[...], ...}`(平铺) | 1 | 0,0,0,0 | 只认 `enable`,数组没读 |
+| `"smartRun": {"enable":1, "cfg": {...}}`(cfg 是**对象**) | 1 | **4,4,4,4** | ✅ 正确 |
+
+> 提示就藏在报错文字里:**`smartRun.cfg`** —— `cfg` 是这条路径上的一层,而且是对象不是数组。
+
+### 6.4 修好之后的样子
+
+`wb_v21.autoExtPara` 里补这一块(见 `tools/iq_patch_smartrun.py`):
+
+```json
+"smartRun": {
+  "enable": 0,
+  "cfg": {
+    "offset": 0,
+    "lumaValue":       [0, 1000, 3000, 5000], "lumaValue_len": 4,
+    "lvVarTh":         [0.9, 0.05, 0.7, 0.04], "lvVarTh_len": 4,
+    "wbgainAlgDiffTh": [0.1, 0.1, 0.1, 0.1],   "wbgainAlgDiffTh_len": 4,
+    "wbgainHwDiffTh":  [0.1, 0.1, 0.1, 0.1],   "wbgainHwDiffTh_len": 4
+  }
+}
+```
+
+实测(3840×2160,`grab /dev/video5 600`):
+
+| 指标 | 修之前 | 修之后 |
+|---|---|---|
+| `lost smartRun` 报错 | 每次启动 1 次 | **0** |
+| 段错误 | 开流后几秒必崩 | **600 帧 / 40.1 s 不崩** |
+| Y(AE) | 2.9 → 14.5(卡住) | 2.9 → **47.4**(收敛) |
+| U / V | 无法收敛 | **126.5(−1.5) / 125.3(−2.7)** |
+| 帧率 | — | 15.0 fps(4K 模式) |
+
+`enable` 开与不开对比(各 180 帧):`enable=0` → U−1.5 / V−2.7;`enable=1` → U−1.6 / V−2.8。
+差异在噪声内,所以默认 `enable=0`(**只补字段、不改 AWB 行为**)最保守。
+
+作为对照,自己写的 mini3a 灰世界闭环在同一场景下能把 U/V 压到 **128.0**,比 rkaiq 的 −1.5/−2.7 更准一点;
+但 rkaiq 这条路现在**能用、不崩、AE/AWB 都在闭环**,不再是"厂商库不可靠"的结论。
+
+### 6.5 旧版库(`.bak-2022`)为什么也不行
+
+| 尝试 | 结果 |
+|---|---|
+| 2024 server + `librkaiq.so.bak-2022` | `undefined symbol: rk_aiq_uapi2_sysctl_setListenStrmStatus, version CODEABI_3.8` → 退出码 0177 |
+| `rkaiq_3A_server.bak-2022` + 旧库 | 更早 abort:`parse sensor entity name ov8858-sm 5-0036 error` → `get isp or ispp info fail`;而且旧库不认 `CALIB_AWB_BLK_STAT_MODE_AL_V201` |
+
+即:**旧库只配旧 server**,而旧 server 不认我们现在的 media 拓扑。这条路走不通,补 IQ 才是正解。
+(旧库 `strings` 里 `smartRun` 出现 0 次,正好反证它是 2022 年的 ABI。)
+
+### 6.6 一句话总结
+
+> 段错误不是"库不健壮",而是 **IQ 比库旧**:AIQ 6.0 要求 `wb_v21.autoExtPara.smartRun.cfg` 里四组等长非零数组,2022 年的 IQ 没有这一段,库就带着空指针去插值。
+> 用 `tools/iq_patch_smartrun.py` 补上 13 行 JSON 即可,`enable=0` 时行为等价于原厂。
 
 ---
 
@@ -218,7 +293,13 @@ ANALYZER:E:AWB stats invalid, ignore
 cd /root/mini3a && ./mini3a -d /dev/video5 -w 1920 -h 1080
 #   预期:AWB LOCKED at f≈20,最终 U/V ≈ 128,收官帧 /root/mini3a/final.nv12
 
-# C) 复现 rkaiq 段错误(调试用)
+# C) 修 IQ(补 smartRun),让 rkaiq 的 AWB 不再段错误
+python3 tools/iq_patch_smartrun.py /etc/iqfiles/imx415_xxx.json --check   # 先看缺不缺
+python3 tools/iq_patch_smartrun.py /etc/iqfiles/imx415_xxx.json           # 补 enable=0
+/usr/bin/rkaiq_3A_server &
+./grab /dev/video5 600 /tmp/fix.raw 3840 2160 NV12   # 预期:600 帧不崩,U/V ≈ 126.5/125.3
+
+# D) 复现旧版段错误(调试用,需要先去掉 smartRun)
 gdb -batch -ex run -ex "bt 20" --args /usr/bin/rkaiq_3A_server &
 ./grab /dev/video5 180 /tmp/g.raw 3840 2160 NV12
 ```

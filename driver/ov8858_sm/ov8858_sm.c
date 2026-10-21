@@ -1,0 +1,667 @@
+#include <linux/module.h>
+#include <linux/i2c.h>
+#include <linux/clk.h>
+#include <linux/regulator/consumer.h>
+#include <linux/pm_runtime.h>
+#include <linux/gpio/consumer.h>
+#include <linux/slab.h>
+#include <linux/delay.h>
+#include <linux/of.h>
+#include <media/v4l2-async.h>
+#include <media/media-entity.h>
+#include <media/v4l2-fwnode.h>
+#include <media/v4l2-subdev.h>
+#include <media/v4l2-ctrls.h>
+
+#include "ov8858_sm_regs.h"
+#include <linux/rk-camera-module.h>
+#include <media/v4l2-mediabus.h>
+#include <media/v4l2-device.h>
+
+static bool test_stream;
+static bool mode_1080p;
+module_param(mode_1080p, bool, 0644);
+MODULE_PARM_DESC(mode_1080p, "use the derived 1920x1080@60 mode instead of 1632x1224");
+module_param(test_stream, bool, 0644);
+MODULE_PARM_DESC(test_stream, "apply the init sequence at probe (bring-up test)");
+
+#define OV8858_SM_NAME "ov8858-sm"
+
+/* TODO(L1-B): every number below must come from the OV8858 datasheet. */
+/* Mode: 1080p 1920x1080@60, 2-lane RAW10, datasheet table 2-1 says 720 Mbps/lane.
+ * link_freq (V4L2) = 720 Mbps / 2 (DDR)      = 360 MHz
+ * pixel_rate       = 720 Mbps * 2 lanes / 10 = 144 Mpixel/s
+ */
+#define OV8858_SM_LINK_FREQ     360000000LL   /* Hz */
+#define OV8858_SM_PIXEL_RATE    144000000LL   /* pixel/s */
+#define OV8858_SM_EXPOSURE_MIN  1
+#define OV8858_SM_EXPOSURE_MAX  0xfffe
+#define OV8858_SM_EXPOSURE_DEF  0x100
+#define OV8858_SM_GAIN_MIN      0
+#define OV8858_SM_GAIN_MAX      0xff
+#define OV8858_SM_GAIN_DEF      0
+
+#define OV8858_SM_NUM_SUPPLIES  3
+
+struct ov8858_sm {
+	struct v4l2_subdev subdev;
+	struct media_pad pad;
+	struct i2c_client *client;
+	struct clk *xvclk;
+	struct gpio_desc *pwdn;
+	struct gpio_desc *reset;
+	struct regulator_bulk_data supplies[3];
+	struct v4l2_ctrl_handler ctrl_handler;
+	struct v4l2_ctrl *exposure;
+	struct v4l2_ctrl *anal_gain;
+	bool is_1080p;
+	bool powered;		/* 电源/时钟是否已打开,保证上电断电严格配对 */
+};
+
+static const struct i2c_device_id ov8858_sm_id[] = {
+	{ "ov8858-sm", 0 },
+	{ }
+};
+MODULE_DEVICE_TABLE(i2c, ov8858_sm_id);
+
+static const struct of_device_id ov8858_sm_of_match[] = {
+	{ .compatible = "ovti,ov8858-sm" },
+	{ /* sentinel */ }
+};
+MODULE_DEVICE_TABLE(of, ov8858_sm_of_match);
+
+static int ov8858_sm_power_on(struct ov8858_sm *ov8858);
+static void ov8858_sm_power_off(struct ov8858_sm *ov8858);
+static int ov8858_sm_read_reg(struct i2c_client *client, u16 reg, u8 *val);
+
+/* ---------------- register access: 16-bit address, 8-bit data ---------------- */
+
+static int ov8858_sm_write_reg(struct i2c_client *client, u16 reg, u8 val)
+{
+	u8 buf[3] = { reg >> 8, reg & 0xff, val };
+	struct i2c_msg msg = {
+		.addr = client->addr, .flags = 0, .len = 3, .buf = buf,
+	};
+	int ret = i2c_transfer(client->adapter, &msg, 1);
+
+	if (ret < 0)
+		return ret;
+	return ret == 1 ? 0 : -EIO;
+}
+
+static int ov8858_sm_write_array(struct i2c_client *client,
+				 const struct ov8858_sm_regval *regs)
+{
+	int i, ret;
+
+	for (i = 0; regs[i].addr != OV8858_SM_REG_NULL; i++) {
+		ret = ov8858_sm_write_reg(client, regs[i].addr, regs[i].val);
+		if (ret) {
+			dev_err(&client->dev, "write 0x%04x=0x%02x failed: %d\n",
+				regs[i].addr, regs[i].val, ret);
+			return ret;
+		}
+	}
+
+	return 0;
+}
+
+/* ---------------- streaming ---------------- */
+
+static int ov8858_sm_start_stream(struct ov8858_sm *ov8858)
+{
+	int ret;
+
+	ret = ov8858_sm_write_array(ov8858->client, ov8858_sm_global_regs);
+	if (ret)
+		return ret;
+
+	/* the mode table also ends with 0x0100 = 0x01 (stream on) */
+	if (ov8858->is_1080p)
+		ret = ov8858_sm_write_array(ov8858->client,
+					    ov8858_sm_mode_1080p_regs);
+	else
+		ret = ov8858_sm_write_array(ov8858->client,
+					    ov8858_sm_mode_1632x1224_regs);
+	if (ret)
+		return ret;
+
+	/* 回读关键寄存器:确认"以为切了模式"和"sensor 真的切了"是一回事 */
+	{
+		u8 wh = 0, wl = 0, hh = 0, hl = 0, th = 0, tl = 0, vh = 0, vl = 0;
+		u8 st = 0, sub = 0, bin = 0;
+
+		ov8858_sm_read_reg(ov8858->client, 0x0100, &st);
+		ov8858_sm_read_reg(ov8858->client, 0x3814, &sub);
+		ov8858_sm_read_reg(ov8858->client, 0x3821, &bin);
+		ov8858_sm_read_reg(ov8858->client, 0x3808, &wh);
+		ov8858_sm_read_reg(ov8858->client, 0x3809, &wl);
+		ov8858_sm_read_reg(ov8858->client, 0x380a, &hh);
+		ov8858_sm_read_reg(ov8858->client, 0x380b, &hl);
+		ov8858_sm_read_reg(ov8858->client, 0x380c, &th);
+		ov8858_sm_read_reg(ov8858->client, 0x380d, &tl);
+		ov8858_sm_read_reg(ov8858->client, 0x380e, &vh);
+		ov8858_sm_read_reg(ov8858->client, 0x380f, &vl);
+
+		dev_info(&ov8858->client->dev,
+			 "start_stream[%s]: stream=0x%02x 0x3814=0x%02x 0x3821=0x%02x size=%dx%d hts=%d vts=%d\n",
+			 ov8858->is_1080p ? "1080p" : "1632x1224",
+			 st, sub, bin, (wh << 8) | wl, (hh << 8) | hl,
+			 (th << 8) | tl, (vh << 8) | vl);
+	}
+
+	return 0;
+}
+
+static int ov8858_sm_stop_stream(struct ov8858_sm *ov8858)
+{
+	return ov8858_sm_write_reg(ov8858->client, 0x0100, 0x00);
+}
+
+static int ov8858_sm_s_stream(struct v4l2_subdev *sd, int enable)
+{
+	struct ov8858_sm *ov8858 = container_of(sd, struct ov8858_sm, subdev);
+	int ret;
+
+	dev_info(sd->dev, "s_stream %d\n", enable);
+
+	if (enable) {
+		ret = ov8858_sm_power_on(ov8858);
+		if (ret)
+			return ret;
+
+		ret = ov8858_sm_start_stream(ov8858);
+		if (ret) {
+			ov8858_sm_power_off(ov8858);
+			return ret;
+		}
+	} else {
+		ov8858_sm_stop_stream(ov8858);
+		ov8858_sm_power_off(ov8858);
+	}
+
+	return 0;
+}
+
+/*
+ * L1-B: rkcif 在打开 video 节点时会问 sensor 一句"你的物理链路是什么样"
+ * (MIPI CSI-2 / 几条 lane / 时钟连续还是非连续)。这里必须实现:
+ * 不实现的话这次 subdev 调用返回 -ENOIOCTLCMD(-515),而 rkcif 只判断
+ * "ret && ret != -ENOIOCTLCMD" 就放过了,却没有把 ret 清零,
+ * 最后 return ret 把 -515 当成自己的失败返回 -> /dev/video0 open 失败。
+ */
+static int ov8858_sm_g_mbus_config(struct v4l2_subdev *sd,
+				   struct v4l2_mbus_config *cfg)
+{
+	cfg->type = V4L2_MBUS_CSI2;
+	cfg->flags = V4L2_MBUS_CSI2_2_LANE |
+		     V4L2_MBUS_CSI2_CHANNEL_0 |
+		     V4L2_MBUS_CSI2_CONTINUOUS_CLOCK;
+
+	return 0;
+}
+
+static const struct v4l2_subdev_video_ops ov8858_sm_video_ops = {
+	.s_stream = ov8858_sm_s_stream,
+	.g_mbus_config = ov8858_sm_g_mbus_config,
+};
+
+/* rkcif asks every sensor for its module info when a video node is opened. */
+static void ov8858_sm_get_module_inf(struct ov8858_sm *ov8858,
+				     struct rkmodule_inf *inf)
+{
+	memset(inf, 0, sizeof(*inf));
+	strscpy(inf->base.sensor, "ov8858-sm", sizeof(inf->base.sensor));
+	strscpy(inf->base.module, "ov8858-sm", sizeof(inf->base.module));
+	strscpy(inf->base.lens, "default", sizeof(inf->base.lens));
+}
+
+static long ov8858_sm_ioctl(struct v4l2_subdev *sd, unsigned int cmd, void *arg)
+{
+	struct ov8858_sm *ov8858 = container_of(sd, struct ov8858_sm, subdev);
+
+	switch (cmd) {
+	case RKMODULE_GET_MODULE_INFO:
+		ov8858_sm_get_module_inf(ov8858, arg);
+		return 0;
+	case RKMODULE_SET_QUICK_STREAM: {
+		u32 stream = *(u32 *)arg;
+
+		return ov8858_sm_write_reg(ov8858->client, 0x0100,
+					   stream ? 0x01 : 0x00);
+	}
+	default:
+		return -ENOTTY;
+	}
+}
+
+static const struct v4l2_subdev_core_ops ov8858_sm_core_ops = {
+	.ioctl = ov8858_sm_ioctl,
+};
+
+/* The sensor always outputs RAW10 Bayer SBGGR. */
+#define OV8858_SM_MBUS_CODE	MEDIA_BUS_FMT_SBGGR10_1X10
+
+static void ov8858_sm_fill_fmt(struct ov8858_sm *ov8858,
+			       struct v4l2_mbus_framefmt *fmt)
+{
+	fmt->code = OV8858_SM_MBUS_CODE;
+	fmt->field = V4L2_FIELD_NONE;
+	fmt->colorspace = V4L2_COLORSPACE_SRGB;
+	if (ov8858->is_1080p) {
+		fmt->width = 1920;
+		fmt->height = 1080;
+	} else {
+		fmt->width = 1632;
+		fmt->height = 1224;
+	}
+}
+
+static int ov8858_sm_get_fmt(struct v4l2_subdev *sd,
+			     struct v4l2_subdev_pad_config *cfg,
+			     struct v4l2_subdev_format *fmt)
+{
+	struct ov8858_sm *ov8858 = container_of(sd, struct ov8858_sm, subdev);
+
+	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
+#ifdef CONFIG_VIDEO_V4L2_SUBDEV_API
+		fmt->format = *v4l2_subdev_get_try_format(sd, cfg, fmt->pad);
+#else
+		return -ENOTTY;
+#endif
+	} else {
+		ov8858_sm_fill_fmt(ov8858, &fmt->format);
+	}
+
+	return 0;
+}
+
+static int ov8858_sm_set_fmt(struct v4l2_subdev *sd,
+			     struct v4l2_subdev_pad_config *cfg,
+			     struct v4l2_subdev_format *fmt)
+{
+	struct ov8858_sm *ov8858 = container_of(sd, struct ov8858_sm, subdev);
+
+	/* Pick the mode that best matches what userspace asked for. */
+	ov8858->is_1080p = (fmt->format.width == 1920 &&
+			    fmt->format.height == 1080);
+
+	ov8858_sm_fill_fmt(ov8858, &fmt->format);
+
+	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
+#ifdef CONFIG_VIDEO_V4L2_SUBDEV_API
+		*v4l2_subdev_get_try_format(sd, cfg, fmt->pad) = fmt->format;
+#else
+		return -ENOTTY;
+#endif
+	}
+
+	return 0;
+}
+
+static const struct v4l2_subdev_pad_ops ov8858_sm_pad_ops = {
+	.get_fmt = ov8858_sm_get_fmt,
+	.set_fmt = ov8858_sm_set_fmt,
+};
+
+/* Must NOT be NULL: v4l2_subdev_init has BUG_ON(!ops) */
+static const struct v4l2_subdev_ops ov8858_sm_subdev_ops = {
+	.core = &ov8858_sm_core_ops,
+	.pad = &ov8858_sm_pad_ops,
+	.video = &ov8858_sm_video_ops,
+};
+
+/* Link frequency menu, in Hz. TODO(L1-B) */
+static const s64 ov8858_sm_link_freq_menu[] = {
+	OV8858_SM_LINK_FREQ,
+};
+
+/* ---------------- register access: 16-bit address, 8-bit data ---------------- */
+
+static int ov8858_sm_read_reg(struct i2c_client *client, u16 reg, u8 *val)
+{
+	u8 buf[2] = { reg >> 8, reg & 0xff };
+	struct i2c_msg msgs[2] = {
+		{ .addr = client->addr, .flags = 0,        .len = 2, .buf = buf },
+		{ .addr = client->addr, .flags = I2C_M_RD, .len = 1, .buf = val },
+	};
+	int ret;
+
+	ret = i2c_transfer(client->adapter, msgs, ARRAY_SIZE(msgs));
+	if (ret < 0)
+		return ret;
+
+	return ret == ARRAY_SIZE(msgs) ? 0 : -EIO;
+}
+
+/* Datasheet: chip ID is at 0x300B (high byte) and 0x300C (low byte). */
+/* ---------------- resources ---------------- */
+
+/* The names must match the "*-supply" suffixes in the dts node. */
+static const char * const ov8858_sm_supply_names[OV8858_SM_NUM_SUPPLIES] = {
+	"dovdd", "avdd", "dvdd",
+};
+
+static int ov8858_sm_get_resources(struct ov8858_sm *ov8858)
+{
+	struct i2c_client *client = ov8858->client;
+	int i, ret;
+
+	for (i = 0; i < OV8858_SM_NUM_SUPPLIES; i++)
+		ov8858->supplies[i].supply = ov8858_sm_supply_names[i];
+
+	ret = devm_regulator_bulk_get(&client->dev, OV8858_SM_NUM_SUPPLIES,
+				      ov8858->supplies);
+	if (ret) {
+		/* -EPROBE_DEFER must be returned as is */
+		dev_err(&client->dev, "failed to get regulators: %d\n", ret);
+		return ret;
+	}
+
+	ov8858->xvclk = devm_clk_get(&client->dev, "xvclk");
+	if (IS_ERR(ov8858->xvclk)) {
+		ret = PTR_ERR(ov8858->xvclk);
+		dev_err(&client->dev, "failed to get xvclk: %d\n", ret);
+		return ret;
+	}
+
+	/* GPIOD_ASIS: take the handle without forcing the pin state */
+	ov8858->pwdn = devm_gpiod_get_optional(&client->dev, "pwdn", GPIOD_ASIS);
+	if (IS_ERR(ov8858->pwdn)) {
+		ret = PTR_ERR(ov8858->pwdn);
+		dev_err(&client->dev, "failed to get pwdn gpio: %d\n", ret);
+		return ret;
+	}
+
+	ov8858->reset = devm_gpiod_get_optional(&client->dev, "reset", GPIOD_ASIS);
+	if (IS_ERR(ov8858->reset)) {
+		ret = PTR_ERR(ov8858->reset);
+		dev_err(&client->dev, "failed to get reset gpio: %d\n", ret);
+		return ret;
+	}
+
+	dev_info(&client->dev, "resources: xvclk=%lu Hz, pwdn=%s, reset=%s\n",
+		 clk_get_rate(ov8858->xvclk),
+		 ov8858->pwdn ? "ok" : "none",
+		 ov8858->reset ? "ok" : "none");
+
+	return 0;
+}
+
+/* ---------------- power sequence (datasheet 2.6) ----------------
+ * figure 2-3 / tables 2-3, 2-4:
+ *  - DOVDD and AVDD order is interchangeable, DVDD only needs both stable
+ *    (t0 / t1 / t7 = 0)  -> a single bulk enable is fine
+ *  - XSHUTDN (the "reset" pin) may be released as soon as DVDD is stable
+ *    (t9 = 0) and must be HIGH for the device to run
+ *  - the clock must have run 8192 cycles before the first SCCB access (t3);
+ *    t2 is another 8192 cycles. 8192 / 24 MHz ~= 341 us -> use 1 ms
+ */
+#define OV8858_SM_PWR_WAIT_US	1000
+
+static int ov8858_sm_power_on(struct ov8858_sm *ov8858)
+{
+	struct i2c_client *client = ov8858->client;
+	int ret;
+
+	/* 已经在电上就直接返回:避免 clk/regulator 引用计数被重复 +
+	 * 1,也避免对已经在跑的传感器再拉一次 reset */
+	if (ov8858->powered)
+		return 0;
+
+	/* 1. clock first */
+	ret = clk_prepare_enable(ov8858->xvclk);
+	if (ret) {
+		dev_err(&client->dev, "enable xvclk failed: %d\n", ret);
+		return ret;
+	}
+
+	/* 2. assert XSHUTDN: low = shutdown */
+	if (ov8858->reset)
+		gpiod_set_value_cansleep(ov8858->reset, 0);
+
+	/* 3. rails on */
+	ret = regulator_bulk_enable(OV8858_SM_NUM_SUPPLIES, ov8858->supplies);
+	if (ret) {
+		dev_err(&client->dev, "enable regulators failed: %d\n", ret);
+		clk_disable_unprepare(ov8858->xvclk);
+		return ret;
+	}
+
+	/* 4. release XSHUTDN: high = running (t9 = 0 after DVDD is stable) */
+	if (ov8858->reset)
+		gpiod_set_value_cansleep(ov8858->reset, 1);
+
+	usleep_range(1000, 2000);
+
+	/* 5. PWDNB high = not powered down */
+	if (ov8858->pwdn)
+		gpiod_set_value_cansleep(ov8858->pwdn, 1);
+
+	/* 6. 8192 XVCLK cycles (~341us @24MHz) before the first SCCB access */
+	usleep_range(OV8858_SM_PWR_WAIT_US, OV8858_SM_PWR_WAIT_US * 2);
+
+	ov8858->powered = true;
+
+	return 0;
+}
+
+static void ov8858_sm_power_off(struct ov8858_sm *ov8858)
+{
+	if (!ov8858->powered)
+		return;
+
+	ov8858->powered = false;
+
+	/* enter shutdown first, then cut clock and rails */
+	if (ov8858->reset)
+		gpiod_set_value_cansleep(ov8858->reset, 0);
+
+	clk_disable_unprepare(ov8858->xvclk);
+	regulator_bulk_disable(OV8858_SM_NUM_SUPPLIES, ov8858->supplies);
+}
+
+static int ov8858_sm_check_sensor_id(struct ov8858_sm *ov8858)
+{
+	struct i2c_client *client = ov8858->client;
+	u8 id_h = 0, id_l = 0;
+	int ret;
+
+	ret = ov8858_sm_read_reg(client, 0x300b, &id_h);
+	if (ret)
+		return ret;
+
+	ret = ov8858_sm_read_reg(client, 0x300c, &id_l);
+	if (ret)
+		return ret;
+
+	dev_info(&client->dev, "Detected OV8858 id 0x%02x%02x\n", id_h, id_l);
+
+	if (id_h != 0x88 || id_l != 0x58) {
+		dev_err(&client->dev, "unexpected sensor id 0x%02x%02x\n", id_h, id_l);
+		return -ENODEV;
+	}
+
+	return 0;
+}
+
+static int ov8858_sm_set_ctrl(struct v4l2_ctrl *ctrl)
+{
+	struct ov8858_sm *ov8858 =
+		container_of(ctrl->handler, struct ov8858_sm, ctrl_handler);
+
+	/* TODO(L1-B): translate ctrl->val into real i2c register writes. */
+	switch (ctrl->id) {
+	case V4L2_CID_EXPOSURE:
+		dev_dbg(&ov8858->client->dev, "set exposure %d\n", ctrl->val);
+		break;
+	case V4L2_CID_ANALOGUE_GAIN:
+		dev_dbg(&ov8858->client->dev, "set analogue gain %d\n", ctrl->val);
+		break;
+	default:
+		break;
+	}
+
+	return 0;
+}
+
+static const struct v4l2_ctrl_ops ov8858_sm_ctrl_ops = {
+	.s_ctrl = ov8858_sm_set_ctrl,
+};
+
+static int ov8858_sm_initialize_controls(struct ov8858_sm *ov8858)
+{
+	struct v4l2_ctrl_handler *handler = &ov8858->ctrl_handler;
+	struct v4l2_ctrl *ctrl;
+	int ret;
+
+	ret = v4l2_ctrl_handler_init(handler, 8);
+	if (ret)
+		return ret;
+
+	ctrl = v4l2_ctrl_new_int_menu(handler, NULL, V4L2_CID_LINK_FREQ,
+				      0, 0, ov8858_sm_link_freq_menu);
+	if (ctrl)
+		ctrl->flags |= V4L2_CTRL_FLAG_READ_ONLY;
+
+	v4l2_ctrl_new_std(handler, NULL, V4L2_CID_PIXEL_RATE,
+			  0, OV8858_SM_PIXEL_RATE, 1, OV8858_SM_PIXEL_RATE);
+
+	ov8858->exposure = v4l2_ctrl_new_std(handler, &ov8858_sm_ctrl_ops,
+					     V4L2_CID_EXPOSURE,
+					     OV8858_SM_EXPOSURE_MIN,
+					     OV8858_SM_EXPOSURE_MAX, 1,
+					     OV8858_SM_EXPOSURE_DEF);
+
+	ov8858->anal_gain = v4l2_ctrl_new_std(handler, &ov8858_sm_ctrl_ops,
+					      V4L2_CID_ANALOGUE_GAIN,
+					      OV8858_SM_GAIN_MIN,
+					      OV8858_SM_GAIN_MAX, 1,
+					      OV8858_SM_GAIN_DEF);
+
+	if (handler->error) {
+		ret = handler->error;
+		dev_err(&ov8858->client->dev, "failed to init controls: %d\n", ret);
+		v4l2_ctrl_handler_free(handler);
+		return ret;
+	}
+
+	ov8858->subdev.ctrl_handler = handler;
+
+	return 0;
+}
+
+static int ov8858_sm_probe(struct i2c_client *client, const struct i2c_device_id *id)
+{
+	struct ov8858_sm *ov8858;
+	int ret;
+
+	ov8858 = devm_kzalloc(&client->dev, sizeof(*ov8858), GFP_KERNEL);
+	if (!ov8858)
+		return -ENOMEM;
+
+	ov8858->client = client;
+	ov8858->is_1080p = mode_1080p;
+
+	ret = ov8858_sm_get_resources(ov8858);
+	if (ret)
+		return ret;
+
+	ret = ov8858_sm_power_on(ov8858);
+	if (ret)
+		return ret;
+
+	v4l2_i2c_subdev_init(&ov8858->subdev, client, &ov8858_sm_subdev_ops);
+
+	/* L1-B: 有了这个 flag 才会出现 /dev/v4l-subdevN,方便单独调试 */
+	ov8858->subdev.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
+
+	/* L1-B: the sensor is powered by now, so it must answer with 0x8858 */
+	ret = ov8858_sm_check_sensor_id(ov8858);
+	if (ret)
+		goto err_power;
+
+	if (test_stream) {
+		u8 st = 0, mult = 0, wh = 0, wl = 0, hh = 0, hl = 0;
+		u8 th = 0, tl = 0, vh = 0, vl = 0;
+
+		dev_info(&client->dev, "test_stream: applying init sequence\n");
+		ret = ov8858_sm_start_stream(ov8858);
+		if (ret)
+			goto err_power;
+
+		ov8858_sm_read_reg(client, 0x0100, &st);
+		ov8858_sm_read_reg(client, 0x0302, &mult);
+		ov8858_sm_read_reg(client, 0x3808, &wh);
+		ov8858_sm_read_reg(client, 0x3809, &wl);
+		ov8858_sm_read_reg(client, 0x380a, &hh);
+		ov8858_sm_read_reg(client, 0x380b, &hl);
+		ov8858_sm_read_reg(client, 0x380c, &th);
+		ov8858_sm_read_reg(client, 0x380d, &tl);
+		ov8858_sm_read_reg(client, 0x380e, &vh);
+		ov8858_sm_read_reg(client, 0x380f, &vl);
+
+		dev_info(&client->dev,
+			 "read back: stream=0x%02x mult=0x%02x size=%dx%d hts=%d vts=%d\n",
+			 st, mult, (wh << 8) | wl, (hh << 8) | hl,
+			 (th << 8) | tl, (vh << 8) | vl);
+	}
+
+	/* probe 只是为了读 ID 才上电,读完必须把电关回去:
+	 * 否则这次上电在驱动常驻期间一直挂着,和 s_stream 的一开一关
+	 * 配不上,传感器两次开流之间不会真正复位,偶发整帧垃圾数据。 */
+	ov8858_sm_power_off(ov8858);
+
+	ret = ov8858_sm_initialize_controls(ov8858);
+	if (ret)
+		goto err_power;
+
+	ov8858->subdev.entity.function = MEDIA_ENT_F_CAM_SENSOR;
+
+	ov8858->pad.flags = MEDIA_PAD_FL_SOURCE;
+	ret = media_entity_pads_init(&ov8858->subdev.entity, 1, &ov8858->pad);
+	if (ret)
+		goto err_free_handler;
+
+	ret = v4l2_async_register_subdev(&ov8858->subdev);
+	if (ret)
+		goto err_entity;
+
+	dev_info(&client->dev, "OV8858 SM camera driver probed\n");
+	return 0;
+
+err_entity:
+	media_entity_cleanup(&ov8858->subdev.entity);
+err_free_handler:
+	v4l2_ctrl_handler_free(&ov8858->ctrl_handler);
+err_power:
+	ov8858_sm_power_off(ov8858);
+	return ret;
+}
+
+static int ov8858_sm_remove(struct i2c_client *client)
+{
+	struct v4l2_subdev *sd = i2c_get_clientdata(client);
+	struct ov8858_sm *ov8858 = container_of(sd, struct ov8858_sm, subdev);
+
+	v4l2_async_unregister_subdev(sd);
+	media_entity_cleanup(&sd->entity);
+	v4l2_ctrl_handler_free(&ov8858->ctrl_handler);
+	ov8858_sm_power_off(ov8858);
+
+	return 0;
+}
+
+static struct i2c_driver ov8858_sm_driver = {
+	.driver = {
+		.name = OV8858_SM_NAME,
+		.of_match_table = of_match_ptr(ov8858_sm_of_match),
+	},
+	.probe = ov8858_sm_probe,
+	.remove = ov8858_sm_remove,
+	.id_table = ov8858_sm_id,
+};
+module_i2c_driver(ov8858_sm_driver);
+
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("OmniVision OV8858 SM Camera Driver");

@@ -1,0 +1,26 @@
+# 编辑器 / 系统
+.vscode/
+*.swp
+*~
+.DS_Store
+
+# 内核模块与编译产物
+*.o
+*.ko
+*.mod
+*.mod.c
+*.mod.o
+.*.cmd
+*.cmd
+modules.order
+Module.symvers
+.tmp_versions/
+
+# 运行产物(抓帧/存图/日志)
+*.nv12
+*.raw
+*.yuv
+*.npy
+*.log
+out.png
+det_*.png

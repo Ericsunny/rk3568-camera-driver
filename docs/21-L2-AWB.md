@@ -248,8 +248,12 @@ b.eq  -> cbnz w0 -> JsonPara2SwParaCom()   ; 长度 != 0 才把数组拷进策�
 `enable` 开与不开对比(各 180 帧):`enable=0` → U−1.5 / V−2.7;`enable=1` → U−1.6 / V−2.8。
 差异在噪声内,所以默认 `enable=0`(**只补字段、不改 AWB 行为**)最保守。
 
-作为对照,自己写的 mini3a 灰世界闭环在同一场景下能把 U/V 压到 **128.0**,比 rkaiq 的 −1.5/−2.7 更准一点;
-但 rkaiq 这条路现在**能用、不崩、AE/AWB 都在闭环**,不再是"厂商库不可靠"的结论。
+作为对照,自己写的 mini3a 灰世界闭环在同一场景下能把 U/V 压到 **128.0**,比 rkaiq 的 −1.5/−2.7 更准一点。
+
+> **2026-10-21 追加更正**:上面这组数只说明"补 smartRun 后不再崩、AWB 有动作",**不能**推出"AE/AWB 都正常闭环"。
+> 后面的配对 A/B(§8)证明 rkaiq 这条路的 **AE 末态在三轮里分别是 Y=181 / 51 / 76**,根本不稳定;IQ 仍在报
+> `invalid main scene len`、`parse sensor entity name ... error`、`Can not get isp params buffer`。
+> 结论要改成:"补丁解决了崩溃,但 rkaiq 的 3A 在本 BSP 上还不可用(版本不配套)"。
 
 ### 6.5 旧版库(`.bak-2022`)为什么也不行
 
@@ -303,3 +307,84 @@ python3 tools/iq_patch_smartrun.py /etc/iqfiles/imx415_xxx.json           # 补 
 gdb -batch -ex run -ex "bt 20" --args /usr/bin/rkaiq_3A_server &
 ./grab /dev/video5 180 /tmp/g.raw 3840 2160 NV12
 ```
+
+---
+
+## 8. 同场景 A/B:rkaiq AWB vs mini3a(2026-10-21 晚)
+
+### 8.1 条件
+
+| 项 | 设置 |
+|---|---|
+| 传感器 / 通路 | IMX415 `/dev/v4l-subdev6` → rkisp mainpath `/dev/video5`,NV12 3840×2160 |
+| 起点 | 每臂开跑前都 `v4l2-ctl --set-ctrl exposure=300,analogue_gain=4` |
+| A 臂 | `/usr/bin/rkaiq_3A_server`(AIQ v6.0x6.1,2024-03-03)+ `grab 180 帧` |
+| B 臂 | `mini3a -d /dev/video5 -s /dev/v4l-subdev6 -w 3840 -h 2160 -n 400` |
+| 场景 | 室内固定机位。房间光是人为不可控的,所以采用**配对法**:A/B 交替、两轮,间隔 < 1 min |
+
+### 8.2 末态数据
+
+| 轮次 | 臂 | 末态 Y | U 偏移 | V 偏移 | sensor 终值(exp/gain) | 收敛表现 |
+|---|---|---|---|---|---|---|
+| 基线 | 无 3A | 17.9 | −0.6 | −0.9 | 300 / 4 | — |
+| 1 | rkaiq | **181.4** | −3.0 | −5.6 | 1013 / 95 | 30 帧后数值不再变(过曝) |
+| 1 | mini3a | **113** | **0.0** | **0.0** | 2242 / 64 | AWB f=90 锁,AE f=130 锁 |
+| 2 | rkaiq | **50.7** | −1.5 | −2.7 | 1013 / 45 | 30 帧后不再变(欠曝) |
+| 2 | mini3a | **113** | **0.0** | **0.0** | 2242 / 64 | 与第 1 轮逐位相同 |
+| 补测 | rkaiq | 74.6 | −2.3 | −4.1 | 1013 / — | 又一组不同的末态 |
+
+mini3a 两轮**完全可重复**;rkaiq 三轮 Y = 181 / 51 / 75,相差 **3.6 倍**。
+
+### 8.3 CPU
+
+| 项 | 实测 | 折合每帧 |
+|---|---|---|
+| rkaiq daemon(`/proc/<pid>/stat` utime+stime) | 43 ticks = 0.430 s / 180 帧 | **2.38 ms** |
+| mini3a(整进程 user+sys) | 4.480 + 0.291 = 4.771 s / 130 帧 | **36.7 ms** |
+| 纯采集对照(`grab`,同为 130 帧) | 0.056 + 0.580 = 0.636 s | 4.89 ms |
+| 所以 mini3a 的 3A 净开销 | 36.7 − 4.9 | ≈ **31.8 ms/帧** |
+
+即 rkaiq 的算力开销只有 mini3a 的 **1/13**,这是它唯一的优势。
+
+### 8.4 rkaiq 为什么不稳(日志证据,按出现顺序)
+
+```
+XCORE:E:invalid main scene len!                                  ← IQ 的 main_scene 在 merge 环节被判非法
+CAMHW:E:252:parse sensor entity name ov8858-sm 5-0036 error at 0  ← 传感器实体名不在库的解析表里
+CAMHW:E:get isp or ispp info fail, something gos wrong!
+CAMHW:E:Can not get isp params buffer, queued cnts:4              ← 每轮 114~289 次:参数更新被丢
+```
+
+三条都做过对照:
+
+- `invalid main scene len` **不是** smartRun 补丁引起的:`/root/iq.orig.json`(788267 B,原版)和补丁版(788677 B)启动时**都报**这一行。
+  用 gdb 在 `RkAiqSceneManager::mergeMultiSceneIQ` / `mergeMainMultiScene` 入口看过实参 JSON 节点,确实是顶层对象/数组被传入,和文件结构(`main_scene` 是长度 1 的数组、`main_scene_len=1`,python json 校验通过)对不上——是**库与 IQ 代差**。
+- `parse sensor entity name` 来自我们的 i2c 设备名 `ov8858-sm`(带 `-sm`),库按 `<sensor> <bus>-<addr>` 解析失败。它不影响"能动 sensor"(rkaiq 确实把 exposure 从 300 推到 1013、gain 推到 45~95),但会让 CAMHW 走降级路径。
+- `Can not get isp params buffer` 是**每帧都失败**:ISP 的 params buffer 池(4 个)一直满,AIQ 只能偶尔塞进去一帧,于是 AE 在"追"的过程中大幅过冲/欠冲——这正好解释了三轮末态 Y 差 3.6 倍。
+
+**结论**:不是 rkaiq 不能跑,而是 **IQ(2022 版)+ librkaiq(AIQ 6.0,2024 版)+ 4.19 BSP 的 rkisp 驱动三者不配套**。
+要真正把 rkaiq 用起来,得拿同一发布的 IQ 包 + 匹配的 librkaiq + 对应内核 rkisp 驱动;只补一个 `smartRun` 只能"止崩"。
+
+### 8.5 该选哪个
+
+| 需求 | 选择 |
+|---|---|
+| 要"颜色/亮度真的收敛、可重复" | **mini3a**(U/V 精确 128,AE 稳定落带内) |
+| 要"CPU 极低、有厂商调校曲线" | rkaiq,但必须先解决版本配套问题,否则 AE 不可用 |
+| 生产建议 | 用配套版本的 rkaiq;mini3a 作为**无厂商库时的保底方案**和"判据工具"(它的 U/V 读数就是标准答案) |
+
+### 8.6 复现
+
+```bash
+# 配对跑两轮(板上,脚本见 tools/ab/pair_ab.sh)
+bash /root/pair_ab.sh
+
+# 单臂
+v4l2-ctl -d /dev/v4l-subdev6 --set-ctrl exposure=300
+v4l2-ctl -d /dev/v4l-subdev6 --set-ctrl analogue_gain=4
+/usr/bin/rkaiq_3A_server > /root/ab/rk.log 2>&1 &
+sleep 3; /root/grab /dev/video5 180 /root/ab/A.nv12 3840 2160 NV12; pkill rkaiq_3A_server
+
+/root/mini3a/mini3a -d /dev/video5 -s /dev/v4l-subdev6 -w 3840 -h 2160 -n 400
+```
+

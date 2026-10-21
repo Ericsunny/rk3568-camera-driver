@@ -7,6 +7,10 @@
 #include <linux/slab.h>
 #include <linux/delay.h>
 #include <linux/of.h>
+#ifdef CONFIG_COMPAT
+#include <linux/compat.h>
+#include <linux/uaccess.h>
+#endif
 #include <media/v4l2-async.h>
 #include <media/media-entity.h>
 #include <media/v4l2-fwnode.h>
@@ -241,8 +245,69 @@ static long ov8858_sm_ioctl(struct v4l2_subdev *sd, unsigned int cmd, void *arg)
 	}
 }
 
+#ifdef CONFIG_COMPAT
+/*
+ * L1-B 收尾: core.compat_ioctl32
+ *
+ * 两条路径的差别是这里最关键的一课:
+ *
+ *   64 位: subdev_ioctl() -> video_usercopy()
+ *          v4l2 核心先把 ioctl 参数从用户态拷进一块内核缓冲,再调用
+ *          sd->ops->core->ioctl()。所以驱动里直接 memset(inf, ...)
+ *          拿到的是内核地址,安全。
+ *
+ *   32 位: subdev_compat_ioctl32() -> v4l2_subdev_call(core, compat_ioctl32)
+ *          核心只是把原始 arg 透传下来,没有任何 usercopy。驱动若把 arg
+ *          直接当内核指针用,就是在裸写用户地址 —— arm64 上会立刻触发
+ *          PAN 保护:
+ *          "Unable to handle kernel access to user memory outside
+ *           uaccess routines",调用进程收到 SIGSEGV。
+ *
+ * 因此 compat 分支必须自己搭这层桥:
+ *   1) compat_ptr() 把 32 位地址扩成指针(高位清零);
+ *   2) GET 类:先在内核缓冲里填好结构,再 copy_to_user();
+ *   3) SET 类:先 copy_from_user() 取标量,再把内核地址交给通用 handler。
+ *
+ * rkmodule_inf 全是定长整型/字符数组(没有指针、没有 long),32/64 位
+ * 布局一致,所以用户态看到的字节和 64 位完全一样。
+ * 不实现这个回调时,32 位进程调用会拿到 -ENOIOCTLCMD(-515)。
+ */
+static long ov8858_sm_compat_ioctl32(struct v4l2_subdev *sd,
+				     unsigned int cmd, unsigned long arg)
+{
+	void __user *up = compat_ptr(arg);
+	long ret;
+
+	switch (cmd) {
+	case RKMODULE_GET_MODULE_INFO: {
+		struct rkmodule_inf *inf = kzalloc(sizeof(*inf), GFP_KERNEL);
+
+		if (!inf)
+			return -ENOMEM;
+		ret = ov8858_sm_ioctl(sd, cmd, inf);
+		if (ret >= 0 && copy_to_user(up, inf, sizeof(*inf)))
+			ret = -EFAULT;
+		kfree(inf);
+		return ret;
+	}
+	case RKMODULE_SET_QUICK_STREAM: {
+		u32 stream;
+
+		if (copy_from_user(&stream, up, sizeof(stream)))
+			return -EFAULT;
+		return ov8858_sm_ioctl(sd, cmd, &stream);
+	}
+	default:
+		return -ENOIOCTLCMD;
+	}
+}
+#endif
+
 static const struct v4l2_subdev_core_ops ov8858_sm_core_ops = {
 	.ioctl = ov8858_sm_ioctl,
+#ifdef CONFIG_COMPAT
+	.compat_ioctl32 = ov8858_sm_compat_ioctl32,
+#endif
 };
 
 /* The sensor always outputs RAW10 Bayer SBGGR. */
@@ -305,7 +370,43 @@ static int ov8858_sm_set_fmt(struct v4l2_subdev *sd,
 	return 0;
 }
 
+/*
+ * L1-B 收尾: pad.enum_frame_size
+ *
+ * 厂商驱动实现了它, 我们之前没有: 结果是 v4l2-ctl --list-formats-ext
+ * 只能列出格式、列不出 "Size: Discrete"; 上层(摄像头 HAL / 媒体框架)
+ * 想在不 try_fmt 的情况下枚举可用分辨率也做不到。
+ *
+ * 两个模式来自同一份 datasheet 时序: 1632x1224(2-lane R2A 默认) 和
+ * 1920x1080(自推, 见 docs/17 §3.7), 都是 100% 有效帧。
+ */
+static const struct ov8858_sm_frmsize {
+	u32 width;
+	u32 height;
+} ov8858_sm_frmsizes[] = {
+	{ 1632, 1224 },
+	{ 1920, 1080 },
+};
+
+static int ov8858_sm_enum_frame_size(struct v4l2_subdev *sd,
+				     struct v4l2_subdev_pad_config *cfg,
+				     struct v4l2_subdev_frame_size_enum *fse)
+{
+	if (fse->pad != 0)
+		return -EINVAL;
+
+	if (fse->index >= ARRAY_SIZE(ov8858_sm_frmsizes))
+		return -EINVAL;
+
+	/* 每个模式都是"离散"的, min == max */
+	fse->min_width = fse->max_width = ov8858_sm_frmsizes[fse->index].width;
+	fse->min_height = fse->max_height = ov8858_sm_frmsizes[fse->index].height;
+
+	return 0;
+}
+
 static const struct v4l2_subdev_pad_ops ov8858_sm_pad_ops = {
+	.enum_frame_size = ov8858_sm_enum_frame_size,
 	.get_fmt = ov8858_sm_get_fmt,
 	.set_fmt = ov8858_sm_set_fmt,
 };

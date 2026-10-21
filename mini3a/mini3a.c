@@ -50,8 +50,10 @@ typedef unsigned long long u64; typedef signed long long s64;
 
 /* ---------------- 全局状态 ---------------- */
 static char  *video_dev = "/dev/video0";
+static char  *subdev_dev = "/dev/v4l-subdev3";   /* 传感器 ctrl 节点(-s 可改) */
 static int    frame_w = 1920, frame_h = 1080;
 static int    verbose = 0;
+static long   max_frames = 0;                    /* -n:安全上限(0=不设) */
 
 static int    vfd = -1;                    /* /dev/video0 */
 static int    sfd = -1;                    /* /dev/v4l-subdev3(传感器 ctrl) */
@@ -92,6 +94,8 @@ static void *capture_thread(void *arg)
         b.length = 1;
         if (xioctl(vfd, VIDIOC_DQBUF, &b) < 0) {
             if (errno == EAGAIN) continue;
+            /* 收尾:主线程 STREAMOFF 会把阻塞中的 DQBUF 打成 EINVAL,属正常退出 */
+            if (capture_done && (errno == EINVAL || errno == ENODEV)) break;
             perror("DQBUF");
             break;
         }
@@ -419,23 +423,30 @@ int main(int argc, char **argv)
     setvbuf(stdout, NULL, _IOLBF, 0);
     for (int i = 1; i < argc; i++)
         if (strcmp(argv[i], "--help") == 0) {
-            printf("用法:%s -d /dev/video0 -w 1920 -h 1080 [-v] [--help]\n", argv[0]);
+            printf("用法:%s -d /dev/video5 -s /dev/v4l-subdev6 -w 3840 -h 2160 [-n 上限帧数] [-v] [--help]\n"
+                   "  -d  采集节点(默认 /dev/video0)\n"
+                   "  -s  传感器 ctrl 子设备(默认 /dev/v4l-subdev3)\n"
+                   "  -n  安全上限帧数,到数即停(0=一直跑到双锁定)\n", argv[0]);
             return 0;
         }
-    while ((opt = getopt(argc, argv, "d:w:h:v")) != -1) {
+    while ((opt = getopt(argc, argv, "d:s:w:h:n:v")) != -1) {
         switch (opt) {
         case 'd': video_dev = optarg; break;
+        case 's': subdev_dev = optarg; break;
         case 'w': frame_w = atoi(optarg); break;
         case 'h': frame_h = atoi(optarg); break;
+        case 'n': max_frames = atol(optarg); break;
         case 'v': verbose = 1; break;
         default:
-            fprintf(stderr, "用法:%s -d /dev/video0 -w 1920 -h 1080 [-v]\n", argv[0]);
+            fprintf(stderr, "用法:%s -d /dev/video0 -s /dev/v4l-subdev3 -w 1920 -h 1080 [-n N] [-v]\n", argv[0]);
             return 1;
         }
     }
 
-    sfd = open("/dev/v4l-subdev3", O_RDWR);
-    if (sfd < 0) { perror("/dev/v4l-subdev3"); return 1; }
+    sfd = open(subdev_dev, O_RDWR);
+    if (sfd < 0) { perror(subdev_dev); return 1; }
+    printf(">>> 采集 %s (%dx%d), 传感器 ctrl %s, 上限 %ld 帧\n",
+           video_dev, frame_w, frame_h, subdev_dev, max_frames);
     if (capture_init() < 0) return 1;
 
     pthread_t cap_tid;
@@ -451,7 +462,7 @@ int main(int argc, char **argv)
      */
     long f = 0; int saved = 0;
     int y = 0, u = 128, v = 128;
-    while (!ae_locked || !awb_locked) {
+    while ((!ae_locked || !awb_locked) && (max_frames <= 0 || f < max_frames)) {
         int idx = -1;
         pthread_mutex_lock(&ring_mu);
         if (ring_tail != ring_head) {
@@ -493,8 +504,8 @@ int main(int argc, char **argv)
                    awb_locked ? "LOCKED" : "RUNNING");
         }
 
-        /* 收官帧落盘:双锁定这一帧就是闭环结果(此刻 idx 还没归还,像素有效) */
-        if (ae_locked && awb_locked && !saved) {
+        /* 收官帧落盘:双锁定(或到 -n 上限)这一帧就是闭环结果(此刻 idx 还没归还,像素有效) */
+        if (((ae_locked && awb_locked) || (max_frames > 0 && f >= max_frames)) && !saved) {
             size_t fsz = (size_t)frame_w * frame_h * 3 / 2;      /* NV12 = w*h*1.5 */
             FILE *fp = fopen("/root/mini3a/final.nv12", "wb");
         if (fp) {
@@ -518,6 +529,10 @@ int main(int argc, char **argv)
         xioctl(vfd, VIDIOC_QBUF, &b);
     }
     printf("AE+AWB 双收敛,共 %ld 帧。检查 /root/frame_v6.nv12 对比图,收工!\n", f);
+    printf(">>> 最终: f=%ld Y=%d(dY=%+d) U=%d(dU=%+d) V=%d(dV=%+d) AE=%s AWB=%s 增益 g_r=0x%X g_b=0x%X\n",
+           f, y, y - 110, u, u - 128, v, v - 128,
+           ae_locked ? "LOCKED" : "RUNNING", awb_locked ? "LOCKED" : "RUNNING",
+           cur_gain_r, cur_gain_b);
 
     capture_stop();
     pthread_join(cap_tid, NULL);

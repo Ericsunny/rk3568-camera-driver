@@ -203,12 +203,12 @@ return ret;                                            /* 但 ret 没清零 */
 | 代码量 | 3676 行 | 1115 行 | — |
 | `core.s_power` | 有 | 无 | 我们靠 s_stream 里开关电,够用 |
 | `core.ioctl` | GET_MODULE_INFO / AWB_CFG / LSC_CFG / SET_QUICK_STREAM | GET_MODULE_INFO / SET_QUICK_STREAM | 少了 3A 配置入口(要配 rkaiq 才需要) |
-| `core.compat_ioctl32` | 有 | 无 | 32 位用户态会 ioctl 失败 |
+| `core.compat_ioctl32` | 有 | **有(补的,见 §10)** | — |
 | `video.s_stream` | 有 | 有 | — |
 | `video.g_mbus_config` | 有 | **有(补的,见 §3.3)** | — |
 | `video.g_frame_interval` | 有 | 无 | 应用层查不到帧率 |
 | `pad.enum_mbus_code` | 有 | 无 | 应用层枚举不到格式 |
-| `pad.enum_frame_size` | 有 | 无 | 应用层枚举不到分辨率 |
+| `pad.enum_frame_size` | 有 | **有(补的,见 §10)** | — |
 | `pad.enum_frame_interval` | 有 | 无 | — |
 | `pad.get_fmt / set_fmt` | 有 | 有 | — |
 | ctrl: LINK_FREQ / PIXEL_RATE | 有 | 有 | — |
@@ -216,7 +216,7 @@ return ret;                                            /* 但 ret 没清零 */
 | ctrl: HBLANK / VBLANK | 有 | 无 | 应用层调不了消隐 |
 | ctrl: TEST_PATTERN | 有 | 无 | 少了自测手段 |
 | OTP 读取与应用 | 有(198 处引用) | 无 | 画质(模块级校准)缺失 |
-| pm_runtime | 有 | 无 | 空闲功耗 |
+| pm_runtime | 有 | **有(补的,L4 阶段)** | — |
 | 模式表 | R1A/R2A × 2/4 lane × 2 分辨率 | 2 档(不够时加表即可) | 只支持自己这颗 R2A 2-lane |
 
 ---
@@ -271,10 +271,11 @@ media 链路:`ov8858-sm(/dev/v4l-subdev2) → rockchip-csi2-dphy2 → rockchip-m
 ## 6. 诚实清单:还差什么
 
 **功能层面**
-1. 无 OTP / AWB / LSC → 画质只能算"能看到东西",离产品级差一整套 3A
-2. 无 `pm_runtime` → 空闲不省电
-3. 无 `enum_frame_size` / `g_frame_interval` / `compat_ioctl32` → 应用层兼容性不足
-4. 无 test pattern / hblank / vblank ctrl → 调试手段少
+1. ❌ OTP / LSC → 模块级画质校准仍缺(要读 OTP 并套 LSC,属于"产品级画质"范畴)
+2. ✅ `pm_runtime` → **L4 阶段已补**(开机 probe 完 → 3.5 s 后 suspended;开流 → active;关流 → 2 s 后 suspended)
+3. ✅ `enum_frame_size` / `compat_ioctl32` → **2026-10-21 补完并实测**(见 §10);
+   仍缺 `g_frame_interval` / `pad.enum_frame_interval`(应用层查不到帧率,不影响出图)
+4. ❌ test pattern / hblank / vblank ctrl → 调试手段少
 
 **1080p 模式**
 - ✅ 帧结构已修好(30 帧连跑零空行),帧率 29.3 fps
@@ -282,6 +283,7 @@ media 链路:`ov8858-sm(/dev/v4l-subdev2) → rockchip-csi2-dphy2 → rockchip-m
 
 **其他**
 - 只验证了 R2A + 2 lane 这一种组合
+- 本驱动在 BSP 里是 **`CONFIG_VIDEO_OV8858_SM=y`(内建)**,改代码必须重编 `Image` 刷 `/boot`,不能 `insmod`(踩坑记录见 §10.1)
 
 ---
 
@@ -361,3 +363,136 @@ print("像素范围", p.min(), p.max())       # 正常: 0..1023
 | `evidence/2026-10-21-1080p30-天花板.png` | 修复前的 1080p 出图(肉眼也正常,但结构是坏的) |
 | `code/ov8858_sm.c` / `code/ov8858_sm_regs.h` / `code/Makefile` | 源码快照 |
 | `16-模块四动手手册-一步一步版.md` | 全过程手册(§5.9~§5.14 是本次 L1-B 的记录) |
+
+---
+
+## 10. 收尾:补 `enum_frame_size` / `compat_ioctl32`(2026-10-21)
+
+### 10.1 先踩一个坑:驱动是**内建**的,不是模块
+
+`zcat /proc/config.gz | grep OV8858` → **`CONFIG_VIDEO_OV8858_SM=y`**。
+
+所以把 `.ko` 装进 `/lib/modules/4.19.232/extra/` + `depmod` **完全无效**(`modprobe` 只回 `module is already loaded`);
+而且这个内核的 `lsmod` 什么都不打印、`/proc/modules` 是空的,`/sys/module/ov8858_sm/` 只有 `parameters` 和 `uevent`(没有 `sections`/`refcnt`)——这些都是内建特征。
+**这就是之前一整天"改了代码但枚举不出分辨率"的真因:板上跑的一直是旧的编译进 Image 的代码。**
+
+正确流程:
+
+```bash
+# VM 上
+cp /home/rk3568/work/ov8858_sm/ov8858_sm.c \
+   /home/rk3568/rk3568/RK_SDK/kernel/drivers/media/i2c/ov8858_sm.c
+cd /home/rk3568/rk3568/RK_SDK/kernel
+TC=$(ls -d ../prebuilts/gcc/linux-x86/aarch64/gcc-buildroot-9.3.0-2020.03-*/ | head -1)
+export LD_LIBRARY_PATH=${TC}lib
+make ARCH=arm64 CROSS_COMPILE=${TC}bin/aarch64-rockchip-linux-gnu- -j6 Image
+# 刷机:scp arch/arm64/boot/Image → 板 /boot/Image-4.19.232(nano boot.cmd: load /Image-4.19.232)
+```
+
+**`/boot` 只有 124 MB 且原本 100% 满**:先删半截的 `Image-4.19.232.bak2`,再把旧 Image 改名 `.bak1`(留一份可回滚),
+`Image-4.19.232.bak-factory`(26071048 B)是原厂镜像,**不要动**。当前 Image:`md5 5f10a688f232bd34b622fa4df98dd263`,
+内核版本 `#32 SMP Wed Oct 21 14:38:47 UTC 2026`。
+
+### 10.2 `enum_frame_size`
+
+```c
+static const struct ov8858_sm_frmsize {
+	u32 width;
+	u32 height;
+} ov8858_sm_frmsizes[] = { {1632, 1224}, {1920, 1080} };
+
+static int ov8858_sm_enum_frame_size(struct v4l2_subdev *sd,
+				     struct v4l2_subdev_pad_config *cfg,
+				     struct v4l2_subdev_frame_size_enum *fse)
+{
+	if (fse->pad != 0)
+		return -EINVAL;
+	if (fse->index >= ARRAY_SIZE(ov8858_sm_frmsizes))
+		return -EINVAL;
+	fse->min_width  = fse->max_width  = ov8858_sm_frmsizes[fse->index].width;
+	fse->min_height = fse->max_height = ov8858_sm_frmsizes[fse->index].height;
+	return 0;
+}
+```
+
+验收(用户在 `/dev/v4l-subdev2` 上直接发 ioctl):
+
+| 请求 | 结果 |
+|---|---|
+| `index=0` | min/max 1632×1224 |
+| `index=1` | min/max 1920×1080 |
+| `index=2,3` | `EINVAL` |
+| `which=5`(非 TRY/ACTIVE) | `EINVAL` |
+| `pad=3` | `EINVAL` |
+
+**两个容易误判的坑**:
+1. 本内核(4.19.232 + Rockchip 回移)的 `struct v4l2_subdev_frame_size_enum` **带 `which` 字段**,`sizeof = 64`,
+   `VIDIOC_SUBDEV_ENUM_FRAME_SIZE = 0xC040564A`。按老结构算 60 字节发过去,v4l2 核心按 `_IOC_SIZE` 校验直接回 `-ENOTTY`,
+   看起来就像"驱动没实现"。
+2. `v4l2-subdev.c` 派发前还会检查 `which ∈ {V4L2_SUBDEV_FORMAT_TRY(0), V4L2_SUBDEV_FORMAT_ACTIVE(1)}` 且 `pad < num_pads`。
+
+> 注:`/dev/video0 --list-formats-ext` 仍显示 `Stepwise 64x64 - 1632x1224 with step 8/8`,那是 **rkcif 自己的**上限,不走 sensor 的枚举,所以看不到 1920×1080。
+
+### 10.3 `compat_ioctl32`:64 位没事,32 位直接把内核打崩
+
+```c
+#ifdef CONFIG_COMPAT
+static long ov8858_sm_compat_ioctl32(struct v4l2_subdev *sd,
+				     unsigned int cmd, unsigned long arg)
+{
+	void __user *up = compat_ptr(arg);
+	struct rkmodule_inf *inf;
+	u32 stream;
+	long ret;
+
+	switch (cmd) {
+	case RKMODULE_GET_MODULE_INFO:
+		inf = kzalloc(sizeof(*inf), GFP_KERNEL);
+		if (!inf)
+			return -ENOMEM;
+		ret = ov8858_sm_ioctl(sd, cmd, inf);
+		if (!ret && copy_to_user(up, inf, sizeof(*inf)))
+			ret = -EFAULT;
+		kfree(inf);
+		return ret;
+	case RKMODULE_SET_QUICK_STREAM:
+		if (copy_from_user(&stream, up, sizeof(stream)))
+			return -EFAULT;
+		return ov8858_sm_ioctl(sd, cmd, &stream);
+	default:
+		return -ENOIOCTLCMD;
+	}
+}
+#endif
+```
+
+**为什么 64 位从来没炸**:`v4l2-subdev.c` 的 `subdev_ioctl()` 走 `video_usercopy()`,它把用户参数整块拷进内核缓冲再调驱动,
+所以驱动里对"指针"做 `memset` 恰好写在内核副本上;而 `subdev_compat_ioctl32()` 只是把 `arg` **原样透传**,
+`ov8858_sm_get_module_inf()` 里的 `memset(inf, 0, sizeof(*inf))` 就变成了"对用户指针普通写"→ PAN:
+
+```
+Unable to handle kernel access to user memory outside uaccess routines at virtual address 00000000ff8840a0
+Call trace:
+ __memset
+ ov8858_sm_compat_ioctl32+0x54/0x6c
+ subdev_compat_ioctl32+0x54/0x78
+ v4l2_compat_ioctl32+0x2310/0x2438
+ __arm64_compat_sys_ioctl+0x190/0xdb8
+```
+
+修复后(内核 `#32`)实测:
+
+```
+# 64 位静态
+ptr_bits=64 sizeof(rkmodule_inf)=5203 dev=/dev/v4l-subdev2
+RESULT=OK sensor='ov8858-sm' module='ov8858-sm' lens='default'
+# 32 位静态(armhf,静态链接,-static)
+RESULT=OK sensor='ov8858-sm' module='ov8858-sm' lens='default'
+# dmesg 里 oops 计数 0
+```
+
+### 10.4 这一项的结论
+
+- 两处都**真补上了**,而且在**真实内核**里验过(不是 `insmod` 一个新模块骗自己)。
+- `compat_ioctl32` 这项的价值不在"多一个回调",而在于它**暴露了驱动原有的一个真 bug**(对用户指针直接 `memset`)。
+  如果客户用 32 位 rootfs 调摄像头应用,原驱动会**直接 oops**,这个坑比缺拟合字号严重得多。

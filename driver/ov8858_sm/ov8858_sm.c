@@ -166,18 +166,24 @@ static int ov8858_sm_s_stream(struct v4l2_subdev *sd, int enable)
 	dev_info(sd->dev, "s_stream %d\n", enable);
 
 	if (enable) {
-		ret = ov8858_sm_power_on(ov8858);
-		if (ret)
+		/* L4: 上电交给 runtime PM —— get_sync 会等 resume 回调把电和时钟打开 */
+		ret = pm_runtime_get_sync(&ov8858->client->dev);
+		if (ret < 0) {
+			dev_err(&ov8858->client->dev, "pm_runtime_get_sync failed: %d\n", ret);
+			pm_runtime_put_noidle(&ov8858->client->dev);
 			return ret;
+		}
 
 		ret = ov8858_sm_start_stream(ov8858);
 		if (ret) {
-			ov8858_sm_power_off(ov8858);
+			pm_runtime_put_sync(&ov8858->client->dev);
 			return ret;
 		}
 	} else {
 		ov8858_sm_stop_stream(ov8858);
-		ov8858_sm_power_off(ov8858);
+		/* 关流后不立刻断电:标记"最后忙",等 autosuspend 超时再挂起 */
+		pm_runtime_mark_last_busy(&ov8858->client->dev);
+		pm_runtime_put_autosuspend(&ov8858->client->dev);
 	}
 
 	return 0;
@@ -627,7 +633,16 @@ static int ov8858_sm_probe(struct i2c_client *client, const struct i2c_device_id
 	if (ret)
 		goto err_entity;
 
-	dev_info(&client->dev, "OV8858 SM camera driver probed\n");
+	/* L4:交给 runtime PM。probe 里已经读过 ID 并断电,
+	 * 这里把"当前状态"标成 active 并允许 2s 后自动挂起。 */
+	pm_runtime_set_autosuspend_delay(&client->dev, 2000);
+	pm_runtime_use_autosuspend(&client->dev);
+	pm_runtime_set_active(&client->dev);
+	pm_runtime_enable(&client->dev);
+	pm_runtime_mark_last_busy(&client->dev);
+	pm_runtime_put_autosuspend(&client->dev);
+
+	dev_info(&client->dev, "OV8858 SM camera driver probed (runtime PM on)\n");
 	return 0;
 
 err_entity:
@@ -647,15 +662,66 @@ static int ov8858_sm_remove(struct i2c_client *client)
 	v4l2_async_unregister_subdev(sd);
 	media_entity_cleanup(&sd->entity);
 	v4l2_ctrl_handler_free(&ov8858->ctrl_handler);
+	pm_runtime_disable(&client->dev);
 	ov8858_sm_power_off(ov8858);
 
 	return 0;
 }
 
+/* ---------------- L4:电源管理 ---------------- */
+
+static int __maybe_unused ov8858_sm_runtime_resume(struct device *dev)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+	struct v4l2_subdev *sd = i2c_get_clientdata(client);
+	struct ov8858_sm *ov8858 = container_of(sd, struct ov8858_sm, subdev);
+
+	dev_info(dev, "runtime_resume\n");
+	return ov8858_sm_power_on(ov8858);
+}
+
+static int __maybe_unused ov8858_sm_runtime_suspend(struct device *dev)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+	struct v4l2_subdev *sd = i2c_get_clientdata(client);
+	struct ov8858_sm *ov8858 = container_of(sd, struct ov8858_sm, subdev);
+
+	dev_info(dev, "runtime_suspend\n");
+	ov8858_sm_power_off(ov8858);
+	return 0;
+}
+
+static int __maybe_unused ov8858_sm_system_suspend(struct device *dev)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+	struct v4l2_subdev *sd = i2c_get_clientdata(client);
+	struct ov8858_sm *ov8858 = container_of(sd, struct ov8858_sm, subdev);
+
+	dev_info(dev, "system_suspend\n");
+	if (ov8858->powered) {
+		ov8858_sm_stop_stream(ov8858);
+		ov8858_sm_power_off(ov8858);
+	}
+	return 0;
+}
+
+static int __maybe_unused ov8858_sm_system_resume(struct device *dev)
+{
+	dev_info(dev, "system_resume\n");
+	/* 真正的恢复由下一次 s_stream -> pm_runtime_get_sync 触发 */
+	return 0;
+}
+
+static const struct dev_pm_ops ov8858_sm_pm_ops = {
+	SET_RUNTIME_PM_OPS(ov8858_sm_runtime_suspend, ov8858_sm_runtime_resume, NULL)
+	SET_SYSTEM_SLEEP_PM_OPS(ov8858_sm_system_suspend, ov8858_sm_system_resume)
+};
+
 static struct i2c_driver ov8858_sm_driver = {
 	.driver = {
 		.name = OV8858_SM_NAME,
 		.of_match_table = of_match_ptr(ov8858_sm_of_match),
+		.pm = &ov8858_sm_pm_ops,
 	},
 	.probe = ov8858_sm_probe,
 	.remove = ov8858_sm_remove,

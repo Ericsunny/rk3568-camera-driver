@@ -13,7 +13,8 @@
 | 5 | **按 datasheet 裸写 OV8858 V4L2 subdev 驱动并出图** | 驱动 666 行,双模式 **29.3 fps / 帧结构 100% 有效**;与厂商逐寄存器对照见 [`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md) |
 | 6 | **V4L2 零拷贝:EXPBUF → dmabuf → RGA → NPU** | `memcpy` **13.67 MB/帧 → 0**;延迟 92.5 → **69.9 ms**;CPU **−66%**(38.3 → 13.0 ms/帧);三线程流水线在 2× 负载下 **+25%** 吞吐,见 [`zerocopy/`](zerocopy/) |
 | 7 | **异构双摄同时开流(IMX415@ISP + OV8858@CIF)** | 两路帧率与单路**完全一致**(15.00 / 30.02 fps,零干扰),总写入 **249.8 MB/s**,CPU ≈6.6% 单核;见 [`docs/19`](docs/19-L3异构双摄报告.md) |
-| 8 | **驱动补 pm_runtime,suspend/resume 链路恢复** | runtime PM 三态迁移实测通过(probe→suspended / 开流→active / 关流→2s→suspended);系统 suspend/resume 后抓帧正常、uptime 连续;见 [`docs/20`](docs/20-L4电源管理.md) |
+| 8 | **ISP 白平衡:把绿偏色修掉** | params 通路下发 `gain_r=0x1EC / gain_b=0x1F0`,色度从 `U−21.4/V−27.0` 收敛到 `U−1.4/V−0.9`;四条通路对比见 [`docs/21`](docs/21-L2-AWB.md) |
+| 9 | **驱动补 pm_runtime,suspend/resume 链路恢复** | runtime PM 三态迁移实测通过(probe→suspended / 开流→active / 关流→2s→suspended);系统 suspend/resume 后抓帧正常、uptime 连续;见 [`docs/20`](docs/20-L4电源管理.md) |
 
 ![我们的驱动抓到的第一帧](evidence/2026-10-21-第一帧-我们的驱动-1632x1224.png)
 
@@ -69,6 +70,7 @@ evidence/           实测证据(第一帧 / 厂商对照 / 1080p / anchor 修�
 - [docs/17-L1-B对照报告](docs/17-L1-B对照报告-自写驱动vs厂商.md) —— **交付级报告**:与厂商逐寄存器对照、哪些是自推的、实测数据、诚实清单。
 - [docs/18-阶段二零拷贝任务书](docs/18-阶段二零拷贝任务书.md) —— EXPBUF/dmabuf/RGA/NPU 全链路、perf 指标定义、S1~S5 验收、多路与流水线数据。
 - [docs/19-L3异构双摄报告](docs/19-L3异构双摄报告.md) —— 两路同时开流实测、带宽/负载表、NV12 与 RAW10 两套消费者设计,以及"单 ISP 决定了异构是唯一解"的分析。
+- [docs/21-L2-AWB](docs/21-L2-AWB.md) —— ISP 白平衡:四条通路(rkaiq / mini3a / 寄存器直写 / params)实测对比,以及从 U/V 偏差反推增益的方法。
 - [docs/20-L4电源管理](docs/20-L4电源管理.md) —— 给 ov8858_sm 补 pm_runtime 的 4 处改动、runtime PM 三态验证、系统 suspend/resume 链路恢复,以及"带流 suspend 会挂死"的已知限制。
 
 ## 环境

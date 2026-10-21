@@ -35,7 +35,7 @@ typedef unsigned long long u64; typedef signed long long s64;
 #include <linux/rkisp21-config.h>
 #include <linux/rkisp2-config.h>
 
-#define PARAMS_DEV "/dev/video8"
+#define PARAMS_DEV "/dev/video13"   /* L2:本系统 params 节点是 video13(用 v4l2-ctl --list-devices 确认) */
 #define NBUFS      4
 
 static int xioctl(int fd, unsigned long req, void *arg)

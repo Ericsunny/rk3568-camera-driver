@@ -5,7 +5,7 @@ CFLAGS    := -O2 -Wall
 CXXFLAGS  := -O2 -Wall -I$(RGA_INC) -I$(RKNN_INC)
 LDLIBS    := -lrga -lrknnrt -lpthread
 
-BINS := zc_s1 zc_s23b zc_npu zc_pipe ystat npu_info capbench
+BINS := zc_s1 zc_s23b zc_npu zc_pipe zc_dual ystat npu_info capbench
 
 all: $(BINS)
 
@@ -28,6 +28,9 @@ zc_npu: zc_npu.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDLIBS)
 
 zc_pipe: zc_pipe.cpp
+	$(CXX) $(CXXFLAGS) -o $@ $< $(LDLIBS)
+
+zc_dual: zc_dual.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDLIBS)
 
 clean:

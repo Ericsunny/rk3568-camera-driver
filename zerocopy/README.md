@@ -74,6 +74,16 @@ exp_name   : videobuf2_dma_sg          ← 真 dma-buf
 
 计算量超过采集周期后,流水线快 **25%**。
 
+### 双路同时接 NPU(争用)
+
+| 场景 | IMX415 | OV8858 | 聚合 | CPU |
+|---|---|---|---|---|
+| 单路 A | 14.38 fps(NPU 41.0 ms) | — | 14.38 inf/s | 18.2% |
+| 单路 B | — | 17.24 fps(NPU 40.7 ms) | 17.24 inf/s | 28.3% |
+| **双路** | 9.57 fps(NPU **77.1 ms**) | 9.47 fps(NPU **72.9 ms**) | **19.04 inf/s** | 30.3% |
+
+`rknn_run` 墙钟 41 → 77 ms 不是 NPU 变慢,是**调用在等另一路**(时间片争用);聚合 19.04 inf/s 比单路上限 24.5 低 22%。两路需求 45 inf/s,**缺口 2.4 倍**——RK3568 的 NPU 只够一路实时分析。
+
 ## 踩过的坑(都很值钱)
 
 1. **`rknn_set_io_mem()` 必须用 `RKNN_QUERY_NATIVE_INPUT_ATTR` + `pass_through=1`**  

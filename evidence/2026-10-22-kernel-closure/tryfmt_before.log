@@ -1,0 +1,52 @@
+===== tryfmt before =====
+time: Tue Jun 18 04:59:45 CST 2024
+kernel: 4.19.232 #40 SMP Thu Oct 22 10:41:25 UTC 2026
+param: inject_stop_err=
+
+--- 1) video0 当前格式(基线) ---
+	Width/Height      : 1632/1080
+	Pixel Format      : 'BG10' (10-bit Bayer BGBG/GRGR)
+	Field             : None
+
+--- 2) TRY sweep(8 个用例) ---
+=== baseline (ACTIVE) ===
+ACTIVE: 1632x1224 code=0x3007
+=== TRY sweep (pad=0, 8 cases) ===
+[ 1] try 1632x1224 -> TRY 1632x1224 | ACTIVE 1632x1224 ok
+[ 2] try 1920x1080 -> TRY 1920x1080 | ACTIVE 1920x1080 **CHANGED** (baseline 1632x1224)
+[ 3] try 1280x720  -> TRY 1632x1224 | ACTIVE 1632x1224 ok
+[ 4] try  640x480  -> TRY 1632x1224 | ACTIVE 1632x1224 ok
+[ 5] try 4000x3000 -> TRY 1632x1224 | ACTIVE 1632x1224 ok
+[ 6] try 1632x1080 -> TRY 1632x1224 | ACTIVE 1632x1224 ok
+[ 7] try 1920x1224 -> TRY 1632x1224 | ACTIVE 1632x1224 ok
+[ 8] try  800x600  -> TRY 1632x1224 | ACTIVE 1632x1224 ok
+=== after sweep (ACTIVE) ===
+ACTIVE: 1632x1224 code=0x3007
+RESULT=FAIL changed=1/8
+sweep_exit=1
+
+--- 3) 单次 TRY(1920x1080):复现「TRY 改了 ACTIVE」 ---
+=== baseline (ACTIVE) ===
+ACTIVE: 1632x1224 code=0x3007
+TRY 1920x1080 -> 1920x1080 | ACTIVE 1920x1080 **CHANGED**
+RESULT=FAIL
+single_exit=1
+
+--- 4) 之后 ACTIVE 报什么 ---
+	Width/Height      : 1920/1080
+	Mediabus Code     : 0x3007 (MEDIA_BUS_FMT_SBGGR10_1X10)
+
+--- 5) 实际采集(video0 仍是 1632x1224) ---
+	Width/Height      : 1632/1080
+	Pixel Format      : 'BG10' (10-bit Bayer BGBG/GRGR)
+	Field             : None
+/dev/video0: 抓 10 帧(0.37 s, 27.0 fps),已存第 9 帧 -> /tmp/t.raw (2211840 字节)
+saved_bytes=2211840  (1632x1224 应为 2048*1224=2506752;若为 2048*1080=2211840 说明 sensor 按 1080p 出流)
+
+--- 6) 恢复 ---
+TRY 1632x1224 -> 1632x1224 | ACTIVE 1632x1224 **CHANGED**
+RESULT=FAIL
+
+--- 7) 停流错误是否向上返回(fault-inject) ---
+current inject_stop_err=
+见 /root/streamoff_err_before.log

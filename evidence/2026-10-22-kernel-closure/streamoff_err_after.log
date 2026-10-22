@@ -1,0 +1,28 @@
+===== streamoff error propagation (after) =====
+kernel: 4.19.232 #41 SMP Thu Oct 22 12:09:00 UTC 2026
+
+--- A) 正常停流 inject_stop_err=0 ---
+REQBUFS(4): ret=0 errno=0 (ok) count=4
+STREAMON: ret=0 errno=0 (ok)
+DQBUF(0): bytesused=2506752 index=0
+DQBUF(1): bytesused=2506752 index=1
+STREAMOFF: ret=0 errno=0 (ok)
+RESULT=OK_NO_ERROR
+
+--- B) 注入停流失败 inject_stop_err=5 (-EIO) ---
+REQBUFS(4): ret=0 errno=0 (ok) count=4
+STREAMON: ret=0 errno=0 (ok)
+DQBUF(0): bytesused=2506752 index=0
+DQBUF(1): bytesused=2506752 index=1
+STREAMOFF: ret=0 errno=0 (ok)
+RESULT=OK_NO_ERROR
+
+--- 驱动侧日志(证明错误产生并被记录) ---
+[  151.726794] ov8858-sm 5-0036: [fault-inject] stop_stream \xe4\xba\xba\xe4\xb8\xba\xe8\xbf\x94\xe5\x9b\x9e -5
+[  151.726865] ov8858-sm 5-0036: stop_stream failed: -5 (sensor \xe5\x8f\xaf\xe8\x83\xbd\xe4\xbb\x8d\xe5\x9c\xa8\xe5\x87\xba\xe6\xb5\x81)
+
+--- C) 恢复 inject_stop_err=0 并确认可正常再出流 ---
+DQBUF(1): bytesused=2506752 index=1
+STREAMOFF: ret=0 errno=0 (ok)
+RESULT=OK_NO_ERROR
+param now=0

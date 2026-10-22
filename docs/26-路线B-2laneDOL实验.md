@@ -91,3 +91,85 @@ MIPI error 计数: 0(开流前) -> overflow 0x00010000(开流瞬间)
 
 - `link_freq_items` 五档(297/446/743/891/1188 Mbps/lane)在驱动里都有;DOL 若要提帧率,1188 档可用(`mipi_freq_idx=4`),但本次卡在 CSI 侧,提链路无意义。
 - 2-lane 下 4K 线性实跑 891 Mbps/lane、11.6 fps(无 3A)/8.2 fps(有 3A),与之前实测一致。
+
+## 7. B-1 收尾:2-lane DOL 的三条假设全部否证(2026-10-22)
+
+结论先行:**2-lane DOL X2 在本板未打通,属硬件 + 资料边界,不是实现缺陷。** 三条候选假设逐条否证如下。
+
+### 7.1 假设一:`hdr_op_mode` 枚举撞车 —— 不成立
+
+uapi `enum rkmodule_hdr_mode { NO_HDR=0, HDR_X2=5, HDR_X3=6 }`(`rk-camera-module.h:355`)与内核 `enum hdr_op_mode { HDR_NORMAL=0, HDR_RDBK_FRAME1=4, HDR_RDBK_FRAME2=5, HDR_RDBK_FRAME3=6, HDR_FRAMEX2_DDR=8, HDR_LINEX2_DDR=9, ... }`(`csi.h:32`)**数值确实撞车**:同样的 5 一个表示 X2、一个表示三帧回读。
+
+但原厂已经处理了。`csi.c:297-300`:
+
+```c
+/* HDR on the fly for isp21 */
+if (dev->isp_ver == ISP_V21 && !(dev->isp_inp & INP_RAWRD2))
+    if (dev->hdr.op_mode == HDR_RDBK_FRAME2)
+        dev->hdr.op_mode = HDR_LINEX2_DDR;
+```
+
+在 `csi.c` 里加临时打印实测(`v4l2_info`,已回退):
+
+```
+普通模式: HDRDBG: hdr_cfg=0 op_mode=4  isp_inp=0x15 single=1
+DOL X2:  HDRDBG: hdr_cfg=5 op_mode=5  isp_inp=0x10 single=1
+         HDRDBG: after -> op_mode=9
+```
+
+两点:**①** 开 HDR 后 `isp_inp` 从 `0x15`(含 `INP_RAWRD2`)变成 `0x10`(CSI 直通,不含回读位),所以 `!(INP_RAWRD2)` 条件成立,5→9 转换**本来就生效**;**②** 转换后 `op_mode=9 (HDR_LINEX2_DDR)`,不是"三帧回读"。假设否证。
+
+实测结果:`op_mode=9` 下仍 **0 帧**,30 s 超时,overflow/timeout/crc 计数 51。
+
+### 7.2 假设二:`esp_mode` 应配成 LINE_CNT —— 不成立
+
+`csi.c:323-325` 把 `esp_mode` 与 `op_mode` 一起写进 `CSI2RX_CTRL0`:
+
+```c
+rkisp_write(dev, CSI2RX_CTRL0,
+            SW_IBUF_OP_MODE(dev->hdr.op_mode) |
+            SW_HDR_ESP_MODE(dev->hdr.esp_mode), true);
+```
+
+而厂商 `imx415.c:2675-2679` 对 `RKMODULE_GET_HDR_CFG` **硬编码**返回:
+
+```c
+hdr->esp.mode = HDR_NORMAL_VC;      // 恒为 0,不随 HDR 变化
+hdr->hdr_mode = imx415->cur_mode->hdr_mode;
+```
+
+即 `op_mode=9 + esp=0` 就是 Rockchip 为 IMX415 设计的组合,我们的通路与厂商一致。假设否证。
+
+### 7.3 假设三:切 4-lane 复用厂商 HDR 表 —— 物理不可行
+
+原理图 `btb_rk3568_mb_1v0.pdf`(16 页)的 CSI 信号按**两个时钟域**成组出现:
+
+```
+MIPI_CSI_RX_D0P/D0N → MIPI_CSI_RX_CLK0P/CLK0N   时钟域 0
+MIPI_CSI_RX_D1P/D1N
+MIPI_CSI_RX_D2P/D2N → MIPI_CSI_RX_CLK1P/CLK1N   时钟域 1
+MIPI_CSI_RX_D3P/D3N
+```
+
+RK3568 的 CSI 是**两组独立 2-lane DPHY**,不是一个 4-lane PHY。单 sensor 跑 4-lane 需要 D0–D3 共用同一时钟域,本板做不到。厂商 `imx415.c` 里那张 4-lane HDR2 表(`#if 0` 块)在本板无法复制。假设否证。
+
+### 7.4 剩余唯一嫌疑与为什么停下
+
+唯一没被否证的是**我们自己从 4-lane 表派生的 2-lane DOL 表**。但要验证它必须有一个参照物,而:
+
+- 厂商没给 2-lane HDR 表(只有 `#if 0` 的 4-lane);
+- 官方文档查证:`Rockchip_Developer_Guide_Linux4.4_Camera_CN.pdf`(29 页)搜 `HDR|DOL|多帧` 仅 1 处正文命中,是 Linux 4.4 时代的老架构文档,不含 ISP2.1 DOL 内容;
+- E 盘迅为资料(`09代码`/`驱动指南`)均为应用层教学,无 DOL 寄存器或 ISP 配置。
+
+**参照物不存在 → 无法判定表是对是错 → 继续投入没有收敛路径。** 据此收尾。
+
+### 7.5 收尾动作
+
+- `csi.c` 的两处临时改动(HDRDBG 打印、5→9/6→13 重映射)**已 `git checkout` 回退**,内核与厂商一致。
+- 重编 + 刷 `/boot/Image-4.19.232`,内核到 **`#39`**(`SMP Thu Oct 22 09:56:53 UTC 2026`)。
+- `rkaiq_3A` 服务**恢复 enabled**(B-1 期间为测 HDR 曾 disable)。
+- HDR 能力锁定在已验证的 **B-2:应用层双次曝光融合**(`tools/hdr_demo.c`,1080p 净耗时 346 ms、4K 1285 ms,见 §4/§5)。
+
+### 7.6 遗留
+
+`#39` 上 `rkaiq_3A` 起来后 `grab` 取不到帧(dmesg 有 `rkisp_stream_stop id:0 timeout`,`set exposure(shr0) 2149 = cur_vts(2250) - val(101)`),与 §6 记录的 "3A 与出流时序冲突" 同源,需在干净状态下重新验证一次;该问题不影响 B-1 的结论,B-2 演示时本就要求 `systemctl stop rkaiq_3A`。

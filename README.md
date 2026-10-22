@@ -20,6 +20,8 @@
 | 12 | **补 `enum_frame_size` + `compat_ioctl32`,并揪出 PAN oops 真 bug** | 内建驱动(`=y`)必须重编 Image 刷 `/boot` 才生效;`enum` 实测 1632×1224 / 1920×1080;`compat_ioctl32` 一加就让 32 位路径把内核打崩——驱动对**用户指针**直接 `memset`,32 位没走 `video_usercopy` → 改成 `kzalloc + copy_to_user`;**32/64 位均 OK**;见 [`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md) §10 |
 | 13 | **修好 rkaiq 3A:换回配套的 2022 三件套** | 厂商只把 `librkaiq.so`/`rkaiq_3A_server` 升到 2024 版、IQ 还是 2022 的 → 用 SDK 里 2022-04 的 deb(板上有 `.bak-2022`,md5 逐字节相同)整套换回:**AE 60 帧收敛到 Y≈110、AWB 稳定、`params buffer` 报错 114~289 → 0**;重测 A/B:rkaiq **15 ms/帧** vs mini3a 36.3 ms/帧,见 [`docs/21`](docs/21-L2-AWB.md) §9 |
 | 15 | **高光能救回一半,但 DRC 在这套 2022 组合里是死的** | 曝光降到 1/8 时高光 clip **4.66% → 0.00%**(证明传感器未饱和,只是超饱和约 **1.3 档**);把 IQ 的 `adrc_calib` 打开 + `DrcGain`×4 实测**与基线逐项相同**(日志 4 条 `get drc params from 3a result failed` → 2022 库取不到 adrc 参数);唯一可用手段是 AE 侧:`OverExpCtrl=1` 让 clip **2.90% → 1.84%**,代价整幅 Y **63.5 → 40.3**;见 [`docs/23`](docs/23-M3-高光与动态范围.md) |
+| 16 | **开机就能用：3A 自启 + 版本闸门 + 一键自检** | 厂商的 `rkaiq_3A.service` 是 `Type=forking` 无 PIDFile 且 stop 用 `killall`（板上没有该命令，**根本停不掉**）→ 换成 `Type=simple` + `Restart=on-failure` 直接托管；冷启动实测 `active`、单进程、AE 从 Y≈39 收敛到 73；`tools/camera_selfcheck.sh` 6 组断言（内核符号 / media 实体 / 6 个节点 / 三件套 md5 / daemon 唯一 / 实拍 60 帧）**全部通过**;见 [`docs/24`](docs/24-M4-工程化.md) |
+| **M4** | 工程化:3A 开机自启(systemd 直接托管)+ 版本闸门 + 一键自检 `tools/camera_selfcheck.sh` | ✅ 2026-10-22 |
 | 14 | **图像"糊"的真因是镜头物理失焦,不是 ISP 参数** | 手动对焦后同场景全帧 `lap_var` **14.3 → 36.5(+155%)**、边缘宽度 **28 → 11 px**;`A Sharp 未生效` 是误判——同一 AE/AWB 下开关锐化 `lap_var` **81.3 / 14.6（+458%）**,`snr mode:127` 只是回退 LSNR 表;见 [`docs/22`](docs/22-M1-图像质量.md) |
 
 ![我们的驱动抓到的第一帧](evidence/2026-10-21-第一帧-我们的驱动-1632x1224.png)
@@ -60,6 +62,7 @@ OV8858 模组(24P)      → 野火转接板 → 15P 1.0mm FPC → 板卡 J11(CAM
 | **L2-AWB 收尾** | rkaiq 3A 真正跑通:换回与 4.19 BSP 配套的 2022 三件套(库+server+IQ 同源),重测 A/B | ✅ 2026-10-22 |
 | **M1** | 图像质量兜底:P0 物理对焦(量化工具 + 迭代协议 + 判据)+ 锐化真相核查(推翻 `snr mode:127` 的误判) | ✅ 2026-10-22 |
 | **M3** | 高光/动态范围:证明高光未饱和(可救约 1.3 档)、DRC 因 2022 库取不到 adrc 参数不可用、给出 AE 侧"高光优先"档 + 可逆切换脚本 `tools/iq_highlight_mode.py` | ✅ 2026-10-22 |
+| **M4** | 工程化:3A 开机自启(systemd 直接托管)+ 版本闸门 + 一键自检 `tools/camera_selfcheck.sh` | ✅ 2026-10-22 |
 
 ## 仓库结构
 
@@ -88,6 +91,7 @@ tools/              IQ 补丁脚本 / 32-64 位 compat 对照 / 换驱动流程 
 - [docs/20-L4电源管理](docs/20-L4电源管理.md) —— 给 ov8858_sm 补 pm_runtime 的 4 处改动、runtime PM 三态验证、系统 suspend/resume 链路恢复,以及"带流 suspend 会挂死"的已知限制。
 - [docs/22-M1-图像质量](docs/22-M1-图像质量.md) —— **"糊"的诊断与修复**:先排"假 4K"、再用同平台 OV8858 交叉验证 ISP 无罪、最后定位到光学失焦;量化对焦工具 `tools/focus_score.c` + 迭代协议 + 收敛判据;以及 `A Sharp 未生效` 的误判纠正(源码 + 开关实测定量)——**结论是锐化一直在工作,`snr mode:127` 只是回退 LSNR 表**。
 - [docs/23-M3-高光与动态范围](docs/23-M3-高光与动态范围.md) —— **逆光过曝怎么办**:先用曝光阶梯证明"高光没饱和、能救",再试 DRC(硬件有、IQ 也有,但 2022 库下发不下去,实测零差异,并附上自我纠错:跨会话比基线不可信),最后给出可落地的三档权衡与 `OverExpCtrl` 高光优先档(字节级可逆)。
+- [docs/24-M4-工程化](docs/24-M4-工程化.md) —— **从手工能跑到开机能用**:厂商 daemon 停不掉的原因(Type=forking 无 PIDFile + 板上没有 killall)、启动顺序这个硬约束(先起 daemon 再开流)、md5 闸门、6 组自检断言与判据,以及用板子换来的 4 条运维铁律(改驱动必须刷 Image / 绝不 rmmod 或 pkill / 脚本是 LF 别做 CR 清洗 / 先查 daemon 和 md5)。
 
 ## 环境
 

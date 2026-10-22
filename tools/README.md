@@ -156,3 +156,24 @@ bash /root/install_rkaiq_2022.sh --rollback  # 回滚到 2024 版
 
 换完要 **reboot**:rkaiq 被杀后 ISP 可能停在 stream 未停的状态,紧接着开 `/dev/video5` 拿不到帧。
 装好后 2022 daemon 的 AE/AWB 才真的闭环(实测 15 ms/帧,mini3a 36.3 ms/帧)。
+
+
+## `hdr_demo.c` —— 板端 HDR 多帧融合(路线 A)
+
+一条命令完成「设曝光 → 抓 3 档 → 线性域加权融合 → 存 NV12」,并打出各阶段耗时。
+算法与 `hdr_fuse.py` 相同(曝光适中度 × 局部对比度,可分离盒式平滑),但用 C 重写、无需 numpy。
+
+```bash
+# 编译(VM 上交叉编译)
+TC=$(ls -d ~/rk3568/RK_SDK/prebuilts/gcc/linux-x86/aarch64/gcc-buildroot-*/ | head -1)
+export LD_LIBRARY_PATH=${TC}lib
+${TC}bin/aarch64-rockchip-linux-gnu-gcc -O2 -std=gnu99 -o hdr_demo hdr_demo.c -lm
+
+# 板端运行(前提:本次启动后从未起过 3A,见 docs/25 §7)
+/root/hdr_demo -d /dev/video5 -s /dev/v4l-subdev6 -w 3840 -h 2160 \
+               -e 60,300,1400 -n 6 -o /root/hdr2/fused_4k.nv12 -k
+```
+
+实测耗时(RK3568):4K 融合净 **1285 ms/帧**、1080p **346 ms/帧**。
+效果(4K 同场景):高光溢出 5.74% → **0.00%**,暗部 73.5% → **7.07%**。
+`-k` 会把每档输入也存成 `out.nv12.e<曝光>.nv12`,方便做前后对比。

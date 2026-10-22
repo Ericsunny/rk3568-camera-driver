@@ -133,3 +133,26 @@ bash /root/pair_ab.sh
 
 结果见 `docs/21-L2-AWB.md` §8:mini3a 两轮逐位可重复(U/V 精确 128、AE 稳定 Y≈113),
 rkaiq 三轮末态 Y = 181 / 51 / 75(3.6 倍漂移),CPU 却只有 mini3a 的 1/13。
+
+**那个 1/13 是坏 daemon 的数字**——修好版本后见 §9 与下一节。
+
+## `install_rkaiq_2022.sh` —— 把 rkaiq 换回与 BSP 配套的 2022 三件套
+
+```bash
+scp tools/install_rkaiq_2022.sh root@192.168.10.2:/root/
+ssh root@192.168.10.2 'sed -i "s/\r$//" /root/install_rkaiq_2022.sh; bash /root/install_rkaiq_2022.sh'
+
+bash /root/install_rkaiq_2022.sh --check     # 只看版本
+bash /root/install_rkaiq_2022.sh --rollback  # 回滚到 2024 版
+```
+
+三条 md5 闸门(必须先通过才动手):
+
+| 文件 | 2022 版 md5 | 2024 版 md5 |
+|---|---|---|
+| `librkaiq.so` | `654dc84e89edc0aae9ee5f646732ba62` | `be51ce86c4e5fdc9d702ead2311d89a6` |
+| `rkaiq_3A_server` | `bc67a0fc6ca1221923132c65c3381aed` | `7640afb5b9c2133a865d4f93f3d9789d` |
+| IMX415 IQ | `0666ba18ce1e4db30cddc92810587fb1`(331401 B) | `82e3adfe…`(788677 B，打过 smartRun) |
+
+换完要 **reboot**:rkaiq 被杀后 ISP 可能停在 stream 未停的状态,紧接着开 `/dev/video5` 拿不到帧。
+装好后 2022 daemon 的 AE/AWB 才真的闭环(实测 15 ms/帧,mini3a 36.3 ms/帧)。

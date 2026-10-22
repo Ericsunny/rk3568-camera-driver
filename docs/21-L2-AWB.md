@@ -351,6 +351,8 @@ mini3a 两轮**完全可重复**;rkaiq 三轮 Y = 181 / 51 / 75,相差 **3.6 倍
 
 即 rkaiq 的算力开销只有 mini3a 的 **1/13**,这是它唯一的优势。
 
+> ⚠️ 这个 2.38 ms 是"坏 daemon"的数字——它因为 params 下发失败基本没在干活。换成配套的 2022 三件套后(§9),真干活的 rkaiq 是 **15 ms/帧**,约为 mini3a 的 41%。
+
 ### 8.4 rkaiq 为什么不稳(日志证据,按出现顺序)
 
 ```
@@ -392,4 +394,75 @@ sleep 3; /root/grab /dev/video5 180 /root/ab/A.nv12 3840 2160 NV12; pkill rkaiq_
 
 /root/mini3a/mini3a -d /dev/video5 -s /dev/v4l-subdev6 -w 3840 -h 2160 -n 400
 ```
+
+> 上面的问题在 §9 已经解决:把 2024 版库/server 换回与 4.19 BSP 配套的 2022 版**整套**即可。
+
+## 9. 修好了:换回"配套的 2022 三件套"(2026-10-22)
+
+### 9.1 结论先说
+
+板子上的 rkaiq 不是"没装好",而是**被换过一半**:镜像是 2024 版 `librkaiq.so`(AIQ 6.0x6.1,2024-03-03)+ 2024 版 `rkaiq_3A_server`,但 IQ 是 2022 schema 的调校文件,内核又是 4.19.232。
+把库、server 一起换回 SDK 里 **2022-04-08 的 `camera_engine_rkaiq_rk3568_arm64.deb`** 那一套(板上原本就有 `.bak-2022` 备份),连同 `.bak` 里那份 331401 B 的 IQ,AE/AWB 立刻闭环,且 `Can not get isp params buffer` 从每轮 114~289 次降到 **0**。
+
+### 9.2 三方版本对照
+
+| 组件 | 板上"原值"(坏) | 2022 套件(好) | 校验 |
+|---|---|---|---|
+| `librkaiq.so` | 2760552 B,md5 `be51ce86…`,AIQ 6.0x6.1 2024-03-03 | 5332648 B,md5 `654dc84e…` | 与 deb 内文件**逐字节相同** |
+| `rkaiq_3A_server` | 30912 B,md5 `7640afb5…` | 14664 B,md5 `bc67a0fc…` | 与 deb 内文件**逐字节相同** |
+| IMX415 IQ | `imx415_CMK-OT1522-FG3_CS-P1150-IRC-8M-FAU.json` 788267 B(我们补 smartRun 后 788677 B) | 331401 B,md5 `0666ba18…` | 与 deb 内文件**逐字节相同** |
+| 内核 rkisp/aiq 接口 | 4.19.232(Rockchip BSP) | 同 | — |
+
+2022 套件来源:VM 上 `~/rk3568/RK_SDK/ubuntu/packages/arm64/rkaiq/camera_engine_rkaiq_rk3568_arm64.deb`(2022-04-08)。板上 `/usr/lib/librkaiq.so.bak-2022`、`/usr/bin/rkaiq_3A_server.bak-2022`、`/etc/iqfiles/…json.bak` 三份备份的 md5 与 deb 内文件完全一致——**厂商升级时只换了库和 server,没换 IQ**。
+
+### 9.3 三组对照:为什么必须"整套换"
+
+| # | 库 + server | IQ | 结果 |
+|---|---|---|---|
+| 1 | 2024 + 2024 | 788677(smartRun 已补) | 不崩,但 `Can not get isp params buffer, queued cnts:4` 每轮 **114~289 次**,AE 结果下不到 ISP,三轮末态 Y=181/51/75(差 3.6 倍) |
+| 2 | 2022 + 2022 | 788677 | **prepare 直接失败**:`af.cpp:352 AfConfigure: Afss is -1 out of range` → `AFPrepare failed` → `analyzer prepare error -1` → daemon 退出 |
+| 3 | 2022 + 2022 | **331401** | ✅ `rkisp_init engine succeed`、`wait stream start event success`,0 次 params 错误,AE/AWB 闭环 |
+
+第 2 组说明:2024 版 IQ 里有 2022 库不认识的 AF 枚举值(`CalibDbV2_AFMODE_NOT_SET` / `AFSS_ADAPTIVE_RANGE` / `AF_ADAPTIVE_SEARCH`),`Afss` 解析成 −1,整个 engine prepare 就被拖死。所以**库、server、IQ 必须同源**。
+
+### 9.4 复测数据(同一配对法:每臂前 `exposure=300,analogue_gain=4`)
+
+| 轮 | 臂 | 末态 Y | ΔU | ΔV | sensor 终值(exp/gain) | CPU |
+|---|---|---|---|---|---|---|
+| A1 | rkaiq | **109.8** | +0.4 | −3.5 | 1013 / 8 | 271 ticks / 180 帧 = **15.1 ms/帧** |
+| A2 | rkaiq | **110.1** | +4.8 | −3.3 | 1013 / 7 | 264 / 180 = **14.7 ms/帧** |
+| A3 | rkaiq | **110.4** | +4.8 | −3.3 | 1013 / 7 | 277 / 180 = **15.4 ms/帧** |
+| B1 | mini3a | **115** | **0.0** | **0.0** | 2242 / 31 | 4.361 s / 120 帧 = **36.3 ms/帧** |
+| B2 | mini3a | **112** | **0.0** | **0.0** | 2242 / 30 | 4.351 / 120 = **36.3 ms/帧** |
+| 基线 | 无 3A | 18.5~19.5 | −1.3~−1.4 | −1.6~−1.7 | 300 / 4 | — |
+
+- rkaiq:AE 在 ~60 帧内把 Y 从 18.9 推到 110 并稳住(600 帧长跑也稳在 107.9~109.7);AWB 的 V 稳定在 −3.3,**U 会随场景在 +0.4~+4.8 之间变**(算法估计 + IQ 标定的自然散布,不是振荡)。
+- mini3a:AWB f=80 锁、AE f=120 锁,两轮逐位相同(U/V 精确 128.00)。
+- **CPU 修正**:§8.3 里 rkaiq 的 2.38 ms/帧 是那个"坏 daemon"的数字(它基本没在干活);现在真干活的 2022 daemon 是 **15 ms/帧**,仍只有 mini3a(36.3 ms)的 **41%**。
+
+### 9.5 安装(可回滚,脚本 `tools/install_rkaiq_2022.sh`)
+
+```bash
+# 板上执行;2024 版会自动备份为 .bak-2024
+cp -f /usr/lib/librkaiq.so        /usr/lib/librkaiq.so.bak-2024
+cp -f /usr/bin/rkaiq_3A_server    /usr/bin/rkaiq_3A_server.bak-2024
+cp -f /usr/lib/librkaiq.so.bak-2022 /usr/lib/librkaiq.so
+cp -f /usr/bin/rkaiq_3A_server.bak-2022 /usr/bin/rkaiq_3A_server
+cp -f /etc/iqfiles/imx415_CMK-OT1522-FG3_CS-P1150-IRC-8M-FAU.json \
+      /root/iq.2024.json.bak
+cp -f /etc/iqfiles/imx415_CMK-OT1522-FG3_CS-P1150-IRC-8M-FAU.json.bak \
+      /etc/iqfiles/imx415_CMK-OT1522-FG3_CS-P1150-IRC-8M-FAU.json
+sync
+/etc/init.d/rkaiq_3A.sh start     # 系统默认 disabled,不会开机自启
+```
+
+回滚:把两个 `.bak-2024` 拷回去、IQ 换回 `/root/iq.2024.json.bak` 即可。
+
+### 9.6 还剩下的坑(诚实清单)
+
+1. **`ov8858-sm` 实体名仍非法**:2022 库对 `/dev/media0`(rkcif)整条跳过——`parse sensor entity name ov8858-sm 5-0036 error at 0` → `Enum sensor frame interval failed`(我们没实现 `g_frame_interval`)→ `get isp or ispp info fail` → `Cound not find rkisp dev names, skipped /dev/media0`。**不影响**走 rkisp 的 IMX415 3A,但意味着 rkaiq 无法给 OV8858 做 3A。修法:照厂商 `imx415.c:3399` 的写法给 `sd->name` 赋 `m%02d_%s_%s %s`(`m01_b_ov8858 5-0036`),再补 `g_frame_interval`,要重编内核。
+2. **DRC 未配**:`get drc params from 3a result failed` ×2,IQ 里没有 DRC 标定,非致命。
+3. **AWB 残差**:V 恒定 −3.3。要消掉得动 IQ 的 `wb_v21` 参考增益,不属于"能不能跑"的问题。
+4. **系统默认不自启**:`systemctl is-enabled rkaiq_3A` = `disabled`;要长期用就 `systemctl enable rkaiq_3A` 或写进自己的启动脚本。
+5. **rkaiq 被杀后 ISP 会卡**:紧接着用别的程序开 `/dev/video5` 拿不到帧(`rkisp_stream_stop id:0 timeout`),要重启才恢复。所以同一台机器做 A/B 时**先跑 mini3a、最后跑 rkaiq**;或者每臂之间重启。
 

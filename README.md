@@ -16,8 +16,9 @@
 | 8 | **ISP 白平衡:把绿偏色修掉** | params 通路下发 `gain_r=0x1EC / gain_b=0x1F0`,色度从 `U−21.4/V−27.0` 收敛到 `U−1.4/V−0.9`;四条通路对比见 [`docs/21`](docs/21-L2-AWB.md) |
 | 9 | **驱动补 pm_runtime,suspend/resume 链路恢复** | runtime PM 三态迁移实测通过(probe→suspended / 开流→active / 关流→2s→suspended);系统 suspend/resume 后抓帧正常、uptime 连续;见 [`docs/20`](docs/20-L4电源管理.md) |
 | 10 | **修好 rkaiq 的 AWB:段错误根因是 IQ 缺 `smartRun`** | 2024 的 AIQ 6.0 库 + 2022 的 IQ → `AwbPreProcV201` 拿 `NULL/NULL/len=0` 插值必崩;补 13 行 JSON 后 **600 帧不崩**;见 [`tools/iq_patch_smartrun.py`](tools/iq_patch_smartrun.py)、[`docs/21`](docs/21-L2-AWB.md) |
-| 11 | **同场景 A/B:mini3a 完胜 rkaiq(CPU 除外)** | 配对两轮,mini3a 逐位可重复(Y≈113、U/V **128.0/128.0**),rkaiq 末态 Y = **181 / 51 / 75** 三轮漂 3.6 倍;rkaiq CPU 却只有 mini3a 的 1/13(2.38 vs 36.7 ms/帧);根因是 IQ/库/BSP 版本不配套(每帧 `Can not get isp params buffer`),见 [`docs/21`](docs/21-L2-AWB.md) §8 |
+| 11 | **同场景 A/B:mini3a 稳定,rkaiq 当时是坏的** | 配对两轮,mini3a 逐位可重复(Y≈113、U/V **128.0/128.0**),rkaiq 末态 Y = **181 / 51 / 75** 三轮漂 3.6 倍;根因是 IQ/库/BSP 版本不配套(每帧 `Can not get isp params buffer`),见 [`docs/21`](docs/21-L2-AWB.md) §8 |
 | 12 | **补 `enum_frame_size` + `compat_ioctl32`,并揪出 PAN oops 真 bug** | 内建驱动(`=y`)必须重编 Image 刷 `/boot` 才生效;`enum` 实测 1632×1224 / 1920×1080;`compat_ioctl32` 一加就让 32 位路径把内核打崩——驱动对**用户指针**直接 `memset`,32 位没走 `video_usercopy` → 改成 `kzalloc + copy_to_user`;**32/64 位均 OK**;见 [`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md) §10 |
+| 13 | **修好 rkaiq 3A:换回配套的 2022 三件套** | 厂商只把 `librkaiq.so`/`rkaiq_3A_server` 升到 2024 版、IQ 还是 2022 的 → 用 SDK 里 2022-04 的 deb(板上有 `.bak-2022`,md5 逐字节相同)整套换回:**AE 60 帧收敛到 Y≈110、AWB 稳定、`params buffer` 报错 114~289 → 0**;重测 A/B:rkaiq **15 ms/帧** vs mini3a 36.3 ms/帧,见 [`docs/21`](docs/21-L2-AWB.md) §9 |
 
 ![我们的驱动抓到的第一帧](evidence/2026-10-21-第一帧-我们的驱动-1632x1224.png)
 
@@ -54,6 +55,7 @@ OV8858 模组(24P)      → 野火转接板 → 15P 1.0mm FPC → 板卡 J11(CAM
 | **L4** | 给 ov8858_sm 补 `pm_runtime`:三态迁移实测 + 系统 suspend/resume 链路 | ✅ 2026-10-21 |
 | **L2-AWB** | ISP 白平衡四条通路 + rkaiq 段错误根因(2022 IQ 缺 `smartRun`)+ 修复 | ✅ 2026-10-21 |
 | **收尾** | 补 `enum_frame_size` / `compat_ioctl32`;顺带修掉 32 位路径的 PAN oops;与 mini3a 做同场景 A/B | ✅ 2026-10-21 |
+| **L2-AWB 收尾** | rkaiq 3A 真正跑通:换回与 4.19 BSP 配套的 2022 三件套(库+server+IQ 同源),重测 A/B | ✅ 2026-10-22 |
 
 ## 仓库结构
 
@@ -77,7 +79,7 @@ tools/              IQ 补丁脚本 / 32-64 位 compat 对照 / 换驱动流程 
 - [docs/17-L1-B对照报告](docs/17-L1-B对照报告-自写驱动vs厂商.md) —— **交付级报告**:与厂商逐寄存器对照、哪些是自推的、实测数据、诚实清单;§10 是补 `enum_frame_size`/`compat_ioctl32` 的收尾记录(含内建驱动刷机流程和 PAN oops 真因)。
 - [docs/18-阶段二零拷贝任务书](docs/18-阶段二零拷贝任务书.md) —— EXPBUF/dmabuf/RGA/NPU 全链路、perf 指标定义、S1~S5 验收、多路与流水线数据。
 - [docs/19-L3异构双摄报告](docs/19-L3异构双摄报告.md) —— 两路同时开流实测、带宽/负载表、NV12 与 RAW10 两套消费者设计,以及"单 ISP 决定了异构是唯一解"的分析。
-- [docs/21-L2-AWB](docs/21-L2-AWB.md) —— ISP 白平衡:四条通路(rkaiq / mini3a / 寄存器直写 / params)实测对比,以及从 U/V 偏差反推增益的方法;§6 是 **rkaiq AWB 段错误的根因(2022 IQ 缺 `smartRun`)与修复**,§8 是 **rkaiq vs mini3a 的同场景配对 A/B**。
+- [docs/21-L2-AWB](docs/21-L2-AWB.md) —— ISP 白平衡:四条通路(rkaiq / mini3a / 寄存器直写 / params)实测对比,以及从 U/V 偏差反推增益的方法;§6 是 **rkaiq AWB 段错误的根因(2022 IQ 缺 `smartRun`)与修复**,§8 是 **rkaiq vs mini3a 的同场景配对 A/B**,§9 是 **把 rkaiq 换回与 BSP 配套的 2022 三件套后真正跑通**的根因与复测数据。
 - [tools/iq_patch_smartrun.py](tools/iq_patch_smartrun.py) —— 给旧 IQ 补 `wb_v21.autoExtPara.smartRun.cfg` 的脚本(幂等、文本插入、插入后校验),配 [tools/README](tools/README.md)。
 - [docs/20-L4电源管理](docs/20-L4电源管理.md) —— 给 ov8858_sm 补 pm_runtime 的 4 处改动、runtime PM 三态验证、系统 suspend/resume 链路恢复,以及"带流 suspend 会挂死"的已知限制。
 

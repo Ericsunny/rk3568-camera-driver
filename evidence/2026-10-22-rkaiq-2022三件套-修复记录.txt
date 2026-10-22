@@ -1,0 +1,87 @@
+2026-10-22  rkaiq 3A 修复记录：换回“配套的 2022 三件套”
+=========================================================
+
+一、板上一共有两套 rkaiq（md5 实测）
+------------------------------------
+组件                      2024 版（镜像默认，坏）                              2022 版（SDK deb 内，好）
+librkaiq.so               be51ce86c4e5fdc9d702ead2311d89a6  2760552 B         654dc84e89edc0aae9ee5f646732ba62  5332648 B
+rkaiq_3A_server           7640afb5b9c2133a865d4f93f3d9789d    30912 B         bc67a0fc6ca1221923132c65c3381aed    14664 B
+IMX415 IQ                 82e3adfe2be6afe8d05510cc39d5d9b2   788677 B(打过 smartRun)  0666ba18ce1e4db30cddc92810587fb1   331401 B
+
+2022 三份与 VM 上
+  ~/rk3568/RK_SDK/ubuntu/packages/arm64/rkaiq/camera_engine_rkaiq_rk3568_arm64.deb（2022-04-08）
+解出来的对应文件 md5 完全一致。板上这三份 2022 版原本就在：
+  /usr/lib/librkaiq.so.bak-2022、/usr/bin/rkaiq_3A_server.bak-2022、/etc/iqfiles/…json.bak
+→ 结论：厂商升级 rkaiq 时只换了库和 server，没换 IQ。
+
+二、失败组合 A：2024 库 + 2024 server + 788677 IQ（smartRun 已补，不崩）
+--------------------------------------------------------------------
+每轮 180 帧里反复出现：
+  CAMHW:E:Can not get isp params buffer, queued cnts:4      ×114~289
+  CAMHW:E:252:parse sensor entity name ov8858-sm 5-0036 error at 0
+  XCORE:E:invalid main scene len!
+三轮末态 Y = 181.4 / 50.7 / 74.6（差 3.6 倍），AE 结果下不到 ISP。
+性能：daemon 43 ticks / 180 帧 = 2.38 ms/帧（它基本没干活）。
+
+三、失败组合 B：2022 库 + 2022 server + 788677 IQ（2024 版 IQ）
+--------------------------------------------------------------
+启动即死，日志（/root/ab/rk2022.log）：
+  W: j2s.c(117) unknown enum name: CalibDbV2_AFMODE_NOT_SET for CalibDbV2_AF_MODE_t
+  W: j2s.c(117) unknown enum name: CalibDbV2_AFSS_ADAPTIVE_RANGE for CalibDbV2_Af_SS_t
+  W: j2s.c(117) unknown enum name: CalibDbV2_AF_ADAPTIVE_SEARCH for CalibDbV2_Af_SearchDir_t
+  [AF]:XCAM ERROR af.cpp:352: AfConfigure: Afss is -1 out of range
+  [AF]:XCAM ERROR rk_aiq_algo_af_itf.cpp:497: AFPrepare: Configuration of AF failed (6)
+  [ANALYZER]:XCAM ERROR RkAiqHandleInt.cpp:1794: af algo prepare failed
+  [XCORE]:XCAM ERROR RkAiqManager.cpp:290: analyzer prepare error -1
+  ERR: rkaiq engine prepare failed !
+→ 2024 版 IQ 里的 AF 枚举值 2022 库不认识，解析成 -1，整个 engine prepare 失败。
+
+四、成功组合：2022 库 + 2022 server + 331401 IQ
+-----------------------------------------------
+启动日志（/root/ab/rk2022c.log，节选）：
+  media get entity by name: … is null                     ← 一堆可选实体缺失，正常
+  CAMHW:E:parse sensor entity name ov8858-sm 5-0036 error at 0
+  CAMHW:E:@get_sensor_caps /dev/v4l-subdev2: Enum sensor frame interval failed
+  CAMHW:E:get isp or ispp info fail, something gos wrong!
+  Cound not find rkisp dev names, skipped /dev/media0      ← 整条跳过 media0(rkcif/OV8858)
+  DBG: get rkisp-isp-subdev devname: /dev/v4l-subdev3
+  DBG: get rkisp-input-params devname: /dev/video13
+  DBG: get rkisp-statistics devname: /dev/video12
+  DBG: get rkisp_mainpath devname: /dev/video5
+  DBG: subscribe events from /dev/video13 success !
+  DBG: /dev/media1: wait stream start event success ...
+  DBG: rkisp_init engine succeed
+  （全程 0 次 Can not get isp params buffer，0 次 invalid main scene len）
+
+收敛（600 帧长跑，起点 exposure=300 / analogue_gain=4）：
+  帧   0: Y   18.5  U  126.7( -1.3)  V  126.4( -1.6)
+  帧  30: Y   90.8  U  126.4( -1.6)  V  124.8( -3.2)
+  帧  60: Y  108.2  U  128.4( +0.4)  V  124.7( -3.3)
+  帧  90: Y  109.6  U  129.0( +1.0)  V  124.7( -3.3)
+  帧 150: Y  109.7  U  129.4( +1.4)  V  124.8( -3.2)
+  帧 570: Y  107.9  U  129.2( +1.2)  V  124.9( -3.1)
+  sensor 终值：exposure 1013、analogue_gain 9
+  dmesg：imx415 1-001a: set analog gain 0x6/0x7/0x8/0x9（AE 在动增益）
+
+五、配对 A/B 复测（每臂前 exposure=300, analogue_gain=4；nv12 3840×2160）
+----------------------------------------------------------------------
+轮  臂       末态 Y    ΔU      ΔV     sensor(exp/gain)   CPU
+A1  rkaiq    109.8    +0.4    -3.5    1013 / 8          271 ticks/180 帧 = 15.1 ms/帧
+A2  rkaiq    110.1    +4.8    -3.3    1013 / 7          264 / 180       = 14.7 ms/帧
+A3  rkaiq    110.4    +4.8    -3.3    1013 / 7          277 / 180       = 15.4 ms/帧
+B1  mini3a   115      0.0     0.0     2242 / 31         4.361 s/120 帧  = 36.3 ms/帧
+B2  mini3a   112      0.0     0.0     2242 / 30         4.351 / 120     = 36.3 ms/帧
+基线 无3A    18.5~19.5  -1.3~-1.4  -1.6~-1.7  300 / 4        —
+
+注：docs/21 §8.3 里 rkaiq 的 2.38 ms/帧 是坏 daemon 的数字；真干活后是 15 ms/帧，仍是
+mini3a(36.3) 的 41%。
+
+六、操作注意
+------------
+1. `systemctl is-enabled rkaiq_3A` = disabled，开机不自启；要用就手动
+   /etc/init.d/rkaiq_3A.sh start（内部是 `rkaiq_3A_server 2>&1 | logger -t rkaiq &`）。
+2. rkaiq 被杀掉之后 ISP 会留在“stream 未停”的状态，紧接着用别的程序开 /dev/video5
+   会拿不到帧（dmesg: rkisp_stream_stop id:0 timeout），要 reboot 才恢复。
+   同一台机器做 A/B 时，顺序上先跑 mini3a、最后跑 rkaiq。
+3. OV8858 这条链还进不了 rkaiq：实体名 ov8858-sm 不符合库的 `<sensor> <bus>-<addr>` 解析，
+   且我们没实现 g_frame_interval，media0 整条被跳过。走 rkisp 的 IMX415 不受影响。

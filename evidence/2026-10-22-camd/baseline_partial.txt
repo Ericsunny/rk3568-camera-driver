@@ -1,0 +1,135 @@
+===== 1) 环境 =====
+date      : Tue Jun 18 04:40:22 CST 2024
+kernel    : 4.19.232 #42 SMP Thu Oct 22 12:14:29 UTC 2026
+cmdline   : storagemedia=emmc androidboot.storagemedia=emmc androidboot.mode=normal root=/dev/mmcblk0p3 earlyprintk console=ttyFIQ0 console=tty1 consoleblank=0 loglevel=7 rootwait rw rootfstype=ext4 androidboot.fwver=ddr-v1.21-2d653b3476,spl-v1.14,bl31-v1.44,bl32-v2.12,uboot-root-10/17/2025
+machine   : yckj-v200
+3A        : inactive / enabled=disabled
+librkaiq  : 654dc84e89edc0aae9ee5f646732ba62
+3A server : bc67a0fc6ca1221923132c65c3381aed
+IQ        : 0666ba18ce1e4db30cddc92810587fb1
+ov8858 pm: N (mode_1080p)
+
+===== 2) media graph 实体 =====
+--- media0 ---
+rkisp-statistics (platform: rkisp):
+	/dev/video12
+	/dev/video13
+
+rkcif_mipi_lvds (platform:rkcif):
+	/dev/media0
+
+rkcif (platform:rkcif_mipi_lvds):
+	/dev/video0
+	/dev/video1
+	/dev/video2
+	/dev/video3
+	/dev/video4
+
+rkisp_mainpath (platform:rkisp-vir0):
+	/dev/video5
+	/dev/video6
+	/dev/video7
+	/dev/video8
+	/dev/video9
+	/dev/video10
+	/dev/video11
+	/dev/media1
+
+	pad0: Sink
+	pad0: Sink
+	pad0: Sink
+	pad0: Sink
+	pad0: Sink
+	pad0: Sink
+	pad0: Source
+--- media1 ---
+rkisp-statistics (platform: rkisp):
+	/dev/video12
+	/dev/video13
+
+rkcif_mipi_lvds (platform:rkcif):
+	/dev/media0
+
+rkcif (platform:rkcif_mipi_lvds):
+	/dev/video0
+	/dev/video1
+	/dev/video2
+	/dev/video3
+	/dev/video4
+
+rkisp_mainpath (platform:rkisp-vir0):
+	/dev/video5
+	/dev/video6
+	/dev/video7
+	/dev/video8
+	/dev/video9
+	/dev/video10
+	/dev/video11
+	/dev/media1
+
+	pad0: Sink
+	pad0: Sink
+	pad0: Sink
+	pad0: Sink
+	pad0: Sink
+	pad0: Sink
+	pad0: Sink
+	pad0: Source
+	pad0: Source
+	pad0: Sink
+	pad0: Source
+	pad0: Sink
+	pad0: Source
+
+===== 3) 支持格式(video0 = OV8858/rkcif, video5 = IMX415/rkisp) =====
+--- video0 ---
+	[0]: 'NV16' (Y/CbCr 4:2:2)
+		Size: Stepwise 64x64 - 1632x1224 with step 8/8
+	[1]: 'NV61' (Y/CrCb 4:2:2)
+		Size: Stepwise 64x64 - 1632x1224 with step 8/8
+	[2]: 'NV12' (Y/CbCr 4:2:0)
+		Size: Stepwise 64x64 - 1632x1224 with step 8/8
+	[3]: 'NV21' (Y/CrCb 4:2:0)
+		Size: Stepwise 64x64 - 1632x1224 with step 8/8
+--- video5 ---
+	[0]: 'UYVY' (UYVY 4:2:2)
+		Size: Stepwise 32x16 - 3840x2160 with step 8/8
+	[1]: '422P' (Planar YUV 4:2:2)
+		Size: Stepwise 32x16 - 3840x2160 with step 8/8
+	[2]: 'NV16' (Y/CbCr 4:2:2)
+		Size: Stepwise 32x16 - 3840x2160 with step 8/8
+	[3]: 'NV61' (Y/CrCb 4:2:2)
+		Size: Stepwise 32x16 - 3840x2160 with step 8/8
+
+===== 4) 运行 PM 状态与引用计数(5 轮开关流) =====
+pm node   : 未找到
+idle      :   suspend_logs=7 resume_logs=6
+cycle1   : status= suspend_logs=7 resume_logs=6
+cycle2   : status= suspend_logs=7 resume_logs=6
+cycle3   : status= suspend_logs=7 resume_logs=6
+cycle4   : status= suspend_logs=7 resume_logs=6
+cycle5   : status= suspend_logs=7 resume_logs=6
+after 3s  :  suspend_logs=7 resume_logs=6
+
+===== 5) 基础吞吐与首帧(每设备 200 帧) =====
+--- video0 ---
+/root/st_burn: invalid option -- 'n'
+--- video5 ---
+/root/st_burn: invalid option -- 'n'
+
+===== 6) 内核日志尾部(相机相关) =====
+[ 1195.029863] rkcif_mipi_lvds: not active buffer, skip current frame, mipi/lvds stream[0]
+[ 1195.063174] rkcif_mipi_lvds: not active buffer, skip current frame, mipi/lvds stream[0]
+[ 1195.129785] rkcif_mipi_lvds: not active buffer, skip current frame, mipi/lvds stream[0]
+[ 1195.163092] rkcif_mipi_lvds: not active buffer, skip current frame, mipi/lvds stream[0]
+[ 1195.196412] rkcif_mipi_lvds: not active buffer, skip current frame, mipi/lvds stream[0]
+[ 1195.229717] rkcif_mipi_lvds: not active buffer, skip current frame, mipi/lvds stream[0]
+[ 1195.263035] rkcif_mipi_lvds: not active buffer, skip current frame, mipi/lvds stream[0]
+[ 1195.329652] rkcif_mipi_lvds: not active buffer, skip current frame, mipi/lvds stream[0]
+[ 1195.362964] rkcif_mipi_lvds: not active buffer, skip current frame, mipi/lvds stream[0]
+[ 1195.396281] rkcif_mipi_lvds: not active buffer, skip current frame, mipi/lvds stream[0]
+[ 1195.429592] rkcif_mipi_lvds: not active buffer, skip current frame, mipi/lvds stream[0]
+[ 1195.462900] rkcif_mipi_lvds: not active buffer, skip current frame, mipi/lvds stream[0]
+[ 1195.478126] rkcif_mipi_lvds: stream[0] start stopping
+[ 1195.497649] ov8858-sm 5-0036: s_stream 0
+[ 1195.501131] rkcif_mipi_lvds: stream[0] stopping finished

@@ -1,0 +1,16 @@
+{
+  "rc": 0,
+  "device": "/dev/video0",
+  "size": "1632x1224",
+  "frames": 200,
+  "frames_returned": 200,
+  "qbuf_errors": 0,
+  "fatal": 0,
+  "fatal_msg": "",
+  "first_frame_ms": 58.41,
+  "elapsed_ms": 39445.91,
+  "fps": 5.08,
+  "rt": {"processed": 200, "dropped": 0, "avg_us": 0.8, "max_us": 2, "p95_us": 0, "p99_us": 1},
+  "ev": {"processed": 200, "dropped": 0, "avg_us": 0.6, "max_us": 1, "p95_us": 0, "p99_us": 1},
+  "queue": {"rt_cap": 4, "ev_cap": 2}
+}

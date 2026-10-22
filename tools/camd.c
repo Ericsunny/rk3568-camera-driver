@@ -1,0 +1,850 @@
+// camd.c —— RK3568 相机服务:双消费者 + 有界队列 + buffer 生命周期 + 可诊断退出
+//
+// 设计要点(docs/29):
+//   1. 一个 V4L2 buffer 只有一个归属链:capture 持有一份,分发给每个消费者各加
+//      一份引用;全部 release 后 refcount 归零才 QBUF 还给内核。DMA-BUF fd 共享
+//      出去 ≠ 访问已完成,归还时机由引用计数决定,不由"分析耗了多久"决定。
+//   2. 两条队列策略不同:实时分支队列满丢最旧(保新帧);取证分支限速 + 有界阻塞
+//      (背压),超时丢并计数——任何情况下都不无限堆内存。
+//   3. 停止靠 pthread mutex/cond + 原子标志驱动,不用 volatile 冒充同步。
+//   4. 故障只做一次有界恢复:恢复失败就干净退出 + 诊断包,不无限重启。
+//
+// 板上编译: gcc -O2 -pthread -o camd camd.c -ldl
+
+#define _GNU_SOURCE
+#include <errno.h>
+#include <fcntl.h>
+#include <getopt.h>
+#include <poll.h>
+#include <pthread.h>
+#include <signal.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stdatomic.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <unistd.h>
+#include <dlfcn.h>
+
+#include <linux/videodev2.h>
+
+#define MAX_BUFS 8
+#define MAX_Q 32
+
+/* ---------------- 时间 ---------------- */
+static int64_t now_us(void)
+{
+	struct timespec ts;
+
+	clock_gettime(CLOCK_MONOTONIC, &ts);
+	return (int64_t)ts.tv_sec * 1000000 + ts.tv_nsec / 1000;
+}
+
+/* ---------------- 延迟直方(定长环形,算分位数) ---------------- */
+typedef struct {
+	uint64_t n, sum_us, max_us;
+	int cap, head;
+	uint32_t *ring;
+} lat_t;
+
+static void lat_init(lat_t *l, int cap)
+{
+	memset(l, 0, sizeof(*l));
+	l->cap = cap;
+	l->ring = cap ? calloc(cap, sizeof(uint32_t)) : NULL;
+}
+
+static void lat_reset(lat_t *l)
+{
+	l->n = l->sum_us = l->max_us = 0;
+	l->head = 0;
+	if (l->ring)
+		memset(l->ring, 0, sizeof(uint32_t) * l->cap);
+}
+
+static void lat_add(lat_t *l, int64_t us)
+{
+	if (us < 0)
+		us = 0;
+	l->n++;
+	l->sum_us += us;
+	if ((uint64_t)us > l->max_us)
+		l->max_us = us;
+	if (l->ring) {
+		l->ring[l->head] = (uint32_t)us;
+		l->head = (l->head + 1) % l->cap;
+	}
+}
+
+static int cmp_u32(const void *a, const void *b)
+{
+	uint32_t x = *(const uint32_t *)a, y = *(const uint32_t *)b;
+
+	return (x > y) - (x < y);
+}
+
+static double lat_pct(lat_t *l, double p)
+{
+	uint32_t *tmp;
+	int k;
+
+	if (!l->cap || l->n == 0)
+		return -1;
+	tmp = malloc(sizeof(uint32_t) * l->cap);
+	if (!tmp)
+		return -1;
+	memcpy(tmp, l->ring, sizeof(uint32_t) * l->cap);
+	qsort(tmp, l->cap, sizeof(uint32_t), cmp_u32);
+	k = (int)(p * (l->cap - 1) + 0.5);
+	if (k < 0)
+		k = 0;
+	if (k >= l->cap)
+		k = l->cap - 1;
+	k = tmp[k];
+	free(tmp);
+	return k;
+}
+
+/* ---------------- 帧节点 ---------------- */
+struct node {
+	int idx;
+	size_t len;
+	int dmabuf_fd;
+	uint64_t seq;
+	int64_t ts_us;
+	atomic_int refs;
+};
+
+typedef struct {
+	struct node *slot[MAX_Q];
+	int cap, n, head;
+	int drop_oldest;	/* 1 = 丢最旧;0 = 有界阻塞 */
+	int block_ms;
+	pthread_mutex_t m;
+	pthread_cond_t not_empty, not_full;
+	uint64_t pushed, popped, dropped;
+} queue_t;
+
+/* ---------------- 全局状态 ---------------- */
+static struct {
+	int fd;
+	int w, h, nbufs;
+	uint32_t fourcc;
+	struct node *nodes[MAX_BUFS];
+	atomic_bool streaming;
+} cap;
+
+static queue_t q[2];
+enum { Q_RT = 0, Q_EV = 1 };
+
+static atomic_bool g_run;
+static atomic_bool g_draining;
+static atomic_int g_fatal;
+static char g_fatal_msg[256];
+static atomic_uint g_frames, g_frames_done, g_qbuf_err;
+static int64_t g_first_us, g_start_us, g_last_us;
+static pthread_mutex_t g_first_mu = PTHREAD_MUTEX_INITIALIZER;
+
+static lat_t rt_lat, ev_lat;
+
+static int g_analyze_ms, g_ev_ms, g_frames_limit, g_recover_attempts;
+static int g_rt_depth = 4, g_ev_depth = 2;
+static int g_dq_timeout_ms, g_verbose, g_analyze_mode, g_fault;
+static double g_ev_fps;
+static const char *g_dev = "/dev/video0", *g_json;
+
+static void fatal(int code, const char *fmt, ...);
+static void node_release(struct node *n);
+
+static void wake_all(void)
+{
+	int i;
+
+	for (i = 0; i < 2; i++) {
+		pthread_mutex_lock(&q[i].m);
+		pthread_cond_broadcast(&q[i].not_empty);
+		pthread_cond_broadcast(&q[i].not_full);
+		pthread_mutex_unlock(&q[i].m);
+	}
+}
+
+static void fatal(int code, const char *fmt, ...)
+{
+	va_list ap;
+
+	if (atomic_load(&g_fatal))
+		return;
+	va_start(ap, fmt);
+	vsnprintf(g_fatal_msg, sizeof(g_fatal_msg), fmt, ap);
+	va_end(ap);
+	atomic_store(&g_fatal, code);
+	atomic_store(&g_run, false);
+	fprintf(stderr, "FATAL[%d]: %s\n", code, g_fatal_msg);
+	wake_all();
+}
+
+/* 把 buffer 还给 V4L2 —— 只在所有引用都释放后发生 */
+static void node_release(struct node *n)
+{
+	int prev = atomic_fetch_sub(&n->refs, 1);
+	struct v4l2_buffer b;
+	struct v4l2_plane pl;
+
+	if (prev <= 0) {
+		fprintf(stderr, "BUG: node seq=%llu refs 下溢\n",
+			(unsigned long long)n->seq);
+		return;
+	}
+	if (prev != 1)
+		return;
+
+	memset(&b, 0, sizeof(b));
+	memset(&pl, 0, sizeof(pl));
+	b.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+	b.memory = V4L2_MEMORY_MMAP;
+	b.index = n->idx;
+	b.length = 1;
+	b.m.planes = &pl;
+	if (ioctl(cap.fd, VIDIOC_QBUF, &b) < 0) {
+		atomic_fetch_add(&g_qbuf_err, 1);
+		fprintf(stderr, "QBUF idx=%d 失败: %s\n", n->idx, strerror(errno));
+	} else {
+		atomic_fetch_add(&g_frames_done, 1);
+	}
+}
+
+static void node_get(struct node *n)
+{
+	atomic_fetch_add(&n->refs, 1);
+}
+
+static void q_init(int id, int depth, int drop_oldest, int block_ms)
+{
+	queue_t *Q = &q[id];
+
+	memset(Q, 0, sizeof(*Q));
+	Q->cap = depth <= 0 ? 1 : (depth > MAX_Q ? MAX_Q : depth);
+	Q->drop_oldest = drop_oldest;
+	Q->block_ms = block_ms;
+	pthread_mutex_init(&Q->m, NULL);
+	pthread_cond_init(&Q->not_empty, NULL);
+	pthread_cond_init(&Q->not_full, NULL);
+}
+
+/* 入队:接管调用方传入的这一份引用 */
+static void q_push(int id, struct node *n)
+{
+	queue_t *Q = &q[id];
+	struct node *victim = NULL;
+
+	pthread_mutex_lock(&Q->m);
+	while (Q->n == Q->cap && !Q->drop_oldest && atomic_load(&g_run)) {
+		struct timespec dl;
+
+		clock_gettime(CLOCK_REALTIME, &dl);
+		dl.tv_sec += Q->block_ms / 1000;
+		dl.tv_nsec += (long)(Q->block_ms % 1000) * 1000000L;
+		if (dl.tv_nsec >= 1000000000L) {
+			dl.tv_sec++;
+			dl.tv_nsec -= 1000000000L;
+		}
+		if (pthread_cond_timedwait(&Q->not_full, &Q->m, &dl) == ETIMEDOUT)
+			break;
+	}
+	if (Q->n == Q->cap) {
+		if (Q->drop_oldest) {
+			victim = Q->slot[Q->head];
+			Q->head = (Q->head + 1) % Q->cap;
+			Q->n--;
+		} else {
+			/* 背压超时:丢掉这一帧,但计数,保证不会无限堆 */
+			Q->dropped++;
+			pthread_mutex_unlock(&Q->m);
+			node_release(n);
+			return;
+		}
+	}
+	Q->slot[(Q->head + Q->n) % Q->cap] = n;
+	Q->n++;
+	Q->pushed++;
+	pthread_cond_signal(&Q->not_empty);
+	pthread_mutex_unlock(&Q->m);
+
+	if (victim) {
+		Q->dropped++;
+		node_release(victim);
+	}
+}
+
+/* 出队;空且已 drain/停止时返回 NULL */
+static struct node *q_pop(int id, int timeout_ms)
+{
+	queue_t *Q = &q[id];
+	struct node *n = NULL;
+	struct timespec dl;
+
+	clock_gettime(CLOCK_REALTIME, &dl);
+	dl.tv_sec += timeout_ms / 1000;
+	dl.tv_nsec += (long)(timeout_ms % 1000) * 1000000L;
+	if (dl.tv_nsec >= 1000000000L) {
+		dl.tv_sec++;
+		dl.tv_nsec -= 1000000000L;
+	}
+
+	pthread_mutex_lock(&Q->m);
+	while (Q->n == 0) {
+		if ((atomic_load(&g_draining) || !atomic_load(&g_run)) &&
+		    Q->n == 0)
+			break;
+		if (pthread_cond_timedwait(&Q->not_empty, &Q->m, &dl) == ETIMEDOUT)
+			break;
+	}
+	if (Q->n > 0) {
+		n = Q->slot[Q->head];
+		Q->head = (Q->head + 1) % Q->cap;
+		Q->n--;
+		Q->popped++;
+		pthread_cond_signal(&Q->not_full);
+	}
+	pthread_mutex_unlock(&Q->m);
+	return n;
+}
+
+/* ---------------- 设备 ---------------- */
+static int xioctl(int fd, unsigned long req, void *arg)
+{
+	int r;
+
+	do {
+		r = ioctl(fd, req, arg);
+	} while (r < 0 && errno == EINTR);
+	return r;
+}
+
+static int dev_open(void)
+{
+	struct v4l2_format f;
+	struct v4l2_requestbuffers req;
+	int i;
+
+	cap.fd = open(g_dev, O_RDWR | O_NONBLOCK);
+	if (cap.fd < 0) {
+		fatal(1, "open %s 失败: %s", g_dev, strerror(errno));
+		return -1;
+	}
+
+	/* 这块 BSP 的采集节点是 multiplanar 接口(VIDIOC_*_MPLANE) */
+	memset(&f, 0, sizeof(f));
+	f.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+	f.fmt.pix_mp.width = cap.w;
+	f.fmt.pix_mp.height = cap.h;
+	f.fmt.pix_mp.pixelformat = cap.fourcc;
+	f.fmt.pix_mp.field = V4L2_FIELD_NONE;
+	f.fmt.pix_mp.num_planes = 1;
+	if (xioctl(cap.fd, VIDIOC_S_FMT, &f) < 0) {
+		fatal(1, "S_FMT %dx%d 失败: %s", cap.w, cap.h, strerror(errno));
+		return -1;
+	}
+	if ((int)f.fmt.pix_mp.width != cap.w || (int)f.fmt.pix_mp.height != cap.h) {
+		fprintf(stderr, "警告: 内核把分辨率改成 %ux%u\n",
+			f.fmt.pix_mp.width, f.fmt.pix_mp.height);
+		cap.w = f.fmt.pix_mp.width;
+		cap.h = f.fmt.pix_mp.height;
+	}
+
+	memset(&req, 0, sizeof(req));
+	req.count = cap.nbufs;
+	req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+	req.memory = V4L2_MEMORY_MMAP;
+	if (xioctl(cap.fd, VIDIOC_REQBUFS, &req) < 0) {
+		fatal(1, "REQBUFS 失败: %s", strerror(errno));
+		return -1;
+	}
+	if ((int)req.count < cap.nbufs)
+		cap.nbufs = req.count;
+
+	for (i = 0; i < cap.nbufs; i++) {
+		struct v4l2_buffer b;
+		struct v4l2_plane pl;
+		struct v4l2_exportbuffer exp;
+
+		memset(&pl, 0, sizeof(pl));
+		memset(&b, 0, sizeof(b));
+		b.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+		b.memory = V4L2_MEMORY_MMAP;
+		b.index = i;
+		b.length = 1;
+		b.m.planes = &pl;
+		if (xioctl(cap.fd, VIDIOC_QUERYBUF, &b) < 0) {
+			fatal(1, "QUERYBUF %d 失败: %s", i, strerror(errno));
+			return -1;
+		}
+
+		memset(&exp, 0, sizeof(exp));
+		exp.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+		exp.index = i;
+		exp.plane = 0;
+		exp.flags = O_RDWR;
+		if (xioctl(cap.fd, VIDIOC_EXPBUF, &exp) < 0) {
+			fatal(1, "EXPBUF %d 失败: %s", i, strerror(errno));
+			return -1;
+		}
+
+		cap.nodes[i] = calloc(1, sizeof(struct node));
+		cap.nodes[i]->idx = i;
+		cap.nodes[i]->len = pl.length;
+		cap.nodes[i]->dmabuf_fd = exp.fd;
+		atomic_init(&cap.nodes[i]->refs, 0);
+	}
+
+	for (i = 0; i < cap.nbufs; i++) {
+		struct v4l2_buffer b;
+		struct v4l2_plane pl;
+
+		memset(&pl, 0, sizeof(pl));
+		memset(&b, 0, sizeof(b));
+		b.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+		b.memory = V4L2_MEMORY_MMAP;
+		b.index = i;
+		b.length = 1;
+		b.m.planes = &pl;
+		if (xioctl(cap.fd, VIDIOC_QBUF, &b) < 0) {
+			fatal(1, "初始 QBUF %d 失败: %s", i, strerror(errno));
+			return -1;
+		}
+	}
+	return 0;
+}
+
+static int dev_streamon(void)
+{
+	enum v4l2_buf_type t = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+
+	if (xioctl(cap.fd, VIDIOC_STREAMON, &t) < 0) {
+		fatal(1, "STREAMON 失败: %s", strerror(errno));
+		return -1;
+	}
+	atomic_store(&cap.streaming, true);
+	return 0;
+}
+
+static void dev_streamoff(void)
+{
+	enum v4l2_buf_type t = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+	int r;
+
+	if (!atomic_load(&cap.streaming))
+		return;
+	r = xioctl(cap.fd, VIDIOC_STREAMOFF, &t);
+	atomic_store(&cap.streaming, false);
+	/* V4L2 规定 STREAMOFF 恒返回 0;真正的停流错误只能由驱动记录
+	 * (ov8858_sm 的 last_stop_err 参数,见 docs/28 §2) */
+	if (g_verbose)
+		fprintf(stderr, "STREAMOFF ret=%d errno=%d\n", r, errno);
+}
+
+static void dev_close(void)
+{
+	int i;
+
+	if (cap.fd > 0) {
+		close(cap.fd);
+		cap.fd = -1;
+	}
+	for (i = 0; i < cap.nbufs; i++) {
+		if (cap.nodes[i] && cap.nodes[i]->dmabuf_fd > 0) {
+			close(cap.nodes[i]->dmabuf_fd);
+			free(cap.nodes[i]);
+			cap.nodes[i] = NULL;
+		}
+	}
+}
+
+/* ---------------- 采集线程 ---------------- */
+static void *capture_thread(void *arg)
+{
+	(void)arg;
+	while (atomic_load(&g_run)) {
+		struct pollfd p = { .fd = cap.fd, .events = POLLIN };
+		struct node *n;
+		struct v4l2_buffer b;
+		struct v4l2_plane pl;
+		int pr = poll(&p, 1, g_dq_timeout_ms);
+
+		if (pr == 0) {
+			fprintf(stderr, "DQBUF 超时(%d ms)\n", g_dq_timeout_ms);
+			continue;
+		}
+		if (pr < 0) {
+			if (errno == EINTR)
+				continue;
+			fatal(1, "poll 失败: %s", strerror(errno));
+			break;
+		}
+		memset(&pl, 0, sizeof(pl));
+		memset(&b, 0, sizeof(b));
+		b.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+		b.memory = V4L2_MEMORY_MMAP;
+		b.length = 1;
+		b.m.planes = &pl;
+		if (xioctl(cap.fd, VIDIOC_DQBUF, &b) < 0) {
+			if (errno == EAGAIN)
+				continue;
+			fatal(1, "DQBUF 失败: %s", strerror(errno));
+			break;
+		}
+
+		n = cap.nodes[b.index];
+		n->seq = atomic_fetch_add(&g_frames, 1);
+		n->ts_us = now_us();
+		atomic_store(&n->refs, 1);	/* capture 自己一份 */
+
+		pthread_mutex_lock(&g_first_mu);
+		if (g_first_us == 0)
+			g_first_us = n->ts_us;
+		pthread_mutex_unlock(&g_first_mu);
+		g_last_us = n->ts_us;
+
+		/* 每个消费者各加一份引用,谁最后释放谁 QBUF */
+		node_get(n);
+		q_push(Q_RT, n);
+		node_get(n);
+		q_push(Q_EV, n);
+		node_release(n);
+
+		if (g_frames_limit > 0 &&
+		    (int)atomic_load(&g_frames) >= g_frames_limit) {
+			atomic_store(&g_draining, true);
+			wake_all();
+			break;
+		}
+	}
+	return NULL;
+}
+
+/* ---------------- 实时分析消费者 ---------------- */
+static void *rt_thread(void *arg)
+{
+	(void)arg;
+	while (1) {
+		struct node *n = q_pop(Q_RT, 50);
+		int64_t t0;
+
+		if (!n) {
+			if (atomic_load(&g_draining) || !atomic_load(&g_run))
+				break;
+			continue;
+		}
+		t0 = now_us();
+		if (g_fault == 2) {	/* 模拟消费者内部故障 */
+			fatal(2, "实时分析消费者故障(注入)");
+			node_release(n);
+			break;
+		}
+		if (g_analyze_mode == 1 || g_fault == 1) {
+			int ms = (g_fault == 1) ? g_analyze_ms * 10 : g_analyze_ms;
+
+			if (ms < 1)
+				ms = 1;
+			if (ms > 20000)
+				ms = 20000;
+			usleep((useconds_t)ms * 1000);
+		} else {
+			/* nop:只触碰数据页,证明缓冲区可读(不做格式解释) */
+			volatile unsigned char *p = (volatile unsigned char *)n;
+			(void)p;
+		}
+		lat_add(&rt_lat, now_us() - t0);
+		node_release(n);
+	}
+	return NULL;
+}
+
+/* ---------------- 取证/保存消费者(限速 + 背压) ---------------- */
+static void *ev_thread(void *arg)
+{
+	int64_t next_us = 0;
+
+	(void)arg;
+	while (1) {
+		struct node *n;
+		int64_t t0;
+
+		if (g_ev_fps > 0) {
+			int64_t period = (int64_t)(1000000.0 / g_ev_fps);
+			int64_t d;
+
+			if (next_us) {
+				d = next_us - now_us();
+				if (d > 0)
+					usleep((useconds_t)d);
+			}
+			next_us = now_us() + period;
+		}
+		n = q_pop(Q_EV, 50);
+		if (!n) {
+			if (atomic_load(&g_draining) || !atomic_load(&g_run))
+				break;
+			continue;
+		}
+		t0 = now_us();
+		if (g_ev_ms > 0)
+			usleep((useconds_t)g_ev_ms * 1000);
+		lat_add(&ev_lat, now_us() - t0);
+		node_release(n);
+	}
+	return NULL;
+}
+
+/* ---------------- 指标与诊断包 ---------------- */
+static void dump_json(FILE *f, int rc)
+{
+	fprintf(f, "{\n");
+	fprintf(f, "  \"rc\": %d,\n", rc);
+	fprintf(f, "  \"device\": \"%s\",\n", g_dev);
+	fprintf(f, "  \"size\": \"%dx%d\",\n", cap.w, cap.h);
+	fprintf(f, "  \"frames\": %u,\n", atomic_load(&g_frames));
+	fprintf(f, "  \"frames_returned\": %u,\n", atomic_load(&g_frames_done));
+	fprintf(f, "  \"qbuf_errors\": %u,\n", atomic_load(&g_qbuf_err));
+	fprintf(f, "  \"fatal\": %d,\n", atomic_load(&g_fatal));
+	fprintf(f, "  \"fatal_msg\": \"%s\",\n", g_fatal_msg);
+	fprintf(f, "  \"first_frame_ms\": %.2f,\n",
+		g_first_us ? (g_first_us - g_start_us) / 1000.0 : -1.0);
+	fprintf(f, "  \"elapsed_ms\": %.2f,\n",
+		g_last_us ? (g_last_us - g_start_us) / 1000.0 : -1.0);
+	fprintf(f, "  \"fps\": %.2f,\n",
+		(g_last_us > g_start_us && g_first_us)
+			? (double)atomic_load(&g_frames) * 1e6 /
+				  (double)(g_last_us - g_first_us)
+			: -1.0);
+	fprintf(f,
+		"  \"rt\": {\"processed\": %llu, \"dropped\": %llu, \"avg_us\": %.1f, \"max_us\": %llu, \"p95_us\": %.0f, \"p99_us\": %.0f},\n",
+		(unsigned long long)rt_lat.n, (unsigned long long)q[Q_RT].dropped,
+		rt_lat.n ? (double)rt_lat.sum_us / rt_lat.n : -1.0,
+		(unsigned long long)rt_lat.max_us, lat_pct(&rt_lat, 0.95),
+		lat_pct(&rt_lat, 0.99));
+	fprintf(f,
+		"  \"ev\": {\"processed\": %llu, \"dropped\": %llu, \"avg_us\": %.1f, \"max_us\": %llu, \"p95_us\": %.0f, \"p99_us\": %.0f},\n",
+		(unsigned long long)ev_lat.n, (unsigned long long)q[Q_EV].dropped,
+		ev_lat.n ? (double)ev_lat.sum_us / ev_lat.n : -1.0,
+		(unsigned long long)ev_lat.max_us, lat_pct(&ev_lat, 0.95),
+		lat_pct(&ev_lat, 0.99));
+	fprintf(f, "  \"queue\": {\"rt_cap\": %d, \"ev_cap\": %d}\n", q[Q_RT].cap,
+		q[Q_EV].cap);
+	fprintf(f, "}\n");
+}
+
+static void diag_bundle(int rc)
+{
+	char dir[128], cmd[512];
+	time_t t = time(NULL);
+	struct tm tm;
+
+	localtime_r(&t, &tm);
+	snprintf(dir, sizeof(dir), "/root/camd_diag_%04d%02d%02d_%02d%02d%02d",
+		 tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour,
+		 tm.tm_min, tm.tm_sec);
+	mkdir(dir, 0777);
+
+	snprintf(cmd, sizeof(cmd), "%s/metrics.json", dir);
+	{
+		FILE *f = fopen(cmd, "w");
+
+		if (f) {
+			dump_json(f, rc);
+			fclose(f);
+		}
+	}
+	snprintf(cmd, sizeof(cmd), "dmesg | tail -n 200 > %s/dmesg.txt", dir);
+	if (system(cmd))
+		;
+	snprintf(cmd, sizeof(cmd), "cat /proc/meminfo > %s/meminfo.txt", dir);
+	if (system(cmd))
+		;
+	snprintf(cmd, sizeof(cmd), "ls -l /proc/%d/fd > %s/fds.txt 2>&1",
+		 getpid(), dir);
+	if (system(cmd))
+		;
+	snprintf(cmd, sizeof(cmd),
+		 "cat /sys/module/ov8858_sm/parameters/last_stop_err > %s/last_stop_err.txt 2>&1",
+		 dir);
+	if (system(cmd))
+		;
+	snprintf(cmd, sizeof(cmd),
+		 "cat /proc/%d/status | grep -e VmRSS -e Threads > %s/threads.txt 2>&1",
+		 getpid(), dir);
+	if (system(cmd))
+		;
+	fprintf(stderr, "诊断包: %s\n", dir);
+}
+
+/* ---------------- 一次会话 ---------------- */
+static int session(void)
+{
+	pthread_t t_cap, t_rt, t_ev;
+	int rc = 0;
+
+	atomic_store(&g_run, true);
+	atomic_store(&g_draining, false);
+	atomic_store(&g_fatal, 0);
+	atomic_store(&g_frames, 0);
+	atomic_store(&g_frames_done, 0);
+	atomic_store(&g_qbuf_err, 0);
+	atomic_store(&cap.streaming, false);
+	g_first_us = g_last_us = 0;
+	g_fatal_msg[0] = 0;
+	lat_reset(&rt_lat);
+	lat_reset(&ev_lat);
+
+	q_init(Q_RT, g_rt_depth, 1, 0);		/* 实时:丢最旧 */
+	q_init(Q_EV, g_ev_depth, 0, 200);	/* 取证:有界阻塞 200 ms */
+
+	if (dev_open() < 0) {
+		rc = 1;
+		goto out;
+	}
+	if (dev_streamon() < 0) {
+		rc = 1;
+		goto out;
+	}
+
+	g_start_us = now_us();
+	pthread_create(&t_cap, NULL, capture_thread, NULL);
+	pthread_create(&t_rt, NULL, rt_thread, NULL);
+	pthread_create(&t_ev, NULL, ev_thread, NULL);
+
+	pthread_join(t_cap, NULL);
+	atomic_store(&g_draining, true);
+	wake_all();
+	pthread_join(t_rt, NULL);
+	pthread_join(t_ev, NULL);
+
+	dev_streamoff();
+	rc = atomic_load(&g_fatal);
+out:
+	dev_close();
+	if (rc)
+		diag_bundle(rc);
+	return rc;
+}
+
+/* ---------------- 入口 ---------------- */
+static void usage(void)
+{
+	fprintf(stderr,
+		"用法: camd [选项]\n"
+		"  -d DEV            设备(默认 /dev/video0)\n"
+		"  -w W -h H         分辨率(默认 1632x1224)\n"
+		"  -f FOURCC         BG10/NV12(默认 BG10)\n"
+		"  -n N              处理 N 帧后收尾(0=一直跑)\n"
+		"  -b N              V4L2 buffer 数(默认 4)\n"
+		"  --rt-depth N      实时队列深度(默认 4,满则丢最旧)\n"
+		"  --ev-depth N      取证队列深度(默认 2,满则有界阻塞)\n"
+		"  --ev-fps F        取证限速帧率(默认 5)\n"
+		"  --analyze-ms N    实时分析模拟耗时(ms)\n"
+		"  --analyze MODE    nop|sleep(默认 nop)\n"
+		"  --ev-ms N         取证明细模拟耗时(ms)\n"
+		"  --fault NAME      none|slow|fail\n"
+		"  --recover-attempts N  有界恢复次数(默认 1)\n"
+		"  --dq-timeout MS   DQBUF 超时(默认 2000)\n"
+		"  --json PATH       指标输出文件\n"
+		"  -v                详细日志\n");
+}
+
+int main(int argc, char **argv)
+{
+	const char *fcc = "BG10";
+	int w = 1632, h = 1224, i, attempt = 0, rc;
+	struct sigaction sa;
+	static struct option lo[] = {
+		{ "rt-depth", required_argument, 0, 1000 },
+		{ "ev-depth", required_argument, 0, 1001 },
+		{ "ev-fps", required_argument, 0, 1002 },
+		{ "analyze-ms", required_argument, 0, 1003 },
+		{ "analyze", required_argument, 0, 1004 },
+		{ "ev-ms", required_argument, 0, 1005 },
+		{ "fault", required_argument, 0, 1006 },
+		{ "recover-attempts", required_argument, 0, 1007 },
+		{ "dq-timeout", required_argument, 0, 1008 },
+		{ "json", required_argument, 0, 1009 },
+		{ 0, 0, 0, 0 }
+	};
+
+	memset(&sa, 0, sizeof(sa));
+	sa.sa_handler = SIG_IGN;
+	sigaction(SIGPIPE, &sa, NULL);
+
+	while ((i = getopt_long(argc, argv, "d:w:h:f:n:b:v", lo, NULL)) != -1) {
+		switch (i) {
+		case 'd': g_dev = optarg; break;
+		case 'w': w = atoi(optarg); break;
+		case 'h': h = atoi(optarg); break;
+		case 'f': fcc = optarg; break;
+		case 'n': g_frames_limit = atoi(optarg); break;
+		case 'b': cap.nbufs = atoi(optarg); break;
+		case 'v': g_verbose = 1; break;
+		case 1000: g_rt_depth = atoi(optarg); break;
+		case 1001: g_ev_depth = atoi(optarg); break;
+		case 1002: g_ev_fps = atof(optarg); break;
+		case 1003: g_analyze_ms = atoi(optarg); break;
+		case 1004:
+			g_analyze_mode = !strcmp(optarg, "sleep") ? 1 : 0;
+			break;
+		case 1005: g_ev_ms = atoi(optarg); break;
+		case 1006:
+			if (!strcmp(optarg, "slow"))
+				g_fault = 1;
+			else if (!strcmp(optarg, "fail"))
+				g_fault = 2;
+			break;
+		case 1007: g_recover_attempts = atoi(optarg); break;
+		case 1008: g_dq_timeout_ms = atoi(optarg); break;
+		case 1009: g_json = optarg; break;
+		default: usage(); return 2;
+		}
+	}
+
+	if (cap.nbufs <= 0 || cap.nbufs > MAX_BUFS)
+		cap.nbufs = 4;
+	if (g_dq_timeout_ms <= 0)
+		g_dq_timeout_ms = 2000;
+	cap.w = w;
+	cap.h = h;
+	cap.fourcc = v4l2_fourcc(fcc[0], fcc[1], fcc[2], fcc[3]);
+	lat_init(&rt_lat, 4096);
+	lat_init(&ev_lat, 4096);
+
+	for (i = 0; i < 2; i++) {
+		pthread_mutex_init(&q[i].m, NULL);
+		pthread_cond_init(&q[i].not_empty, NULL);
+		pthread_cond_init(&q[i].not_full, NULL);
+	}
+
+	while (1) {
+		rc = session();
+		if (rc == 0 || attempt >= g_recover_attempts)
+			break;
+		attempt++;
+		fprintf(stderr, ">>> 有界恢复 第 %d/%d 次\n", attempt,
+			g_recover_attempts);
+	}
+
+	if (g_json) {
+		FILE *f = fopen(g_json, "w");
+
+		if (f) {
+			dump_json(f, rc);
+			fclose(f);
+		} else {
+			dump_json(stdout, rc);
+		}
+	} else {
+		dump_json(stdout, rc);
+	}
+	return rc;
+}

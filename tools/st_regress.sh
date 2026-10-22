@@ -101,20 +101,36 @@ fi
 say ""
 
 # ---------- P3 休眠恢复 ----------
+# ⚠️ 安全闸门:本板没有 RTC(/dev/rtc* 不存在)、也没有电源键(只有硬开关),
+#    没有任何"人能触发"的唤醒源。真实 suspend 之后只能断电,所以这里必须先确认
+#    唤醒源可用并读回校验,不通过就跳过,绝不让板子睡死。详见 docs/27 §7。
 if [ $SUSP = 1 ]; then
 	say "## 3. 停流后休眠 / 唤醒 / 恢复出流"
 	sleep 2     # 等 ISP 空闲,runtime PM 自行挂起
-	echo "+10" > /sys/class/rtc/rtc0/wakealarm 2>/dev/null
-	if [ ! -s /sys/class/rtc/rtc0/wakealarm ]; then
-		NOW=$(date +%s); echo $(( NOW + 10 )) > /sys/class/rtc/rtc0/wakealarm 2>/dev/null
+	WAKEALARM=/sys/class/rtc/rtc0/wakealarm
+	WAKE_OK=0
+	if [ -w "$WAKEALARM" ]; then
+		echo 0 > "$WAKEALARM" 2>/dev/null
+		TARGET=$(( $(date +%s) + 10 ))
+		echo "$TARGET" > "$WAKEALARM" 2>/dev/null
+		if [ "$(cat "$WAKEALARM" 2>/dev/null)" = "$TARGET" ]; then
+			WAKE_OK=1
+			say "- 唤醒源已就绪: RTC wakealarm @ $TARGET"
+		fi
 	fi
-	T0=$(date +%s%N)
-	echo mem > /sys/power/state 2>>"$LOG/suspend.err"
-	T1=$(date +%s%N)
-	sleep 1
-	RESUME_MS=$(( (T1 - T0) / 1000000 ))
-	say "- 进入/退出 suspend 耗时: ${RESUME_MS} ms"
-	say "- 唤醒后内核: $(uname -v)"
+	if [ $WAKE_OK != 1 ]; then
+		say "- **跳过 suspend**:本板无可用唤醒源(无 RTC、无电源键),真实 suspend 后只能断电"
+		say "- 依据: docs/27 §7;如需验证,请先接串口或补 PMIC RTC 设备节点"
+		echo "RESULT=SKIPPED_NO_WAKEUP_SOURCE" >> "$LOG/suspend.err"
+	else
+		T0=$(date +%s%N)
+		echo mem > /sys/power/state 2>>"$LOG/suspend.err"
+		T1=$(date +%s%N)
+		sleep 1
+		RESUME_MS=$(( (T1 - T0) / 1000000 ))
+		say "- 进入/退出 suspend 耗时: ${RESUME_MS} ms"
+		say "- 唤醒后内核: $(uname -v)"
+	fi
 	R0=$(date +%s%N)
 	C3=$(/root/st_burn -d "$DEV" -w "$W" -h "$H" -c 20)
 	RC3=$?

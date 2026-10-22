@@ -12,6 +12,33 @@ mkdir -p "$DIR"
 LOG="$DIR/suspend.log"
 : > "$LOG"
 
+# ⚠️ 安全闸门(依据 docs/27 §7):本板**没有 RTC**(`/dev/rtc*` 不存在)、**也没有电源键**
+#    (只有硬开关),不存在任何"人能触发"的唤醒源。真实 suspend 之后只能断电,
+#    所以必须先确认唤醒源可用并读回校验:
+#      能装上 RTC 闹钟 → real(真挂起,120 s 后自动唤醒)
+#      装不上         → 自动降级 sim(`pm_test=devices`,5 秒后内核自己恢复,不用断电)
+WAKEALARM=/sys/class/rtc/rtc0/wakealarm
+SUSP_MODE=sim
+if [ -w "$WAKEALARM" ]; then
+	_t=$(( $(date +%s) + 120 ))
+	echo 0 > "$WAKEALARM" 2>/dev/null
+	echo "$_t" > "$WAKEALARM" 2>/dev/null
+	if [ "$(cat "$WAKEALARM" 2>/dev/null)" = "$_t" ]; then
+		SUSP_MODE=real
+	else
+		echo 0 > "$WAKEALARM" 2>/dev/null
+	fi
+fi
+if [ "$SUSP_MODE" = "sim" ]; then
+	echo devices > /sys/power/pm_test 2>/dev/null
+	echo "suspend 模式: sim(**无唤醒源**,改用 pm_test=devices 模拟;耗时不代表真实挂起/恢复)" | tee -a "$LOG"
+	echo "suspend 模式: sim" >> "$DIR/suspend.mode"
+else
+	echo none > /sys/power/pm_test 2>/dev/null
+	echo "suspend 模式: real(RTC wakealarm 已就绪,120 s 后自动唤醒)" | tee -a "$LOG"
+	echo "suspend 模式: real" >> "$DIR/suspend.mode"
+fi
+
 DEV_ISP=/dev/video5
 DEV_CIF=/dev/video0
 
@@ -68,3 +95,6 @@ while [ $i -le $N ]; do
     i=$((i + 1))
 done
 echo "suspend 回归完成: $N 轮,失败 $fail" | tee -a "$LOG"
+# 归还 pm_test,避免影响后续真实休眠测试
+echo none > /sys/power/pm_test 2>/dev/null
+echo "suspend 模式: $SUSP_MODE(结束)" | tee -a "$LOG"

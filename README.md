@@ -19,6 +19,7 @@
 | 11 | **同场景 A/B:mini3a 稳定,rkaiq 当时是坏的** | 配对两轮,mini3a 逐位可重复(Y≈113、U/V **128.0/128.0**),rkaiq 末态 Y = **181 / 51 / 75** 三轮漂 3.6 倍;根因是 IQ/库/BSP 版本不配套(每帧 `Can not get isp params buffer`),见 [`docs/21`](docs/21-L2-AWB.md) §8 |
 | 12 | **补 `enum_frame_size` + `compat_ioctl32`,并揪出 PAN oops 真 bug** | 内建驱动(`=y`)必须重编 Image 刷 `/boot` 才生效;`enum` 实测 1632×1224 / 1920×1080;`compat_ioctl32` 一加就让 32 位路径把内核打崩——驱动对**用户指针**直接 `memset`,32 位没走 `video_usercopy` → 改成 `kzalloc + copy_to_user`;**32/64 位均 OK**;见 [`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md) §10 |
 | 13 | **修好 rkaiq 3A:换回配套的 2022 三件套** | 厂商只把 `librkaiq.so`/`rkaiq_3A_server` 升到 2024 版、IQ 还是 2022 的 → 用 SDK 里 2022-04 的 deb(板上有 `.bak-2022`,md5 逐字节相同)整套换回:**AE 60 帧收敛到 Y≈110、AWB 稳定、`params buffer` 报错 114~289 → 0**;重测 A/B:rkaiq **15 ms/帧** vs mini3a 36.3 ms/帧,见 [`docs/21`](docs/21-L2-AWB.md) §9 |
+| 14 | **图像"糊"的真因是镜头物理失焦,不是 ISP 参数** | 手动对焦后同场景全帧 `lap_var` **14.3 → 36.5(+155%)**、边缘宽度 **28 → 11 px**;`A Sharp 未生效` 是误判——同一 AE/AWB 下开关锐化 `lap_var` **81.3 / 14.6（+458%）**,`snr mode:127` 只是回退 LSNR 表;见 [`docs/22`](docs/22-M1-图像质量.md) |
 
 ![我们的驱动抓到的第一帧](evidence/2026-10-21-第一帧-我们的驱动-1632x1224.png)
 
@@ -56,6 +57,7 @@ OV8858 模组(24P)      → 野火转接板 → 15P 1.0mm FPC → 板卡 J11(CAM
 | **L2-AWB** | ISP 白平衡四条通路 + rkaiq 段错误根因(2022 IQ 缺 `smartRun`)+ 修复 | ✅ 2026-10-21 |
 | **收尾** | 补 `enum_frame_size` / `compat_ioctl32`;顺带修掉 32 位路径的 PAN oops;与 mini3a 做同场景 A/B | ✅ 2026-10-21 |
 | **L2-AWB 收尾** | rkaiq 3A 真正跑通:换回与 4.19 BSP 配套的 2022 三件套(库+server+IQ 同源),重测 A/B | ✅ 2026-10-22 |
+| **M1** | 图像质量兜底:P0 物理对焦(量化工具 + 迭代协议 + 判据)+ 锐化真相核查(推翻 `snr mode:127` 的误判) | ✅ 2026-10-22 |
 
 ## 仓库结构
 
@@ -64,8 +66,8 @@ driver/ov8858_sm/   从 datasheet 裸写的 OV8858 sensor 驱动(.c/.h/Makefile 
 zerocopy/           V4L2 零拷贝链路:EXPBUF→dmabuf→RGA→NPU,三模式 perf 对比 + 多路 + 流水线
 mini3a/             用户态 3A 闭环(V4L2 MPLANE 采集线程 + AE/AWB 控制环)
 docs/               任务书、排障复盘、对照报告、陪跑手册
-evidence/           实测证据(第一帧 / 厂商对照 / 1080p / anchor 修复前后 / 双路预览 / rkaiq 修复)
-tools/              IQ 补丁脚本 / 32-64 位 compat 对照 / 换驱动流程 / 同场景 A/B 脚本(tools/ab/)
+evidence/           实测证据(第一帧 / 厂商对照 / 1080p / anchor 修复前后 / 双路预览 / rkaiq 修复 / M1 对焦前后)
+tools/              IQ 补丁脚本 / 32-64 位 compat 对照 / 换驱动流程 / 同场景 A/B 脚本(tools/ab/) / 对焦量化工具(focus_score.c)+ A4 对焦图生成
 ```
 
 ## 文档
@@ -82,6 +84,7 @@ tools/              IQ 补丁脚本 / 32-64 位 compat 对照 / 换驱动流程 
 - [docs/21-L2-AWB](docs/21-L2-AWB.md) —— ISP 白平衡:四条通路(rkaiq / mini3a / 寄存器直写 / params)实测对比,以及从 U/V 偏差反推增益的方法;§6 是 **rkaiq AWB 段错误的根因(2022 IQ 缺 `smartRun`)与修复**,§8 是 **rkaiq vs mini3a 的同场景配对 A/B**,§9 是 **把 rkaiq 换回与 BSP 配套的 2022 三件套后真正跑通**的根因与复测数据。
 - [tools/iq_patch_smartrun.py](tools/iq_patch_smartrun.py) —— 给旧 IQ 补 `wb_v21.autoExtPara.smartRun.cfg` 的脚本(幂等、文本插入、插入后校验),配 [tools/README](tools/README.md)。
 - [docs/20-L4电源管理](docs/20-L4电源管理.md) —— 给 ov8858_sm 补 pm_runtime 的 4 处改动、runtime PM 三态验证、系统 suspend/resume 链路恢复,以及"带流 suspend 会挂死"的已知限制。
+- [docs/22-M1-图像质量](docs/22-M1-图像质量.md) —— **"糊"的诊断与修复**:先排"假 4K"、再用同平台 OV8858 交叉验证 ISP 无罪、最后定位到光学失焦;量化对焦工具 `tools/focus_score.c` + 迭代协议 + 收敛判据;以及 `A Sharp 未生效` 的误判纠正(源码 + 开关实测定量)——**结论是锐化一直在工作,`snr mode:127` 只是回退 LSNR 表**。
 
 ## 环境
 

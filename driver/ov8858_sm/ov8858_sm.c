@@ -24,10 +24,32 @@
 
 static bool test_stream;
 static bool mode_1080p;
+/*
+ * 故障注入(仅用于验证错误码能否向上返回,默认 0 = 关闭):
+ *   设成 N(>0) 时,stop_stream 的 I2C 写会人为返回 -N,
+ *   用来确认"异常停流"能把可定位的错误码传回调用者,而不是被吞掉。
+ *   例: echo 5 > /sys/module/ov8858_sm/parameters/inject_stop_err  → 返回 -EIO
+ */
+static int inject_stop_err;
+/*
+ * 停流状态(只读,供用户态查询):VIDIOC_STREAMOFF 本身按 V4L2 规范不返回错误
+ * (videobuf2 的 stop_streaming 回调是 void),所以把"最近一次停流错误码"和
+ * "累计失败次数"导出成只读 module parameter,用户态可直接读取定位。
+ *   cat /sys/module/ov8858_sm/parameters/last_stop_err
+ *   cat /sys/module/ov8858_sm/parameters/stop_err_cnt
+ */
+static int last_stop_err;
+static int stop_err_cnt;
 module_param(mode_1080p, bool, 0644);
 MODULE_PARM_DESC(mode_1080p, "use the derived 1920x1080@60 mode instead of 1632x1224");
 module_param(test_stream, bool, 0644);
 MODULE_PARM_DESC(test_stream, "apply the init sequence at probe (bring-up test)");
+module_param(inject_stop_err, int, 0644);
+MODULE_PARM_DESC(inject_stop_err, "fault injection: make stop_stream return -N (0=off)");
+module_param(last_stop_err, int, 0444);
+MODULE_PARM_DESC(last_stop_err, "last stop_stream error code (read-only, 0=ok)");
+module_param(stop_err_cnt, int, 0444);
+MODULE_PARM_DESC(stop_err_cnt, "cumulative stop_stream failure count (read-only)");
 
 #define OV8858_SM_NAME "ov8858-sm"
 
@@ -60,6 +82,7 @@ struct ov8858_sm {
 	struct v4l2_ctrl *anal_gain;
 	bool is_1080p;
 	bool powered;		/* 电源/时钟是否已打开,保证上电断电严格配对 */
+	bool streaming;		/* 是否正在出流:流期间拒绝改 ACTIVE 格式 */
 };
 
 static const struct i2c_device_id ov8858_sm_id[] = {
@@ -159,7 +182,25 @@ static int ov8858_sm_start_stream(struct ov8858_sm *ov8858)
 
 static int ov8858_sm_stop_stream(struct ov8858_sm *ov8858)
 {
-	return ov8858_sm_write_reg(ov8858->client, 0x0100, 0x00);
+	int ret;
+
+	if (inject_stop_err > 0) {
+		dev_err(&ov8858->client->dev,
+			"[fault-inject] stop_stream 人为返回 %d\n", -inject_stop_err);
+		ret = -inject_stop_err;
+	} else {
+		ret = ov8858_sm_write_reg(ov8858->client, 0x0100, 0x00);
+	}
+
+	if (ret < 0) {
+		/* VIDIOC_STREAMOFF 无法返回错误(vb2 回调是 void),这里落到只读参数里 */
+		last_stop_err = ret;
+		stop_err_cnt++;
+		dev_err(&ov8858->client->dev,
+			"stop_stream failed: %d (sensor 可能仍在出流)\n", ret);
+	}
+
+	return ret;
 }
 
 static int ov8858_sm_s_stream(struct v4l2_subdev *sd, int enable)
@@ -180,14 +221,31 @@ static int ov8858_sm_s_stream(struct v4l2_subdev *sd, int enable)
 
 		ret = ov8858_sm_start_stream(ov8858);
 		if (ret) {
+			dev_err(&ov8858->client->dev, "start_stream failed: %d\n", ret);
 			pm_runtime_put_sync(&ov8858->client->dev);
 			return ret;
 		}
+		ov8858->streaming = true;
 	} else {
-		ov8858_sm_stop_stream(ov8858);
+		/*
+		 * 停流失败必须向上返回:原来这里把返回值丢了,上层(V4L2/rkcif)
+		 * 会以为 STREAMOFF 成功,传感器其实还在出流,表现为"停了没停、
+		 * 再开就 busy",且日志里毫无线索。现在把驱动返回的真实 errno
+		 * (-EIO / -ENXIO / -ETIMEDOUT …) 原样传回。
+		 * 注意:即使失败也要归还 pm_runtime 引用,否则会泄漏电源计数。
+		 */
+		ret = ov8858_sm_stop_stream(ov8858);
+		if (ret) {
+			dev_err(&ov8858->client->dev,
+				"stop_stream failed: %d (sensor 可能仍在出流)\n", ret);
+		} else {
+			ov8858->streaming = false;
+		}
 		/* 关流后不立刻断电:标记"最后忙",等 autosuspend 超时再挂起 */
 		pm_runtime_mark_last_busy(&ov8858->client->dev);
 		pm_runtime_put_autosuspend(&ov8858->client->dev);
+
+		return ret;
 	}
 
 	return 0;
@@ -334,19 +392,29 @@ static const struct v4l2_subdev_core_ops ov8858_sm_core_ops = {
 /* The sensor always outputs RAW10 Bayer SBGGR. */
 #define OV8858_SM_MBUS_CODE	MEDIA_BUS_FMT_SBGGR10_1X10
 
-static void ov8858_sm_fill_fmt(struct ov8858_sm *ov8858,
-			       struct v4l2_mbus_framefmt *fmt)
+/*
+ * 按"目标模式"填 fmt。注意它**不读也不写** ov8858->is_1080p:
+ * set_fmt 的 TRY 分支必须先在一份临时选择上算出结果,再决定要不要提交状态。
+ */
+static void ov8858_sm_fill_fmt_mode(bool is_1080p,
+				    struct v4l2_mbus_framefmt *fmt)
 {
 	fmt->code = OV8858_SM_MBUS_CODE;
 	fmt->field = V4L2_FIELD_NONE;
 	fmt->colorspace = V4L2_COLORSPACE_SRGB;
-	if (ov8858->is_1080p) {
+	if (is_1080p) {
 		fmt->width = 1920;
 		fmt->height = 1080;
 	} else {
 		fmt->width = 1632;
 		fmt->height = 1224;
 	}
+}
+
+static void ov8858_sm_fill_fmt(struct ov8858_sm *ov8858,
+			       struct v4l2_mbus_framefmt *fmt)
+{
+	ov8858_sm_fill_fmt_mode(ov8858->is_1080p, fmt);
 }
 
 static int ov8858_sm_get_fmt(struct v4l2_subdev *sd,
@@ -373,20 +441,41 @@ static int ov8858_sm_set_fmt(struct v4l2_subdev *sd,
 			     struct v4l2_subdev_format *fmt)
 {
 	struct ov8858_sm *ov8858 = container_of(sd, struct ov8858_sm, subdev);
+	bool want_1080p;
 
-	/* Pick the mode that best matches what userspace asked for. */
-	ov8858->is_1080p = (fmt->format.width == 1920 &&
-			    fmt->format.height == 1080);
+	/*
+	 * TRY/ACTIVE 隔离(本函数是这次内核闭环的修复点):
+	 *
+	 * 原实现先写 ov8858->is_1080p,再判断 which —— 于是上层任何一次
+	 * VIDIOC_SUBDEV_TRY_FMT(1920x1080) 都会把驱动全局模式真的切到 1080p:
+	 *   - 之后 G_FMT(ACTIVE) 报 1920x1080(与实际出流不一致);
+	 *   - rkcif 按 1632x1224 申请 buffer,而 sensor 按 1080p 出流,
+	 *     两边行数对不上(实测 buffer 变成 2048×1080),画面直接错乱。
+	 *
+	 * 正确语义:TRY 只承诺"如果你真的设,会得到什么",不能产生任何副作用;
+	 * 只有 ACTIVE 才允许提交状态,且流期间必须拒绝(-EBUSY)。
+	 */
+	want_1080p = (fmt->format.width == 1920 && fmt->format.height == 1080);
 
-	ov8858_sm_fill_fmt(ov8858, &fmt->format);
+	/* 无论 TRY 还是 ACTIVE,都先按请求把 fmt 夹到最近的支持模式 */
+	ov8858_sm_fill_fmt_mode(want_1080p, &fmt->format);
 
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
 #ifdef CONFIG_VIDEO_V4L2_SUBDEV_API
 		*v4l2_subdev_get_try_format(sd, cfg, fmt->pad) = fmt->format;
+		return 0;
 #else
 		return -ENOTTY;
 #endif
 	}
+
+	if (ov8858->streaming) {
+		dev_err(sd->dev, "set_fmt(ACTIVE) refused while streaming\n");
+		return -EBUSY;
+	}
+
+	/* 到这里才是 ACTIVE:提交驱动状态 */
+	ov8858->is_1080p = want_1080p;
 
 	return 0;
 }

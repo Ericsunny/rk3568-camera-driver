@@ -21,7 +21,9 @@
 | 13 | **修好 rkaiq 3A:换回配套的 2022 三件套** | 厂商只把 `librkaiq.so`/`rkaiq_3A_server` 升到 2024 版、IQ 还是 2022 的 → 用 SDK 里 2022-04 的 deb(板上有 `.bak-2022`,md5 逐字节相同)整套换回:**AE 60 帧收敛到 Y≈110、AWB 稳定、`params buffer` 报错 114~289 → 0**;重测 A/B:rkaiq **15 ms/帧** vs mini3a 36.3 ms/帧,见 [`docs/21`](docs/21-L2-AWB.md) §9 |
 | 15 | **高光能救回一半,但 DRC 在这套 2022 组合里是死的** | 曝光降到 1/8 时高光 clip **4.66% → 0.00%**(证明传感器未饱和,只是超饱和约 **1.3 档**);把 IQ 的 `adrc_calib` 打开 + `DrcGain`×4 实测**与基线逐项相同**(日志 4 条 `get drc params from 3a result failed` → 2022 库取不到 adrc 参数);唯一可用手段是 AE 侧:`OverExpCtrl=1` 让 clip **2.90% → 1.84%**,代价整幅 Y **63.5 → 40.3**;见 [`docs/23`](docs/23-M3-高光与动态范围.md) |
 | 16 | **开机就能用：3A 自启 + 版本闸门 + 一键自检** | 厂商的 `rkaiq_3A.service` 是 `Type=forking` 无 PIDFile 且 stop 用 `killall`（板上没有该命令，**根本停不掉**）→ 换成 `Type=simple` + `Restart=on-failure` 直接托管；冷启动实测 `active`、单进程、AE 从 Y≈39 收敛到 73；`tools/camera_selfcheck.sh` 6 组断言（内核符号 / media 实体 / 6 个节点 / 三件套 md5 / daemon 唯一 / 实拍 60 帧）**全部通过**;见 [`docs/24`](docs/24-M4-工程化.md) |
+| 17 | **内核问题闭环：TRY_FMT 不再污染 ACTIVE、停流错误可定位** | `S_FMT(TRY)` 早期没区分 `which`，一次 `TRY 1920x1080` 就把 `cur_mode` 改掉——实测采集字节数从 2506752(2048×1224) 变成 2211840(2048×1080)，**而 `G_FMT` 仍报 1632×1224**；修复后 8 例 sweep `changed=0/8`、单次 TRY 不变、出流中改模式返回 `-EBUSY`。停流侧：驱动原本丢弃返回值，且 `stop_streaming` 是 void（`videobuf2-core.h:404`），`VIDIOC_STREAMOFF` 按规范恒返回 0 → 新增只读参数 `last_stop_err` / `stop_err_cnt`（实测 -5 / 1）；见 [`docs/28`](docs/28-内核问题闭环.md) |
 | **M4** | 工程化:3A 开机自启(systemd 直接托管)+ 版本闸门 + 一键自检 `tools/camera_selfcheck.sh` | ✅ 2026-10-22 |
+| **M5** | 内核问题闭环：TRY/ACTIVE 隔离 + 停流错误可定位（`last_stop_err`） | ✅ 2026-10-22 |
 | 14 | **图像"糊"的真因是镜头物理失焦,不是 ISP 参数** | 手动对焦后同场景全帧 `lap_var` **14.3 → 36.5(+155%)**、边缘宽度 **28 → 11 px**;`A Sharp 未生效` 是误判——同一 AE/AWB 下开关锐化 `lap_var` **81.3 / 14.6（+458%）**,`snr mode:127` 只是回退 LSNR 表;见 [`docs/22`](docs/22-M1-图像质量.md) |
 
 ![我们的驱动抓到的第一帧](evidence/2026-10-21-第一帧-我们的驱动-1632x1224.png)
@@ -63,6 +65,7 @@ OV8858 模组(24P)      → 野火转接板 → 15P 1.0mm FPC → 板卡 J11(CAM
 | **M1** | 图像质量兜底:P0 物理对焦(量化工具 + 迭代协议 + 判据)+ 锐化真相核查(推翻 `snr mode:127` 的误判) | ✅ 2026-10-22 |
 | **M3** | 高光/动态范围:证明高光未饱和(可救约 1.3 档)、DRC 因 2022 库取不到 adrc 参数不可用、给出 AE 侧"高光优先"档 + 可逆切换脚本 `tools/iq_highlight_mode.py` | ✅ 2026-10-22 |
 | **M4** | 工程化:3A 开机自启(systemd 直接托管)+ 版本闸门 + 一键自检 `tools/camera_selfcheck.sh` | ✅ 2026-10-22 |
+| **M5** | 内核问题闭环：TRY/ACTIVE 隔离 + 停流错误可定位（`last_stop_err`） | ✅ 2026-10-22 |
 | **HDR 预研** | 四层能力盘点(UAPI/ISP/rkaiq/IQ 都有 HDR,卡在传感器 `#if 0` 的 4-lane 表);软件多帧融合**板端落地** `tools/hdr_demo`(4K clip **5.74% → 0.00%**、暗部 **73.5% → 7.07%**,融合 1285 ms/4K 帧、346 ms/1080p 帧);2-lane DOL X2 带宽核算:**1080p ≈15 fps 可行,4K 不可行** | 🔬 预研 2026-10-22 |
 
 ## 仓库结构
@@ -93,6 +96,7 @@ tools/              IQ 补丁脚本 / 32-64 位 compat 对照 / 换驱动流程 
 - [docs/22-M1-图像质量](docs/22-M1-图像质量.md) —— **"糊"的诊断与修复**:先排"假 4K"、再用同平台 OV8858 交叉验证 ISP 无罪、最后定位到光学失焦;量化对焦工具 `tools/focus_score.c` + 迭代协议 + 收敛判据;以及 `A Sharp 未生效` 的误判纠正(源码 + 开关实测定量)——**结论是锐化一直在工作,`snr mode:127` 只是回退 LSNR 表**。
 - [docs/23-M3-高光与动态范围](docs/23-M3-高光与动态范围.md) —— **逆光过曝怎么办**:先用曝光阶梯证明"高光没饱和、能救",再试 DRC(硬件有、IQ 也有,但 2022 库下发不下去,实测零差异,并附上自我纠错:跨会话比基线不可信),最后给出可落地的三档权衡与 `OverExpCtrl` 高光优先档(字节级可逆)。
 - [docs/24-M4-工程化](docs/24-M4-工程化.md) —— **从手工能跑到开机能用**:厂商 daemon 停不掉的原因(Type=forking 无 PIDFile + 板上没有 killall)、启动顺序这个硬约束(先起 daemon 再开流)、md5 闸门、6 组自检断言与判据,以及用板子换来的 4 条运维铁律(改驱动必须刷 Image / 绝不 rmmod 或 pkill / 脚本是 LF 别做 CR 清洗 / 先查 daemon 和 md5)。
+- [docs/28-内核问题闭环](docs/28-内核问题闭环.md) —— **TRY_FMT 为什么会把实际采集模式改掉**：`which` 不区分导致 TRY 写穿 `cur_mode`，只有比对“实际读出的字节数”才抓得到的 bug；以及 V4L2 的 `stop_streaming` 回调为何注定拿不到错误码、只能用只读参数兜底。
 - [docs/26-路线B-2laneDOL实验](docs/26-路线B-2laneDOL实验.md) —— **2-lane 跑 DOL X2 的实测**:用“数据驱动派生寄存器表”的办法把 IMX415 切进了 `HDR_X2`(`set hdr cfg, set mode to 2`、`s_stream: hdr: 5`),但 `rkisp` 侧报 `MIPI error: overflow 0x00010000`、零帧;把 HTS 翻倍排除行速率因素后仍 overflow → 失败点在 CSI/ISP 的 HDR 接收路径,不在传感器侧。附三个工具与下一步清单。
 - [docs/25-HDR预研](docs/25-HDR预研.md) —— **能不能做 HDR**:UAPI/ISP/rkaiq/IQ 四层都有 HDR 能力,唯独传感器驱动把 `HDR_X2/HDR_X3` 的模式表用 `#if 0` 关在 4-lane 分支里(本板走 2-lane);软件多帧融合已板端落地(`tools/hdr_demo`,4K 高光溢出 5.74%→**0.00%**、暗部 73.5%→**7.07%**,融合 4K **1285 ms**/1080p **346 ms**);2-lane DOL X2 带宽核算结论是 **1080p ≈15 fps 可行、4K 不可行**;另附"停 3A 后 ISP 再也开不了流"的运维坑与复现命令。
 

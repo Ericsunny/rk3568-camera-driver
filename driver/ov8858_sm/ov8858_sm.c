@@ -236,9 +236,30 @@ static long ov8858_sm_ioctl(struct v4l2_subdev *sd, unsigned int cmd, void *arg)
 		return 0;
 	case RKMODULE_SET_QUICK_STREAM: {
 		u32 stream = *(u32 *)arg;
+		int ret;
 
-		return ov8858_sm_write_reg(ov8858->client, 0x0100,
-					   stream ? 0x01 : 0x00);
+		/*
+		 * L1-B 收尾: quick-stream 是绕过 s_stream() 的快路径,
+		 * 不经过 pm_runtime_get_sync(), 传感器可能已被 runtime PM
+		 * 挂起(时钟/电源全断)。这里自己把电源生命周期补上,
+		 * 否则就是"在断电的传感器上裸写 I2C"。
+		 */
+		ret = pm_runtime_get_sync(&ov8858->client->dev);
+		if (ret < 0) {
+			pm_runtime_put_noidle(&ov8858->client->dev);
+			dev_err(&ov8858->client->dev,
+				"quick_stream: pm_runtime_get_sync failed: %d\n",
+				ret);
+			return ret;
+		}
+
+		ret = ov8858_sm_write_reg(ov8858->client, 0x0100,
+					  stream ? 0x01 : 0x00);
+
+		pm_runtime_mark_last_busy(&ov8858->client->dev);
+		pm_runtime_put_autosuspend(&ov8858->client->dev);
+
+		return ret;
 	}
 	default:
 		return -ENOTTY;
@@ -596,20 +617,56 @@ static int ov8858_sm_set_ctrl(struct v4l2_ctrl *ctrl)
 {
 	struct ov8858_sm *ov8858 =
 		container_of(ctrl->handler, struct ov8858_sm, ctrl_handler);
+	struct i2c_client *client = ov8858->client;
+	u16 val;
+	int ret = 0;
 
-	/* TODO(L1-B): translate ctrl->val into real i2c register writes. */
+	/*
+	 * L1-B 收尾: 曝光/增益必须真的写进传感器。
+	 *
+	 * 寄存器映射(OV8858 8/10bit 模式共用):
+	 *   0x3501[7:0] = 曝光高 8 位, 0x3502[7:0] = 曝光低 8 位
+	 *   0x3508[4:0] = 增益整数部分, 0x3509[7:4] = 增益小数(1/16 为步长)
+	 *
+	 * 传感器未上电时不写:power_on() 会重新灌整张初始化表,
+	 * 此时写进去的值会在下一次开流被覆盖, 徒增一次 I2C 失败日志。
+	 */
+	if (!ov8858->powered)
+		return 0;
+
 	switch (ctrl->id) {
 	case V4L2_CID_EXPOSURE:
-		dev_dbg(&ov8858->client->dev, "set exposure %d\n", ctrl->val);
+		val = clamp_t(u16, ctrl->val,
+			      OV8858_SM_EXPOSURE_MIN, OV8858_SM_EXPOSURE_MAX);
+		ret = ov8858_sm_write_reg(client, 0x3501, (val >> 8) & 0xff);
+		if (!ret)
+			ret = ov8858_sm_write_reg(client, 0x3502, val & 0xff);
+		if (ret)
+			break;
+		dev_dbg(&client->dev, "exposure %d -> 0x%04x\n",
+			ctrl->val, val);
 		break;
 	case V4L2_CID_ANALOGUE_GAIN:
-		dev_dbg(&ov8858->client->dev, "set analogue gain %d\n", ctrl->val);
+		val = clamp_t(u16, ctrl->val,
+			      OV8858_SM_GAIN_MIN, OV8858_SM_GAIN_MAX);
+		ret = ov8858_sm_write_reg(client, 0x3508, (val >> 4) & 0x1f);
+		if (!ret)
+			ret = ov8858_sm_write_reg(client, 0x3509,
+						  (val & 0x0f) << 4);
+		if (ret)
+			break;
+		dev_dbg(&client->dev, "gain %d -> 0x%02x (int %u, frac %u/16)\n",
+			ctrl->val, val, (val >> 4) & 0x1f, val & 0x0f);
 		break;
 	default:
-		break;
+		return 0;
 	}
 
-	return 0;
+	if (ret)
+		dev_err(&client->dev, "set_ctrl(0x%x=%d) failed: %d\n",
+			ctrl->id, ctrl->val, ret);
+
+	return ret;
 }
 
 static const struct v4l2_ctrl_ops ov8858_sm_ctrl_ops = {

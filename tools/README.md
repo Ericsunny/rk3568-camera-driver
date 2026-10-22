@@ -177,3 +177,22 @@ ${TC}bin/aarch64-rockchip-linux-gnu-gcc -O2 -std=gnu99 -o hdr_demo hdr_demo.c -l
 实测耗时(RK3568):4K 融合净 **1285 ms/帧**、1080p **346 ms/帧**。
 效果(4K 同场景):高光溢出 5.74% → **0.00%**,暗部 73.5% → **7.07%**。
 `-k` 会把每档输入也存成 `out.nv12.e<曝光>.nv12`,方便做前后对比。
+## 27. 路线 B:2-lane DOL X2 的两个补丁 + 切换工具
+
+`patch_imx415_hdr.py` / `patch_imx415_hdr_hts.py` / `hdr_cfg.c` 用于 docs/26 的实验。
+
+```bash
+# 在 VM 的 SDK 内核树上注入 HDR_X2 模式(幂等,重复跑会跳过)
+python3 tools/patch_imx415_hdr.py
+# 可选:把新表 HTS 翻倍(排除行速率因素)
+python3 tools/patch_imx415_hdr_hts.py
+# 重编 Image 后刷 /boot(见 docs/17 §10)
+```
+
+```bash
+# 板上切换模式
+/root/hdr_cfg /dev/v4l-subdev6 5   # HDR_X2
+/root/hdr_cfg /dev/v4l-subdev6 0   # NO_HDR(切回后需再 S_FMT 回 3840x2160)
+```
+
+实测结果见 docs/26:传感器侧切换成功,CSI/ISP 侧 MIPI overflow 收不到帧,**未通**。

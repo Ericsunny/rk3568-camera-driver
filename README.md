@@ -93,6 +93,7 @@ tools/              IQ 补丁脚本 / 32-64 位 compat 对照 / 换驱动流程 
 - [docs/22-M1-图像质量](docs/22-M1-图像质量.md) —— **"糊"的诊断与修复**:先排"假 4K"、再用同平台 OV8858 交叉验证 ISP 无罪、最后定位到光学失焦;量化对焦工具 `tools/focus_score.c` + 迭代协议 + 收敛判据;以及 `A Sharp 未生效` 的误判纠正(源码 + 开关实测定量)——**结论是锐化一直在工作,`snr mode:127` 只是回退 LSNR 表**。
 - [docs/23-M3-高光与动态范围](docs/23-M3-高光与动态范围.md) —— **逆光过曝怎么办**:先用曝光阶梯证明"高光没饱和、能救",再试 DRC(硬件有、IQ 也有,但 2022 库下发不下去,实测零差异,并附上自我纠错:跨会话比基线不可信),最后给出可落地的三档权衡与 `OverExpCtrl` 高光优先档(字节级可逆)。
 - [docs/24-M4-工程化](docs/24-M4-工程化.md) —— **从手工能跑到开机能用**:厂商 daemon 停不掉的原因(Type=forking 无 PIDFile + 板上没有 killall)、启动顺序这个硬约束(先起 daemon 再开流)、md5 闸门、6 组自检断言与判据,以及用板子换来的 4 条运维铁律(改驱动必须刷 Image / 绝不 rmmod 或 pkill / 脚本是 LF 别做 CR 清洗 / 先查 daemon 和 md5)。
+- [docs/26-路线B-2laneDOL实验](docs/26-路线B-2laneDOL实验.md) —— **2-lane 跑 DOL X2 的实测**:用“数据驱动派生寄存器表”的办法把 IMX415 切进了 `HDR_X2`(`set hdr cfg, set mode to 2`、`s_stream: hdr: 5`),但 `rkisp` 侧报 `MIPI error: overflow 0x00010000`、零帧;把 HTS 翻倍排除行速率因素后仍 overflow → 失败点在 CSI/ISP 的 HDR 接收路径,不在传感器侧。附三个工具与下一步清单。
 - [docs/25-HDR预研](docs/25-HDR预研.md) —— **能不能做 HDR**:UAPI/ISP/rkaiq/IQ 四层都有 HDR 能力,唯独传感器驱动把 `HDR_X2/HDR_X3` 的模式表用 `#if 0` 关在 4-lane 分支里(本板走 2-lane);软件多帧融合已板端落地(`tools/hdr_demo`,4K 高光溢出 5.74%→**0.00%**、暗部 73.5%→**7.07%**,融合 4K **1285 ms**/1080p **346 ms**);2-lane DOL X2 带宽核算结论是 **1080p ≈15 fps 可行、4K 不可行**;另附"停 3A 后 ISP 再也开不了流"的运维坑与复现命令。
 
 ## 环境

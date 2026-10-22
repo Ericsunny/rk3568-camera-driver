@@ -41,10 +41,14 @@ else
     bad "rkisp 侧找不到 m00_b_imx415 —— 3A 会认不出 sensor"
 fi
 TOPO0=$(media-ctl -d /dev/media0 --print-topology 2>/dev/null)
-if echo "$TOPO0" | grep -q "ov8858-sm"; then
-    ok "rkcif 侧 OV8858 实体在（ov8858-sm，非 Rockchip 命名但 2022 库容忍）"
+# M4 起驱动把实体名改成 Rockchip 约定 "m<NN>_<b|f>_<sensor> <bus>-<addr>"，
+# 老版本是 v4l2_i2c_subdev_init 默认的 "ov8858-sm 5-0036"，这里两种都认。
+if echo "$TOPO0" | grep -Eq 'm[0-9]{2}_[bf]_ov8858'; then
+    ok "rkcif 侧 OV8858 实体名合规（$(echo "$TOPO0" | grep -Eo 'm[0-9]{2}_[bf]_ov8858[^"]*' | head -1)）"
+elif echo "$TOPO0" | grep -q "ov8858-sm"; then
+    ok "rkcif 侧 OV8858 实体在，但名字还是旧的（ov8858-sm …）；2022 库容忍，2024 库会拒绝"
 else
-    bad "rkcif 侧找不到 ov8858-sm"
+    bad "rkcif 侧找不到 ov8858 实体"
 fi
 
 echo "===== 3. 设备节点 ====="
@@ -115,6 +119,32 @@ else
                 && ok "亮度 Y=${Y} 落在合理区间（8~200）" \
                 || bad "亮度 Y=${Y} 异常（过暗/过曝，查曝光或镜头盖）"
         fi
+    fi
+fi
+
+echo "===== 7. 双摄并行（L3）====="
+if [ "$QUICK" = "1" ]; then
+    info "跳过（-q）"
+else
+    for d in /dev/video0; do
+        [ -e "$d" ] && ok "$d 在" || bad "$d 不在（OV8858/rkcif 路）"
+    done
+    # 两路同时在跑：rkisp 走 IMX415，rkcif 走 OV8858，验证互不干扰
+    timeout 45 /root/grab /dev/video0 60 /tmp/dual_ov.nv12 1632 1224 > /tmp/dual_ov.log 2>&1 &
+    P_OV=$!
+    timeout 45 /root/grab /dev/video5 60 /tmp/dual_ic.nv12 > /tmp/dual_ic.log 2>&1
+    wait $P_OV
+    FPS_OV=$(sed -n 's/.*, *\([0-9][0-9.]*\) fps).*/\1/p' /tmp/dual_ov.log | tail -1)
+    FPS_IC=$(sed -n 's/.*, *\([0-9][0-9.]*\) fps).*/\1/p' /tmp/dual_ic.log | tail -1)
+    if [ -n "$FPS_OV" ] && [ -n "$FPS_IC" ]; then
+        ok "双路同时出流：OV8858 ${FPS_OV} fps + IMX415 ${FPS_IC} fps"
+        SUM=$(awk -v a="$FPS_OV" -v b="$FPS_IC" 'BEGIN{printf "%.1f", a+b}')
+        BW=$(awk -v a="$FPS_OV" -v b="$FPS_IC" \
+            'BEGIN{printf "%.0f", a*2996352/1048576 + b*12441600/1048576}')
+        info "合计 ${SUM} fps / 约 ${BW} MB/s 原始码流"
+    else
+        bad "双摄并行失败（OV8858 fps='${FPS_OV}' IMX415 fps='${FPS_IC}'）"
+        info "看 /tmp/dual_ov.log 与 /tmp/dual_ic.log；若 rkcif 侧 0 帧，多半是设备被占"
     fi
 fi
 

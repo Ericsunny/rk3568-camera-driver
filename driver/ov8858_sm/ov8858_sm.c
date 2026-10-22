@@ -680,6 +680,20 @@ static int ov8858_sm_probe(struct i2c_client *client, const struct i2c_device_id
 
 	v4l2_i2c_subdev_init(&ov8858->subdev, client, &ov8858_sm_subdev_ops);
 
+	/*
+	 * L4/M4: Rockchip 的实体名约定是 "m%02d_%c_<sensor> <bus>-<addr>"，
+	 * 例如 "m00_b_imx415 1-001a"。librkaiq 的 CamHwIsp20::parse_module_info()
+	 * 会逐字符校验：name[0]=='m'、substr(0,3) 是模块号、[3]=='_'、
+	 * [4] 是 'b'/'f'、[5]=='_'，后面才是真正的 sensor 名。
+	 * v4l2_i2c_subdev_init() 默认给的是 "ov8858-sm 5-0036"，不符合约定：
+	 *   - 2022 版库只是打印警告然后跳过（AWB 能用）；
+	 *   - 2024 版库会直接拒绝该 sensor（get isp or ispp info fail）。
+	 * 这里照抄厂商 imx415.c 的写法覆写一遍，模块号固定 01、朝向 back。
+	 */
+	snprintf(ov8858->subdev.name, sizeof(ov8858->subdev.name),
+		 "m%02d_%s_%s %s", 1, "b", OV8858_SM_NAME,
+		 dev_name(&client->dev));
+
 	/* L1-B: 有了这个 flag 才会出现 /dev/v4l-subdevN,方便单独调试 */
 	ov8858->subdev.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 

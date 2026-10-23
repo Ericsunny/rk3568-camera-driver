@@ -227,6 +227,38 @@ static void cpu_copy_process(struct node *n)
 }
 
 /* 从 DMA-BUF fd 直接给 RGA,不经 CPU 拷贝;NV12 走 420SP,其余按 8bit 灰度搬 */
+/* 灰度世界白平衡:按通道均值把 RGB 拉回同一亮度,消除无 3A 时的偏色。
+ * 就地修改,像素数 640x640 = 40.9 万,实测 < 2 ms。*/
+static void wb_grayworld(unsigned char *rgb, int npix)
+{
+	uint64_t sum[3] = {0, 0, 0};
+	int i, c, step = 7;
+	double mean[3], avg, g[3];
+
+	for (i = 0; i < npix; i += step) {
+		const unsigned char *p = rgb + (size_t)i * 3;
+
+		sum[0] += p[0]; sum[1] += p[1]; sum[2] += p[2];
+	}
+	for (c = 0; c < 3; c++)
+		mean[c] = (double)sum[c] / ((npix + step - 1) / step);
+	avg = (mean[0] + mean[1] + mean[2]) / 3.0;
+	for (c = 0; c < 3; c++) {
+		g[c] = mean[c] > 1.0 ? avg / mean[c] : 1.0;
+		if (g[c] < 0.4) g[c] = 0.4;
+		if (g[c] > 2.5) g[c] = 2.5;
+	}
+	for (i = 0; i < npix; i++) {
+		unsigned char *p = rgb + (size_t)i * 3;
+		int v;
+
+		for (c = 0; c < 3; c++) {
+			v = (int)(p[c] * g[c] + 0.5);
+			p[c] = v > 255 ? 255 : (unsigned char)v;
+		}
+	}
+}
+
 static void rga_process(struct node *n)
 {
 	int fmt = (cap.fourcc == V4L2_PIX_FMT_NV12) ? RK_FORMAT_YCbCr_420_SP
@@ -295,6 +327,9 @@ static char *g_dump_rgb;		/* 调试:把 NPU 输入(640x640 RGB)存一份 */
 static int g_dump_done;
 static int g_outs_done;
 static int g_rot90;
+static int g_wb;                    /* --wb: 灰度世界白平衡(无 3A 时去绿) */
+static unsigned char *g_rgb_alt;    /* rot90 用的中间缓冲 */
+static const unsigned char *g_npu_inbuf;
 static char *g_image;
 static int g_exp = -1;              /* --exposure: 起流前写 V4L2_CID_EXPOSURE */
 static int g_gain = -1;             /* --gain: 写 V4L2_CID_ANALOGUE_GAIN */
@@ -507,7 +542,12 @@ static int rknn_consumer_init(void)
 		snprintf(g_npu_msg, sizeof(g_npu_msg), "posix_memalign rgb failed");
 		return -1;
 	}
-	g_npu_dst = wrapbuffer_virtualaddr_t(g_npu_rgb, g_npu_w, g_npu_h,
+		if (posix_memalign((void **)&g_rgb_alt, 64,
+			   (size_t)g_npu_w * g_npu_h * 3) != 0 || !g_rgb_alt) {
+		fprintf(stderr, "alloc rgb alt failed\n");
+		return -1;
+	}
+g_npu_dst = wrapbuffer_virtualaddr_t(g_npu_rgb, g_npu_w, g_npu_h,
 					     g_npu_w, g_npu_h, RK_FORMAT_RGB_888);
 	lat_init(&npu_lat, 4096);
 	lat_init(&npu_rga_lat, 4096);
@@ -615,34 +655,27 @@ static void rknn_process(struct node *n)
 			stage("rt seq=%u dump rgb %s", n->seq, g_dump_rgb);
 		}
 	}
-	/* uint8 -> int8(zp=-128):减 128 在字节上等价于 xor 0x80,8 字节一次做完
-	 * (与 zerocopy/zc_npu.cpp mode C 完全一致;RGA2 没有 NN 单元,只能这么补) */
+	/* 送入模型的缓冲:可选白平衡 + 可选旋转。
+	 * 注意:必须改 g_npu_rgb 本身或它的替代缓冲 —— rknn_inputs_set 从 in.buf 拷贝,
+	 * 之前写 dst(NPU 内存)对 inputs_set 路径无效(遗留自 set_io_mem 版本)。*/
 	{
-		uint8_t *dst = (uint8_t *)g_npu_in->virt_addr;
-		const uint8_t *src8 = g_npu_rgb;
+		const unsigned char *use = g_npu_rgb;
 		int W = g_npu_w, H = g_npu_h, xx, yy;
 
-		if (g_rot90) {
-			/* 相机侧装(画面旋转 90 度):顺时针转正后再送模型 */
+		if (g_wb)
+			wb_grayworld(g_npu_rgb, W * H);
+		if (g_rot90 && g_rgb_alt) {
 			for (yy = 0; yy < H; yy++) {
 				for (xx = 0; xx < W; xx++) {
-					uint8_t *d = dst + ((size_t)xx * H + (H - 1 - yy)) * 3;
-					const uint8_t *s = src8 + ((size_t)yy * W + xx) * 3;
+					unsigned char *d = g_rgb_alt + ((size_t)xx * H + (H - 1 - yy)) * 3;
+					const unsigned char *sp = g_npu_rgb + ((size_t)yy * W + xx) * 3;
 
-					d[0] = s[0] ^ 0x80;
-					d[1] = s[1] ^ 0x80;
-					d[2] = s[2] ^ 0x80;
+					d[0] = sp[0]; d[1] = sp[1]; d[2] = sp[2];
 				}
 			}
-		} else {
-			uint64_t *t64 = (uint64_t *)dst;
-			const uint64_t *s64 = (const uint64_t *)src8;
-			size_t n64 = (size_t)W * H * 3 / 8;
-			size_t k;
-
-			for (k = 0; k < n64; k++)
-				t64[k] = s64[k] ^ 0x8080808080808080ULL;
+			use = g_rgb_alt;
 		}
+		g_npu_inbuf = use;
 	}
 	t1 = now_us();
 	lat_add(&npu_rga_lat, t1 - t0);
@@ -658,7 +691,7 @@ static void rknn_process(struct node *n)
 		in.type = RKNN_TENSOR_UINT8;
 		in.fmt = RKNN_TENSOR_NHWC;
 		in.size = (uint32_t)(g_npu_w * g_npu_h * 3);
-		in.buf = g_npu_rgb;
+		in.buf = (void *)g_npu_inbuf;
 		stage("rt seq=%u npu run in", n->seq);
 		ret = rknn_inputs_set(g_npu_ctx, 1, &in);
 		if (ret < 0) {
@@ -1582,6 +1615,7 @@ int main(int argc, char **argv)
 		{ "obj-thresh", required_argument, 0, 1016 },
 		{ "dump-rgb", required_argument, 0, 1017 },
 		{ "rot90", no_argument, 0, 1018 },
+        { "wb", no_argument, 0, 1033 },
 		{ "image", required_argument, 0, 1019 },
         { "exposure", required_argument, 0, 1030 },
         { "gain", required_argument, 0, 1031 },
@@ -1645,6 +1679,7 @@ int main(int argc, char **argv)
 			break;
 		case 1018:
 			g_rot90 = 1;
+		case 1033: g_wb = 1; break;
 			break;
 		case 1019:
 			g_image = optarg;

@@ -16,7 +16,8 @@
  * 设计约束（判据）:
  *   1) 环形缓冲只能从 IDR 起算，dump 时丢弃起点之前的 P 帧；
  *   2) pre 由时长决定，但受 --ring-mb 字节上限约束，冲突时以字节为准；
- *   3) .json 记录每帧 seq/ts/key，解码帧数必须与之相等才算切片正确。
+ *   3) .json 逐包记录 seq(源帧序号)/pkt/ts/key, 1 包 = 1 解码帧时
+ *      "解码帧数 == 记录数" 才算切片正确。
  */
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -51,7 +52,10 @@ struct rec {
 	unsigned char *data;
 	int len;
 	double ts_ms;		/* 自启动 */
+	/* 源帧序号: 只有 DQBUF 成功才 +1。一帧可能吐出多个编码包,
+	 * 这些包共用同一个 seq, 用 pkt 区分帧内第几个包。 */
 	unsigned seq;
+	unsigned pkt;		/* 帧内包序号, 0 起; 与 seq 一起唯一标识一个包 */
 	int key;
 	double abs_ms;		/* 绝对 CLOCK_REALTIME, 写 json 用 */
 };
@@ -199,7 +203,7 @@ static const unsigned char font5x7[14][7] = {
 	{0x04,0x04,0x0E,0x04,0x04,0x05,0x02},	/* t */
 };
 
-static unsigned g_osd_seq;	/* 本帧的 seq, 与写进 .json 的是同一个值 */
+static unsigned g_osd_seq;	/* 源帧序号, 与写进 .json 的 seq/frame_seq 同源 */
 static double g_osd_ms;		/* 相对首帧的毫秒数, 与 .json 的 ts_ms 同口径 */
 
 /* NV12 的 Y 平面单字节写: 步长用 S_FMT 回填的 stride, 不是 width */
@@ -715,7 +719,8 @@ static int is_key(const unsigned char *p, int len)
 	return 0;
 }
 
-static void ring_push(unsigned char *d, int len, unsigned seq, int key)
+static void ring_push(unsigned char *d, int len, unsigned seq, unsigned pkt,
+		      int key)
 {
 	struct rec *r;
 
@@ -729,7 +734,8 @@ static void ring_push(unsigned char *d, int len, unsigned seq, int key)
 	r = &ring[(ring_head + ring_cnt) % MAX_FRAMES];
 	r->data = d;
 	r->len = len;
-	r->seq = seq;
+	r->seq = seq;	/* 源帧序号(可能多包重复) */
+	r->pkt = pkt;
 	r->key = key;
 	r->ts_ms = now_ms(CLOCK_MONOTONIC) - t0_ms;
 	r->abs_ms = now_ms(CLOCK_REALTIME);
@@ -816,9 +822,11 @@ static int dump(const char *out, unsigned trig_seq, double trig_ts, int pre_i,
 	for (i = pre_i; i <= end_i && i < ring_cnt; i++) {
 		struct rec *r = ring_at(i);
 
-		fprintf(j, "%s{\"seq\":%u,\"ts_ms\":%.1f,\"abs_ms\":%.1f,"
-			"\"bytes\":%d,\"key\":%d}",
-			(i == pre_i) ? "" : ",", r->seq, r->ts_ms,
+		/* list 是"每包一条"; seq 与 frame_seq 都是源帧序号(多包时重复),
+		 * pkt 是该帧内第几个包。保留 seq 是为了兼容既有解析脚本。 */
+		fprintf(j, "%s{\"seq\":%u,\"frame_seq\":%u,\"pkt\":%u,\"ts_ms\":%.1f,"
+			"\"abs_ms\":%.1f,\"bytes\":%d,\"key\":%d}",
+			(i == pre_i) ? "" : ",", r->seq, r->seq, r->pkt, r->ts_ms,
 			r->abs_ms, r->len, r->key);
 	}
 	fprintf(j, "]}\n");
@@ -849,7 +857,8 @@ int main(int argc, char **argv)
 	int i, k, trigger_i = -1, pre_i = -1, end_i = -1;
 	int rc = 0;		/* 进程退出码: 0=正常, 1=真错误 */
 	int reached_max = 0;	/* 因 --max-events 正常结束 */
-	unsigned seq = 0;
+	unsigned seq = 0;	/* 源帧序号: 只有 DQBUF 成功才 +1, 编码包循环不碰 */
+	unsigned frame_seq = 0;	/* 当前帧的源帧序号(编码包循环内只读) */
 	double trig_ts = 0, trig_abs = 0, t_start;
 	struct stat st;
 	time_t trig_mtime = 0;
@@ -935,6 +944,10 @@ int main(int argc, char **argv)
 			break;
 		}
 		ts = now_ms(CLOCK_MONOTONIC);
+		/* 帧序号在这里 +1: 一次 DQBUF = 一个源帧。编码器一帧可能吐出
+		 * 多个包(SPS/PPS 单独成包等), 但包循环里只读 frame_seq, 所以
+		 * OSD 的 # 与 .json 的 seq 永远按源帧递增, 不会被包数带偏。 */
+		frame_seq = seq++;
 #ifdef HAVE_RGA
 #ifdef HAVE_RKNN
 		if (g_detect) {
@@ -950,7 +963,7 @@ int main(int argc, char **argv)
 		       (size_t)cap.stride * h * 3 / 2);
 		/* OSD 画在编码输入缓冲(最终被编码的那块内存)上, 必须在 encode_put_frame 之前 */
 		if (g_osd) {
-			g_osd_seq = seq;	/* 与 .json 的 seq 同源 */
+			g_osd_seq = frame_seq;	/* 与 .json 的 seq/frame_seq 同源 */
 			g_osd_ms = ts - t_start;
 			draw_osd(mpp_buffer_get_ptr(g_fbuf), (int)cap.stride, w, h);
 		}
@@ -969,20 +982,26 @@ int main(int argc, char **argv)
 		}
 		mpp_frame_deinit(&frame);
 
-		while (g_mpi->encode_get_packet(g_ctx, &pkt) == MPP_OK && pkt) {
-			void *pos = mpp_packet_get_pos(pkt);
-			size_t len = mpp_packet_get_length(pkt);
-			unsigned char *copy;
+		{
+			unsigned pkn = 0;	/* 帧内包序号, 只用于 json 的 pkt */
 
-			if (len == 0) {
+			while (g_mpi->encode_get_packet(g_ctx, &pkt) == MPP_OK && pkt) {
+				void *pos = mpp_packet_get_pos(pkt);
+				size_t len = mpp_packet_get_length(pkt);
+				unsigned char *copy;
+
+				if (len == 0) {
+					mpp_packet_deinit(&pkt);
+					continue;
+				}
+				copy = malloc(len);
+				memcpy(copy, pos, len);
+				/* seq 只读: 同一帧的所有包共用 frame_seq */
+				ring_push(copy, (int)len, frame_seq, pkn,
+					  is_key(copy, (int)len));
+				pkn++;
 				mpp_packet_deinit(&pkt);
-				continue;
 			}
-			copy = malloc(len);
-			memcpy(copy, pos, len);
-			ring_push(copy, (int)len, seq, is_key(copy, (int)len));
-			seq++;
-			mpp_packet_deinit(&pkt);
 		}
 
 		/* 触发: 信号 或 触发文件 mtime 变化 */
@@ -1017,7 +1036,7 @@ int main(int argc, char **argv)
 			g_pre_seq = ring_at(pre_i)->seq;
 			printf(">>> 触发 seq=%u ts=%.1fms -> pre_i=%d pre_seq=%u "
 			       "(ring_cnt=%d head=%d pushed=%lu)\n",
-			       seq, trig_ts, pre_i, g_pre_seq,
+			       frame_seq, trig_ts, pre_i, g_pre_seq,
 			       ring_cnt, ring_head, g_pushed);
 		}
 		if (trigger_i >= 0 && ts - t_start > trig_ts + post_sec * 1000.0) {
@@ -1031,7 +1050,7 @@ int main(int argc, char **argv)
 					if (ring_at(k)->seq == g_pre_seq) { pi = k; break; }
 			if (pi >= 0) {
 				snprintf(outn, sizeof(outn), "%s-%02d", out, g_events);
-				ok = dump(outn, seq - 1, trig_ts, pi, end_i, w, h,
+				ok = dump(outn, frame_seq, trig_ts, pi, end_i, w, h,
 					  (double)(end_i - pi + 1) * 1000.0 /
 					  (trig_ts + post_sec * 1000.0)) == 0;
 			}
@@ -1076,7 +1095,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "未触发或无数据, 不落盘\n");
 		return 1;
 	}
-	if (dump(out, seq - 1, trig_ts, pre_i, end_i, w, h,
+	if (dump(out, frame_seq, trig_ts, pre_i, end_i, w, h,
 		 (double)(end_i - pre_i + 1) * 1000.0 /
 		 (trig_ts + post_sec * 1000.0)) < 0) {
 		fprintf(stderr, ">>> 事件落盘失败\n");

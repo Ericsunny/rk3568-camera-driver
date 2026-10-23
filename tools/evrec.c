@@ -66,6 +66,7 @@ static size_t ring_bytes, ring_limit = 64u << 20;
 static double t0_ms;
 static volatile sig_atomic_t g_trigger;
 static const char *g_trig_path;
+static int g_osd;		/* --osd 烧 OSD; 默认关闭, 不加参数行为不变 */
 
 static double now_ms(clockid_t c)
 {
@@ -84,7 +85,7 @@ static void on_sig(int s)
 /* ---------------- V4L2 ---------------- */
 static struct {
 	int fd, nbufs;
-	unsigned w, h;
+	unsigned w, h, stride;	/* stride 来自 S_FMT 回填, 不等于 width */
 	void *map[8];
 	size_t len[8];
 } cap;
@@ -122,6 +123,13 @@ static int cap_open(const char *dev, int w, int h, int nbufs)
 	}
 	cap.w = f.fmt.pix_mp.width;
 	cap.h = f.fmt.pix_mp.height;
+	/* 1920x1080 实测 stride 可能不等于 1920: 必须用回填值算 Y 平面步长 */
+	cap.stride = f.fmt.pix_mp.plane_fmt[0].bytesperline;
+	if (cap.stride < cap.w)
+		cap.stride = cap.w;
+	if (g_osd)
+		printf(">>> S_FMT 回填 %ux%u stride=%u sizeimage=%u\n", cap.w, cap.h,
+		       cap.stride, f.fmt.pix_mp.plane_fmt[0].sizeimage);
 
 	memset(&rb, 0, sizeof(rb));
 	rb.count = nbufs;
@@ -172,6 +180,97 @@ static int cap_open(const char *dev, int w, int h, int nbufs)
 	return 0;
 }
 
+/* ---------------- OSD: 源帧 seq + 相对时间(烧在 NV12 的 Y 平面) ---------------- */
+/* 5x7 点阵, 每行 5 bit; 与 camd.c 同一份表(0-9 : . # t) */
+static const unsigned char font5x7[14][7] = {
+	{0x0E,0x11,0x13,0x15,0x19,0x11,0x0E},	/* 0 */
+	{0x04,0x0C,0x04,0x04,0x04,0x04,0x0E},	/* 1 */
+	{0x0E,0x11,0x01,0x02,0x04,0x08,0x1F},	/* 2 */
+	{0x1F,0x02,0x04,0x02,0x01,0x11,0x0E},	/* 3 */
+	{0x02,0x06,0x0A,0x12,0x1F,0x02,0x02},	/* 4 */
+	{0x1F,0x10,0x1E,0x01,0x01,0x11,0x0E},	/* 5 */
+	{0x06,0x08,0x10,0x1E,0x11,0x11,0x0E},	/* 6 */
+	{0x1F,0x01,0x02,0x04,0x08,0x08,0x08},	/* 7 */
+	{0x0E,0x11,0x11,0x0E,0x11,0x11,0x0E},	/* 8 */
+	{0x0E,0x11,0x11,0x0F,0x01,0x02,0x0C},	/* 9 */
+	{0x00,0x0C,0x0C,0x00,0x0C,0x0C,0x00},	/* : */
+	{0x00,0x00,0x00,0x00,0x0C,0x0C,0x00},	/* . */
+	{0x0A,0x0A,0x1F,0x0A,0x1F,0x0A,0x0A},	/* # */
+	{0x04,0x04,0x0E,0x04,0x04,0x05,0x02},	/* t */
+};
+
+static unsigned g_osd_seq;	/* 本帧的 seq, 与写进 .json 的是同一个值 */
+static double g_osd_ms;		/* 相对首帧的毫秒数, 与 .json 的 ts_ms 同口径 */
+
+/* NV12 的 Y 平面单字节写: 步长用 S_FMT 回填的 stride, 不是 width */
+static void put_y_px(unsigned char *y_plane, int stride, int W, int H,
+		     int x, int y, unsigned char v)
+{
+	if (x < 0 || y < 0 || x >= W || y >= H)
+		return;
+	y_plane[(size_t)y * stride + x] = v;
+}
+
+static int glyph_idx(char ch)
+{
+	if (ch >= '0' && ch <= '9')
+		return ch - '0';
+	if (ch == ':')
+		return 10;
+	if (ch == '.')
+		return 11;
+	if (ch == '#')
+		return 12;
+	if (ch == 't')
+		return 13;
+	return -1;
+}
+
+static void draw_text(unsigned char *y_plane, int stride, int W, int H,
+		      int x, int y0, const char *s, int sc)
+{
+	for (; *s; s++) {
+		int gi = glyph_idx(*s), r, cc;
+
+		if (gi < 0) {		/* 空格: 只前进 */
+			x += 4 * sc;
+			continue;
+		}
+		for (r = 0; r < 7; r++) {
+			for (cc = 0; cc < 5; cc++) {
+				int on = (font5x7[gi][r] >> (4 - cc)) & 1;
+				int dy, dx;
+
+				for (dy = 0; dy < sc; dy++)
+					for (dx = 0; dx < sc; dx++)
+						put_y_px(y_plane, stride, W, H,
+							 x + cc * sc + dx,
+							 y0 + r * sc + dy,
+							 on ? 255 : 0);
+			}
+		}
+		x += 6 * sc;
+	}
+}
+
+/* 左上角两行: "#<seq>" / "t mm:ss.mmm" (相对首帧) */
+static void draw_osd(unsigned char *y_plane, int stride, int W, int H)
+{
+	char l1[32], l2[32];
+	unsigned el = g_osd_ms > 0 ? (unsigned)(g_osd_ms + 0.5) : 0;
+	int sec = (int)(el / 1000), ms = (int)(el % 1000);
+	int x, y;
+
+	snprintf(l1, sizeof(l1), "#%u", g_osd_seq);
+	snprintf(l2, sizeof(l2), "t %02d:%02d.%03d", sec / 60, sec % 60, ms);
+	/* 先铺黑底再画白字, 保证任何背景上都可读(与 camd 同) */
+	for (y = 2; y < 2 + 2 * 9 * 2 + 4; y++)
+		for (x = 2; x < 2 + 14 * 12 + 4; x++)
+			put_y_px(y_plane, stride, W, H, x, y, 0);
+	draw_text(y_plane, stride, W, H, 4, 4, l1, 2);
+	draw_text(y_plane, stride, W, H, 4, 4 + 16, l2, 2);
+}
+
 /* ---------------- MPP ---------------- */
 static MppCtx g_ctx;
 static MppApi *g_mpi;
@@ -181,7 +280,7 @@ static size_t g_fsize;
 static unsigned char *g_hdr;
 static size_t g_hdr_len;
 
-static int enc_init(int w, int h, int kbps, int gop)
+static int enc_init(int w, int h, int stride, int kbps, int gop)
 {
 	MppEncCfg cfg;
 
@@ -193,7 +292,7 @@ static int enc_init(int w, int h, int kbps, int gop)
 	mpp_enc_cfg_init(&cfg);
 	mpp_enc_cfg_set_s32(cfg, "prep:width", w);
 	mpp_enc_cfg_set_s32(cfg, "prep:height", h);
-	mpp_enc_cfg_set_s32(cfg, "prep:hor_stride", w);
+	mpp_enc_cfg_set_s32(cfg, "prep:hor_stride", stride);
 	mpp_enc_cfg_set_s32(cfg, "prep:ver_stride", h);
 	mpp_enc_cfg_set_s32(cfg, "prep:format", MPP_FMT_YUV420SP);
 	mpp_enc_cfg_set_s32(cfg, "rc:mode", MPP_ENC_RC_MODE_CBR);
@@ -229,7 +328,7 @@ static int enc_init(int w, int h, int kbps, int gop)
 		}
 	}
 	mpp_buffer_group_get_internal(&g_grp, MPP_BUFFER_TYPE_ION);
-	g_fsize = (size_t)w * h * 3 / 2;
+	g_fsize = (size_t)stride * h * 3 / 2;
 	if (mpp_buffer_get(g_grp, &g_fbuf, g_fsize) != MPP_OK) {
 		fprintf(stderr, "buffer_get 失败\n");
 		return -1;
@@ -772,6 +871,8 @@ int main(int argc, char **argv)
 		else if (!strcmp(argv[i], "--det-frames")) g_det_frames = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--obj-thresh")) g_obj_thresh = (float)atof(argv[++i]);
 		else if (!strcmp(argv[i], "--rga-size")) sscanf(argv[++i], "%dx%d", &g_rga_w, &g_rga_h);
+		else if (!strcmp(argv[i], "--osd")) g_osd = 1;
+		else if (!strcmp(argv[i], "--no-osd")) g_osd = 0;
 	}
 	gop = (pre_sec + post_sec) * 15 / 2;
 	if (gop < 8)
@@ -783,7 +884,10 @@ int main(int argc, char **argv)
 
 	if (cap_open(dev, w, h, 4) < 0)
 		return 1;
-	if (enc_init(w, h, kbps, gop) < 0)
+	/* 分辨率以 S_FMT 回填为准(驱动可能改), stride 同理 */
+	w = (int)cap.w;
+	h = (int)cap.h;
+	if (enc_init(w, h, (int)cap.stride, kbps, gop) < 0)
 		return 1;
 #ifdef HAVE_RGA
 	if (g_detect) {
@@ -807,6 +911,9 @@ int main(int argc, char **argv)
 	}
 	printf(">>> 采集 %s %dx%d,pre=%ds post=%ds ring=%zuMB gop=%d\n",
 	       dev, w, h, pre_sec, post_sec, ring_limit >> 20, gop);
+	if (g_osd)
+		printf(">>> OSD 开启: #<seq> + t mm:ss.mmm @左上角(4px, sc=2), stride=%u\n",
+		       cap.stride);
 
 	for (;;) {
 		struct v4l2_buffer b;
@@ -840,13 +947,19 @@ int main(int argc, char **argv)
 #endif
 #endif
 		memcpy(mpp_buffer_get_ptr(g_fbuf), cap.map[b.index],
-		       (size_t)w * h * 3 / 2);
+		       (size_t)cap.stride * h * 3 / 2);
+		/* OSD 画在编码输入缓冲(最终被编码的那块内存)上, 必须在 encode_put_frame 之前 */
+		if (g_osd) {
+			g_osd_seq = seq;	/* 与 .json 的 seq 同源 */
+			g_osd_ms = ts - t_start;
+			draw_osd(mpp_buffer_get_ptr(g_fbuf), (int)cap.stride, w, h);
+		}
 		xioctl(cap.fd, VIDIOC_QBUF, &b);
 
 		mpp_frame_init(&frame);
 		mpp_frame_set_width(frame, w);
 		mpp_frame_set_height(frame, h);
-		mpp_frame_set_hor_stride(frame, w);
+		mpp_frame_set_hor_stride(frame, (int)cap.stride);
 		mpp_frame_set_ver_stride(frame, h);
 		mpp_frame_set_fmt(frame, MPP_FMT_YUV420SP);
 		mpp_frame_set_buffer(frame, g_fbuf);

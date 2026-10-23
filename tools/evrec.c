@@ -166,6 +166,8 @@ static MppApi *g_mpi;
 static MppBufferGroup g_grp;
 static MppBuffer g_fbuf;
 static size_t g_fsize;
+static unsigned char *g_hdr;
+static size_t g_hdr_len;
 
 static int enc_init(int w, int h, int kbps, int gop)
 {
@@ -199,6 +201,20 @@ static int enc_init(int w, int h, int kbps, int gop)
 	if (g_mpi->control(g_ctx, MPP_ENC_SET_CFG, cfg) != MPP_OK) {
 		fprintf(stderr, "SET_CFG 失败\n");
 		return -1;
+	}
+	{
+		MppEncHeaderMode hm = MPP_ENC_HEADER_MODE_EACH_IDR;
+		MppPacket hdr = NULL;
+
+		g_mpi->control(g_ctx, MPP_ENC_SET_HEADER_MODE, &hm);
+
+		if (g_mpi->control(g_ctx, MPP_ENC_GET_HDR_SYNC, &hdr) == MPP_OK && hdr) {
+			g_hdr_len = mpp_packet_get_length(hdr);
+			g_hdr = malloc(g_hdr_len);
+			memcpy(g_hdr, mpp_packet_get_pos(hdr), g_hdr_len);
+			mpp_packet_deinit(&hdr);
+			printf(">>> SPS/PPS 头 %zu 字节\n", g_hdr_len);
+		}
 	}
 	mpp_buffer_group_get_internal(&g_grp, MPP_BUFFER_TYPE_ION);
 	g_fsize = (size_t)w * h * 3 / 2;
@@ -283,6 +299,8 @@ static int dump(const char *out, unsigned trig_seq, double trig_ts, int pre_i,
 	for (i = pre_i; i <= end_i && i < ring_cnt; i++) {
 		struct rec *r = ring_at(i);
 
+		if (r->key && g_hdr_len)
+			fwrite(g_hdr, 1, g_hdr_len, f);
 		fwrite(r->data, 1, (size_t)r->len, f);
 		n++;
 	}

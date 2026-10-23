@@ -296,6 +296,9 @@ static int g_dump_done;
 static int g_outs_done;
 static int g_rot90;
 static char *g_image;
+static int g_exp = -1;              /* --exposure: 起流前写 V4L2_CID_EXPOSURE */
+static int g_gain = -1;             /* --gain: 写 V4L2_CID_ANALOGUE_GAIN */
+static char *g_ctrl_dev = "/dev/v4l-subdev2";  /* sensor subdev */
 
 /* YOLOv8 后处理(9 输出 = 3 尺度 x [DFL 64ch, 80 类, 1 score]),从 zerocopy/zc_npu.cpp 移植 */
 #define OBJ_THRESH 0.35f
@@ -979,7 +982,34 @@ static int dev_open(void)
 	req.count = cap.nbufs;
 	req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
 	req.memory = V4L2_MEMORY_MMAP;
-	if (xioctl(cap.fd, VIDIOC_REQBUFS, &req) < 0) {
+	if (g_exp >= 0 || g_gain >= 0) {
+                int sfd = open(g_ctrl_dev, O_RDWR);
+                if (sfd < 0) {
+                        fprintf(stderr, "WARN: 打不开 %s: %s (跳过曝光设置)\n",
+                                g_ctrl_dev, strerror(errno));
+                } else {
+                        struct v4l2_control c;
+                        memset(&c, 0, sizeof(c));
+                        if (g_exp >= 0) {
+                                c.id = V4L2_CID_EXPOSURE; c.value = g_exp;
+                                if (ioctl(sfd, VIDIOC_S_CTRL, &c) == 0)
+                                        fprintf(stderr, ">>> 曝光 = %d", g_exp);
+                                else
+                                        fprintf(stderr, ">>> 曝光设置失败: %s", strerror(errno));
+                        }
+                        if (g_gain >= 0) {
+                                c.id = V4L2_CID_ANALOGUE_GAIN; c.value = g_gain;
+                                if (ioctl(sfd, VIDIOC_S_CTRL, &c) == 0)
+                                        fprintf(stderr, "  增益 = %d\n", g_gain);
+                                else
+                                        fprintf(stderr, "  增益设置失败: %s\n", strerror(errno));
+                        } else {
+                                fprintf(stderr, "\n");
+                        }
+                        close(sfd);
+                }
+        }
+        if (xioctl(cap.fd, VIDIOC_REQBUFS, &req) < 0) {
 		fatal(1, "REQBUFS 失败: %s", strerror(errno));
 		return -1;
 	}
@@ -1553,6 +1583,9 @@ int main(int argc, char **argv)
 		{ "dump-rgb", required_argument, 0, 1017 },
 		{ "rot90", no_argument, 0, 1018 },
 		{ "image", required_argument, 0, 1019 },
+        { "exposure", required_argument, 0, 1030 },
+        { "gain", required_argument, 0, 1031 },
+        { "ctrl-dev", required_argument, 0, 1032 },
 		{ 0, 0, 0, 0 }
 	};
 
@@ -1604,7 +1637,10 @@ int main(int argc, char **argv)
 		case 1016:
 			g_obj_thresh = (float)atof(optarg);
 			break;
-		case 1017:
+		case 1030: g_exp = atoi(optarg); break;
+        case 1031: g_gain = atoi(optarg); break;
+        case 1032: g_ctrl_dev = optarg; break;
+        case 1017:
 			g_dump_rgb = optarg;
 			break;
 		case 1018:

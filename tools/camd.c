@@ -247,6 +247,7 @@ static void rga_process(struct node *n)
 #endif
 
 static int g_analyze_ms, g_ev_ms, g_frames_limit, g_recover_attempts;
+static int g_fault_once;	/* 只注入一次故障:用于演示"恢复后能继续跑" */
 static int g_rt_depth = 4, g_ev_depth = 2;
 static int g_ev_policy;   /* 0=丢最旧(默认,不阻塞采集) 1=有界阻塞(背压) */
 static int g_dq_timeout_ms, g_verbose, g_analyze_mode, g_fault;
@@ -421,8 +422,26 @@ static int xioctl(int fd, unsigned long req, void *arg)
 	return r;
 }
 
+/* rkcif 在 close() 之后释放 vb2 队列是延迟的(实测:紧接着重开会 S_FMT EBUSY,
+ * 隔 100 ms 以上的新进程却能成功)。恢复路径必须容忍这个窗口,否则"有界恢复"
+ * 会在第一次重开时就假失败。 */
+static int xioctl_busy_retry(int fd, unsigned long req, void *arg, int ms)
+{
+	int waited = 0;
+
+	while (1) {
+		int r = ioctl(fd, req, arg);
+
+		if (r >= 0 || errno != EBUSY || waited >= ms)
+			return r;
+		usleep(20000);
+		waited += 20;
+	}
+}
+
 static int dev_open(void)
 {
+
 	struct v4l2_format f;
 	struct v4l2_requestbuffers req;
 	int i;
@@ -441,7 +460,7 @@ static int dev_open(void)
 	f.fmt.pix_mp.pixelformat = cap.fourcc;
 	f.fmt.pix_mp.field = V4L2_FIELD_NONE;
 	f.fmt.pix_mp.num_planes = 1;
-	if (xioctl(cap.fd, VIDIOC_S_FMT, &f) < 0) {
+	if (xioctl_busy_retry(cap.fd, VIDIOC_S_FMT, &f, 1000) < 0) {
 		fatal(1, "S_FMT %dx%d 失败: %s", cap.w, cap.h, strerror(errno));
 		return -1;
 	}
@@ -562,13 +581,47 @@ static void dev_close(void)
 {
 	int i;
 
+	if (getenv("CAMDBG"))
+		fprintf(stderr, "[dbg] dev_close: fd=%d nbufs=%d\n", cap.fd, cap.nbufs);
+
+	/* 规范拆除顺序:先解除映射,再 REQBUFS(0) 让 vb2 真正释放 buffer,
+	 * 最后才 close。只 close 而不 REQBUFS(0) 时,rkcif 侧的 vb2 队列会
+	 * 继续处于 busy(num_buffers > 0),同一进程紧接着重开会 S_FMT EBUSY。 */
+	for (i = 0; i < cap.nbufs; i++) {
+		if (cap.mmap[i]) {
+			munmap(cap.mmap[i], cap.nodes[i] ? cap.nodes[i]->len : 0);
+			cap.mmap[i] = NULL;
+		}
+	}
 	if (cap.fd > 0) {
-		close(cap.fd);
-		cap.fd = -1;
+		struct v4l2_requestbuffers req;
+
+		memset(&req, 0, sizeof(req));
+		req.count = 0;
+		req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+		req.memory = V4L2_MEMORY_MMAP;
+		if (ioctl(cap.fd, VIDIOC_REQBUFS, &req) < 0 && getenv("CAMDBG"))
+			fprintf(stderr, "[dbg] REQBUFS(0) 失败: %s\n", strerror(errno));
 	}
 	for (i = 0; i < cap.nbufs; i++) {
 		if (cap.nodes[i] && cap.nodes[i]->dmabuf_fd > 0) {
-			close(cap.nodes[i]->dmabuf_fd);
+			int r = close(cap.nodes[i]->dmabuf_fd);
+
+			if (getenv("CAMDBG"))
+				fprintf(stderr, "[dbg] close dmabuf[%d]=%d rc=%d\n", i,
+					cap.nodes[i]->dmabuf_fd, r);
+			cap.nodes[i]->dmabuf_fd = -1;
+		}
+	}
+	if (cap.fd > 0) {
+		int r = close(cap.fd);
+
+		if (getenv("CAMDBG"))
+			fprintf(stderr, "[dbg] close dev fd=%d rc=%d\n", cap.fd, r);
+		cap.fd = -1;
+	}
+	for (i = 0; i < cap.nbufs; i++) {
+		if (cap.nodes[i]) {
 			free(cap.nodes[i]);
 			cap.nodes[i] = NULL;
 		}
@@ -690,6 +743,8 @@ static void *rt_thread(void *arg)
 		}
 		t0 = now_us();
 		if (g_fault == 2) {	/* 模拟消费者内部故障 */
+			if (g_fault_once)
+				g_fault = 0;	/* 只坏这一帧:恢复后应能继续跑 */
 			fatal(2, "实时分析消费者故障(注入)");
 			node_release(n);
 			break;
@@ -916,6 +971,7 @@ static void usage(void)
 "  --rga             实时消费者改用 RGA 零拷贝缩放(需 -DHAVE_RGA -lrga)\n"
 "  --rga-size WxH    RGA 目标尺寸(默认 640x360)\n"
 "  --cpu-copy        对照组:CPU memcpy 整帧 + 降采样(不开 RGA)\n"
+"  --fault-once      故障只注入一次(验证恢复后能继续跑)\n"
 		"  --ev-fps F        取证限速帧率(默认 5)\n"
 		"  --analyze-ms N    实时分析模拟耗时(ms)\n"
 		"  --analyze MODE    nop|sleep(默认 nop)\n"
@@ -947,6 +1003,7 @@ int main(int argc, char **argv)
 		{ "rga", no_argument, 0, 1011 },
 		{ "rga-size", required_argument, 0, 1012 },
 		{ "cpu-copy", no_argument, 0, 1013 },
+		{ "fault-once", no_argument, 0, 1014 },
 		{ 0, 0, 0, 0 }
 	};
 
@@ -988,6 +1045,9 @@ int main(int argc, char **argv)
 			break;
 		case 1013:
 			g_copy = 1;
+			break;
+		case 1014:
+			g_fault_once = 1;
 			break;
 		case 1012:
 			sscanf(optarg, "%dx%d", &g_rga_dw, &g_rga_dh);

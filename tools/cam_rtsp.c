@@ -45,7 +45,8 @@ static int g_w = 1920, g_h = 1080;
 static int g_fps = 30;
 static int g_kbps = 4000;
 static int g_port = 8554;
-static int g_http_port = 0;   /* 0 = 关闭浏览器预览 */
+static int g_http_port = 0;
+static double g_t0;  /* 时间基准 */
 static volatile int g_run = 1;
 static volatile int g_lfd = -1;
 
@@ -233,14 +234,14 @@ static void copy_nv12(uint8_t *dst, const uint8_t *src, int w, int h, uint32_t s
 #define RING 8
 struct eframe {
 	uint8_t *data;
-	int len, key, ready;
-	uint64_t pts_ms;
+	int len, key, cap;
+	uint64_t pts_ms, tag;      /* tag = 写入时的全局序号,客户端据此判断是否被覆盖 */
 };
 static struct eframe g_ring[RING];
-static int g_wr, g_rd;
+static volatile uint64_t g_wr;   /* 已产出的帧数(=下一个槽的 tag) */
 static pthread_mutex_t g_lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t g_cond = PTHREAD_COND_INITIALIZER;
-static volatile int g_have_client;
+static volatile int g_nclients;  /* 当前 PLAY 中的客户端数 */
 
 static uint8_t g_sps[128], g_pps[128];
 static int g_sps_len, g_pps_len;
@@ -490,6 +491,7 @@ static void *capture_thread(void *arg)
 	while (g_run) {
 		void *addr; size_t bytes;
 		if (cap_grab(c, &addr, &bytes) < 0) continue;
+		double t_cap = now_ms();
 
 		uint8_t *dst = mpp_buffer_get_ptr(e.buf);
 		copy_nv12(dst, addr, g_w, g_h, c->stride);
@@ -516,17 +518,21 @@ static void *capture_thread(void *arg)
 
 		scan_nals(pdata, plen);
 
-		if (g_have_client) {
+		if (g_nclients > 0) {
 			pthread_mutex_lock(&g_lock);
 			struct eframe *ef = &g_ring[g_wr % RING];
-			if (ef->data) { free(ef->data); ef->data = NULL; }
-			ef->data = malloc(plen);
+			if (ef->cap < plen) {
+				free(ef->data);
+				ef->data = malloc(plen);
+				ef->cap = ef->data ? plen : 0;
+			}
 			if (ef->data) {
 				memcpy(ef->data, pdata, plen);
-				ef->len = plen; ef->key = key; ef->ready = 1;
-				ef->pts_ms = idx * 1000 / g_fps;
+				ef->len = plen; ef->key = key;
+				ef->pts_ms = (uint64_t)t_cap;   /* 采集到手时刻(绝对 CLOCK_MONOTONIC 毫秒) */
+				ef->tag = g_wr;
 				g_wr++;
-				pthread_cond_signal(&g_cond);
+				pthread_cond_broadcast(&g_cond);
 			}
 			pthread_mutex_unlock(&g_lock);
 		}
@@ -583,8 +589,11 @@ static int read_req(int fd, char *buf, int cap)
 	return n;
 }
 
-static void serve_client(int fd)
+struct client_arg { int fd; };
+static void *client_thread(void *arg)
 {
+	int fd = ((struct client_arg *)arg)->fd;
+	free(arg);
 	char req[4096];
 	char sdp[1024];
 	char b64s[512], b64p[512];
@@ -658,45 +667,50 @@ static void serve_client(int fd)
 			if (write(fd, out, strlen(out)) < 0) break;
 			rd = 1;
 			pthread_mutex_lock(&g_lock);
-			g_have_client = 1;
+			uint64_t mine = g_wr;      /* 从当前最新帧开始 */
+			g_nclients++;
 			pthread_mutex_unlock(&g_lock);
+			printf(">>> 开始推送 (当前 %d 个客户端)\n", g_nclients);
+			fflush(stdout);
+
+			uint8_t *sendbuf = malloc(1 << 20);
+			struct eframe local;
 
 			/* 进入发送循环 */
-			uint64_t sent_ts = 0;
 			while (g_run && rd) {
-				struct eframe *fr = NULL;
+				int have = 0;
 				pthread_mutex_lock(&g_lock);
-				int spins = 0;
-				while (g_rd == g_wr && g_run && spins++ < 200) {
+				for (int spins = 0; spins < 200; spins++) {
+					if (mine < g_wr) break;
 					struct timespec to = { 0, 100 * 1000 * 1000 };
 					pthread_cond_timedwait(&g_cond, &g_lock, &to);
-					/* 期间可能客户端断开,靠 write 失败退出 */
-					if (g_rd == g_wr) break;
 				}
-				if (g_rd != g_wr) {
-					fr = &g_ring[g_rd % RING];
-					g_rd++;
+				if (mine < g_wr) {
+					/* 落后太多(被覆盖)则跳到最旧可用帧 */
+					if (mine + RING <= g_wr) mine = g_wr - RING + 1;
+					struct eframe *ef = &g_ring[mine % RING];
+					if (ef->tag == mine && ef->data && ef->len <= (int)(1 << 20)) {
+						memcpy(sendbuf, ef->data, ef->len);
+						local = *ef;
+						local.data = sendbuf;
+						have = 1;
+					}
+					mine++;
 				}
 				pthread_mutex_unlock(&g_lock);
 
-				if (fr && fr->ready) {
-					uint32_t rts = (uint32_t)(fr->pts_ms * 90);
+				if (have) {
+					uint32_t rts = (uint32_t)(local.pts_ms * 90);
 					uint16_t sq = seq;
-					if (rtp_send_frame(fd, ch_rtp, fr, rts, &sq) < 0) {
+					if (rtp_send_frame(fd, ch_rtp, &local, rts, &sq) < 0) {
 						fprintf(stderr, ">>> 发送失败,客户端断开\n");
 						goto done;
 					}
 					seq = sq;
 					ts = rts;
-					sent_ts++;
-					/* 标记位:重发最后包以设置 marker 太复杂,这里改为在
-					 * rtp_send_frame 内对最后一个 NAL 的最后一包设置。已实现。*/
-					pthread_mutex_lock(&g_lock);
-					if (fr->data) { free(fr->data); fr->data = NULL; }
-					fr->ready = 0;
-					pthread_mutex_unlock(&g_lock);
 				}
 			}
+			free(sendbuf);
 		} else if (strncmp(req, "TEARDOWN", 8) == 0) {
 			const char *r = "RTSP/1.0 200 OK\r\nCSeq: %d\r\n\r\n";
 			char out[128];
@@ -716,14 +730,17 @@ static void serve_client(int fd)
 	}
 done:
 	pthread_mutex_lock(&g_lock);
-	g_have_client = 0;
+	if (g_nclients > 0) g_nclients--;
+	int left = g_nclients;
 	pthread_mutex_unlock(&g_lock);
 	close(fd);
-	fprintf(stderr, ">>> 客户端断开\n");
+	fprintf(stderr, ">>> 客户端断开 (还剩 %d 个)\n", left);
+	return NULL;
 }
 
 int main(int argc, char **argv)
 {
+	g_t0 = now_ms();
 	int opt;
 	setvbuf(stdout, NULL, _IONBF, 0);
 	setvbuf(stderr, NULL, _IONBF, 0);
@@ -788,7 +805,11 @@ int main(int argc, char **argv)
 		setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &one, sizeof(one));
 		printf(">>> 客户端接入 %s:%d\n", inet_ntoa(cli.sin_addr), ntohs(cli.sin_port));
 		fflush(stdout);
-		serve_client(fd);
+		struct client_arg *ca = malloc(sizeof(*ca));
+		ca->fd = fd;
+		pthread_t ct;
+		if (pthread_create(&ct, NULL, client_thread, ca) == 0) pthread_detach(ct);
+		else { close(fd); free(ca); }
 	}
 
 	g_run = 0;

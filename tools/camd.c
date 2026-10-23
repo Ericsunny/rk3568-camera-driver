@@ -323,9 +323,6 @@ static lat_t npu_lat, npu_rga_lat, npu_post_lat;
 static unsigned g_det_total, g_det_max;
 static atomic_uint g_score_maxi;	/* maxscore x1000 */
 static char g_det_last[128];
-static const char *g_ev_trigger;
-static int g_ev_class = 0, g_ev_frames = 3, g_ev_streak;
-static float g_ev_score = 0.45f;
 static char *g_draw_file;		/* --draw: 把框画到 RGB 上存 PPM */
 static unsigned char *g_draw_buf;
 static int g_no_obj_mul;		/* --no-obj-mul: score 直接取 class 概率 */
@@ -770,33 +767,7 @@ static void draw_boxes(struct dbox *b, int n)
 	}
 }
 
-static void ev_trigger_fire(void)
-{
-	int fd = open(g_ev_trigger, O_CREAT | O_WRONLY | O_APPEND, 0644);
-
-	if (fd >= 0) {
-		if (write(fd, "x", 1) < 0) { }
-		close(fd);
-		printf("<<< 事件触发: 写 %s (连续 %d 帧 cls=%d score>=%.2f)\n",
-		       g_ev_trigger, g_ev_frames, g_ev_class, g_ev_score);
-		fflush(stdout);
-	}
-}
-
 /* 连续 N 帧检出目标类才触发, 避免单帧误检 */
-static void ev_trigger_check(struct dbox *b, int n)
-{
-	int hit = 0, i;
-
-	for (i = 0; i < n; i++)
-		if (b[i].cls == g_ev_class && b[i].score >= g_ev_score)
-			hit = 1;
-	g_ev_streak = hit ? g_ev_streak + 1 : 0;
-	if (g_ev_streak >= g_ev_frames) {
-		ev_trigger_fire();
-		g_ev_streak = 0;
-	}
-}
 
 static void rknn_process(struct node *n)
 {
@@ -962,8 +933,6 @@ static void rknn_process(struct node *n)
 	if (nd > 0 && !g_det_last[0])
 		snprintf(g_det_last, sizeof(g_det_last), "cls=%d score=%.2f @%.0f,%.0f",
 			 boxes[0].cls, boxes[0].score, boxes[0].x1, boxes[0].y1);
-	if (g_ev_trigger)
-		ev_trigger_check(boxes, nd);
 	if (g_draw_file)
 		draw_boxes(boxes, nd);
 	if (nd > 0) {

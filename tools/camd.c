@@ -29,6 +29,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/times.h>
 #include <time.h>
 #include <unistd.h>
 #include <dlfcn.h>
@@ -860,6 +861,8 @@ static int g_ev_policy;   /* 0=丢最旧(默认,不阻塞采集) 1=有界阻塞(
 static int g_dq_timeout_ms, g_verbose, g_analyze_mode, g_fault;
 /* 可靠性收尾: 故障注入与资源曲线 */
 static int g_fault_at, g_stopfail_n;
+/* 连续多久拿不到帧就判故障(默认 3 × --dq-timeout-ms) */
+#define DQ_TIMEOUT_LIMIT 3
 static atomic_int g_dq_timeouts;
 static unsigned long g_rss_max_kb, g_rss_end_kb;
 static double g_cpu_pct;
@@ -1371,13 +1374,18 @@ static void *capture_thread(void *arg)
 
 		if (pr == 0) {
 			int t = atomic_fetch_add(&g_dq_timeouts, 1) + 1;
+			/* 真实断流与故障注入走同一条恢复路径:
+			 * 连续 DQ_TIMEOUT_LIMIT 次无帧即判故障,不再无限等待。 */
+			int limit = (g_fault == 3) ? 3 : DQ_TIMEOUT_LIMIT;
 
-			fprintf(stderr, "DQBUF 超时(%d ms) 第 %d 次\n",
-				g_dq_timeout_ms, t);
-			if (g_fault == 3 && t >= 3) {
-				if (g_fault_once)
+			fprintf(stderr, "DQBUF 超时(%d ms) 连续第 %d/%d 次\n",
+				g_dq_timeout_ms, t, limit);
+			if (t >= limit) {
+				if (g_fault_once && g_fault == 3)
 					g_fault = 0;	/* 只坏一次: 恢复后应能继续跑 */
-				fatal(3, "DQBUF 连续超时 %d 次(故障注入)", t);
+				fatal(3, "DQBUF 连续超时 %d 次(%s)", t,
+				      g_fault == 3 ? "故障注入" : "真实无帧");
+				break;
 			}
 			continue;
 		}
@@ -1387,6 +1395,7 @@ static void *capture_thread(void *arg)
 			fatal(1, "poll 失败: %s", strerror(errno));
 			break;
 		}
+		atomic_store(&g_dq_timeouts, 0);	/* 有帧即清零,只统计"连续"超时 */
 		memset(&pl, 0, sizeof(pl));
 		memset(&b, 0, sizeof(b));
 		b.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;

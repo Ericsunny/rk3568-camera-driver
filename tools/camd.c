@@ -26,12 +26,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
+#include <sys/mman.h>
 #include <sys/stat.h>
 #include <time.h>
 #include <unistd.h>
 #include <dlfcn.h>
 
 #include <linux/videodev2.h>
+
+#ifdef HAVE_RGA
+#include "im2d.h"		/* librga 1.9.x:C 接口 *_t 版本 */
+#endif
 
 #define MAX_BUFS 8
 #define MAX_Q 32
@@ -115,6 +120,7 @@ struct node {
 	int idx;
 	size_t len;
 	int dmabuf_fd;
+	int stride;		/* 行 stride(bytesperline),RGA 按它解释内存 */
 	uint64_t seq;
 	int64_t ts_us;
 	atomic_int refs;
@@ -136,6 +142,7 @@ static struct {
 	int w, h, nbufs;
 	uint32_t fourcc;
 	struct node *nodes[MAX_BUFS];
+	void *mmap[MAX_BUFS];	/* CPU 对照路径需要可读基址 */
 	atomic_bool streaming;
 } cap;
 
@@ -151,6 +158,93 @@ static int64_t g_first_us, g_start_us, g_last_us;
 static pthread_mutex_t g_first_mu = PTHREAD_MUTEX_INITIALIZER;
 
 static lat_t rt_lat, ev_lat;
+
+/* ---------------- RGA 零拷贝消费者 ---------------- */
+static int g_rga;			/* --rga 打开 */
+static int g_copy;			/* --cpu-copy:CPU 拷贝路径(对照组) */
+#ifdef HAVE_RGA
+static unsigned char *g_copybuf;	/* CPU 侧全帧副本 */
+#endif
+
+static int g_rga_dw = 640, g_rga_dh = 360;
+#ifdef HAVE_RGA
+static rga_buffer_t g_rga_dst;
+static unsigned char *g_rga_dstbuf;
+static atomic_uint g_rga_ok, g_rga_err;
+static char g_rga_msg[128];
+static lat_t rga_lat;
+
+static int rga_init_dst(void)
+{
+	size_t need = (size_t)g_rga_dw * g_rga_dh * 3 / 2;
+
+	g_rga_dstbuf = malloc(need);
+	if (!g_rga_dstbuf)
+		return -1;
+	memset(g_rga_dstbuf, 0, need);
+	g_rga_dst = wrapbuffer_virtualaddr_t(g_rga_dstbuf, g_rga_dw, g_rga_dh,
+					     g_rga_dw, g_rga_dh,
+					     RK_FORMAT_YCbCr_420_SP);
+	lat_init(&rga_lat, 2048);
+	return 0;
+}
+
+/* 对照组:CPU 把整帧 memcpy 出来,再做 4x4 盒式降采样(与 RGA 同输出尺寸) */
+static void cpu_copy_process(struct node *n)
+{
+	size_t need = n->len;
+	unsigned char *dst = g_rga_dstbuf;
+	int x, y, i, j, dw = g_rga_dw, dh = g_rga_dh;
+	int stride = n->stride > 0 ? n->stride : cap.w;
+	int bx = cap.w / dw, by = cap.h / dh;
+	volatile unsigned long sum = 0;
+
+	if (!g_copybuf) {
+		g_copybuf = malloc(need);
+		if (!g_copybuf)
+			return;
+	}
+	/* 真实基址来自 mmap(在 dev_open 里保存),见 cap.mmap[i] */
+	memcpy(g_copybuf, cap.mmap[n->idx], need);
+	for (y = 0; y < dh; y++) {
+		for (x = 0; x < dw; x++) {
+			int acc = 0;
+			for (j = 0; j < by; j++) {
+				const unsigned char *row = g_copybuf +
+					(size_t)(y * by + j) * stride + x * bx;
+				for (i = 0; i < bx; i++)
+					acc += row[i];
+			}
+			dst[(size_t)y * dw + x] = (unsigned char)(acc / (bx * by));
+		}
+	}
+	sum += dst[0];
+	(void)sum;
+}
+
+/* 从 DMA-BUF fd 直接给 RGA,不经 CPU 拷贝;NV12 走 420SP,其余按 8bit 灰度搬 */
+static void rga_process(struct node *n)
+{
+	int fmt = (cap.fourcc == V4L2_PIX_FMT_NV12) ? RK_FORMAT_YCbCr_420_SP
+						    : RK_FORMAT_YCbCr_400;
+	int64_t t0 = now_us();
+	rga_buffer_t src;
+	IM_STATUS st;
+
+	src = wrapbuffer_fd_t(n->dmabuf_fd, cap.w, cap.h,
+			      n->stride > 0 ? n->stride : cap.w, cap.h, fmt);
+	st = imresize_t(src, g_rga_dst, 0, 0, 0, 1);
+	if (st != IM_STATUS_SUCCESS) {
+		atomic_fetch_add(&g_rga_err, 1);
+		if (!g_rga_msg[0])
+			snprintf(g_rga_msg, sizeof(g_rga_msg), "%s",
+				 imStrError(st));
+	} else {
+		atomic_fetch_add(&g_rga_ok, 1);
+	}
+	lat_add(&rga_lat, now_us() - t0);
+}
+#endif
 
 static int g_analyze_ms, g_ev_ms, g_frames_limit, g_recover_attempts;
 static int g_rt_depth = 4, g_ev_depth = 2;
@@ -399,10 +493,25 @@ static int dev_open(void)
 		cap.nodes[i] = calloc(1, sizeof(struct node));
 		cap.nodes[i]->idx = i;
 		cap.nodes[i]->len = pl.length;
+		/* 本内核 v4l2_plane 没有 bytesperline 字段;用 S_FMT 回填的
+		 * plane_fmt[0].bytesperline(1624x1224 BG10 实测 2048)。 */
+		cap.nodes[i]->stride = f.fmt.pix_mp.plane_fmt[0].bytesperline
+					       ? (int)f.fmt.pix_mp.plane_fmt[0].bytesperline
+					       : (int)cap.w;
 		cap.nodes[i]->dmabuf_fd = exp.fd;
+		cap.mmap[i] = mmap(NULL, pl.length, PROT_READ | PROT_WRITE,
+				   MAP_SHARED, cap.fd, pl.m.mem_offset);
+		if (cap.mmap[i] == MAP_FAILED)
+			cap.mmap[i] = NULL;
 		atomic_init(&cap.nodes[i]->refs, 0);
 	}
 
+#ifdef HAVE_RGA
+	if ((g_rga || g_copy) && rga_init_dst() < 0) {
+		fatal(1, "RGA 目标缓冲分配失败");
+		return -1;
+	}
+#endif
 	for (i = 0; i < cap.nbufs; i++) {
 		struct v4l2_buffer b;
 		struct v4l2_plane pl;
@@ -529,6 +638,44 @@ static void *capture_thread(void *arg)
 }
 
 /* ---------------- 实时分析消费者 ---------------- */
+/* 消费者实现分派:同一处入口,便于给 CPU 拷贝 / RGA 两条路径统一计时 */
+static int consumer_run(struct node *n)
+{
+#ifdef HAVE_RGA
+	if (g_copy) {
+		int64_t c0 = now_us();
+
+		cpu_copy_process(n);
+		lat_add(&rga_lat, now_us() - c0);
+		atomic_fetch_add(&g_rga_ok, 1);
+		return 0;
+	}
+	if (g_rga) {
+		rga_process(n);
+		return 0;
+	}
+#else
+	if (g_copy || g_rga) {
+		fprintf(stderr, "--rga/--cpu-copy 需要 -DHAVE_RGA 编译\\n");
+		return -1;
+	}
+#endif
+	if (g_analyze_mode == 1 || g_fault == 1) {
+		int ms = (g_fault == 1) ? g_analyze_ms * 10 : g_analyze_ms;
+
+		if (ms < 1)
+			ms = 1;
+		if (ms > 20000)
+			ms = 20000;
+		usleep((useconds_t)ms * 1000);
+	} else {
+		/* nop:只触碰数据页,证明缓冲区可读(不做格式解释) */
+		volatile unsigned char *p = (volatile unsigned char *)n;
+		(void)p;
+	}
+	return 0;
+}
+
 static void *rt_thread(void *arg)
 {
 	(void)arg;
@@ -547,18 +694,9 @@ static void *rt_thread(void *arg)
 			node_release(n);
 			break;
 		}
-		if (g_analyze_mode == 1 || g_fault == 1) {
-			int ms = (g_fault == 1) ? g_analyze_ms * 10 : g_analyze_ms;
-
-			if (ms < 1)
-				ms = 1;
-			if (ms > 20000)
-				ms = 20000;
-			usleep((useconds_t)ms * 1000);
-		} else {
-			/* nop:只触碰数据页,证明缓冲区可读(不做格式解释) */
-			volatile unsigned char *p = (volatile unsigned char *)n;
-			(void)p;
+		if (consumer_run(n) < 0) {
+			node_release(n);
+			break;
 		}
 		lat_add(&rt_lat, now_us() - t0);
 		node_release(n);
@@ -635,6 +773,17 @@ static void dump_json(FILE *f, int rc)
 		ev_lat.n ? (double)ev_lat.sum_us / ev_lat.n : -1.0,
 		(unsigned long long)ev_lat.max_us, lat_pct(&ev_lat, 0.95),
 		lat_pct(&ev_lat, 0.99));
+#ifdef HAVE_RGA
+	if (g_rga || g_copy)
+		fprintf(f,
+			"  \"consumer\": {\"mode\": \"%s\", \"ok\": %u, \"err\": %u, \"dst\": \"%dx%d\", \"avg_us\": %.1f, \"max_us\": %llu, \"p99_us\": %.0f, \"msg\": \"%s\"},\n",
+			g_copy ? "cpu-copy" : "rga",
+			atomic_load(&g_rga_ok), atomic_load(&g_rga_err),
+			g_rga_dw, g_rga_dh,
+			rga_lat.n ? (double)rga_lat.sum_us / rga_lat.n : -1.0,
+			(unsigned long long)rga_lat.max_us, lat_pct(&rga_lat, 0.99),
+			g_rga_msg);
+#endif
 	fprintf(f, "  \"queue\": {\"rt_cap\": %d, \"ev_cap\": %d}\n", q[Q_RT].cap,
 		q[Q_EV].cap);
 	fprintf(f, "}\n");
@@ -702,6 +851,10 @@ static int session(void)
 	lat_reset(&rt_lat);
 	lat_reset(&ev_lat);
 
+	if (g_rga)
+		printf(">>> 实时消费者: RGA 零拷贝 -> %dx%d\n", g_rga_dw, g_rga_dh);
+	if (g_copy)
+		printf(">>> 实时消费者: CPU 拷贝+降采样 -> %dx%d\n", g_rga_dw, g_rga_dh);
 	q_init(Q_RT, g_rt_depth, 1, 0);		/* 实时:丢最旧 */
 	/* 取证队列:默认丢最旧(采集永不被消费者拖住);--ev-policy block 才做背压 */
 	/* 配置自洽性检查:每个消费者在处理中会占住 1 个 buffer,采集侧还要 1 个在途,
@@ -760,6 +913,9 @@ static void usage(void)
 		"  --rt-depth N      实时队列深度(默认 4,满则丢最旧)\n"
 		"  --ev-depth N      取证队列深度(默认 2)\n"
 "  --ev-policy drop|block  取证队列满时策略(默认 drop=丢最旧,不阻塞采集)\n"
+"  --rga             实时消费者改用 RGA 零拷贝缩放(需 -DHAVE_RGA -lrga)\n"
+"  --rga-size WxH    RGA 目标尺寸(默认 640x360)\n"
+"  --cpu-copy        对照组:CPU memcpy 整帧 + 降采样(不开 RGA)\n"
 		"  --ev-fps F        取证限速帧率(默认 5)\n"
 		"  --analyze-ms N    实时分析模拟耗时(ms)\n"
 		"  --analyze MODE    nop|sleep(默认 nop)\n"
@@ -788,6 +944,9 @@ int main(int argc, char **argv)
 		{ "dq-timeout", required_argument, 0, 1008 },
 		{ "json", required_argument, 0, 1009 },
 		{ "ev-policy", required_argument, 0, 1010 },
+		{ "rga", no_argument, 0, 1011 },
+		{ "rga-size", required_argument, 0, 1012 },
+		{ "cpu-copy", no_argument, 0, 1013 },
 		{ 0, 0, 0, 0 }
 	};
 
@@ -823,6 +982,15 @@ int main(int argc, char **argv)
 		case 1009: g_json = optarg; break;
 		case 1010:
 			g_ev_policy = !strcmp(optarg, "block") ? 1 : 0;
+			break;
+		case 1011:
+			g_rga = 1;
+			break;
+		case 1013:
+			g_copy = 1;
+			break;
+		case 1012:
+			sscanf(optarg, "%dx%d", &g_rga_dw, &g_rga_dh);
 			break;
 		default: usage(); return 2;
 		}

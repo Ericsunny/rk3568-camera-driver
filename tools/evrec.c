@@ -61,6 +61,7 @@ static int ring_head, ring_cnt;
 static unsigned g_pre_seq;      /* pre 窗口首帧的绝对 seq */
 static unsigned long g_pushed;  /* 累计入环帧数(诊断) */
 static int g_events, g_max_events;
+static char g_outbuf[640];
 static size_t ring_bytes, ring_limit = 64u << 20;
 static double t0_ms;
 static volatile sig_atomic_t g_trigger;
@@ -756,6 +757,16 @@ int main(int argc, char **argv)
 #endif
 	}
 #endif
+	{	/* 输出名加时间戳: 长跑/多次启动不会覆盖同名文件 */
+		time_t now_t = time(NULL);
+		struct tm tmv;
+		char tstr[32];
+
+		localtime_r(&now_t, &tmv);
+		strftime(tstr, sizeof(tstr), "%Y%m%d-%H%M%S", &tmv);
+		snprintf(g_outbuf, sizeof(g_outbuf), "%s_%s", out, tstr);
+		out = g_outbuf;
+	}
 	printf(">>> 采集 %s %dx%d,pre=%ds post=%ds ring=%zuMB gop=%d\n",
 	       dev, w, h, pre_sec, post_sec, ring_limit >> 20, gop);
 

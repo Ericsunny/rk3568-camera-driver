@@ -29,6 +29,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <time.h>
+#include <pthread.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -69,6 +70,7 @@ static char g_outbuf[640];
 static size_t ring_bytes, ring_limit = 64u << 20;
 static double t0_ms;
 static volatile sig_atomic_t g_trigger;
+static volatile sig_atomic_t g_stop;	/* SIGTERM: 优雅退出 */
 static const char *g_trig_path;
 static int g_osd;		/* --osd 烧 OSD; 默认关闭, 不加参数行为不变 */
 
@@ -86,6 +88,13 @@ static void on_sig(int s)
 	g_trigger = 1;
 }
 
+/* 与 on_sig 分开: 退出信号绝不能顺带触发一次录像 */
+static void on_term(int s)
+{
+	(void)s;
+	g_stop = 1;
+}
+
 /* ---------------- V4L2 ---------------- */
 static struct {
 	int fd, nbufs;
@@ -100,7 +109,9 @@ static int xioctl(int fd, unsigned long req, void *arg)
 
 	do {
 		r = ioctl(fd, req, arg);
-	} while (r < 0 && errno == EINTR);
+		/* g_stop 只由 SIGTERM 置位; 置位后不再重试 EINTR,
+		 * 让阻塞中的 DQBUF 真正返回, 主线程才能 join 发送线程并退出 */
+	} while (r < 0 && errno == EINTR && !g_stop);
 	return r;
 }
 
@@ -773,6 +784,153 @@ static int ring_first_idr_from(int from)
 	return -1;
 }
 
+/* ---------------- RTSP 投递环(骨架, 不含任何协议) ----------------
+ *
+ * 先把"编码线程 -> 发送线程"的边界立起来, 网络部分后面再补:
+ *   - 编码线程对每个编码包 malloc+memcpy 一份投递, 环满丢最旧,
+ *     绝不等待消费者; 发送慢只会丢自己的帧, 不会反压采集/编码/录像;
+ *   - 发送线程当前取到即累加计数并 free, 不做任何 I/O, 只验证这条
+ *     "编码一次、两个出口"的通路不会把编码线程拖住;
+ *   - 录像环/OSD/检测路径不经过这里。不加 --rtsp-ring 时默认深度 8,
+ *     因此默认行为与改动前一致(仅多一个空转线程)。
+ */
+#define PKB_MAX 64		/* --rtsp-ring 的硬上限 */
+struct pktbuf {
+	unsigned char *data;
+	int len;
+	unsigned seq;
+	unsigned char key;
+};
+
+static struct pktbuf g_pkb[PKB_MAX];
+static int g_pkb_depth = 8;	/* --rtsp-ring N, 默认 8 */
+static int g_pkb_head, g_pkb_cnt;
+static unsigned long g_pkb_in, g_pkb_drop, g_pkb_out;
+static pthread_mutex_t g_pkb_lock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t g_pkb_cond = PTHREAD_COND_INITIALIZER;
+static pthread_t g_pkb_tid;
+static int g_pkb_started;
+static double g_pkb_next_ms = 5000.0;	/* 下一次打印 in/drop 的时间(相对启动) */
+
+/* 编码线程: 只做一次拷贝入环, 环满丢最旧。计数与队列同一把锁, 天然原子。 */
+static void pkb_push(const unsigned char *src, int len, unsigned seq, int key)
+{
+	struct pktbuf *p;
+	unsigned char *copy, *victim = NULL;
+
+	if (!g_pkb_started || len <= 0)
+		return;
+	copy = malloc((size_t)len);
+	if (!copy) {
+		pthread_mutex_lock(&g_pkb_lock);
+		g_pkb_drop++;
+		pthread_mutex_unlock(&g_pkb_lock);
+		return;
+	}
+	memcpy(copy, src, (size_t)len);
+
+	pthread_mutex_lock(&g_pkb_lock);
+	if (g_pkb_cnt == g_pkb_depth) {
+		/* 环满: 摘掉最旧的一个, free 放到锁外做, 缩短编码线程持锁时间 */
+		p = &g_pkb[g_pkb_head];
+		victim = p->data;
+		p->data = NULL;
+		g_pkb_head = (g_pkb_head + 1) % g_pkb_depth;
+		g_pkb_cnt--;
+		g_pkb_drop++;
+	}
+	p = &g_pkb[(g_pkb_head + g_pkb_cnt) % g_pkb_depth];
+	p->data = copy;
+	p->len = len;
+	p->seq = seq;
+	p->key = (unsigned char)(key ? 1 : 0);
+	g_pkb_cnt++;
+	g_pkb_in++;
+	pthread_cond_signal(&g_pkb_cond);
+	pthread_mutex_unlock(&g_pkb_lock);
+
+	free(victim);		/* 锁外释放: 不占着环锁调用 allocator */
+}
+
+/* 发送线程骨架: 取包 -> 计数/free -> 再等。零 I/O, 因此正常情况下永不丢包。 */
+static void *sender_thread(void *arg)
+{
+	(void)arg;
+	for (;;) {
+		struct pktbuf p;
+
+		pthread_mutex_lock(&g_pkb_lock);
+		while (g_pkb_cnt == 0 && !g_stop)
+			pthread_cond_wait(&g_pkb_cond, &g_pkb_lock);
+		if (g_pkb_cnt == 0) {	/* 只可能是 g_stop 且环已空 */
+			pthread_mutex_unlock(&g_pkb_lock);
+			break;
+		}
+		p = g_pkb[g_pkb_head];
+		g_pkb[g_pkb_head].data = NULL;
+		g_pkb_head = (g_pkb_head + 1) % g_pkb_depth;
+		g_pkb_cnt--;
+		g_pkb_out++;
+		pthread_mutex_unlock(&g_pkb_lock);
+		free(p.data);		/* 骨架: 这里将来换成非阻塞 send */
+	}
+	return NULL;
+}
+
+static void rtsp_ring_report(void)
+{
+	unsigned long in, drop;
+
+	pthread_mutex_lock(&g_pkb_lock);
+	in = g_pkb_in;
+	drop = g_pkb_drop;
+	pthread_mutex_unlock(&g_pkb_lock);
+	printf("rtsp-ring: in=%lu drop=%lu (深度上限 %d)\n",
+	       in, drop, g_pkb_depth);
+	fflush(stdout);		/* 后台重定向到日志时也要实时可见 */
+}
+
+static int pkb_start(int depth)
+{
+	if (depth < 1)
+		depth = 1;
+	if (depth > PKB_MAX)
+		depth = PKB_MAX;
+	g_pkb_depth = depth;
+	if (pthread_create(&g_pkb_tid, NULL, sender_thread, NULL) != 0) {
+		fprintf(stderr, ">>> rtsp 发送线程创建失败\n");
+		return -1;
+	}
+	g_pkb_started = 1;
+	return 0;
+}
+
+/* 退出: 先唤醒并 join, 再把环内残留兜底释放(sender 正常会先抽干) */
+static void pkb_stop(void)
+{
+	int i;
+
+	if (!g_pkb_started)
+		return;
+	pthread_mutex_lock(&g_pkb_lock);
+	g_stop = 1;
+	pthread_cond_broadcast(&g_pkb_cond);
+	pthread_mutex_unlock(&g_pkb_lock);
+	pthread_join(g_pkb_tid, NULL);
+	g_pkb_started = 0;
+
+	pthread_mutex_lock(&g_pkb_lock);
+	for (i = 0; i < g_pkb_cnt; i++) {
+		int idx = (g_pkb_head + i) % g_pkb_depth;
+
+		free(g_pkb[idx].data);
+		g_pkb[idx].data = NULL;
+	}
+	g_pkb_cnt = 0;
+	g_pkb_head = 0;
+	pthread_mutex_unlock(&g_pkb_lock);
+}
+
 static int dump(const char *out, unsigned trig_seq, double trig_ts, int pre_i,
 		int end_i, unsigned w, unsigned h, double fps)
 {
@@ -857,6 +1015,7 @@ int main(int argc, char **argv)
 	int i, k, trigger_i = -1, pre_i = -1, end_i = -1;
 	int rc = 0;		/* 进程退出码: 0=正常, 1=真错误 */
 	int reached_max = 0;	/* 因 --max-events 正常结束 */
+	int got_term;		/* 主循环退出时是否已收到 SIGTERM */
 	unsigned seq = 0;	/* 源帧序号: 只有 DQBUF 成功才 +1, 编码包循环不碰 */
 	unsigned frame_seq = 0;	/* 当前帧的源帧序号(编码包循环内只读) */
 	double trig_ts = 0, trig_abs = 0, t_start;
@@ -882,12 +1041,23 @@ int main(int argc, char **argv)
 		else if (!strcmp(argv[i], "--rga-size")) sscanf(argv[++i], "%dx%d", &g_rga_w, &g_rga_h);
 		else if (!strcmp(argv[i], "--osd")) g_osd = 1;
 		else if (!strcmp(argv[i], "--no-osd")) g_osd = 0;
+		else if (!strcmp(argv[i], "--rtsp-ring")) g_pkb_depth = atoi(argv[++i]);
 	}
 	gop = (pre_sec + post_sec) * 15 / 2;
 	if (gop < 8)
 		gop = 8;
 
 	signal(SIGUSR1, on_sig);
+	{	/* SIGTERM 用不带 SA_RESTART 的 sigaction:
+		 * 否则阻塞的 DQBUF 会被内核自动重启, 收不到 EINTR, 无法及时退出 */
+		struct sigaction sa;
+
+		memset(&sa, 0, sizeof(sa));
+		sa.sa_handler = on_term;
+		sigemptyset(&sa.sa_mask);
+		sa.sa_flags = 0;
+		sigaction(SIGTERM, &sa, NULL);
+	}
 	t0_ms = now_ms(CLOCK_MONOTONIC);
 	t_start = t0_ms;
 
@@ -924,6 +1094,10 @@ int main(int argc, char **argv)
 		printf(">>> OSD 开启: #<seq> + t mm:ss.mmm @左上角(4px, sc=2), stride=%u\n",
 		       cap.stride);
 
+	/* 采集/编码初始化都成功后再起线程: 失败路径直接 return, 不需要 join */
+	if (pkb_start(g_pkb_depth) < 0)
+		return 1;
+
 	for (;;) {
 		struct v4l2_buffer b;
 		struct v4l2_plane pl;
@@ -931,6 +1105,8 @@ int main(int argc, char **argv)
 		MppPacket pkt = NULL;
 		double ts;
 
+		if (g_stop)
+			break;
 		memset(&pl, 0, sizeof(pl));
 		memset(&b, 0, sizeof(b));
 		b.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
@@ -938,6 +1114,8 @@ int main(int argc, char **argv)
 		b.length = 1;
 		b.m.planes = &pl;
 		if (xioctl(cap.fd, VIDIOC_DQBUF, &b) < 0) {
+			if (g_stop)
+				break;	/* SIGTERM: 不再重试, 尽快退出 */
 			if (errno == EINTR)
 				continue;
 			perror("DQBUF");
@@ -989,6 +1167,7 @@ int main(int argc, char **argv)
 				void *pos = mpp_packet_get_pos(pkt);
 				size_t len = mpp_packet_get_length(pkt);
 				unsigned char *copy;
+				int isk;
 
 				if (len == 0) {
 					mpp_packet_deinit(&pkt);
@@ -996,12 +1175,21 @@ int main(int argc, char **argv)
 				}
 				copy = malloc(len);
 				memcpy(copy, pos, len);
+				isk = is_key(copy, (int)len);
 				/* seq 只读: 同一帧的所有包共用 frame_seq */
-				ring_push(copy, (int)len, frame_seq, pkn,
-					  is_key(copy, (int)len));
+				ring_push(copy, (int)len, frame_seq, pkn, isk);
+				/* 同一包的副本进投递环; malloc/memcpy 后立即返回,
+				 * 与录像环完全独立, 环满由 pkb_push 丢最旧 */
+				pkb_push(copy, (int)len, frame_seq, isk);
 				pkn++;
 				mpp_packet_deinit(&pkt);
 			}
+		}
+
+		/* 每 5 秒报一次投递环收支, 用于观察是否有丢包 */
+		while (ts - t_start >= g_pkb_next_ms) {
+			rtsp_ring_report();
+			g_pkb_next_ms += 5000.0;
 		}
 
 		/* 触发: 信号 或 触发文件 mtime 变化 */
@@ -1075,10 +1263,19 @@ int main(int argc, char **argv)
 		}
 	}
 
+	/* 先记下退出原因: pkb_stop 会用 g_stop 唤醒发送线程, 不能事后区分 */
+	got_term = g_stop;
 	{
 		enum v4l2_buf_type t = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
 
 		xioctl(cap.fd, VIDIOC_STREAMOFF, &t);
+	}
+	/* 先 join 发送线程并释放投递环残留, 再走各条退出路径 */
+	pkb_stop();
+	/* SIGTERM: 优雅退出; 未完成的事件不再落盘 */
+	if (got_term && !reached_max && !rc) {
+		printf(">>> 收到 SIGTERM, 已停止\n");
+		return 0;
 	}
 	/* 达到 --max-events 属正常结束(事件已在循环内落盘); 落盘失败已打印过 */
 	if (reached_max || rc)

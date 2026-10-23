@@ -837,10 +837,16 @@ static void rknn_process(struct node *n)
 			 boxes[0].cls, boxes[0].score, boxes[0].x1, boxes[0].y1);
 	if (nd > 0 && g_draw_file)
 		draw_boxes(boxes, nd);
-	if (nd > 0 && (n->seq % 30) == 0) {
-		stage("rt seq=%u det=%d cls=%d score=%.2f max=%.2f box=%.0f,%.0f,%.0f,%.0f",
-		      n->seq, nd, boxes[0].cls, boxes[0].score, maxscore,
-		      boxes[0].x1, boxes[0].y1, boxes[0].x2, boxes[0].y2);
+	if (nd > 0) {
+		char lb[512];
+		int off = 0, q;
+
+		for (q = 0; q < nd && q < 4; q++)
+			off += snprintf(lb + off, sizeof(lb) - off,
+					" [%d]cls=%d s=%.2f %.0f,%.0f,%.0f,%.0f",
+					q, boxes[q].cls, boxes[q].score, boxes[q].x1,
+					boxes[q].y1, boxes[q].x2, boxes[q].y2);
+		stage("rt seq=%u det=%d max=%.2f%s", n->seq, nd, maxscore, lb);
 	} else if ((n->seq % 30) == 0) {
 		stage("rt seq=%u det=0 max=%.2f", n->seq, maxscore);
 	}

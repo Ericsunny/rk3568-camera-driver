@@ -5,6 +5,7 @@
 #include <linux/pm_runtime.h>
 #include <linux/gpio/consumer.h>
 #include <linux/slab.h>
+#include <linux/math64.h>
 #include <linux/delay.h>
 #include <linux/of.h>
 #ifdef CONFIG_COMPAT
@@ -269,9 +270,16 @@ static int ov8858_sm_g_mbus_config(struct v4l2_subdev *sd,
 	return 0;
 }
 
+static int ov8858_sm_g_frame_interval(struct v4l2_subdev *sd,
+				      struct v4l2_subdev_frame_interval *fi);
+static int ov8858_sm_s_frame_interval(struct v4l2_subdev *sd,
+				      struct v4l2_subdev_frame_interval *fi);
+
 static const struct v4l2_subdev_video_ops ov8858_sm_video_ops = {
 	.s_stream = ov8858_sm_s_stream,
 	.g_mbus_config = ov8858_sm_g_mbus_config,
+	.g_frame_interval = ov8858_sm_g_frame_interval,
+	.s_frame_interval = ov8858_sm_s_frame_interval,
 };
 
 /* rkcif asks every sensor for its module info when a video node is opened. */
@@ -515,8 +523,86 @@ static int ov8858_sm_enum_frame_size(struct v4l2_subdev *sd,
 	return 0;
 }
 
+/*
+ * L1-B 收尾: 帧间隔(g/s/enum frame_interval)
+ *
+ * 为什么必须补: 2022 版 rkaiq 在 get_sensor_caps 阶段枚举帧间隔, 我们没实现,
+ * 它一直打印 "@get_sensor_caps /dev/v4l-subdev2: Enum sensor frame interval failed"。
+ *
+ * 本内核(4.19 + Rockchip 回移)的 ABI 与新版不同:
+ *   - G/S_FRAME_INTERVAL 在 video ops(sd, interval), 不在 pad ops;
+ *   - pad ops 只有 enum_frame_interval;
+ *   - 结构体里是 v4l2_fract interval, 不是 min/max。
+ *
+ * 帧率不是可调量: 由 datasheet 时序 HTS/VTS 与固定 pixel_rate 决定。
+ *   fps = pixel_rate / (2 * HTS * VTS)   (系数 2 见 0x380e 注释 143.9M/(3880*1236))
+ * 所以这里只"报告"帧间隔, set 只接受与当前模式一致的值。
+ */
+static const struct ov8858_sm_timing {
+	u32 hts;
+	u32 vts;
+} ov8858_sm_timings[] = {
+	{ 1928, 1244 },		/* 1632x1224: 144M/(2*1928*1244) = 30.02 fps */
+	{ 1940, 1236 },		/* 1920x1080: 144M/(2*1940*1236) = 30.03 fps */
+};
+
+static u32 ov8858_sm_calc_fps(int idx)
+{
+	return (u32)div_u64((u64)OV8858_SM_PIXEL_RATE,
+			    2ULL * ov8858_sm_timings[idx].hts *
+			    ov8858_sm_timings[idx].vts);
+}
+
+static int ov8858_sm_enum_frame_interval(struct v4l2_subdev *sd,
+					 struct v4l2_subdev_pad_config *cfg,
+					 struct v4l2_subdev_frame_interval_enum *fie)
+{
+	if (fie->pad != 0)
+		return -EINVAL;
+
+	if (fie->index >= ARRAY_SIZE(ov8858_sm_timings))
+		return -EINVAL;
+
+	fie->interval.numerator = 1;
+	fie->interval.denominator = ov8858_sm_calc_fps(fie->index);
+
+	return 0;
+}
+
+static int ov8858_sm_g_frame_interval(struct v4l2_subdev *sd,
+				      struct v4l2_subdev_frame_interval *fi)
+{
+	struct ov8858_sm *ov8858 = container_of(sd, struct ov8858_sm, subdev);
+
+	fi->interval.numerator = 1;
+	fi->interval.denominator =
+		ov8858_sm_calc_fps(ov8858->is_1080p ? 1 : 0);
+
+	return 0;
+}
+
+static int ov8858_sm_s_frame_interval(struct v4l2_subdev *sd,
+				      struct v4l2_subdev_frame_interval *fi)
+{
+	struct ov8858_sm *ov8858 = container_of(sd, struct ov8858_sm, subdev);
+	u32 fps = ov8858_sm_calc_fps(ov8858->is_1080p ? 1 : 0);
+
+	/* 只接受当前模式的固定帧率 */
+	if (fi->interval.numerator != 1 || fi->interval.denominator != fps) {
+		dev_dbg(&ov8858->client->dev,
+			"s_frame_interval: %u/%u 不支持(固定 %u fps)\n",
+			fi->interval.numerator, fi->interval.denominator, fps);
+		fi->interval.numerator = 1;
+		fi->interval.denominator = fps;
+		return -EINVAL;
+	}
+
+	return 0;
+}
+
 static const struct v4l2_subdev_pad_ops ov8858_sm_pad_ops = {
 	.enum_frame_size = ov8858_sm_enum_frame_size,
+	.enum_frame_interval = ov8858_sm_enum_frame_interval,
 	.get_fmt = ov8858_sm_get_fmt,
 	.set_fmt = ov8858_sm_set_fmt,
 };

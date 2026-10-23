@@ -322,6 +322,7 @@ static lat_t npu_lat, npu_rga_lat, npu_post_lat;
 static unsigned g_det_total, g_det_max;
 static atomic_uint g_score_maxi;	/* maxscore x1000 */
 static char g_det_last[128];
+static int g_no_obj_mul;		/* --no-obj-mul: score 直接取 class 概率 */
 static float g_obj_thresh;		/* 0 = 用 OBJ_THRESH */
 static char *g_dump_rgb;		/* 调试:把 NPU 输入(640x640 RGB)存一份 */
 static int g_dump_done;
@@ -398,10 +399,6 @@ static int decode_yolov8(rknn_tensor_attr *oa, int8_t **od, struct dbox *res,
 
 				idx = y * gw + x;
 				score = (scr[idx] - ascr->zp) * ascr->scale;
-				if (score > *p_maxscore)
-					*p_maxscore = score;
-				if (score < (g_obj_thresh > 0 ? g_obj_thresh : OBJ_THRESH))
-					continue;
 				for (c = 0; c < 80; c++) {
 					float v = (cls[(size_t)c * gh * gw + idx] - acls->zp) *
 						  acls->scale;
@@ -411,10 +408,12 @@ static int decode_yolov8(rknn_tensor_attr *oa, int8_t **od, struct dbox *res,
 						best = c;
 					}
 				}
-				if (best < 0)
-					continue;
-				conf = score * bestv;
-				if (conf < (g_obj_thresh > 0 ? g_obj_thresh : OBJ_THRESH))
+				/* 官方 rknn_model_zoo 的 yolov8 demo 直接拿 class 概率当 score;
+				 * 之前一律 obj*cls,会把弱纹理目标系统性压到阈值以下。*/
+				conf = g_no_obj_mul ? bestv : score * bestv;
+				if (conf > *p_maxscore)
+					*p_maxscore = conf;
+				if (best < 0 || conf < (g_obj_thresh > 0 ? g_obj_thresh : OBJ_THRESH))
 					continue;
 				for (side = 0; side < 4; side++) {
 					float p[16], mx = -1e9f, sum = 0, acc = 0;
@@ -1613,6 +1612,7 @@ int main(int argc, char **argv)
 		{ "fault-once", no_argument, 0, 1014 },
 		{ "rknn", required_argument, 0, 1015 },
 		{ "obj-thresh", required_argument, 0, 1016 },
+        { "no-obj-mul", no_argument, 0, 1034 },
 		{ "dump-rgb", required_argument, 0, 1017 },
 		{ "rot90", no_argument, 0, 1018 },
         { "wb", no_argument, 0, 1033 },
@@ -1668,6 +1668,7 @@ int main(int argc, char **argv)
 		case 1015:
 			g_rknn_model = optarg;
 			break;
+		case 1034: g_no_obj_mul = 1; break;
 		case 1016:
 			g_obj_thresh = (float)atof(optarg);
 			break;

@@ -45,6 +45,7 @@ static int g_w = 1920, g_h = 1080;
 static int g_fps = 30;
 static int g_kbps = 4000;
 static int g_port = 8554;
+static int g_http_port = 0;   /* 0 = 关闭浏览器预览 */
 static volatile int g_run = 1;
 static volatile int g_lfd = -1;
 
@@ -377,6 +378,106 @@ static void sig_handler(int sig)
 	}
 }
 
+/* ---------------- 浏览器预览(HTTP + BMP 快照) ---------------- */
+#define SNAP_W 640
+#define SNAP_H 360
+static uint8_t *g_bmp;
+static int g_bmp_len;
+static pthread_mutex_t g_bmp_lock = PTHREAD_MUTEX_INITIALIZER;
+
+static inline uint8_t clamp8(int v) { return v < 0 ? 0 : (v > 255 ? 255 : (uint8_t)v); }
+
+/* NV12 -> BMP(640x360,BT.601 limited range),供浏览器 <img> 拉取 */
+static void snap_update(const uint8_t *nv12, int w, int h, int stride)
+{
+	int rowsz = (SNAP_W * 3 + 3) & ~3;
+	int len = 54 + rowsz * SNAP_H;
+	uint8_t *b = malloc(len);
+	if (!b) return;
+	memset(b, 0, 54);
+	b[0] = 'B'; b[1] = 'M';
+	*(uint32_t *)(b + 2) = (uint32_t)len;
+	*(uint32_t *)(b + 10) = 54;
+	*(uint32_t *)(b + 14) = 40;
+	*(int32_t *)(b + 18) = SNAP_W;
+	*(int32_t *)(b + 22) = SNAP_H;
+	*(uint16_t *)(b + 26) = 1;
+	*(uint16_t *)(b + 28) = 24;
+	*(uint32_t *)(b + 34) = (uint32_t)(rowsz * SNAP_H);
+	const uint8_t *uv = nv12 + (size_t)stride * h;
+	for (int y = 0; y < SNAP_H; y++) {
+		int sy = y * h / SNAP_H;
+		uint8_t *row = b + 54 + (size_t)(SNAP_H - 1 - y) * rowsz;
+		for (int x = 0; x < SNAP_W; x++) {
+			int sx = x * w / SNAP_W;
+			int Y = nv12[(size_t)sy * stride + sx] - 16;
+			int U = uv[(size_t)(sy / 2) * stride + (sx & ~1)] - 128;
+			int V = uv[(size_t)(sy / 2) * stride + (sx & ~1) + 1] - 128;
+			row[x * 3 + 0] = clamp8((298 * Y + 516 * U + 128) >> 8);
+			row[x * 3 + 1] = clamp8((298 * Y - 100 * U - 208 * V + 128) >> 8);
+			row[x * 3 + 2] = clamp8((298 * Y + 409 * V + 128) >> 8);
+		}
+	}
+	pthread_mutex_lock(&g_bmp_lock);
+	free(g_bmp); g_bmp = b; g_bmp_len = len;
+	pthread_mutex_unlock(&g_bmp_lock);
+}
+
+static const char g_page[] =
+"HTTP/1.0 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nCache-Control: no-store\r\n\r\n"
+"<html><head><meta charset='utf-8'><title>RK3568 camera</title></head>"
+"<body style='margin:0;background:#111'>"
+"<div style='color:#ddd;font:14px sans-serif;padding:8px'>RK3568 实时预览(约 5 fps 快照)</div>"
+"<img id=v style='width:100%;max-width:960px;display:block'>"
+"<script>var t=0;function f(){document.getElementById('v').src='/snap.bmp?t='+(t++);setTimeout(f,200);}f();</script>"
+"</body></html>";
+
+static void *http_thread(void *arg)
+{
+	int port = (int)(intptr_t)arg;
+	int lfd = socket(AF_INET, SOCK_STREAM, 0);
+	int one = 1;
+	if (lfd < 0) return NULL;
+	setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
+	struct sockaddr_in sa = { .sin_family = AF_INET, .sin_port = htons(port),
+				  .sin_addr.s_addr = htonl(INADDR_ANY) };
+	if (bind(lfd, (struct sockaddr *)&sa, sizeof(sa)) < 0) { perror("http bind"); return NULL; }
+	listen(lfd, 8);
+	printf(">>> 浏览器预览: http://192.168.10.2:%d/  用浏览器打开\n", port);
+	fflush(stdout);
+	while (g_run) {
+		int fd = accept(lfd, NULL, NULL);
+		if (fd < 0) { if (!g_run) break; continue; }
+		char req[512] = {0};
+		ssize_t r = read(fd, req, sizeof(req) - 1);
+		(void)r;
+		if (strstr(req, "GET /snap.bmp")) {
+			pthread_mutex_lock(&g_bmp_lock);
+			int len = g_bmp_len;
+			uint8_t *tmp = len ? malloc(len) : NULL;
+			if (tmp) memcpy(tmp, g_bmp, len);
+			pthread_mutex_unlock(&g_bmp_lock);
+			if (tmp) {
+				char hdr[192];
+				int hl = snprintf(hdr, sizeof(hdr),
+					"HTTP/1.0 200 OK\r\nContent-Type: image/bmp\r\n"
+					"Content-Length: %d\r\nCache-Control: no-store\r\n\r\n", len);
+				if (write(fd, hdr, hl) < 0) { /* ignore */ }
+				if (write(fd, tmp, len) < 0) { /* ignore */ }
+				free(tmp);
+			} else {
+				const char *e = "HTTP/1.0 503 Busy\r\nContent-Length: 0\r\n\r\n";
+				if (write(fd, e, strlen(e)) < 0) { /* ignore */ }
+			}
+		} else {
+			if (write(fd, g_page, sizeof(g_page) - 1) < 0) { /* ignore */ }
+		}
+		close(fd);
+	}
+	close(lfd);
+	return NULL;
+}
+
 static void *capture_thread(void *arg)
 {
 	struct cap *c = arg;
@@ -392,6 +493,7 @@ static void *capture_thread(void *arg)
 
 		uint8_t *dst = mpp_buffer_get_ptr(e.buf);
 		copy_nv12(dst, addr, g_w, g_h, c->stride);
+		if (g_http_port && (idx % 3) == 0) snap_update(dst, g_w, g_h, g_w);
 		cap_return(c, addr);
 
 		MppFrame fr = NULL;
@@ -625,7 +727,7 @@ int main(int argc, char **argv)
 	int opt;
 	setvbuf(stdout, NULL, _IONBF, 0);
 	setvbuf(stderr, NULL, _IONBF, 0);
-	while ((opt = getopt(argc, argv, "d:w:h:r:b:p:")) != -1) {
+	while ((opt = getopt(argc, argv, "d:w:h:r:b:p:H:")) != -1) {
 		switch (opt) {
 		case 'd': g_dev = optarg; break;
 		case 'w': g_w = atoi(optarg); break;
@@ -633,6 +735,7 @@ int main(int argc, char **argv)
 		case 'r': g_fps = atoi(optarg); break;
 		case 'b': g_kbps = atoi(optarg); break;
 		case 'p': g_port = atoi(optarg); break;
+		case 'H': g_http_port = atoi(optarg); break;
 		default:
 			fprintf(stderr, "用法: %s [-d dev] [-w W] [-h H] [-r fps] [-b kbps] [-p port]\n", argv[0]);
 			return 2;
@@ -666,6 +769,11 @@ int main(int argc, char **argv)
 	printf(">>> RTSP 服务已就绪: rtsp://192.168.10.2:%d/live  (SPS=%d PPS=%d)\n",
 	       g_port, g_sps_len, g_pps_len);
 	fflush(stdout);
+
+	if (g_http_port) {
+		pthread_t ht;
+		pthread_create(&ht, NULL, http_thread, (void *)(intptr_t)g_http_port);
+	}
 
 	while (g_run) {
 		struct sockaddr_in cli;

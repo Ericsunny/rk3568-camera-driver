@@ -634,7 +634,7 @@ static unsigned g_osd_seq;
 static uint64_t g_osd_ts_us, g_osd_t0_us;
 
 /* 5x7 点阵, 每行 5 bit */
-static const unsigned char font5x7[13][7] = {
+static const unsigned char font5x7[14][7] = {
 	{0x0E,0x11,0x13,0x15,0x19,0x11,0x0E},	/* 0 */
 	{0x04,0x0C,0x04,0x04,0x04,0x04,0x0E},	/* 1 */
 	{0x0E,0x11,0x01,0x02,0x04,0x08,0x1F},	/* 2 */
@@ -648,6 +648,7 @@ static const unsigned char font5x7[13][7] = {
 	{0x00,0x0C,0x0C,0x00,0x0C,0x0C,0x00},	/* : */
 	{0x00,0x00,0x00,0x00,0x0C,0x0C,0x00},	/* . */
 	{0x0A,0x0A,0x1F,0x0A,0x1F,0x0A,0x0A},	/* # */
+	{0x04,0x04,0x0E,0x04,0x04,0x05,0x02},	/* t */
 };
 
 static void put_px(unsigned char *buf, int W, int H, int x, int y, int v)
@@ -669,6 +670,8 @@ static int glyph_idx(char ch)
 		return 11;
 	if (ch == '#')
 		return 12;
+	if (ch == 't')
+		return 13;
 	return -1;
 }
 
@@ -705,7 +708,7 @@ static void draw_osd(unsigned char *buf, int W, int H)
 	int sec = (int)(el / 1000000), ms = (int)((el / 1000) % 1000);
 
 	snprintf(l1, sizeof(l1), "#%u", g_osd_seq);
-	snprintf(l2, sizeof(l2), "#t %02d:%02d.%03d", sec / 60, sec % 60, ms);
+	snprintf(l2, sizeof(l2), "t %02d:%02d.%03d", sec / 60, sec % 60, ms);
 	/* 先铺黑底, 保证任何背景上都可读 */
 	for (int y = 2; y < 2 + 2 * 9 * 2 + 4; y++)
 		for (int x = 2; x < 2 + 14 * 12 + 4; x++)

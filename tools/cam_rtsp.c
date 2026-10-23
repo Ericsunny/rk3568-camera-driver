@@ -248,7 +248,7 @@ static int xwrite(int fd, const void *buf, size_t n)
 	size_t off = 0;
 
 	while (off < n) {
-		ssize_t w = xwrite(fd, p + off, n - off);
+		ssize_t w = write(fd, p + off, n - off);
 
 		if (w < 0) {
 			if (errno == EINTR)
@@ -322,8 +322,48 @@ static int send_interleaved(int sock, int ch, const uint8_t *rtp, int len)
 {
 	uint8_t pre[4] = { '$', (uint8_t)ch, (uint8_t)(len >> 8), (uint8_t)(len & 0xff) };
 	struct iovec iov[2] = { { pre, 4 }, { (void *)rtp, (size_t)len } };
-	struct msghdr mh = { .msg_iov = iov, .msg_iovlen = 2 };
-	return sendmsg(sock, &mh, 0) < 0 ? -1 : 0;
+	size_t total = 4 + (size_t)len, sent = 0;
+	int k = 0;
+
+	/* sendmsg 在阻塞 TCP 上也允许正数短写,必须按已发字节前移 iov 再发 */
+	while (sent < total) {
+		struct iovec iv[2];
+		struct msghdr mh;
+		int n = 0;
+
+		for (int j = k; j < 2; j++)
+			if (iov[j].iov_len > 0)
+				iv[n++] = iov[j];
+		if (n == 0)
+			return -1;
+		memset(&mh, 0, sizeof(mh));
+		mh.msg_iov = iv;
+		mh.msg_iovlen = n;
+
+		ssize_t w = sendmsg(sock, &mh, 0);
+		if (w < 0) {
+			if (errno == EINTR)
+				continue;
+			return -1;
+		}
+		if (w == 0)
+			return -1;	/* 对端关闭 */
+		sent += (size_t)w;
+
+		size_t skip = (size_t)w;
+		while (k < 2 && skip > 0) {
+			if (skip >= iov[k].iov_len) {
+				skip -= iov[k].iov_len;
+				iov[k].iov_len = 0;
+				k++;
+			} else {
+				iov[k].iov_base = (char *)iov[k].iov_base + skip;
+				iov[k].iov_len -= skip;
+				skip = 0;
+			}
+		}
+	}
+	return 0;
 }
 
 static int send_nal(int sock, int ch, const uint8_t *nal, int len, uint32_t ts,

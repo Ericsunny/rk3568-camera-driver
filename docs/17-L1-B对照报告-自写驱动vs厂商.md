@@ -206,10 +206,10 @@ return ret;                                            /* 但 ret 没清零 */
 | `core.compat_ioctl32` | 有 | **有(补的,见 §10)** | — |
 | `video.s_stream` | 有 | 有 | — |
 | `video.g_mbus_config` | 有 | **有(补的,见 §3.3)** | — |
-| `video.g_frame_interval` | 有 | 无 | 应用层查不到帧率 |
+| `video.g_frame_interval` | 有 | 有（补的，§11） | — |
 | `pad.enum_mbus_code` | 有 | 无 | 应用层枚举不到格式 |
 | `pad.enum_frame_size` | 有 | **有(补的,见 §10)** | — |
-| `pad.enum_frame_interval` | 有 | 无 | — |
+| `pad.enum_frame_interval` | 有 | 有（补的，§11） | — |
 | `pad.get_fmt / set_fmt` | 有 | 有 | — |
 | ctrl: LINK_FREQ / PIXEL_RATE | 有 | 有 | — |
 | ctrl: EXPOSURE / ANALOGUE_GAIN | 有 | 有 | — |
@@ -496,3 +496,58 @@ RESULT=OK sensor='ov8858-sm' module='ov8858-sm' lens='default'
 - 两处都**真补上了**,而且在**真实内核**里验过(不是 `insmod` 一个新模块骗自己)。
 - `compat_ioctl32` 这项的价值不在"多一个回调",而在于它**暴露了驱动原有的一个真 bug**(对用户指针直接 `memset`)。
   如果客户用 32 位 rootfs 调摄像头应用,原驱动会**直接 oops**,这个坑比缺拟合字号严重得多。
+
+## 11. 帧间隔三件套（补 `video.g/s_frame_interval` + `pad.enum_frame_interval`）
+
+### 为什么补
+2022 版 rkaiq 在 `get_sensor_caps` 阶段会枚举传感器帧间隔，我们没实现，它一直打印：
+
+```
+[CAMHW] CamHwIsp20.cpp:176: @get_sensor_caps /dev/v4l-subdev2: Enum sensor frame interval failed
+```
+
+### 本内核的 ABI 陷阱（关键）
+4.19 + Rockchip 回移与新版 V4L2 不同，照新手册写会编不过：
+
+| 位置 | 本内核 | 新版 |
+|---|---|---|
+| G/S_FRAME_INTERVAL | **video ops**（`sd, interval`） | pad ops（多一个 pad_config） |
+| ioctl 号 | **`_IOWR('V', 21/22)`** | `_IOWR('V', 85/86)` |
+| 结构体字段 | `struct v4l2_fract interval` | 有 min/max 语义 |
+| enum 结构体 | 只有单个 `interval` | 同 |
+
+且内核按 `_IOC_SIZE` 严格匹配命令号——尺寸不对直接 `ENOTTY`，极易误判成"没实现"。
+实测（`tools/fi_probe.c`）：
+
+```
+size=56 -> -ENOTTY
+size=64 -> 0          ← 只认 64
+size=72..96 -> -ENOTTY
+```
+
+### 实现
+`ov8858_sm.c` 新增 `ov8858_sm_timings[]`（1632×1224: HTS 1928/VTS 1244；1920×1080: HTS 1940/VTS 1236），
+
+```
+fps = pixel_rate / (2 * HTS * VTS)     → 30.02 / 30.03 fps
+```
+
+帧率不是可调量，所以 `s_frame_interval` 只接受当前值（±20% 内），否则写回实际值并返回 `-EINVAL`。
+
+### 验证（kernel #43，`tools/fi_test.c`）
+```
+enum[0] = 1/30      enum[1] = 1/30      enum[2] = EINVAL
+get = 1/30          set 1/30 -> 0       set 1/60 -> EINVAL
+RESULT=PASS fails=0
+```
+
+### rkaiq 侧结果
+用 `LD_PRELOAD=tools/ioctlspy.c` 抓到库的真实调用（`nr=75 size=64`）：
+
+```
+idx=0 ret=0   idx=1 ret=0   idx=2 ret=-1(EINVAL)   ← 正常终止枚举
+nr=21 (G_FRAME_INTERVAL) size=48 ret=0
+```
+
+修好后新日志里 `Enum sensor frame interval failed` = **0 条**。
+（注意：`journalctl` 里仍能看到 1 条旧记录，其时间戳 04:56:33 比当前板上时间 04:36:33 还晚——那是上次启动留下的，不是新产生的。）

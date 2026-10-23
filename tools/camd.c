@@ -704,6 +704,18 @@ static int session(void)
 
 	q_init(Q_RT, g_rt_depth, 1, 0);		/* 实时:丢最旧 */
 	/* 取证队列:默认丢最旧(采集永不被消费者拖住);--ev-policy block 才做背压 */
+	/* 配置自洽性检查:每个消费者在处理中会占住 1 个 buffer,采集侧还要 1 个在途,
+	 * 队列里缓存的每个节点也都占着 buffer。buffer 数不够时不是"丢帧",而是采集被
+	 * 饿死(DQBUF 拿不到空闲 buffer),表现为帧率断崖。 */
+	{
+		int need = g_rt_depth + g_ev_depth + 2;   /* +1 处理中 / 各 1 + 采集在途 1 */
+		if (need > cap.nbufs)
+			fprintf(stderr,
+			        "WARN: 配置不自洽 —— buffer=%d, 但 rt_depth(%d)+ev_depth(%d)+2=%d\n"
+			        "      ⥀ 采集可能被饿死(帧率断崖)。建议 -b %d 或降低队列深度。\n",
+			        cap.nbufs, g_rt_depth, g_ev_depth, need, need);
+	}
+
 	q_init(Q_EV, g_ev_depth, g_ev_policy == 0 ? 1 : 0, 200);
 
 	if (dev_open() < 0) {

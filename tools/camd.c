@@ -15,6 +15,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <getopt.h>
+#include <math.h>
 #include <poll.h>
 #include <pthread.h>
 #include <signal.h>
@@ -278,13 +279,155 @@ static const char *g_rknn_model;	/* --rknn <model> 打开 */
 #define MAX_OUT 16
 static rknn_context g_npu_ctx;
 static rknn_tensor_mem *g_npu_in;
-static rknn_tensor_mem *g_npu_out[MAX_OUT];
+static rknn_tensor_attr g_npu_out_attr[MAX_OUT];
 static unsigned g_npu_nout;
 static int g_npu_w, g_npu_h;
 static rga_buffer_t g_npu_dst;
 static atomic_uint g_npu_ok, g_npu_err;
 static char g_npu_msg[192];
-static lat_t npu_lat, npu_rga_lat;
+static lat_t npu_lat, npu_rga_lat, npu_post_lat;
+static unsigned g_det_total, g_det_max;
+static atomic_uint g_score_maxi;	/* maxscore x1000 */
+static char g_det_last[128];
+static float g_obj_thresh;		/* 0 = 用 OBJ_THRESH */
+static char *g_dump_rgb;		/* 调试:把 NPU 输入(640x640 RGB)存一份 */
+static int g_dump_done;
+
+/* YOLOv8 后处理(9 输出 = 3 尺度 x [DFL 64ch, 80 类, 1 score]),从 zerocopy/zc_npu.cpp 移植 */
+#define OBJ_THRESH 0.35f
+#define NMS_THRESH 0.45f
+#define MAX_BOX 512
+
+struct dbox {
+	float x1, y1, x2, y2, score;
+	int cls;
+};
+
+static int cmp_box(const void *a, const void *b)
+{
+	const struct dbox *x = a, *y = b;
+
+	return (x->score < y->score) - (x->score > y->score);
+}
+
+static float box_iou(const struct dbox *a, const struct dbox *b)
+{
+	float xx1 = a->x1 > b->x1 ? a->x1 : b->x1;
+	float yy1 = a->y1 > b->y1 ? a->y1 : b->y1;
+	float xx2 = a->x2 < b->x2 ? a->x2 : b->x2;
+	float yy2 = a->y2 < b->y2 ? a->y2 : b->y2;
+	float w = xx2 - xx1 > 0 ? xx2 - xx1 : 0;
+	float h = yy2 - yy1 > 0 ? yy2 - yy1 : 0;
+	float inter = w * h;
+	float ua = (a->x2 - a->x1) * (a->y2 - a->y1) +
+		   (b->x2 - b->x1) * (b->y2 - b->y1) - inter;
+
+	return ua > 0 ? inter / ua : 0;
+}
+
+static int decode_yolov8(rknn_tensor_attr *oa, int8_t **od, struct dbox *res,
+			 int maxn, float *p_maxscore)
+{
+	static const int strides[3] = { 8, 16, 32 };
+	int n = 0, s, y, x, k, side, c;
+
+	*p_maxscore = 0;
+
+	for (s = 0; s < 3; s++) {
+		rknn_tensor_attr *areg = &oa[s * 3 + 0];
+		rknn_tensor_attr *acls = &oa[s * 3 + 1];
+		rknn_tensor_attr *ascr = &oa[s * 3 + 2];
+		int gh = areg->dims[2], gw = areg->dims[3];
+		int stride, idx;
+		int8_t *reg, *cls, *scr;
+
+		if (gh <= 0 || gw <= 0)
+			continue;
+		if ((int)acls->dims[2] != gh || (int)ascr->dims[2] != gh)
+			continue;
+		stride = strides[s];
+		reg = od[s * 3 + 0];
+		cls = od[s * 3 + 1];
+		scr = od[s * 3 + 2];
+		for (y = 0; y < gh; y++) {
+			for (x = 0; x < gw; x++) {
+				float score, bestv = 0, conf, d[4] = { 0, 0, 0, 0 };
+				int best = -1;
+
+				idx = y * gw + x;
+				score = (scr[idx] - ascr->zp) * ascr->scale;
+				if (score > *p_maxscore)
+					*p_maxscore = score;
+				if (score < (g_obj_thresh > 0 ? g_obj_thresh : OBJ_THRESH))
+					continue;
+				for (c = 0; c < 80; c++) {
+					float v = (cls[(size_t)c * gh * gw + idx] - acls->zp) *
+						  acls->scale;
+
+					if (v > bestv) {
+						bestv = v;
+						best = c;
+					}
+				}
+				if (best < 0)
+					continue;
+				conf = score * bestv;
+				if (conf < (g_obj_thresh > 0 ? g_obj_thresh : OBJ_THRESH))
+					continue;
+				for (side = 0; side < 4; side++) {
+					float p[16], mx = -1e9f, sum = 0, acc = 0;
+
+					for (k = 0; k < 16; k++) {
+						float v = (reg[((size_t)side * 16 + k) * gh * gw + idx] -
+							   areg->zp) * areg->scale;
+
+						p[k] = v;
+						if (v > mx)
+							mx = v;
+					}
+					for (k = 0; k < 16; k++) {
+						p[k] = expf(p[k] - mx);
+						sum += p[k];
+					}
+					for (k = 0; k < 16; k++)
+						acc += (p[k] / sum) * k;
+					d[side] = acc;
+				}
+				if (n < maxn) {
+					float cx = (x + 0.5f) * stride, cy = (y + 0.5f) * stride;
+
+					res[n].x1 = cx - d[0] * stride;
+					res[n].y1 = cy - d[1] * stride;
+					res[n].x2 = cx + d[2] * stride;
+					res[n].y2 = cy + d[3] * stride;
+					res[n].score = conf;
+					res[n].cls = best;
+					n++;
+				}
+			}
+		}
+	}
+	/* 贪心 NMS */
+	if (n > 1) {
+		int keep = 0, i, j;
+
+		qsort(res, (size_t)n, sizeof(res[0]), cmp_box);
+		for (i = 0; i < n; i++) {
+			int drop = 0;
+
+			for (j = 0; j < keep; j++) {
+				if (box_iou(&res[i], &res[j]) > NMS_THRESH) {
+					drop = 1;
+					break;
+				}
+			}
+			if (!drop)
+				res[keep++] = res[i];
+		}
+		n = keep;
+	}
+	return n;
+}
 
 static int rknn_consumer_init(void)
 {
@@ -343,29 +486,12 @@ static int rknn_consumer_init(void)
 	}
 	g_npu_nout = io.n_output > MAX_OUT ? MAX_OUT : io.n_output;
 	for (i = 0; i < (int)g_npu_nout; i++) {
-		memset(&oattr, 0, sizeof(oattr));
-		oattr.index = i;
-		/* 输入用了 native attr,输出也必须用 native,混用会让 runtime 在
-		 * set_io_mem 阶段按非 native 解释 buffer(实测 SIGBUS) */
-		if (rknn_query(g_npu_ctx, RKNN_QUERY_NATIVE_OUTPUT_ATTR, &oattr,
-			       sizeof(oattr)) != 0) {
-			memset(&oattr, 0, sizeof(oattr));
-			oattr.index = i;
-			rknn_query(g_npu_ctx, RKNN_QUERY_OUTPUT_ATTR, &oattr,
-				   sizeof(oattr));
-		}
-		g_npu_out[i] = rknn_create_mem(g_npu_ctx, oattr.size_with_stride);
-		if (!g_npu_out[i]) {
-			snprintf(g_npu_msg, sizeof(g_npu_msg),
-				 "rknn_create_mem(out %d) failed", i);
-			return -1;
-		}
-		ret = rknn_set_io_mem(g_npu_ctx, g_npu_out[i], &oattr);
-		if (ret < 0) {
-			snprintf(g_npu_msg, sizeof(g_npu_msg),
-				 "set_io_mem(out %d)=%d", i, ret);
-			return -1;
-		}
+		memset(&g_npu_out_attr[i], 0, sizeof(g_npu_out_attr[i]));
+		g_npu_out_attr[i].index = i;
+		/* 输出走 rknn_outputs_get(普通 NCHW 布局),不解码 native 的
+		 * NC1HWC2 打包;输入仍然是 native 零拷贝,两者可以共存 */
+		rknn_query(g_npu_ctx, RKNN_QUERY_OUTPUT_ATTR, &g_npu_out_attr[i],
+			   sizeof(g_npu_out_attr[i]));
 	}
 	/* RGA 直接写 NPU 输入 buffer(同一个 DMA-BUF fd),全程零拷贝 */
 	g_npu_dst = wrapbuffer_fd_t(g_npu_in->fd, g_npu_w, g_npu_h, g_npu_w * 3,
@@ -384,11 +510,14 @@ static void rknn_process(struct node *n)
 {
 	int fmt = (cap.fourcc == V4L2_PIX_FMT_NV12) ? RK_FORMAT_YCbCr_420_SP
 						    : RK_FORMAT_YCbCr_400;
-	int64_t t0 = now_us(), t1;
+	int64_t t0 = now_us(), t1, t2;
 	rga_buffer_t src;
 	IM_STATUS st;
-	volatile int8_t probe;
-	int ret;
+	rknn_output outs[MAX_OUT];
+	int8_t *odata[MAX_OUT];
+	struct dbox boxes[MAX_BOX];
+	float maxscore = 0;
+	int ret, i, nd = 0;
 
 	src = wrapbuffer_fd_t(n->dmabuf_fd, cap.w, cap.h,
 			      n->stride > 0 ? n->stride : cap.w, cap.h, fmt);
@@ -402,6 +531,28 @@ static void rknn_process(struct node *n)
 				 imStrError(st));
 		return;
 	}
+	if (g_dump_rgb && !g_dump_done && n->seq >= 10) {
+		FILE *df = fopen(g_dump_rgb, "wb");
+
+		if (df) {
+			/* 在 xor 之前转储:这里才是 RGA 产出的 RGB888 */
+			fwrite(g_npu_in->virt_addr, 1,
+			       (size_t)g_npu_w * g_npu_h * 3, df);
+			fclose(df);
+			g_dump_done = 1;
+			stage("rt seq=%u dump rgb %s", n->seq, g_dump_rgb);
+		}
+	}
+	/* uint8 -> int8(zp=-128):减 128 在字节上等价于 xor 0x80,8 字节一次做完
+	 * (与 zerocopy/zc_npu.cpp mode C 完全一致;RGA2 没有 NN 单元,只能这么补) */
+	{
+		uint64_t *t64 = (uint64_t *)g_npu_in->virt_addr;
+		size_t n64 = (size_t)g_npu_w * g_npu_h * 3 / 8;
+		size_t k;
+
+		for (k = 0; k < n64; k++)
+			t64[k] ^= 0x8080808080808080ULL;
+	}
 	t1 = now_us();
 	lat_add(&npu_rga_lat, t1 - t0);
 	stage("rt seq=%u npu run in", n->seq);
@@ -413,11 +564,44 @@ static void rknn_process(struct node *n)
 			snprintf(g_npu_msg, sizeof(g_npu_msg), "rknn_run=%d", ret);
 		return;
 	}
-	/* 触摸一个输出字节,确保这次推理的结果被真正取用(不做完整解码) */
-	probe = *(volatile int8_t *)g_npu_out[0]->virt_addr;
-	(void)probe;
-	lat_add(&npu_lat, now_us() - t1);
+	/* 输出用 rknn_outputs_get 取回(普通 NCHW int8),再做 YOLOv8 解码 + NMS */
+	memset(outs, 0, sizeof(outs));
+	for (i = 0; i < (int)g_npu_nout; i++) {
+		outs[i].index = i;
+		outs[i].want_float = 0;
+		outs[i].is_prealloc = 0;
+	}
+	stage("rt seq=%u out get", n->seq);
+	ret = rknn_outputs_get(g_npu_ctx, g_npu_nout, outs, NULL);
+	if (ret < 0) {
+		atomic_fetch_add(&g_npu_err, 1);
+		if (!g_npu_msg[0])
+			snprintf(g_npu_msg, sizeof(g_npu_msg), "outputs_get=%d", ret);
+		return;
+	}
+	t2 = now_us();
+	lat_add(&npu_lat, t2 - t1);
+	for (i = 0; i < (int)g_npu_nout; i++)
+		odata[i] = (int8_t *)outs[i].buf;
+	nd = decode_yolov8(g_npu_out_attr, odata, boxes, MAX_BOX, &maxscore);
+	rknn_outputs_release(g_npu_ctx, g_npu_nout, outs);
+	lat_add(&npu_post_lat, now_us() - t2);
+	if (maxscore * 1000 > (float)atomic_load(&g_score_maxi))
+		atomic_store(&g_score_maxi, (unsigned)(maxscore * 1000));
 	atomic_fetch_add(&g_npu_ok, 1);
+	atomic_fetch_add(&g_det_total, (unsigned)nd);
+	if ((unsigned)nd > atomic_load(&g_det_max))
+		atomic_store(&g_det_max, (unsigned)nd);
+	if (nd > 0 && !g_det_last[0])
+		snprintf(g_det_last, sizeof(g_det_last), "cls=%d score=%.2f @%.0f,%.0f",
+			 boxes[0].cls, boxes[0].score, boxes[0].x1, boxes[0].y1);
+	if (nd > 0 && (n->seq % 30) == 0) {
+		stage("rt seq=%u det=%d cls=%d score=%.2f max=%.2f box=%.0f,%.0f,%.0f,%.0f",
+		      n->seq, nd, boxes[0].cls, boxes[0].score, maxscore,
+		      boxes[0].x1, boxes[0].y1, boxes[0].x2, boxes[0].y2);
+	} else if ((n->seq % 30) == 0) {
+		stage("rt seq=%u det=0 max=%.2f", n->seq, maxscore);
+	}
 }
 #endif
 
@@ -1025,12 +1209,16 @@ static void dump_json(FILE *f, int rc)
 #ifdef HAVE_RKNN
 	if (g_rknn_model)
 		fprintf(f,
-			"  \"npu\": {\"model\": \"%s\", \"in\": \"%dx%d\", \"ok\": %u, \"err\": %u, \"rga_us\": %.1f, \"run_us\": %.1f, \"run_p99_us\": %.0f, \"msg\": \"%s\"},\n",
+			"  \"npu\": {\"model\": \"%s\", \"in\": \"%dx%d\", \"ok\": %u, \"err\": %u, \"rga_us\": %.1f, \"run_us\": %.1f, \"run_p99_us\": %.0f, \"post_us\": %.1f, \"det_total\": %u, \"det_max\": %u, \"score_max\": %.3f, \"det_last\": \"%s\", \"msg\": \"%s\"},\n",
 			g_rknn_model, g_npu_w, g_npu_h,
 			atomic_load(&g_npu_ok), atomic_load(&g_npu_err),
 			npu_rga_lat.n ? (double)npu_rga_lat.sum_us / npu_rga_lat.n : -1.0,
 			npu_lat.n ? (double)npu_lat.sum_us / npu_lat.n : -1.0,
-			lat_pct(&npu_lat, 0.99), g_npu_msg);
+			lat_pct(&npu_lat, 0.99),
+			npu_post_lat.n ? (double)npu_post_lat.sum_us / npu_post_lat.n : -1.0,
+			atomic_load(&g_det_total), atomic_load(&g_det_max),
+			atomic_load(&g_score_maxi) / 1000.0,
+			g_det_last, g_npu_msg);
 #endif
 	fprintf(f, "  \"queue\": {\"rt_cap\": %d, \"ev_cap\": %d}\n", q[Q_RT].cap,
 		q[Q_EV].cap);
@@ -1174,6 +1362,7 @@ static void usage(void)
 "  --rga-size WxH    RGA 目标尺寸(默认 640x360)\n"
 "  --cpu-copy        对照组:CPU memcpy 整帧 + 降采样(不开 RGA)\n"
 "  --rknn MODEL      实时消费者改用 RKNN 推理(RGA 直写 NPU 输入,零拷贝)\n"
+"  --obj-thresh F    检测置信度阈值(默认 0.35,调试时可降到 0.10)\n"
 "  --fault-once      故障只注入一次(验证恢复后能继续跑)\n"
 		"  --ev-fps F        取证限速帧率(默认 5)\n"
 		"  --analyze-ms N    实时分析模拟耗时(ms)\n"
@@ -1208,6 +1397,8 @@ int main(int argc, char **argv)
 		{ "cpu-copy", no_argument, 0, 1013 },
 		{ "fault-once", no_argument, 0, 1014 },
 		{ "rknn", required_argument, 0, 1015 },
+		{ "obj-thresh", required_argument, 0, 1016 },
+		{ "dump-rgb", required_argument, 0, 1017 },
 		{ 0, 0, 0, 0 }
 	};
 
@@ -1255,6 +1446,12 @@ int main(int argc, char **argv)
 			break;
 		case 1015:
 			g_rknn_model = optarg;
+			break;
+		case 1016:
+			g_obj_thresh = (float)atof(optarg);
+			break;
+		case 1017:
+			g_dump_rgb = optarg;
 			break;
 		case 1012:
 			sscanf(optarg, "%dx%d", &g_rga_dw, &g_rga_dh);

@@ -154,6 +154,7 @@ static lat_t rt_lat, ev_lat;
 
 static int g_analyze_ms, g_ev_ms, g_frames_limit, g_recover_attempts;
 static int g_rt_depth = 4, g_ev_depth = 2;
+static int g_ev_policy;   /* 0=丢最旧(默认,不阻塞采集) 1=有界阻塞(背压) */
 static int g_dq_timeout_ms, g_verbose, g_analyze_mode, g_fault;
 static double g_ev_fps;
 static const char *g_dev = "/dev/video0", *g_json;
@@ -702,7 +703,8 @@ static int session(void)
 	lat_reset(&ev_lat);
 
 	q_init(Q_RT, g_rt_depth, 1, 0);		/* 实时:丢最旧 */
-	q_init(Q_EV, g_ev_depth, 0, 200);	/* 取证:有界阻塞 200 ms */
+	/* 取证队列:默认丢最旧(采集永不被消费者拖住);--ev-policy block 才做背压 */
+	q_init(Q_EV, g_ev_depth, g_ev_policy == 0 ? 1 : 0, 200);
 
 	if (dev_open() < 0) {
 		rc = 1;
@@ -744,7 +746,8 @@ static void usage(void)
 		"  -n N              处理 N 帧后收尾(0=一直跑)\n"
 		"  -b N              V4L2 buffer 数(默认 4)\n"
 		"  --rt-depth N      实时队列深度(默认 4,满则丢最旧)\n"
-		"  --ev-depth N      取证队列深度(默认 2,满则有界阻塞)\n"
+		"  --ev-depth N      取证队列深度(默认 2)\n"
+"  --ev-policy drop|block  取证队列满时策略(默认 drop=丢最旧,不阻塞采集)\n"
 		"  --ev-fps F        取证限速帧率(默认 5)\n"
 		"  --analyze-ms N    实时分析模拟耗时(ms)\n"
 		"  --analyze MODE    nop|sleep(默认 nop)\n"
@@ -772,6 +775,7 @@ int main(int argc, char **argv)
 		{ "recover-attempts", required_argument, 0, 1007 },
 		{ "dq-timeout", required_argument, 0, 1008 },
 		{ "json", required_argument, 0, 1009 },
+		{ "ev-policy", required_argument, 0, 1010 },
 		{ 0, 0, 0, 0 }
 	};
 
@@ -805,6 +809,9 @@ int main(int argc, char **argv)
 		case 1007: g_recover_attempts = atoi(optarg); break;
 		case 1008: g_dq_timeout_ms = atoi(optarg); break;
 		case 1009: g_json = optarg; break;
+		case 1010:
+			g_ev_policy = !strcmp(optarg, "block") ? 1 : 0;
+			break;
 		default: usage(); return 2;
 		}
 	}

@@ -283,6 +283,7 @@ static rknn_tensor_attr g_npu_out_attr[MAX_OUT];
 static unsigned g_npu_nout;
 static int g_npu_w, g_npu_h;
 static rga_buffer_t g_npu_dst;
+static unsigned char *g_npu_rgb;
 static atomic_uint g_npu_ok, g_npu_err;
 static char g_npu_msg[192];
 static lat_t npu_lat, npu_rga_lat, npu_post_lat;
@@ -292,6 +293,9 @@ static char g_det_last[128];
 static float g_obj_thresh;		/* 0 = 用 OBJ_THRESH */
 static char *g_dump_rgb;		/* 调试:把 NPU 输入(640x640 RGB)存一份 */
 static int g_dump_done;
+static int g_outs_done;
+static int g_rot90;
+static char *g_image;
 
 /* YOLOv8 后处理(9 输出 = 3 尺度 x [DFL 64ch, 80 类, 1 score]),从 zerocopy/zc_npu.cpp 移植 */
 #define OBJ_THRESH 0.35f
@@ -493,9 +497,15 @@ static int rknn_consumer_init(void)
 		rknn_query(g_npu_ctx, RKNN_QUERY_OUTPUT_ATTR, &g_npu_out_attr[i],
 			   sizeof(g_npu_out_attr[i]));
 	}
-	/* RGA 直接写 NPU 输入 buffer(同一个 DMA-BUF fd),全程零拷贝 */
-	g_npu_dst = wrapbuffer_fd_t(g_npu_in->fd, g_npu_w, g_npu_h, g_npu_w * 3,
-				    g_npu_h, RK_FORMAT_RGB_888);
+	/* RGA 先缩放到 CPU 可写的 RGB 缓冲,再 memcpy+xor 进 NPU 输入
+	 * (直接写 NPU 的 DMA-BUF fd 实测会让网络输出全常数,原因待查) */
+	if (posix_memalign((void **)&g_npu_rgb, 64,
+			   (size_t)g_npu_w * g_npu_h * 3) != 0 || !g_npu_rgb) {
+		snprintf(g_npu_msg, sizeof(g_npu_msg), "posix_memalign rgb failed");
+		return -1;
+	}
+	g_npu_dst = wrapbuffer_virtualaddr_t(g_npu_rgb, g_npu_w, g_npu_h,
+					     g_npu_w, g_npu_h, RK_FORMAT_RGB_888);
 	lat_init(&npu_lat, 4096);
 	lat_init(&npu_rga_lat, 4096);
 	printf(">>> RKNN 消费者: %s  输入 %dx%d type=%d zp=%d scale=%f 输出 %u 个\n",
@@ -505,6 +515,64 @@ static int rknn_consumer_init(void)
 	       g_npu_in->fd, g_npu_in->size);
 	return 0;
 }
+
+
+#ifdef HAVE_RKNN
+/* 用一张 640x640x3 的 RGB 原图跑一次推理:用于把"模型问题"和"采集/预处理问题"分开 */
+static int npu_run_file(const char *path)
+{
+	static struct dbox boxes[MAX_BOX];
+	rknn_input in;
+	rknn_output outs[MAX_OUT];
+	rknn_tensor_attr oa[MAX_OUT];
+	unsigned char *buf;
+	int8_t *od[MAX_OUT];
+	float maxscore = 0;
+	int i, nd;
+	FILE *f = fopen(path, "rb");
+
+	if (!f) {
+		perror(path);
+		return 1;
+	}
+	buf = malloc((size_t)g_npu_w * g_npu_h * 3);
+	if (!buf || fread(buf, 1, (size_t)g_npu_w * g_npu_h * 3, f) !=
+			   (size_t)g_npu_w * g_npu_h * 3) {
+		printf("image too short\\n");
+		return 1;
+	}
+	fclose(f);
+	memset(&in, 0, sizeof(in));
+	in.index = 0;
+	in.type = RKNN_TENSOR_UINT8;
+	in.fmt = RKNN_TENSOR_NHWC;
+	in.size = (uint32_t)(g_npu_w * g_npu_h * 3);
+	in.buf = buf;
+	if (rknn_inputs_set(g_npu_ctx, 1, &in) < 0 || rknn_run(g_npu_ctx, NULL) < 0) {
+		printf("run failed\\n");
+		return 1;
+	}
+	memset(outs, 0, sizeof(outs));
+	for (i = 0; i < (int)g_npu_nout; i++) {
+		memcpy(&oa[i], &g_npu_out_attr[i], sizeof(oa[i]));
+		outs[i].index = i;
+	}
+	if (rknn_outputs_get(g_npu_ctx, g_npu_nout, outs, NULL) < 0) {
+		printf("outputs_get failed\\n");
+		return 1;
+	}
+	for (i = 0; i < (int)g_npu_nout; i++)
+		od[i] = (int8_t *)outs[i].buf;
+	nd = decode_yolov8(oa, od, boxes, MAX_BOX, &maxscore);
+	rknn_outputs_release(g_npu_ctx, g_npu_nout, outs);
+	printf("IMAGE %s -> det=%d max_score=%.3f\\n", path, nd, maxscore);
+	for (i = 0; i < nd && i < 5; i++)
+		printf("  box %d: cls=%d score=%.2f  [%.0f,%.0f,%.0f,%.0f]\\n", i,
+		       boxes[i].cls, boxes[i].score, boxes[i].x1, boxes[i].y1,
+		       boxes[i].x2, boxes[i].y2);
+	return 0;
+}
+#endif
 
 static void rknn_process(struct node *n)
 {
@@ -522,6 +590,8 @@ static void rknn_process(struct node *n)
 	src = wrapbuffer_fd_t(n->dmabuf_fd, cap.w, cap.h,
 			      n->stride > 0 ? n->stride : cap.w, cap.h, fmt);
 	stage("rt seq=%u rga in fd=%d", n->seq, n->dmabuf_fd);
+	/* 目标用 CPU 可写缓冲:RGA 直接写 rknn 的 fd 实测不可靠(结果张量全常数),
+	 * 这里退回"RGA 缩放到本地 RGB + 一次 memcpy/xor 进 NPU 输入"的稳妥路径 */
 	st = imresize_t(src, g_npu_dst, 0, 0, 0, 1);
 	stage("rt seq=%u rga out st=%d", n->seq, (int)st);
 	if (st != IM_STATUS_SUCCESS) {
@@ -536,8 +606,7 @@ static void rknn_process(struct node *n)
 
 		if (df) {
 			/* 在 xor 之前转储:这里才是 RGA 产出的 RGB888 */
-			fwrite(g_npu_in->virt_addr, 1,
-			       (size_t)g_npu_w * g_npu_h * 3, df);
+			fwrite(g_npu_rgb, 1, (size_t)g_npu_w * g_npu_h * 3, df);
 			fclose(df);
 			g_dump_done = 1;
 			stage("rt seq=%u dump rgb %s", n->seq, g_dump_rgb);
@@ -546,17 +615,58 @@ static void rknn_process(struct node *n)
 	/* uint8 -> int8(zp=-128):减 128 在字节上等价于 xor 0x80,8 字节一次做完
 	 * (与 zerocopy/zc_npu.cpp mode C 完全一致;RGA2 没有 NN 单元,只能这么补) */
 	{
-		uint64_t *t64 = (uint64_t *)g_npu_in->virt_addr;
-		size_t n64 = (size_t)g_npu_w * g_npu_h * 3 / 8;
-		size_t k;
+		uint8_t *dst = (uint8_t *)g_npu_in->virt_addr;
+		const uint8_t *src8 = g_npu_rgb;
+		int W = g_npu_w, H = g_npu_h, xx, yy;
 
-		for (k = 0; k < n64; k++)
-			t64[k] ^= 0x8080808080808080ULL;
+		if (g_rot90) {
+			/* 相机侧装(画面旋转 90 度):顺时针转正后再送模型 */
+			for (yy = 0; yy < H; yy++) {
+				for (xx = 0; xx < W; xx++) {
+					uint8_t *d = dst + ((size_t)xx * H + (H - 1 - yy)) * 3;
+					const uint8_t *s = src8 + ((size_t)yy * W + xx) * 3;
+
+					d[0] = s[0] ^ 0x80;
+					d[1] = s[1] ^ 0x80;
+					d[2] = s[2] ^ 0x80;
+				}
+			}
+		} else {
+			uint64_t *t64 = (uint64_t *)dst;
+			const uint64_t *s64 = (const uint64_t *)src8;
+			size_t n64 = (size_t)W * H * 3 / 8;
+			size_t k;
+
+			for (k = 0; k < n64; k++)
+				t64[k] = s64[k] ^ 0x8080808080808080ULL;
+		}
 	}
 	t1 = now_us();
 	lat_add(&npu_rga_lat, t1 - t0);
-	stage("rt seq=%u npu run in", n->seq);
-	ret = rknn_run(g_npu_ctx, NULL);
+	/* 走 rknn_inputs_set(标准拷贝路径)而不是 set_io_mem:
+	 * 实测绑定 native 输入内存后网络输出全常数(cls 全 = zero_point),
+	 * 怀疑 NPU 没看到 CPU 写进去的内容(缺 rknn_mem_sync 或 coherency 问题)。
+	 * 先用标准路径证明模型本身能出框,零拷贝再回来接。 */
+	{
+		rknn_input in;
+
+		memset(&in, 0, sizeof(in));
+		in.index = 0;
+		in.type = RKNN_TENSOR_UINT8;
+		in.fmt = RKNN_TENSOR_NHWC;
+		in.size = (uint32_t)(g_npu_w * g_npu_h * 3);
+		in.buf = g_npu_rgb;
+		stage("rt seq=%u npu run in", n->seq);
+		ret = rknn_inputs_set(g_npu_ctx, 1, &in);
+		if (ret < 0) {
+			atomic_fetch_add(&g_npu_err, 1);
+			if (!g_npu_msg[0])
+				snprintf(g_npu_msg, sizeof(g_npu_msg),
+					 "inputs_set=%d", ret);
+			return;
+		}
+		ret = rknn_run(g_npu_ctx, NULL);
+	}
 	stage("rt seq=%u npu run out ret=%d", n->seq, ret);
 	if (ret < 0) {
 		atomic_fetch_add(&g_npu_err, 1);
@@ -583,6 +693,41 @@ static void rknn_process(struct node *n)
 	lat_add(&npu_lat, t2 - t1);
 	for (i = 0; i < (int)g_npu_nout; i++)
 		odata[i] = (int8_t *)outs[i].buf;
+	if (g_dump_rgb && !g_outs_done) {
+		char p[64];
+
+		for (i = 0; i < (int)g_npu_nout; i++) {
+			rknn_tensor_attr *a = &g_npu_out_attr[i];
+			int8_t *d = odata[i];
+			size_t k, cnt = 1;
+			int mn = 127, mx = -128;
+			long sum = 0;
+			FILE *of;
+
+			for (k = 0; k < 4; k++)
+				cnt *= a->dims[k] ? a->dims[k] : 1;
+			for (k = 0; k < cnt; k++) {
+				int v = d[k];
+
+				if (v < mn)
+					mn = v;
+				if (v > mx)
+					mx = v;
+				sum += v;
+			}
+			snprintf(p, sizeof(p), "/root/out_%d.bin", i);
+			of = fopen(p, "wb");
+			if (of) {
+				fwrite(d, 1, cnt, of);
+				fclose(of);
+			}
+			stage("out[%d] dims=%u,%u,%u,%u zp=%d sc=%.6f n=%u min=%d max=%d mean=%.2f",
+			      i, a->dims[0], a->dims[1], a->dims[2], a->dims[3],
+			      a->zp, a->scale, (unsigned)cnt, mn, mx,
+			      (double)sum / (double)cnt);
+		}
+		g_outs_done = 1;
+	}
 	nd = decode_yolov8(g_npu_out_attr, odata, boxes, MAX_BOX, &maxscore);
 	rknn_outputs_release(g_npu_ctx, g_npu_nout, outs);
 	lat_add(&npu_post_lat, now_us() - t2);
@@ -1308,6 +1453,13 @@ static int session(void)
 	q_init(Q_EV, g_ev_depth, g_ev_policy == 0 ? 1 : 0, 200);
 
 #ifdef HAVE_RKNN
+	if (g_image) {
+		int rci = rknn_consumer_init();
+
+		if (rci < 0)
+			return 1;
+		return npu_run_file(g_image);
+	}
 	if (g_rknn_model && rknn_consumer_init() < 0) {
 		fprintf(stderr, "RKNN 消费者初始化失败: %s\n", g_npu_msg);
 		return 1;
@@ -1399,6 +1551,8 @@ int main(int argc, char **argv)
 		{ "rknn", required_argument, 0, 1015 },
 		{ "obj-thresh", required_argument, 0, 1016 },
 		{ "dump-rgb", required_argument, 0, 1017 },
+		{ "rot90", no_argument, 0, 1018 },
+		{ "image", required_argument, 0, 1019 },
 		{ 0, 0, 0, 0 }
 	};
 
@@ -1452,6 +1606,12 @@ int main(int argc, char **argv)
 			break;
 		case 1017:
 			g_dump_rgb = optarg;
+			break;
+		case 1018:
+			g_rot90 = 1;
+			break;
+		case 1019:
+			g_image = optarg;
 			break;
 		case 1012:
 			sscanf(optarg, "%dx%d", &g_rga_dw, &g_rga_dh);

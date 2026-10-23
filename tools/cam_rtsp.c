@@ -426,12 +426,19 @@ static void snap_update(const uint8_t *nv12, int w, int h, int stride)
 
 static const char g_page[] =
 "HTTP/1.0 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nCache-Control: no-store\r\n\r\n"
-"<html><head><meta charset='utf-8'><title>RK3568 camera</title></head>"
-"<body style='margin:0;background:#111'>"
-"<div style='color:#ddd;font:14px sans-serif;padding:8px'>RK3568 实时预览(约 5 fps 快照)</div>"
-"<img id=v style='width:100%;max-width:960px;display:block'>"
-"<script>var t=0;function f(){document.getElementById('v').src='/snap.bmp?t='+(t++);setTimeout(f,200);}f();</script>"
-"</body></html>";
+"<html><head><meta charset='utf-8'><title>RK3568 latency</title></head>"
+"<body style='margin:0;background:#000;color:#0f0;font-family:monospace'>"
+"<div id=clk style='font-size:72px;padding:8px'>--</div>"
+"<div id=ms style='font-size:72px;padding:0 8px;color:#ff0'>---</div>"
+"<img id=v style='width:100%;max-width:900px;display:block'>"
+"<script>"
+"function pad(n,w){n=''+n;while(n.length<w)n='0'+n;return n;}"
+"function tick(){var d=new Date();"
+"document.getElementById('clk').textContent=pad(d.getHours(),2)+':'+pad(d.getMinutes(),2)+':'+pad(d.getSeconds(),2);"
+"document.getElementById('ms').textContent=pad(d.getMilliseconds(),3);}"
+"var t=0;function f(){document.getElementById('v').src='/snap.bmp?t='+(t++);setTimeout(f,200);}"
+"setInterval(tick,20);tick();f();"
+"</script></body></html>";
 
 static void *http_thread(void *arg)
 {
@@ -495,7 +502,7 @@ static void *capture_thread(void *arg)
 
 		uint8_t *dst = mpp_buffer_get_ptr(e.buf);
 		copy_nv12(dst, addr, g_w, g_h, c->stride);
-		if (g_http_port && (idx % 3) == 0) snap_update(dst, g_w, g_h, g_w);
+		if (g_http_port && (idx % 2) == 0) snap_update(dst, g_w, g_h, g_w);
 		cap_return(c, addr);
 
 		MppFrame fr = NULL;

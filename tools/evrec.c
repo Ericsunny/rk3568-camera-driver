@@ -58,6 +58,9 @@ struct rec {
 
 static struct rec ring[MAX_FRAMES];
 static int ring_head, ring_cnt;
+static unsigned g_pre_seq;      /* pre 窗口首帧的绝对 seq */
+static unsigned long g_pushed;  /* 累计入环帧数(诊断) */
+static int g_events, g_max_events;
 static size_t ring_bytes, ring_limit = 64u << 20;
 static double t0_ms;
 static volatile sig_atomic_t g_trigger;
@@ -288,6 +291,9 @@ static void rga_scale(const void *src_va, unsigned sw, unsigned sh)
 static float g_obj_thresh = OBJ_THRESH;
 #define MAX_OUT 16
 static int g_no_obj_mul = 0;
+static float g_det_score = 0.45f;   /* 触发所需分数 */
+static int g_det_frames = 3;        /* 连续命中帧数 */
+static int g_streak;
 static int g_npu_w = 640, g_npu_h = 640;
 struct dbox {
 	float x1, y1, x2, y2, score;
@@ -482,6 +488,8 @@ static int npu_init(void)
 			if (ret != RKNN_SUCC) { fprintf(stderr, "query out attr %u\n", k); return -1; }
 		}
 	}
+	if (g_det_score < g_obj_thresh)
+		g_obj_thresh = g_det_score;
 	printf(">>> NPU 就绪 %dx%d nout=%u\n", g_npu_w, g_npu_h, g_nout);
 	return 0;
 }
@@ -556,6 +564,26 @@ static void npu_run(const unsigned char *rgb)
 		nd = decode_yolov8(g_out_attr, od, boxes, MAX_BOX, &maxscore);
 	}
 	rknn_outputs_release(g_nctx, g_nout, outs);
+
+	{	/* 触发判定: 目标类 + 分数门限, 且必须连续 N 帧 */
+		int hit = 0, k;
+
+		for (k = 0; k < nd; k++)
+			if (boxes[k].cls == 0 && boxes[k].score >= g_det_score) {
+				hit = 1;
+				break;
+			}
+		if (hit) {
+			if (++g_streak >= g_det_frames && !g_trigger) {
+				g_trigger = 1;
+				printf(">>> 检测触发 streak=%d score=%.3f\n",
+				       g_streak, (double)boxes[k].score);
+			}
+		} else {
+			g_streak = 0;
+		}
+	}
+
 	g_det_total += (unsigned)nd;
 	if ((unsigned)nd > g_det_max) g_det_max = (unsigned)nd;
 	if (maxscore > g_score_max) g_score_max = maxscore;
@@ -606,6 +634,7 @@ static void ring_push(unsigned char *d, int len, unsigned seq, int key)
 	r->ts_ms = now_ms(CLOCK_MONOTONIC) - t0_ms;
 	r->abs_ms = now_ms(CLOCK_REALTIME);
 	ring_cnt++;
+	g_pushed++;
 	ring_bytes += (size_t)len;
 }
 
@@ -681,7 +710,7 @@ int main(int argc, char **argv)
 {
 	const char *dev = "/dev/video5", *out = "/root/ev/ev";
 	int w = 1920, h = 1080, pre_sec = 3, post_sec = 2, kbps = 8000, gop;
-	int i, trigger_i = -1, pre_i = -1, end_i = -1;
+	int i, k, trigger_i = -1, pre_i = -1, end_i = -1;
 	unsigned seq = 0;
 	double trig_ts = 0, trig_abs = 0, t_start;
 	struct stat st;
@@ -699,6 +728,9 @@ int main(int argc, char **argv)
 		else if (!strcmp(argv[i], "--kbps")) kbps = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--detect")) g_detect = 1;
 		else if (!strcmp(argv[i], "--model")) g_model = argv[++i];
+		else if (!strcmp(argv[i], "--max-events")) g_max_events = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "--det-score")) g_det_score = (float)atof(argv[++i]);
+		else if (!strcmp(argv[i], "--det-frames")) g_det_frames = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--obj-thresh")) g_obj_thresh = (float)atof(argv[++i]);
 		else if (!strcmp(argv[i], "--rga-size")) sscanf(argv[++i], "%dx%d", &g_rga_w, &g_rga_h);
 	}
@@ -797,6 +829,11 @@ int main(int argc, char **argv)
 			trig_mtime = st.st_mtime;
 			g_trigger = 1;
 		}
+		if (g_trigger && trigger_i < 0 && ring_cnt < (int)(pre_sec * 15)) {
+			/* 预热未满: 环里的帧数还不够 pre 秒前置内容, 忽略本次触发,
+			 * 但不清 g_streak, 攒够后会立刻重新触发 */
+			g_trigger = 0;
+		}
 		if (g_trigger && trigger_i < 0) {
 			trigger_i = ring_cnt;
 			trig_ts = ts - t_start;
@@ -805,15 +842,49 @@ int main(int argc, char **argv)
 			for (i = ring_cnt - 1; i >= 0; i--)
 				if (ring_at(i)->ts_ms < trig_ts - pre_sec * 1000.0)
 					break;
-			pre_i = ring_first_idr_from(i + 1);
+			/* 从回退点往前找最近的 IDR(往前才能把 pre 窗口填满;
+			 * 往后找会跳到下一个 GOP 的 IDR, 白白丢掉中间一段) */
+			pre_i = -1;
+			for (i = ring_cnt - 1; i >= 0; i--)
+				if (ring_at(i)->ts_ms < trig_ts - pre_sec * 1000.0)
+					break;
+			for (; i >= 0; i--)
+				if (ring_at(i)->key) { pre_i = i; break; }
 			if (pre_i < 0)
 				pre_i = ring_first_idr_from(0);
-			printf(">>> 触发 seq=%u ts=%.1fms -> pre_i=%d (丢弃到 IDR)\n",
-			       seq, trig_ts, pre_i);
+			g_pre_seq = ring_at(pre_i)->seq;
+			printf(">>> 触发 seq=%u ts=%.1fms -> pre_i=%d pre_seq=%u "
+			       "(ring_cnt=%d head=%d pushed=%lu)\n",
+			       seq, trig_ts, pre_i, g_pre_seq,
+			       ring_cnt, ring_head, g_pushed);
 		}
 		if (trigger_i >= 0 && ts - t_start > trig_ts + post_sec * 1000.0) {
+			char outn[512];
+			int pi = pre_i;
+
 			end_i = ring_cnt - 1;
-			break;
+			/* 触发到此刻环形可能已前移 -> 按 seq 重新定位 */
+			if (g_pre_seq)
+				for (k = 0; k < ring_cnt; k++)
+					if (ring_at(k)->seq == g_pre_seq) { pi = k; break; }
+			if (pi >= 0) {
+				snprintf(outn, sizeof(outn), "%s-%02d", out, g_events);
+				dump(outn, seq - 1, trig_ts, pi, end_i, w, h,
+				     (double)(end_i - pi + 1) * 1000.0 /
+				     (trig_ts + post_sec * 1000.0));
+			}
+			g_events++;
+			printf(">>> 事件 %d 完成, 继续等待下一个事件\n", g_events);
+			/* 复位状态, 复用同一块环 */
+			ring_head = ring_cnt = 0;
+			ring_bytes = 0;
+			g_pushed = 0;
+			g_trigger = 0;
+			g_streak = 0;
+			g_pre_seq = 0;
+			trigger_i = pre_i = end_i = -1;
+			if (g_max_events && g_events >= g_max_events)
+				break;
 		}
 	}
 
@@ -821,6 +892,14 @@ int main(int argc, char **argv)
 		enum v4l2_buf_type t = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
 
 		xioctl(cap.fd, VIDIOC_STREAMOFF, &t);
+	}
+	/* 触发到 dump 之间环形可能已前移, 下标会失效 -> 用绝对 seq 重新定位 */
+	if (end_i >= 0 && g_pre_seq) {
+		for (i = 0; i < ring_cnt; i++)
+			if (ring_at(i)->seq == g_pre_seq) {
+				pre_i = i;
+				break;
+			}
 	}
 	if (pre_i < 0 || end_i < 0) {
 		fprintf(stderr, "未触发或无数据, 不落盘\n");

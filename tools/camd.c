@@ -628,6 +628,92 @@ static int npu_run_file(const char *path)
 
 /* 把 NMS 之后的框画到当前 RGB 上,存成 PPM(P6) —— 板上没有 PIL,
  * 存 PPM 后拷回 PC 再看,省掉一套 PNG 编码。*/
+
+/* ---------------- OSD: 源帧 ID + 时间戳 ---------------- */
+static unsigned g_osd_seq;
+static uint64_t g_osd_ts_us, g_osd_t0_us;
+
+/* 5x7 点阵, 每行 5 bit */
+static const unsigned char font5x7[13][7] = {
+	{0x0E,0x11,0x13,0x15,0x19,0x11,0x0E},	/* 0 */
+	{0x04,0x0C,0x04,0x04,0x04,0x04,0x0E},	/* 1 */
+	{0x0E,0x11,0x01,0x02,0x04,0x08,0x1F},	/* 2 */
+	{0x1F,0x02,0x04,0x02,0x01,0x11,0x0E},	/* 3 */
+	{0x02,0x06,0x0A,0x12,0x1F,0x02,0x02},	/* 4 */
+	{0x1F,0x10,0x1E,0x01,0x01,0x11,0x0E},	/* 5 */
+	{0x06,0x08,0x10,0x1E,0x11,0x11,0x0E},	/* 6 */
+	{0x1F,0x01,0x02,0x04,0x08,0x08,0x08},	/* 7 */
+	{0x0E,0x11,0x11,0x0E,0x11,0x11,0x0E},	/* 8 */
+	{0x0E,0x11,0x11,0x0F,0x01,0x02,0x0C},	/* 9 */
+	{0x00,0x0C,0x0C,0x00,0x0C,0x0C,0x00},	/* : */
+	{0x00,0x00,0x00,0x00,0x0C,0x0C,0x00},	/* . */
+	{0x0A,0x0A,0x1F,0x0A,0x1F,0x0A,0x0A},	/* # */
+};
+
+static void put_px(unsigned char *buf, int W, int H, int x, int y, int v)
+{
+	if (x < 0 || y < 0 || x >= W || y >= H)
+		return;
+	buf[((size_t)y * W + x) * 3 + 0] = v;
+	buf[((size_t)y * W + x) * 3 + 1] = v;
+	buf[((size_t)y * W + x) * 3 + 2] = v;
+}
+
+static int glyph_idx(char ch)
+{
+	if (ch >= '0' && ch <= '9')
+		return ch - '0';
+	if (ch == ':')
+		return 10;
+	if (ch == '.')
+		return 11;
+	if (ch == '#')
+		return 12;
+	return -1;
+}
+
+static void draw_text(unsigned char *buf, int W, int H, int x, int y,
+		      const char *s, int sc)
+{
+	for (; *s; s++) {
+		int gi = glyph_idx(*s), r, cc;
+
+		if (gi < 0) {		/* 空格: 只前进 */
+			x += 4 * sc;
+			continue;
+		}
+		for (r = 0; r < 7; r++) {
+			for (cc = 0; cc < 5; cc++) {
+				int on = (font5x7[gi][r] >> (4 - cc)) & 1;
+				int dy, dx;
+
+				for (dy = 0; dy < sc; dy++)
+					for (dx = 0; dx < sc; dx++)
+						put_px(buf, W, H, x + cc * sc + dx,
+						       y + r * sc + dy, on ? 255 : 0);
+			}
+		}
+		x += 6 * sc;
+	}
+}
+
+/* 左上角两行: "#seq 1234" / "#t 03:12.345 (自首帧) */
+static void draw_osd(unsigned char *buf, int W, int H)
+{
+	char l1[32], l2[32];
+	uint64_t el = (g_osd_ts_us > g_osd_t0_us) ? g_osd_ts_us - g_osd_t0_us : 0;
+	int sec = (int)(el / 1000000), ms = (int)((el / 1000) % 1000);
+
+	snprintf(l1, sizeof(l1), "#%u", g_osd_seq);
+	snprintf(l2, sizeof(l2), "#t %02d:%02d.%03d", sec / 60, sec % 60, ms);
+	/* 先铺黑底, 保证任何背景上都可读 */
+	for (int y = 2; y < 2 + 2 * 9 * 2 + 4; y++)
+		for (int x = 2; x < 2 + 14 * 12 + 4; x++)
+			put_px(buf, W, H, x, y, 0);
+	draw_text(buf, W, H, 4, 4, l1, 2);
+	draw_text(buf, W, H, 4, 4 + 16, l2, 2);
+}
+
 static void draw_boxes(struct dbox *b, int n)
 {
 	static const unsigned char pal[6][3] = {
@@ -666,6 +752,7 @@ static void draw_boxes(struct dbox *b, int n)
 			}
 		}
 	}
+	draw_osd(g_draw_buf, W, H);
 	{
 		FILE *f = fopen(g_draw_file, "wb");
 
@@ -683,6 +770,11 @@ static void rknn_process(struct node *n)
 						    : RK_FORMAT_YCbCr_400;
 	int64_t t0 = now_us(), t1, t2;
 	rga_buffer_t src;
+
+	g_osd_seq = n->seq;
+	g_osd_ts_us = n->ts_us;
+	if (!g_osd_t0_us)
+		g_osd_t0_us = n->ts_us;
 	IM_STATUS st;
 	rknn_output outs[MAX_OUT];
 	int8_t *odata[MAX_OUT];
@@ -836,7 +928,7 @@ static void rknn_process(struct node *n)
 	if (nd > 0 && !g_det_last[0])
 		snprintf(g_det_last, sizeof(g_det_last), "cls=%d score=%.2f @%.0f,%.0f",
 			 boxes[0].cls, boxes[0].score, boxes[0].x1, boxes[0].y1);
-	if (nd > 0 && g_draw_file)
+	if (g_draw_file)
 		draw_boxes(boxes, nd);
 	if (nd > 0) {
 		char lb[512];

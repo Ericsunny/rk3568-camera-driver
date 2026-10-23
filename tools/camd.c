@@ -37,6 +37,9 @@
 #ifdef HAVE_RGA
 #include "im2d.h"		/* librga 1.9.x:C 接口 *_t 版本 */
 #endif
+#ifdef HAVE_RKNN
+#include "rknn_api.h"
+#endif
 
 #define MAX_BUFS 8
 #define MAX_Q 32
@@ -243,6 +246,178 @@ static void rga_process(struct node *n)
 		atomic_fetch_add(&g_rga_ok, 1);
 	}
 	lat_add(&rga_lat, now_us() - t0);
+}
+#endif
+
+/* ---------------- 阶段心跳(卡死后靠它定位死在哪一步) ---------------- */
+static int g_stage_fd = -1;
+
+static void stage(const char *fmt, ...)
+{
+	char b[256];
+	va_list ap;
+	int n;
+
+	if (g_stage_fd < 0)
+		g_stage_fd = open("/root/camd_stage.log",
+				  O_WRONLY | O_CREAT | O_APPEND, 0644);
+	if (g_stage_fd < 0)
+		return;
+	va_start(ap, fmt);
+	n = vsnprintf(b, sizeof(b), fmt, ap);
+	va_end(ap);
+	if (n > 0)
+		(void)!write(g_stage_fd, b, (size_t)(n < (int)sizeof(b) ? n : (int)sizeof(b) - 2));
+	(void)!write(g_stage_fd, "\n", 1);
+	fsync(g_stage_fd);
+}
+
+/* ---------------- RKNN 消费者(零拷贝:RGA 直写 NPU 输入 tensor) ---------------- */
+static const char *g_rknn_model;	/* --rknn <model> 打开 */
+#ifdef HAVE_RKNN
+#define MAX_OUT 16
+static rknn_context g_npu_ctx;
+static rknn_tensor_mem *g_npu_in;
+static rknn_tensor_mem *g_npu_out[MAX_OUT];
+static unsigned g_npu_nout;
+static int g_npu_w, g_npu_h;
+static rga_buffer_t g_npu_dst;
+static atomic_uint g_npu_ok, g_npu_err;
+static char g_npu_msg[192];
+static lat_t npu_lat, npu_rga_lat;
+
+static int rknn_consumer_init(void)
+{
+	rknn_input_output_num io;
+	rknn_tensor_attr in_attr, in_native, oattr;
+	FILE *f;
+	long sz;
+	void *model;
+	int i, ret;
+
+	f = fopen(g_rknn_model, "rb");
+	if (!f) {
+		snprintf(g_npu_msg, sizeof(g_npu_msg), "open %s: %s", g_rknn_model,
+			 strerror(errno));
+		return -1;
+	}
+	fseek(f, 0, SEEK_END);
+	sz = ftell(f);
+	fseek(f, 0, SEEK_SET);
+	model = malloc(sz);
+	if (!model || fread(model, 1, sz, f) != (size_t)sz) {
+		fclose(f);
+		free(model);
+		snprintf(g_npu_msg, sizeof(g_npu_msg), "read model failed");
+		return -1;
+	}
+	fclose(f);
+	ret = rknn_init(&g_npu_ctx, model, sz, 0, NULL);
+	free(model);
+	if (ret < 0) {
+		snprintf(g_npu_msg, sizeof(g_npu_msg), "rknn_init=%d", ret);
+		return -1;
+	}
+	rknn_query(g_npu_ctx, RKNN_QUERY_IN_OUT_NUM, &io, sizeof(io));
+	memset(&in_attr, 0, sizeof(in_attr));
+	in_attr.index = 0;
+	rknn_query(g_npu_ctx, RKNN_QUERY_INPUT_ATTR, &in_attr, sizeof(in_attr));
+	/* 零拷贝必须用 native attr + pass_through=1,否则 runtime 每帧还会做一次转换 */
+	memset(&in_native, 0, sizeof(in_native));
+	in_native.index = 0;
+	if (rknn_query(g_npu_ctx, RKNN_QUERY_NATIVE_INPUT_ATTR, &in_native,
+		       sizeof(in_native)) != 0)
+		in_native = in_attr;
+	g_npu_h = in_native.dims[1];
+	g_npu_w = in_native.dims[2];
+	g_npu_in = rknn_create_mem(g_npu_ctx, in_native.size_with_stride);
+	if (!g_npu_in) {
+		snprintf(g_npu_msg, sizeof(g_npu_msg), "rknn_create_mem(input) failed");
+		return -1;
+	}
+	in_native.pass_through = 1;
+	ret = rknn_set_io_mem(g_npu_ctx, g_npu_in, &in_native);
+	if (ret < 0) {
+		snprintf(g_npu_msg, sizeof(g_npu_msg), "set_io_mem(input)=%d", ret);
+		return -1;
+	}
+	g_npu_nout = io.n_output > MAX_OUT ? MAX_OUT : io.n_output;
+	for (i = 0; i < (int)g_npu_nout; i++) {
+		memset(&oattr, 0, sizeof(oattr));
+		oattr.index = i;
+		/* 输入用了 native attr,输出也必须用 native,混用会让 runtime 在
+		 * set_io_mem 阶段按非 native 解释 buffer(实测 SIGBUS) */
+		if (rknn_query(g_npu_ctx, RKNN_QUERY_NATIVE_OUTPUT_ATTR, &oattr,
+			       sizeof(oattr)) != 0) {
+			memset(&oattr, 0, sizeof(oattr));
+			oattr.index = i;
+			rknn_query(g_npu_ctx, RKNN_QUERY_OUTPUT_ATTR, &oattr,
+				   sizeof(oattr));
+		}
+		g_npu_out[i] = rknn_create_mem(g_npu_ctx, oattr.size_with_stride);
+		if (!g_npu_out[i]) {
+			snprintf(g_npu_msg, sizeof(g_npu_msg),
+				 "rknn_create_mem(out %d) failed", i);
+			return -1;
+		}
+		ret = rknn_set_io_mem(g_npu_ctx, g_npu_out[i], &oattr);
+		if (ret < 0) {
+			snprintf(g_npu_msg, sizeof(g_npu_msg),
+				 "set_io_mem(out %d)=%d", i, ret);
+			return -1;
+		}
+	}
+	/* RGA 直接写 NPU 输入 buffer(同一个 DMA-BUF fd),全程零拷贝 */
+	g_npu_dst = wrapbuffer_fd_t(g_npu_in->fd, g_npu_w, g_npu_h, g_npu_w * 3,
+				    g_npu_h, RK_FORMAT_RGB_888);
+	lat_init(&npu_lat, 4096);
+	lat_init(&npu_rga_lat, 4096);
+	printf(">>> RKNN 消费者: %s  输入 %dx%d type=%d zp=%d scale=%f 输出 %u 个\n",
+	       g_rknn_model, g_npu_w, g_npu_h, in_native.type, in_native.zp,
+	       in_native.scale, g_npu_nout);
+	printf(">>> 零拷贝: RGA 写 fd=%d (mem %u B) -> rknn_run, pass_through=1\n",
+	       g_npu_in->fd, g_npu_in->size);
+	return 0;
+}
+
+static void rknn_process(struct node *n)
+{
+	int fmt = (cap.fourcc == V4L2_PIX_FMT_NV12) ? RK_FORMAT_YCbCr_420_SP
+						    : RK_FORMAT_YCbCr_400;
+	int64_t t0 = now_us(), t1;
+	rga_buffer_t src;
+	IM_STATUS st;
+	volatile int8_t probe;
+	int ret;
+
+	src = wrapbuffer_fd_t(n->dmabuf_fd, cap.w, cap.h,
+			      n->stride > 0 ? n->stride : cap.w, cap.h, fmt);
+	stage("rt seq=%u rga in fd=%d", n->seq, n->dmabuf_fd);
+	st = imresize_t(src, g_npu_dst, 0, 0, 0, 1);
+	stage("rt seq=%u rga out st=%d", n->seq, (int)st);
+	if (st != IM_STATUS_SUCCESS) {
+		atomic_fetch_add(&g_npu_err, 1);
+		if (!g_npu_msg[0])
+			snprintf(g_npu_msg, sizeof(g_npu_msg), "rga: %s",
+				 imStrError(st));
+		return;
+	}
+	t1 = now_us();
+	lat_add(&npu_rga_lat, t1 - t0);
+	stage("rt seq=%u npu run in", n->seq);
+	ret = rknn_run(g_npu_ctx, NULL);
+	stage("rt seq=%u npu run out ret=%d", n->seq, ret);
+	if (ret < 0) {
+		atomic_fetch_add(&g_npu_err, 1);
+		if (!g_npu_msg[0])
+			snprintf(g_npu_msg, sizeof(g_npu_msg), "rknn_run=%d", ret);
+		return;
+	}
+	/* 触摸一个输出字节,确保这次推理的结果被真正取用(不做完整解码) */
+	probe = *(volatile int8_t *)g_npu_out[0]->virt_addr;
+	(void)probe;
+	lat_add(&npu_lat, now_us() - t1);
+	atomic_fetch_add(&g_npu_ok, 1);
 }
 #endif
 
@@ -666,6 +841,8 @@ static void *capture_thread(void *arg)
 		n->seq = atomic_fetch_add(&g_frames, 1);
 		n->ts_us = now_us();
 		atomic_store(&n->refs, 1);	/* capture 自己一份 */
+		if ((n->seq % 10) == 0)
+			stage("cap seq=%u idx=%d", n->seq, b.index);
 
 		pthread_mutex_lock(&g_first_mu);
 		if (g_first_us == 0)
@@ -711,6 +888,12 @@ static int consumer_run(struct node *n)
 	if (g_copy || g_rga) {
 		fprintf(stderr, "--rga/--cpu-copy 需要 -DHAVE_RGA 编译\\n");
 		return -1;
+	}
+#endif
+#ifdef HAVE_RKNN
+	if (g_rknn_model) {
+		rknn_process(n);
+		return 0;
 	}
 #endif
 	if (g_analyze_mode == 1 || g_fault == 1) {
@@ -839,6 +1022,16 @@ static void dump_json(FILE *f, int rc)
 			(unsigned long long)rga_lat.max_us, lat_pct(&rga_lat, 0.99),
 			g_rga_msg);
 #endif
+#ifdef HAVE_RKNN
+	if (g_rknn_model)
+		fprintf(f,
+			"  \"npu\": {\"model\": \"%s\", \"in\": \"%dx%d\", \"ok\": %u, \"err\": %u, \"rga_us\": %.1f, \"run_us\": %.1f, \"run_p99_us\": %.0f, \"msg\": \"%s\"},\n",
+			g_rknn_model, g_npu_w, g_npu_h,
+			atomic_load(&g_npu_ok), atomic_load(&g_npu_err),
+			npu_rga_lat.n ? (double)npu_rga_lat.sum_us / npu_rga_lat.n : -1.0,
+			npu_lat.n ? (double)npu_lat.sum_us / npu_lat.n : -1.0,
+			lat_pct(&npu_lat, 0.99), g_npu_msg);
+#endif
 	fprintf(f, "  \"queue\": {\"rt_cap\": %d, \"ev_cap\": %d}\n", q[Q_RT].cap,
 		q[Q_EV].cap);
 	fprintf(f, "}\n");
@@ -926,14 +1119,23 @@ static int session(void)
 
 	q_init(Q_EV, g_ev_depth, g_ev_policy == 0 ? 1 : 0, 200);
 
+#ifdef HAVE_RKNN
+	if (g_rknn_model && rknn_consumer_init() < 0) {
+		fprintf(stderr, "RKNN 消费者初始化失败: %s\n", g_npu_msg);
+		return 1;
+	}
+#endif
 	if (dev_open() < 0) {
 		rc = 1;
 		goto out;
 	}
+	stage("dev_open ok %dx%d bufs=%d fourcc=%08x", cap.w, cap.h, cap.nbufs,
+	      cap.fourcc);
 	if (dev_streamon() < 0) {
 		rc = 1;
 		goto out;
 	}
+	stage("streamon ok");
 
 	g_start_us = now_us();
 	pthread_create(&t_cap, NULL, capture_thread, NULL);
@@ -971,6 +1173,7 @@ static void usage(void)
 "  --rga             实时消费者改用 RGA 零拷贝缩放(需 -DHAVE_RGA -lrga)\n"
 "  --rga-size WxH    RGA 目标尺寸(默认 640x360)\n"
 "  --cpu-copy        对照组:CPU memcpy 整帧 + 降采样(不开 RGA)\n"
+"  --rknn MODEL      实时消费者改用 RKNN 推理(RGA 直写 NPU 输入,零拷贝)\n"
 "  --fault-once      故障只注入一次(验证恢复后能继续跑)\n"
 		"  --ev-fps F        取证限速帧率(默认 5)\n"
 		"  --analyze-ms N    实时分析模拟耗时(ms)\n"
@@ -1004,6 +1207,7 @@ int main(int argc, char **argv)
 		{ "rga-size", required_argument, 0, 1012 },
 		{ "cpu-copy", no_argument, 0, 1013 },
 		{ "fault-once", no_argument, 0, 1014 },
+		{ "rknn", required_argument, 0, 1015 },
 		{ 0, 0, 0, 0 }
 	};
 
@@ -1048,6 +1252,9 @@ int main(int argc, char **argv)
 			break;
 		case 1014:
 			g_fault_once = 1;
+			break;
+		case 1015:
+			g_rknn_model = optarg;
 			break;
 		case 1012:
 			sscanf(optarg, "%dx%d", &g_rga_dw, &g_rga_dh);

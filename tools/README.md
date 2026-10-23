@@ -157,6 +157,31 @@ bash /root/install_rkaiq_2022.sh --rollback  # 回滚到 2024 版
 换完要 **reboot**:rkaiq 被杀后 ISP 可能停在 stream 未停的状态,紧接着开 `/dev/video5` 拿不到帧。
 装好后 2022 daemon 的 AE/AWB 才真的闭环(实测 15 ms/帧,mini3a 36.3 ms/帧)。
 
+## `camd.c --rknn` —— NPU 零拷贝消费者(RGA 直写 NPU 输入 tensor)
+
+```bash
+# 板上编译(需要 rknn 头 + librknnrt + librga)
+gcc -O2 -pthread -DHAVE_RGA -DHAVE_RKNN \
+    -I/usr/include/rga -I/root/npu/3rdparty/rknpu2/include \
+    -o camd camd.c -lrga -lrknnrt
+
+# ISP 出图通道(NV12)-> RGA 缩到 640x640 RGB -> 直写 NPU 输入 -> rknn_run
+/root/camd -d /dev/video5 -w 1920 -h 1080 -f NV12 -n 100 -b 4 \
+    --rt-depth 2 --ev-depth 1 \
+    --rknn /root/npu/examples/yolov8/model/yolov8n_rk3568_i8.rknn \
+    --json /root/npu_1080p.json
+```
+
+实测(见 docs/29 §5.8):1632×1224 → 48.1 ms/帧(RGA 7.1 + NPU 41.0);
+1080p → 66.5 ms(RGA 11.9 + NPU 54.5);4K → 78.9 ms(RGA 25.8 + NPU 53.1)。
+瓶颈是 NPU,不是采集。
+
+两个必须知道的约束:
+
+- 输入/输出**都要用 `RKNN_QUERY_NATIVE_*_ATTR` + `pass_through=1`**;混用 native 输入与普通输出属性会 SIGBUS。
+- 停采集只能 `kill -TERM`。`kill -9` 打正在出流的进程会让 ISP 卡死(`rkisp_stream_stop timeout`),只能断电重启。
+- 卡死后看 `/root/camd_stage.log`(`cap seq=` / `rga in` / `rga out st=` / `npu run in|out`),能定位死在哪一步。
+
 
 ## `hdr_demo.c` —— 板端 HDR 多帧融合(路线 A)
 

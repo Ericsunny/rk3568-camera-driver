@@ -644,6 +644,19 @@ static struct rec *ring_at(int i)
 	return &ring[(ring_head + i) % MAX_FRAMES];
 }
 
+/* 事件结束复位环: 必须释放帧数据, 否则每个事件都会漏掉一整环编码包副本 */
+static void ring_clear(void)
+{
+	int i;
+
+	for (i = 0; i < ring_cnt; i++)
+		free(ring_at(i)->data);
+	ring_head = 0;
+	ring_cnt = 0;
+	ring_bytes = 0;
+	g_pushed = 0;
+}
+
 /* 找到 >= from 的第一个 IDR 的下标 */
 static int ring_first_idr_from(int from)
 {
@@ -666,7 +679,8 @@ static int dump(const char *out, unsigned trig_seq, double trig_ts, int pre_i,
 	snprintf(jpath, sizeof(jpath), "%s.json", out);
 	f = fopen(path, "wb");
 	if (!f) {
-		perror("fopen h264");
+		fprintf(stderr, ">>> fopen %s 失败: %s (errno=%d)\n",
+			path, strerror(errno), errno);
 		return -1;
 	}
 	for (i = pre_i; i <= end_i && i < ring_cnt; i++) {
@@ -674,14 +688,26 @@ static int dump(const char *out, unsigned trig_seq, double trig_ts, int pre_i,
 
 		if (0 && r->key && g_hdr_len)
 			fwrite(g_hdr, 1, g_hdr_len, f);
-		fwrite(r->data, 1, (size_t)r->len, f);
+		if (fwrite(r->data, 1, (size_t)r->len, f) != (size_t)r->len) {
+			fprintf(stderr, ">>> 写 %s 失败(seq=%u len=%d): %s (errno=%d)\n",
+				path, r->seq, r->len, strerror(errno), errno);
+			fclose(f);
+			return -1;
+		}
 		n++;
 	}
-	fclose(f);
+	if (fclose(f) != 0) {
+		fprintf(stderr, ">>> fclose %s 失败: %s (errno=%d)\n",
+			path, strerror(errno), errno);
+		return -1;
+	}
 
 	j = fopen(jpath, "w");
-	if (!j)
+	if (!j) {
+		fprintf(stderr, ">>> fopen %s 失败: %s (errno=%d)\n",
+			jpath, strerror(errno), errno);
 		return -1;
+	}
 	fprintf(j, "{\"file\":\"%s.h264\",\"trigger_seq\":%u,"
 		"\"trigger_ts_ms\":%.1f,\"first_idr_seq\":%u,"
 		"\"first_idr_ts_ms\":%.1f,\"frames\":%d,"
@@ -697,14 +723,24 @@ static int dump(const char *out, unsigned trig_seq, double trig_ts, int pre_i,
 			r->abs_ms, r->len, r->key);
 	}
 	fprintf(j, "]}\n");
-	fclose(j);
+	if (ferror(j)) {
+		fprintf(stderr, ">>> 写 %s 失败: %s (errno=%d)\n",
+			jpath, strerror(errno), errno);
+		fclose(j);
+		return -1;
+	}
+	if (fclose(j) != 0) {
+		fprintf(stderr, ">>> fclose %s 失败: %s (errno=%d)\n",
+			jpath, strerror(errno), errno);
+		return -1;
+	}
 	printf(">>> NPU det_total=%u det_max=%u score_max=%.3f\n",
 	       g_det_total, g_det_max, (double)g_score_max);
 	if (g_rga_n)
 		printf(">>> RGA 缩放均值 Y=%.1f (%ux%u, 采样 %lu)\n",
 		       (double)g_rga_sum / g_rga_n, g_rga_w, g_rga_h, g_rga_n);
 	printf(">>> 写出 %s.h264 (%d 帧) + %s.json\n", out, n, out);
-	return n;
+	return 0;
 }
 
 int main(int argc, char **argv)
@@ -712,6 +748,8 @@ int main(int argc, char **argv)
 	const char *dev = "/dev/video5", *out = "/root/ev/ev";
 	int w = 1920, h = 1080, pre_sec = 3, post_sec = 2, kbps = 8000, gop;
 	int i, k, trigger_i = -1, pre_i = -1, end_i = -1;
+	int rc = 0;		/* 进程退出码: 0=正常, 1=真错误 */
+	int reached_max = 0;	/* 因 --max-events 正常结束 */
 	unsigned seq = 0;
 	double trig_ts = 0, trig_abs = 0, t_start;
 	struct stat st;
@@ -871,7 +909,7 @@ int main(int argc, char **argv)
 		}
 		if (trigger_i >= 0 && ts - t_start > trig_ts + post_sec * 1000.0) {
 			char outn[512];
-			int pi = pre_i;
+			int pi = pre_i, ok = 0;
 
 			end_i = ring_cnt - 1;
 			/* 触发到此刻环形可能已前移 -> 按 seq 重新定位 */
@@ -880,22 +918,28 @@ int main(int argc, char **argv)
 					if (ring_at(k)->seq == g_pre_seq) { pi = k; break; }
 			if (pi >= 0) {
 				snprintf(outn, sizeof(outn), "%s-%02d", out, g_events);
-				dump(outn, seq - 1, trig_ts, pi, end_i, w, h,
-				     (double)(end_i - pi + 1) * 1000.0 /
-				     (trig_ts + post_sec * 1000.0));
+				ok = dump(outn, seq - 1, trig_ts, pi, end_i, w, h,
+					  (double)(end_i - pi + 1) * 1000.0 /
+					  (trig_ts + post_sec * 1000.0)) == 0;
+			}
+			if (!ok) {
+				/* 落盘失败 = 真错误: 不计数, 也不再等下一个事件 */
+				fprintf(stderr, ">>> 事件落盘失败\n");
+				rc = 1;
+				break;
 			}
 			g_events++;
 			printf(">>> 事件 %d 完成, 继续等待下一个事件\n", g_events);
 			/* 复位状态, 复用同一块环 */
-			ring_head = ring_cnt = 0;
-			ring_bytes = 0;
-			g_pushed = 0;
+			ring_clear();
 			g_trigger = 0;
 			g_streak = 0;
 			g_pre_seq = 0;
 			trigger_i = pre_i = end_i = -1;
-			if (g_max_events && g_events >= g_max_events)
+			if (g_max_events && g_events >= g_max_events) {
+				reached_max = 1;
 				break;
+			}
 		}
 	}
 
@@ -904,6 +948,9 @@ int main(int argc, char **argv)
 
 		xioctl(cap.fd, VIDIOC_STREAMOFF, &t);
 	}
+	/* 达到 --max-events 属正常结束(事件已在循环内落盘); 落盘失败已打印过 */
+	if (reached_max || rc)
+		return rc;
 	/* 触发到 dump 之间环形可能已前移, 下标会失效 -> 用绝对 seq 重新定位 */
 	if (end_i >= 0 && g_pre_seq) {
 		for (i = 0; i < ring_cnt; i++)
@@ -916,7 +963,11 @@ int main(int argc, char **argv)
 		fprintf(stderr, "未触发或无数据, 不落盘\n");
 		return 1;
 	}
-	dump(out, seq - 1, trig_ts, pre_i, end_i, w, h,
-	     (double)(end_i - pre_i + 1) * 1000.0 / (trig_ts + post_sec * 1000.0));
+	if (dump(out, seq - 1, trig_ts, pre_i, end_i, w, h,
+		 (double)(end_i - pre_i + 1) * 1000.0 /
+		 (trig_ts + post_sec * 1000.0)) < 0) {
+		fprintf(stderr, ">>> 事件落盘失败\n");
+		return 1;
+	}
 	return 0;
 }

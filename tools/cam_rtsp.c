@@ -240,6 +240,40 @@ struct eframe {
 static struct eframe g_ring[RING];
 static volatile uint64_t g_wr;   /* 已产出的帧数(=下一个槽的 tag) */
 static pthread_mutex_t g_lock = PTHREAD_MUTEX_INITIALIZER;
+
+/* --- TCP 短写: 必须写完, 否则 RTP/RTSP 分帧会被拆坏 --- */
+static int xwrite(int fd, const void *buf, size_t n)
+{
+	const char *p = (const char *)buf;
+	size_t off = 0;
+
+	while (off < n) {
+		ssize_t w = xwrite(fd, p + off, n - off);
+
+		if (w < 0) {
+			if (errno == EINTR)
+				continue;
+			return -1;
+		}
+		if (w == 0)
+			return -1;	/* 对端关闭 */
+		off += (size_t)w;
+	}
+	return 0;
+}
+
+/* --- 绝对截止时间: pthread_cond_timedwait 要的是"几点", 不是"多久" --- */
+static void deadline_in_ms(struct timespec *to, int ms)
+{
+	clock_gettime(CLOCK_REALTIME, to);	/* 条件变量默认时钟 */
+	to->tv_sec += ms / 1000;
+	to->tv_nsec += (long)(ms % 1000) * 1000L * 1000L;
+	if (to->tv_nsec >= 1000000000L) {
+		to->tv_sec++;
+		to->tv_nsec -= 1000000000L;
+	}
+}
+
 static pthread_cond_t g_cond = PTHREAD_COND_INITIALIZER;
 static volatile int g_nclients;  /* 当前 PLAY 中的客户端数 */
 
@@ -470,15 +504,15 @@ static void *http_thread(void *arg)
 				int hl = snprintf(hdr, sizeof(hdr),
 					"HTTP/1.0 200 OK\r\nContent-Type: image/bmp\r\n"
 					"Content-Length: %d\r\nCache-Control: no-store\r\n\r\n", len);
-				if (write(fd, hdr, hl) < 0) { /* ignore */ }
-				if (write(fd, tmp, len) < 0) { /* ignore */ }
+				if (xwrite(fd, hdr, hl) < 0) { /* ignore */ }
+				if (xwrite(fd, tmp, len) < 0) { /* ignore */ }
 				free(tmp);
 			} else {
 				const char *e = "HTTP/1.0 503 Busy\r\nContent-Length: 0\r\n\r\n";
-				if (write(fd, e, strlen(e)) < 0) { /* ignore */ }
+				if (xwrite(fd, e, strlen(e)) < 0) { /* ignore */ }
 			}
 		} else {
-			if (write(fd, g_page, sizeof(g_page) - 1) < 0) { /* ignore */ }
+			if (xwrite(fd, g_page, sizeof(g_page) - 1) < 0) { /* ignore */ }
 		}
 		close(fd);
 	}
@@ -624,11 +658,11 @@ static void *client_thread(void *arg)
 				"Public: OPTIONS, DESCRIBE, SETUP, PLAY, TEARDOWN, GET_PARAMETER\r\n";
 			char out[256];
 			snprintf(out, sizeof(out), "%sCSeq: %d\r\n\r\n", r, cseq);
-			if (write(fd, out, strlen(out)) < 0) break;
+			if (xwrite(fd, out, strlen(out)) < 0) break;
 		} else if (strncmp(req, "DESCRIBE", 8) == 0) {
 			if (!g_sps_len || !g_pps_len) {
 				const char *e = "RTSP/1.0 503 Service Unavailable\r\nCSeq: 0\r\n\r\n";
-				write(fd, e, strlen(e));
+				xwrite(fd, e, strlen(e));
 				continue;
 			}
 			b64(g_sps, g_sps_len, b64s);
@@ -653,7 +687,7 @@ static void *client_thread(void *arg)
 				 "Content-Type: application/sdp\r\n"
 				 "Content-Length: %d\r\n\r\n%s",
 				 cseq, g_port, (int)strlen(sdp), sdp);
-			if (write(fd, out, strlen(out)) < 0) break;
+			if (xwrite(fd, out, strlen(out)) < 0) break;
 		} else if (strncmp(req, "SETUP", 5) == 0) {
 			char *tr = strstr(req, "interleaved=");
 			if (tr) sscanf(tr + 12, "%d-%d", &ch_rtp, &ch_rtcp);
@@ -663,7 +697,7 @@ static void *client_thread(void *arg)
 				 "Session: %s\r\n"
 				 "Transport: RTP/AVP/TCP;unicast;interleaved=%d-%d;ssrc=12345678\r\n\r\n",
 				 cseq, session, ch_rtp, ch_rtcp);
-			if (write(fd, out, strlen(out)) < 0) break;
+			if (xwrite(fd, out, strlen(out)) < 0) break;
 		} else if (strncmp(req, "PLAY", 4) == 0) {
 			char out[512];
 			snprintf(out, sizeof(out),
@@ -671,7 +705,7 @@ static void *client_thread(void *arg)
 				 "Range: npt=0.000-\r\n"
 				 "RTP-Info: url=rtsp://127.0.0.1:%d/live/trackID=0;seq=%u;rtptime=%u\r\n\r\n",
 				 cseq, session, g_port, seq, ts);
-			if (write(fd, out, strlen(out)) < 0) break;
+			if (xwrite(fd, out, strlen(out)) < 0) break;
 			rd = 1;
 			pthread_mutex_lock(&g_lock);
 			uint64_t mine = g_wr;      /* 从当前最新帧开始 */
@@ -687,10 +721,15 @@ static void *client_thread(void *arg)
 			while (g_run && rd) {
 				int have = 0;
 				pthread_mutex_lock(&g_lock);
-				for (int spins = 0; spins < 200; spins++) {
-					if (mine < g_wr) break;
-					struct timespec to = { 0, 100 * 1000 * 1000 };
-					pthread_cond_timedwait(&g_cond, &g_lock, &to);
+				if (mine >= g_wr) {
+					/* 一个绝对截止时间管满 200 ms, 期间允许伪唤醒 */
+					struct timespec to;
+
+					deadline_in_ms(&to, 200);
+					while (g_run && mine >= g_wr)
+						if (pthread_cond_timedwait(&g_cond, &g_lock,
+									   &to) == ETIMEDOUT)
+							break;
 				}
 				if (mine < g_wr) {
 					/* 落后太多(被覆盖)则跳到最旧可用帧 */
@@ -722,17 +761,17 @@ static void *client_thread(void *arg)
 			const char *r = "RTSP/1.0 200 OK\r\nCSeq: %d\r\n\r\n";
 			char out[128];
 			snprintf(out, sizeof(out), r, cseq);
-			write(fd, out, strlen(out));
+			xwrite(fd, out, strlen(out));
 			break;
 		} else if (strncmp(req, "GET_PARAMETER", 13) == 0) {
 			char out[128];
 			snprintf(out, sizeof(out), "RTSP/1.0 200 OK\r\nCSeq: %d\r\n\r\n", cseq);
-			if (write(fd, out, strlen(out)) < 0) break;
+			if (xwrite(fd, out, strlen(out)) < 0) break;
 		} else {
 			const char *r = "RTSP/1.0 200 OK\r\nCSeq: %d\r\n\r\n";
 			char out[128];
 			snprintf(out, sizeof(out), r, cseq);
-			if (write(fd, out, strlen(out)) < 0) break;
+			if (xwrite(fd, out, strlen(out)) < 0) break;
 		}
 	}
 done:

@@ -47,11 +47,16 @@ int main(int argc, char **argv)
 	mpp_packet_init(&pkt, p0, n0);
 	mpp_packet_set_pos(pkt, p0);
 	mpp_packet_set_length(pkt, n0);
-	mpp_packet_set_eos(pkt);
 
-	int got = 0, idle_rounds = 0, put_done = 0;
+	int got = 0, idle_rounds = 0, put_done = 0, flush_done = 0;
 	for (int rounds = 0; rounds < 500; rounds++) {
 		if (!put_done && mpi->decode_put_packet(ctx, pkt) == MPP_OK) put_done = 1;
+		if (put_done && !flush_done) {   /* 空包 + EOS 让解码器吐出最后一张 AU */
+			MppPacket ep = NULL;
+			mpp_packet_init(&ep, NULL, 0);
+			mpp_packet_set_eos(ep);
+			if (mpi->decode_put_packet(ctx, ep) == MPP_OK) flush_done = 1;
+		}
 
 		int idle = 1;
 		for (;;) {

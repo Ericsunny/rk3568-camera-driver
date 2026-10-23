@@ -858,6 +858,13 @@ static int g_fault_once;	/* 只注入一次故障:用于演示"恢复后能继�
 static int g_rt_depth = 4, g_ev_depth = 2;
 static int g_ev_policy;   /* 0=丢最旧(默认,不阻塞采集) 1=有界阻塞(背压) */
 static int g_dq_timeout_ms, g_verbose, g_analyze_mode, g_fault;
+/* 可靠性收尾: 故障注入与资源曲线 */
+static int g_fault_at, g_stopfail_n;
+static atomic_int g_dq_timeouts;
+static unsigned long g_rss_max_kb, g_rss_end_kb;
+static double g_cpu_pct;
+static int64_t g_run_start_us;
+static unsigned long g_cpu_ticks_start;
 static double g_ev_fps;
 static const char *g_dev = "/dev/video0", *g_json;
 
@@ -913,6 +920,12 @@ static void node_release(struct node *n)
 	b.index = n->idx;
 	b.length = 1;
 	b.m.planes = &pl;
+	if (g_fault == 3 && (int)atomic_load(&g_frames) >= g_fault_at) {
+		/* 故障注入: 故意不归还, 空闲队列见底后 DQBUF 必然超时 */
+		fprintf(stderr, "[fault-inject] 扣留 buffer idx=%d (已采 %d 帧)\n",
+			n->idx, (int)atomic_load(&g_frames));
+		return;
+	}
 	if (ioctl(cap.fd, VIDIOC_QBUF, &b) < 0) {
 		atomic_fetch_add(&g_qbuf_err, 1);
 		fprintf(stderr, "QBUF idx=%d 失败: %s\n", n->idx, strerror(errno));
@@ -1262,6 +1275,89 @@ static void dev_close(void)
 	}
 }
 
+/* ---------------- 停流失败注入 ---------------- */
+
+#define STOPFAIL_PARAM "/sys/module/ov8858_sm/parameters/inject_stop_err"
+
+static void stopfail_arm(void)
+{
+	int fd = open(STOPFAIL_PARAM, O_WRONLY);
+	char v[16];
+	int n;
+
+	if (fd < 0) {
+		fprintf(stderr, "stopfail: 打不开 %s (%s)\n", STOPFAIL_PARAM,
+			strerror(errno));
+		return;
+	}
+	n = snprintf(v, sizeof(v), "%d", g_stopfail_n > 0 ? g_stopfail_n : 5);
+	if (write(fd, v, n) != n)
+		fprintf(stderr, "stopfail: 写入失败\n");
+	else
+		fprintf(stderr, "stopfail: 已注入 stop_stream 返回 -%s\n", v);
+	close(fd);
+}
+
+/* 读驱动侧的只读参数: 停流错误到底有没有被记下来 */
+static int stopfail_read(void)
+{
+	int fd = open("/sys/module/ov8858_sm/parameters/last_stop_err", O_RDONLY);
+	char v[16] = { 0 };
+	int n, val = 0;
+
+	if (fd < 0)
+		return 0;
+	n = read(fd, v, sizeof(v) - 1);
+	close(fd);
+	if (n > 0)
+		val = atoi(v);
+
+	return val;
+}
+
+/* ---------------- 资源采样 ---------------- */
+
+static unsigned long proc_rss_kb(void)
+{
+	FILE *f = fopen("/proc/self/statm", "r");
+	long total = 0, resident = 0;
+
+	if (!f)
+		return 0;
+	if (fscanf(f, "%ld %ld", &total, &resident) != 2)
+		resident = 0;
+	fclose(f);
+
+	return (unsigned long)resident * (unsigned long)(sysconf(_SC_PAGESIZE) / 1024);
+}
+
+static unsigned long proc_cpu_ticks(void)
+{
+	struct tms t;
+
+	/* times() 比解析 /proc/self/stat 可靠(字段序号容易数错) */
+	if (times(&t) == (clock_t)-1)
+		return 0;
+
+	return (unsigned long)(t.tms_utime + t.tms_stime);
+}
+
+static void *sampler_thread(void *arg)
+{
+	(void)arg;
+	while (atomic_load(&g_run)) {
+		unsigned long rss = proc_rss_kb();
+		struct timespec ts = { 0, 500 * 1000 * 1000 };
+
+		if (rss > g_rss_max_kb)
+			g_rss_max_kb = rss;
+		g_rss_end_kb = rss;
+		nanosleep(&ts, NULL);
+	}
+
+	return NULL;
+}
+
 /* ---------------- 采集线程 ---------------- */
 static void *capture_thread(void *arg)
 {
@@ -1274,7 +1370,15 @@ static void *capture_thread(void *arg)
 		int pr = poll(&p, 1, g_dq_timeout_ms);
 
 		if (pr == 0) {
-			fprintf(stderr, "DQBUF 超时(%d ms)\n", g_dq_timeout_ms);
+			int t = atomic_fetch_add(&g_dq_timeouts, 1) + 1;
+
+			fprintf(stderr, "DQBUF 超时(%d ms) 第 %d 次\n",
+				g_dq_timeout_ms, t);
+			if (g_fault == 3 && t >= 3) {
+				if (g_fault_once)
+					g_fault = 0;	/* 只坏一次: 恢复后应能继续跑 */
+				fatal(3, "DQBUF 连续超时 %d 次(故障注入)", t);
+			}
 			continue;
 		}
 		if (pr < 0) {
@@ -1446,6 +1550,11 @@ static void dump_json(FILE *f, int rc)
 	fprintf(f, "  \"size\": \"%dx%d\",\n", cap.w, cap.h);
 	fprintf(f, "  \"frames\": %u,\n", atomic_load(&g_frames));
 	fprintf(f, "  \"frames_returned\": %u,\n", atomic_load(&g_frames_done));
+	fprintf(f, "  \"dq_timeouts\": %d,\n", atomic_load(&g_dq_timeouts));
+	fprintf(f, "  \"rss_max_kb\": %lu,\n", g_rss_max_kb);
+	fprintf(f, "  \"rss_end_kb\": %lu,\n", g_rss_end_kb);
+	fprintf(f, "  \"cpu_pct\": %.2f,\n", g_cpu_pct);
+	fprintf(f, "  \"stop_err_param\": %d,\n", stopfail_read());
 	fprintf(f, "  \"qbuf_errors\": %u,\n", atomic_load(&g_qbuf_err));
 	fprintf(f, "  \"fatal\": %d,\n", atomic_load(&g_fatal));
 	fprintf(f, "  \"fatal_msg\": \"%s\",\n", g_fatal_msg);
@@ -1547,7 +1656,7 @@ static void diag_bundle(int rc)
 /* ---------------- 一次会话 ---------------- */
 static int session(void)
 {
-	pthread_t t_cap, t_rt, t_ev;
+	pthread_t t_cap, t_smpl, t_rt, t_ev;
 	int rc = 0;
 
 	atomic_store(&g_run, true);
@@ -1608,6 +1717,11 @@ static int session(void)
 	stage("streamon ok");
 
 	g_start_us = now_us();
+	g_run_start_us = now_us();
+	g_cpu_ticks_start = proc_cpu_ticks();
+	if (g_fault == 4)
+		stopfail_arm();
+	pthread_create(&t_smpl, NULL, sampler_thread, NULL);
 	pthread_create(&t_cap, NULL, capture_thread, NULL);
 	pthread_create(&t_rt, NULL, rt_thread, NULL);
 	pthread_create(&t_ev, NULL, ev_thread, NULL);
@@ -1678,6 +1792,8 @@ int main(int argc, char **argv)
 		{ "rga-size", required_argument, 0, 1012 },
 		{ "cpu-copy", no_argument, 0, 1013 },
 		{ "fault-once", no_argument, 0, 1014 },
+		{ "fault-at", required_argument, 0, 1040 },
+		{ "stopfail-n", required_argument, 0, 1041 },
 		{ "rknn", required_argument, 0, 1015 },
 		{ "obj-thresh", required_argument, 0, 1016 },
         { "no-obj-mul", no_argument, 0, 1034 },
@@ -1718,6 +1834,10 @@ int main(int argc, char **argv)
 				g_fault = 1;
 			else if (!strcmp(optarg, "fail"))
 				g_fault = 2;
+			else if (!strcmp(optarg, "dqbuf"))
+				g_fault = 3;
+			else if (!strcmp(optarg, "stopfail"))
+				g_fault = 4;
 			break;
 		case 1007: g_recover_attempts = atoi(optarg); break;
 		case 1008: g_dq_timeout_ms = atoi(optarg); break;
@@ -1733,6 +1853,12 @@ int main(int argc, char **argv)
 			break;
 		case 1014:
 			g_fault_once = 1;
+			break;
+		case 1040:
+			g_fault_at = atoi(optarg);
+			break;
+		case 1041:
+			g_stopfail_n = atoi(optarg);
 			break;
 		case 1015:
 			g_rknn_model = optarg;
@@ -1785,6 +1911,17 @@ int main(int argc, char **argv)
 		attempt++;
 		fprintf(stderr, ">>> 有界恢复 第 %d/%d 次\n", attempt,
 			g_recover_attempts);
+	}
+
+	/* CPU 占用 = 总 tick 差 / 实际运行时长 */
+	if (g_run_start_us > 0) {
+		int64_t el = now_us() - g_run_start_us;
+		unsigned long ticks = proc_cpu_ticks() - g_cpu_ticks_start;
+
+		if (el > 0)
+			g_cpu_pct = 100.0 * (double)ticks /
+				    (double)sysconf(_SC_CLK_TCK) /
+				    ((double)el / 1e6);
 	}
 
 	if (g_json) {

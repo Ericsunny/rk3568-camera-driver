@@ -322,6 +322,8 @@ static lat_t npu_lat, npu_rga_lat, npu_post_lat;
 static unsigned g_det_total, g_det_max;
 static atomic_uint g_score_maxi;	/* maxscore x1000 */
 static char g_det_last[128];
+static char *g_draw_file;		/* --draw: 把框画到 RGB 上存 PPM */
+static unsigned char *g_draw_buf;
 static int g_no_obj_mul;		/* --no-obj-mul: score 直接取 class 概率 */
 static float g_obj_thresh;		/* 0 = 用 OBJ_THRESH */
 static char *g_dump_rgb;		/* 调试:把 NPU 输入(640x640 RGB)存一份 */
@@ -436,11 +438,18 @@ static int decode_yolov8(rknn_tensor_attr *oa, int8_t **od, struct dbox *res,
 				}
 				if (n < maxn) {
 					float cx = (x + 0.5f) * stride, cy = (y + 0.5f) * stride;
+					float bw, bh;
 
 					res[n].x1 = cx - d[0] * stride;
 					res[n].y1 = cy - d[1] * stride;
 					res[n].x2 = cx + d[2] * stride;
 					res[n].y2 = cy + d[3] * stride;
+					/* 退化框过滤:铺满整幅的巨大框是典型误检(实测整帧被判成 train),
+					 * 不滤掉会把真正的小目标挡在 NMS 之外。*/
+					bw = res[n].x2 - res[n].x1;
+					bh = res[n].y2 - res[n].y1;
+					if (bw > 0.80f * g_npu_w && bh > 0.80f * g_npu_h)
+						continue;
 					res[n].score = conf;
 					res[n].cls = best;
 					n++;
@@ -616,6 +625,57 @@ static int npu_run_file(const char *path)
 }
 #endif
 
+/* 把 NMS 之后的框画到当前 RGB 上,存成 PPM(P6) —— 板上没有 PIL,
+ * 存 PPM 后拷回 PC 再看,省掉一套 PNG 编码。*/
+static void draw_boxes(struct dbox *b, int n)
+{
+	static const unsigned char pal[6][3] = {
+		{255, 0, 0}, {0, 255, 0}, {0, 128, 255},
+		{255, 255, 0}, {255, 0, 255}, {0, 255, 255}
+	};
+	int W = g_npu_w, H = g_npu_h, i, t, k;
+
+	if (!g_draw_buf) {
+		g_draw_buf = malloc((size_t)W * H * 3);
+		if (!g_draw_buf)
+			return;
+	}
+	memcpy(g_draw_buf, g_npu_rgb, (size_t)W * H * 3);
+	for (i = 0; i < n && i < 8; i++) {
+		int x1 = (int)b[i].x1, y1 = (int)b[i].y1;
+		int x2 = (int)b[i].x2, y2 = (int)b[i].y2;
+		const unsigned char *c = pal[b[i].cls % 6];
+
+		if (x1 < 0) x1 = 0;
+		if (y1 < 0) y1 = 0;
+		if (x2 >= W) x2 = W - 1;
+		if (y2 >= H) y2 = H - 1;
+		for (t = 0; t < 3; t++) {
+			for (k = x1; k <= x2; k++) {
+				if (y1 + t < H)
+					memcpy(g_draw_buf + (size_t)((y1 + t) * W + k) * 3, c, 3);
+				if (y2 - t >= 0)
+					memcpy(g_draw_buf + (size_t)((y2 - t) * W + k) * 3, c, 3);
+			}
+			for (k = y1; k <= y2; k++) {
+				if (x1 + t < W)
+					memcpy(g_draw_buf + (size_t)(k * W + x1 + t) * 3, c, 3);
+				if (x2 - t >= 0)
+					memcpy(g_draw_buf + (size_t)(k * W + x2 - t) * 3, c, 3);
+			}
+		}
+	}
+	{
+		FILE *f = fopen(g_draw_file, "wb");
+
+		if (!f)
+			return;
+		fprintf(f, "P6\n%d %d\n255\n", W, H);
+		fwrite(g_draw_buf, 1, (size_t)W * H * 3, f);
+		fclose(f);
+	}
+}
+
 static void rknn_process(struct node *n)
 {
 	int fmt = (cap.fourcc == V4L2_PIX_FMT_NV12) ? RK_FORMAT_YCbCr_420_SP
@@ -775,6 +835,8 @@ static void rknn_process(struct node *n)
 	if (nd > 0 && !g_det_last[0])
 		snprintf(g_det_last, sizeof(g_det_last), "cls=%d score=%.2f @%.0f,%.0f",
 			 boxes[0].cls, boxes[0].score, boxes[0].x1, boxes[0].y1);
+	if (nd > 0 && g_draw_file)
+		draw_boxes(boxes, nd);
 	if (nd > 0 && (n->seq % 30) == 0) {
 		stage("rt seq=%u det=%d cls=%d score=%.2f max=%.2f box=%.0f,%.0f,%.0f,%.0f",
 		      n->seq, nd, boxes[0].cls, boxes[0].score, maxscore,
@@ -1614,6 +1676,7 @@ int main(int argc, char **argv)
 		{ "obj-thresh", required_argument, 0, 1016 },
         { "no-obj-mul", no_argument, 0, 1034 },
 		{ "dump-rgb", required_argument, 0, 1017 },
+        { "draw", required_argument, 0, 1035 },
 		{ "rot90", no_argument, 0, 1018 },
         { "wb", no_argument, 0, 1033 },
 		{ "image", required_argument, 0, 1019 },
@@ -1675,7 +1738,8 @@ int main(int argc, char **argv)
 		case 1030: g_exp = atoi(optarg); break;
         case 1031: g_gain = atoi(optarg); break;
         case 1032: g_ctrl_dev = optarg; break;
-        case 1017:
+        case 1035: g_draw_file = optarg; break;
+		case 1017:
 			g_dump_rgb = optarg;
 			break;
 		case 1018:

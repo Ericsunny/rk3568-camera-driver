@@ -299,7 +299,7 @@ static int dump(const char *out, unsigned trig_seq, double trig_ts, int pre_i,
 	for (i = pre_i; i <= end_i && i < ring_cnt; i++) {
 		struct rec *r = ring_at(i);
 
-		if (r->key && g_hdr_len)
+		if (0 && r->key && g_hdr_len)
 			fwrite(g_hdr, 1, g_hdr_len, f);
 		fwrite(r->data, 1, (size_t)r->len, f);
 		n++;

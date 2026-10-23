@@ -31,6 +31,14 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <math.h>
+#ifdef HAVE_RKNN
+#include <rknn_api.h>
+#endif
+#ifdef HAVE_RGA
+#include <rga/im2d.h>
+#include <rga/rga.h>
+#endif
 #include <linux/videodev2.h>
 #include <rockchip/rk_mpi.h>
 #include <rockchip/mpp_frame.h>
@@ -225,6 +233,341 @@ static int enc_init(int w, int h, int kbps, int gop)
 	return 0;
 }
 
+
+/* ---------------- ① RGA 缩放(验证移植的最小一步) ---------------- */
+static int g_detect, g_rga_w = 640, g_rga_h = 360;
+static unsigned long g_rga_sum, g_rga_n;
+static unsigned char *g_rgb;
+static unsigned char *g_int8;
+
+#ifdef HAVE_RGA
+static rga_buffer_t g_rga_src, g_rga_dst;
+static unsigned char *g_rga_buf;
+
+static void rga_init(void)
+{
+	g_rga_buf = malloc((size_t)g_rga_w * g_rga_h * 3 / 2);
+	if (!g_rga_buf) {
+		fprintf(stderr, "RGA 缓冲分配失败\n");
+		exit(1);
+	}
+	g_rga_dst = wrapbuffer_virtualaddr_t(g_rga_buf, g_rga_w, g_rga_h,
+					     g_rga_w, g_rga_h,
+					     RK_FORMAT_YCbCr_420_SP);
+}
+
+/* 用 mmap 虚拟地址做源, 不需要 EXPBUF(第①步先证明缩放可用) */
+static void rga_scale(const void *src_va, unsigned sw, unsigned sh)
+{
+	IM_STATUS st;
+
+	g_rga_src = wrapbuffer_virtualaddr_t((void *)src_va, sw, sh, sw, sh,
+					     RK_FORMAT_YCbCr_420_SP);
+	st = imresize_t(g_rga_src, g_rga_dst, 0, 0, 0, 1);
+	if (st != IM_STATUS_SUCCESS) {
+		fprintf(stderr, "RGA 失败: %s\n", imStrError(st));
+		return;
+	}
+	{	/* 采样均值: 与 camd 同口径(Y 平面每 16 像素取 1) */
+		unsigned long sum = 0, n = 0;
+		unsigned char *y = g_rgb;
+
+		for (int i = 0; i < g_rga_w * g_rga_h; i += 16) {
+			sum += y[i];
+			n++;
+		}
+		g_rga_sum += sum;
+		g_rga_n += n;
+	}
+}
+#endif
+
+#define OBJ_THRESH 0.35f
+#define NMS_THRESH 0.45f
+#define MAX_BOX 512
+static float g_obj_thresh = OBJ_THRESH;
+#define MAX_OUT 16
+static int g_no_obj_mul = 0;
+static int g_npu_w = 640, g_npu_h = 640;
+struct dbox {
+	float x1, y1, x2, y2, score;
+	int cls;
+};
+static int cmp_box(const void *a, const void *b)
+{
+	const struct dbox *x = a, *y = b;
+
+	return (x->score < y->score) - (x->score > y->score);
+}
+static float box_iou(const struct dbox *a, const struct dbox *b)
+{
+	float xx1 = a->x1 > b->x1 ? a->x1 : b->x1;
+	float yy1 = a->y1 > b->y1 ? a->y1 : b->y1;
+	float xx2 = a->x2 < b->x2 ? a->x2 : b->x2;
+	float yy2 = a->y2 < b->y2 ? a->y2 : b->y2;
+	float w = xx2 - xx1 > 0 ? xx2 - xx1 : 0;
+	float h = yy2 - yy1 > 0 ? yy2 - yy1 : 0;
+	float inter = w * h;
+	float ua = (a->x2 - a->x1) * (a->y2 - a->y1) +
+		   (b->x2 - b->x1) * (b->y2 - b->y1) - inter;
+
+	return ua > 0 ? inter / ua : 0;
+}
+static int decode_yolov8(rknn_tensor_attr *oa, int8_t **od, struct dbox *res,
+			 int maxn, float *p_maxscore)
+{
+	static const int strides[3] = { 8, 16, 32 };
+	int n = 0, s, y, x, k, side, c;
+
+	*p_maxscore = 0;
+
+	for (s = 0; s < 3; s++) {
+		rknn_tensor_attr *areg = &oa[s * 3 + 0];
+		rknn_tensor_attr *acls = &oa[s * 3 + 1];
+		rknn_tensor_attr *ascr = &oa[s * 3 + 2];
+		int gh = areg->dims[2], gw = areg->dims[3];
+		int stride, idx;
+		int8_t *reg, *cls, *scr;
+
+		if (gh <= 0 || gw <= 0)
+			continue;
+		if ((int)acls->dims[2] != gh || (int)ascr->dims[2] != gh)
+			continue;
+		stride = strides[s];
+		reg = od[s * 3 + 0];
+		cls = od[s * 3 + 1];
+		scr = od[s * 3 + 2];
+		for (y = 0; y < gh; y++) {
+			for (x = 0; x < gw; x++) {
+				float score, bestv = 0, conf, d[4] = { 0, 0, 0, 0 };
+				int best = -1;
+
+				idx = y * gw + x;
+				score = (scr[idx] - ascr->zp) * ascr->scale;
+				for (c = 0; c < 80; c++) {
+					float v = (cls[(size_t)c * gh * gw + idx] - acls->zp) *
+						  acls->scale;
+
+					if (v > bestv) {
+						bestv = v;
+						best = c;
+					}
+				}
+				/* 官方 rknn_model_zoo 的 yolov8 demo 直接拿 class 概率当 score;
+				 * 之前一律 obj*cls,会把弱纹理目标系统性压到阈值以下。*/
+				conf = g_no_obj_mul ? bestv : score * bestv;
+				if (conf > *p_maxscore)
+					*p_maxscore = conf;
+				if (best < 0 || conf < g_obj_thresh)
+					continue;
+				for (side = 0; side < 4; side++) {
+					float p[16], mx = -1e9f, sum = 0, acc = 0;
+
+					for (k = 0; k < 16; k++) {
+						float v = (reg[((size_t)side * 16 + k) * gh * gw + idx] -
+							   areg->zp) * areg->scale;
+
+						p[k] = v;
+						if (v > mx)
+							mx = v;
+					}
+					for (k = 0; k < 16; k++) {
+						p[k] = expf(p[k] - mx);
+						sum += p[k];
+					}
+					for (k = 0; k < 16; k++)
+						acc += (p[k] / sum) * k;
+					d[side] = acc;
+				}
+				if (n < maxn) {
+					float cx = (x + 0.5f) * stride, cy = (y + 0.5f) * stride;
+					float bw, bh;
+
+					res[n].x1 = cx - d[0] * stride;
+					res[n].y1 = cy - d[1] * stride;
+					res[n].x2 = cx + d[2] * stride;
+					res[n].y2 = cy + d[3] * stride;
+					/* 退化框过滤:铺满整幅的巨大框是典型误检(实测整帧被判成 train),
+					 * 不滤掉会把真正的小目标挡在 NMS 之外。*/
+					bw = res[n].x2 - res[n].x1;
+					bh = res[n].y2 - res[n].y1;
+					if (bw > 0.80f * g_npu_w && bh > 0.80f * g_npu_h)
+						continue;
+					res[n].score = conf;
+					res[n].cls = best;
+					n++;
+				}
+			}
+		}
+	}
+	/* 贪心 NMS */
+	if (n > 1) {
+		int keep = 0, i, j;
+
+		qsort(res, (size_t)n, sizeof(res[0]), cmp_box);
+		for (i = 0; i < n; i++) {
+			int drop = 0;
+
+			for (j = 0; j < keep; j++) {
+				if (box_iou(&res[i], &res[j]) > NMS_THRESH) {
+					drop = 1;
+					break;
+				}
+			}
+			if (!drop)
+				res[keep++] = res[i];
+		}
+		n = keep;
+	}
+	return n;
+}
+
+/* ---------------- ② RKNN 推理(只统计 det 数与最大分, 不画框) ---------------- */
+static const char *g_model = "/root/npu/examples/yolov8/model/yolov8n_rk3568_i8.rknn";
+static unsigned g_det_total, g_det_max;
+static float g_score_max;
+
+#ifdef HAVE_RKNN
+static rknn_context g_nctx;
+static rknn_tensor_mem *g_in_mem;
+static rknn_tensor_attr g_in_attr, g_out_attr[MAX_OUT];
+static unsigned g_nout;
+
+static int npu_init(void)
+{
+	int ret, sz;
+	FILE *f;
+	void *model;
+	struct stat st;
+
+	if (stat(g_model, &st) < 0) { fprintf(stderr, "模型不存在: %s\n", g_model); return -1; }
+	f = fopen(g_model, "rb"); if (!f) return -1;
+	model = malloc((size_t)st.st_size);
+	if (!model || fread(model, 1, (size_t)st.st_size, f) != (size_t)st.st_size) { fclose(f); return -1; }
+	fclose(f);
+
+	ret = rknn_init(&g_nctx, model, (uint32_t)st.st_size, 0, NULL);
+	free(model);
+	if (ret != RKNN_SUCC) { fprintf(stderr, "rknn_init %d\n", ret); return -1; }
+
+	ret = rknn_query(g_nctx, RKNN_QUERY_NATIVE_INPUT_ATTR, &g_in_attr, sizeof(g_in_attr));
+	if (ret != RKNN_SUCC) { fprintf(stderr, "query native input %d\n", ret); return -1; }
+	/* NATIVE 输入是 NHWC [1,640,640,3] */
+	g_npu_h = (int)g_in_attr.dims[1];
+	g_npu_w = (int)g_in_attr.dims[2];
+
+	g_in_mem = rknn_create_mem(g_nctx, g_in_attr.size_with_stride);
+	if (!g_in_mem) { fprintf(stderr, "create_mem 失败\n"); return -1; }
+	g_in_attr.pass_through = 1;
+	ret = RKNN_SUCC; /* 不绑 io_mem: 否则 rknn_inputs_set 的缓冲被忽略 */
+
+
+	sz = g_npu_w * g_npu_h * 3;
+	g_rgb  = malloc((size_t)sz);
+	g_int8 = malloc((size_t)sz);
+	if (!g_rgb || !g_int8) return -1;
+
+	{	rknn_input_output_num io;
+		unsigned k;
+
+		memset(&io, 0, sizeof(io));
+		ret = rknn_query(g_nctx, RKNN_QUERY_IN_OUT_NUM, &io, sizeof(io));
+		if (ret != RKNN_SUCC) { fprintf(stderr, "query out num %d\n", ret); return -1; }
+		g_nout = io.n_output > MAX_OUT ? MAX_OUT : io.n_output;
+		for (k = 0; k < g_nout; k++) {
+			memset(&g_out_attr[k], 0, sizeof(g_out_attr[k]));
+			g_out_attr[k].index = k;   /* 必须显式设 index, 否则每次拿到的都是 0 号张量 */
+			ret = rknn_query(g_nctx, RKNN_QUERY_OUTPUT_ATTR, &g_out_attr[k],
+					 sizeof(g_out_attr[k]));
+			if (ret != RKNN_SUCC) { fprintf(stderr, "query out attr %u\n", k); return -1; }
+		}
+	}
+	printf(">>> NPU 就绪 %dx%d nout=%u\n", g_npu_w, g_npu_h, g_nout);
+	return 0;
+}
+
+static void npu_run(const unsigned char *rgb)
+{
+	rknn_input in;
+	rknn_output outs[MAX_OUT];
+	struct dbox boxes[MAX_BOX];
+	int ret, nd;
+	float maxscore = 0.0f;
+	size_t i, sz = (size_t)g_npu_w * g_npu_h * 3;
+
+	for (i = 0; i < sz; i += 8) {      /* uint8 -> int8 零点偏置(zp=-128) */
+		g_int8[i + 0] = rgb[i + 0] ^ 0x80;
+		g_int8[i + 1] = rgb[i + 1] ^ 0x80;
+		g_int8[i + 2] = rgb[i + 2] ^ 0x80;
+		g_int8[i + 3] = rgb[i + 3] ^ 0x80;
+		g_int8[i + 4] = rgb[i + 4] ^ 0x80;
+		g_int8[i + 5] = rgb[i + 5] ^ 0x80;
+		g_int8[i + 6] = rgb[i + 6] ^ 0x80;
+		g_int8[i + 7] = rgb[i + 7] ^ 0x80;
+	}
+
+	memset(&in, 0, sizeof(in));
+	in.index = 0;
+	in.buf = g_int8;
+	in.size = (uint32_t)sz;
+	in.type = RKNN_TENSOR_INT8;
+	in.fmt = RKNN_TENSOR_NHWC;
+	in.pass_through = 1;
+	{	/* 诊断: g_int8 是否真的有数据 */
+		static int dbg;
+		long s = 0;
+		for (i = 0; i < sz; i += 64) s += (unsigned char)g_int8[i];
+		if (dbg++ < 3)
+			fprintf(stderr, "[npu] in: sz=%u mean=%ld rgb0=%u/%u/%u int8_0=%d\n",
+				(uint32_t)sz, s / (long)(sz / 64),
+				rgb[0], rgb[1], rgb[2], (int)(signed char)g_int8[0]);
+	}
+
+	ret = rknn_inputs_set(g_nctx, 1, &in);
+	if (ret != RKNN_SUCC) {
+		fprintf(stderr, "[npu] inputs_set ret=%d\n", ret);
+		return;
+	}
+	ret = rknn_run(g_nctx, NULL);
+	if (ret != RKNN_SUCC) {
+		fprintf(stderr, "[npu] run ret=%d\n", ret);
+		return;
+	}
+
+	memset(outs, 0, sizeof(outs));
+	ret = rknn_outputs_get(g_nctx, g_nout, outs, NULL);
+	if (ret != RKNN_SUCC) {
+		fprintf(stderr, "[npu] outputs_get ret=%d nout=%u\n", ret, g_nout);
+		return;
+	}
+	{	static int dbg2;
+		if (dbg2++ < 2 && outs[0].buf)
+			fprintf(stderr, "[npu] out0 size=%d b0..b7=%d %d %d %d %d %d %d %d\n",
+				(int)outs[0].size,
+				((int8_t *)outs[0].buf)[0], ((int8_t *)outs[0].buf)[1],
+				((int8_t *)outs[0].buf)[2], ((int8_t *)outs[0].buf)[3],
+				((int8_t *)outs[0].buf)[4], ((int8_t *)outs[0].buf)[5],
+				((int8_t *)outs[0].buf)[6], ((int8_t *)outs[0].buf)[7]);
+	}
+
+	{	int8_t *od[MAX_OUT];
+		for (i = 0; i < g_nout; i++)
+			od[i] = (int8_t *)outs[i].buf;
+		nd = decode_yolov8(g_out_attr, od, boxes, MAX_BOX, &maxscore);
+	}
+	rknn_outputs_release(g_nctx, g_nout, outs);
+	g_det_total += (unsigned)nd;
+	if ((unsigned)nd > g_det_max) g_det_max = (unsigned)nd;
+	if (maxscore > g_score_max) g_score_max = maxscore;
+}
+#endif
+
+static void rga_to_rgb(void)
+{
+	g_rga_dst = wrapbuffer_virtualaddr_t(g_rgb, g_npu_w, g_npu_h,
+					     g_npu_w, g_npu_h, RK_FORMAT_RGB_888);
+}
+
 /* ---------------- 环形缓冲 ---------------- */
 static int is_key(const unsigned char *p, int len)
 {
@@ -325,6 +668,11 @@ static int dump(const char *out, unsigned trig_seq, double trig_ts, int pre_i,
 	}
 	fprintf(j, "]}\n");
 	fclose(j);
+	printf(">>> NPU det_total=%u det_max=%u score_max=%.3f\n",
+	       g_det_total, g_det_max, (double)g_score_max);
+	if (g_rga_n)
+		printf(">>> RGA 缩放均值 Y=%.1f (%ux%u, 采样 %lu)\n",
+		       (double)g_rga_sum / g_rga_n, g_rga_w, g_rga_h, g_rga_n);
 	printf(">>> 写出 %s.h264 (%d 帧) + %s.json\n", out, n, out);
 	return n;
 }
@@ -349,6 +697,10 @@ int main(int argc, char **argv)
 		else if (!strcmp(argv[i], "-o")) out = argv[++i];
 		else if (!strcmp(argv[i], "--trigger")) g_trig_path = argv[++i];
 		else if (!strcmp(argv[i], "--kbps")) kbps = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "--detect")) g_detect = 1;
+		else if (!strcmp(argv[i], "--model")) g_model = argv[++i];
+		else if (!strcmp(argv[i], "--obj-thresh")) g_obj_thresh = (float)atof(argv[++i]);
+		else if (!strcmp(argv[i], "--rga-size")) sscanf(argv[++i], "%dx%d", &g_rga_w, &g_rga_h);
 	}
 	gop = (pre_sec + post_sec) * 15 / 2;
 	if (gop < 8)
@@ -362,6 +714,16 @@ int main(int argc, char **argv)
 		return 1;
 	if (enc_init(w, h, kbps, gop) < 0)
 		return 1;
+#ifdef HAVE_RGA
+	if (g_detect) {
+		rga_init();
+#ifdef HAVE_RKNN
+		if (npu_init() < 0)
+			return 1;
+		rga_to_rgb();
+#endif
+	}
+#endif
 	printf(">>> 采集 %s %dx%d,pre=%ds post=%ds ring=%zuMB gop=%d\n",
 	       dev, w, h, pre_sec, post_sec, ring_limit >> 20, gop);
 
@@ -385,6 +747,17 @@ int main(int argc, char **argv)
 			break;
 		}
 		ts = now_ms(CLOCK_MONOTONIC);
+#ifdef HAVE_RGA
+#ifdef HAVE_RKNN
+		if (g_detect) {
+			rga_scale(cap.map[b.index], w, h);
+			npu_run(g_rgb);
+		}
+#else
+		if (g_detect)
+			rga_scale(cap.map[b.index], w, h);
+#endif
+#endif
 		memcpy(mpp_buffer_get_ptr(g_fbuf), cap.map[b.index],
 		       (size_t)w * h * 3 / 2);
 		xioctl(cap.fd, VIDIOC_QBUF, &b);

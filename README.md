@@ -24,7 +24,7 @@
 ### 核心成果(六条)
 
 **1. 按 datasheet 裸写 OV8858 V4L2 subdev 驱动并出图**
-821 行 C:上电时序/PLL/link_freq/曝光增益 ctrl/runtime PM 全部自推;与厂商驱动**逐寄存器对照零差异**;双模式 29.3 fps、帧结构 100% 有效;自推 1080p30 并定位修复 BLC anchor 越界致帧结构缺陷(179 空行→0,30 帧零错行)。→ [`driver/ov8858_sm/`](driver/ov8858_sm/) / [`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md)
+1079 行 C:上电时序/PLL/link_freq/曝光增益 ctrl/runtime PM 全部自推;与厂商驱动**逐寄存器对照零差异**;双模式 30.0 fps、帧结构 100% 有效;自推 1080p30 并定位修复 BLC anchor 越界致帧结构缺陷(179 空行→0,30 帧零错行)。→ [`driver/ov8858_sm/`](driver/ov8858_sm/) / [`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md)
 
 **2. V4L2 零拷贝:EXPBUF → dmabuf → RGA → NPU**
 每帧 CPU 拷贝 13.67 MB → **0 B**;端到端 92.5 → **69.9 ms**;CPU **−66%**;三线程流水线在 2× 负载下 **+25%** 吞吐。三模式(A 拷贝基线 / B RGA / C 全零拷贝)定量对照,收益拆解到环节。→ [`zerocopy/`](zerocopy/) / [`docs/18`](docs/18-阶段二零拷贝任务书.md)
@@ -107,6 +107,7 @@
 ## 仓库结构
 
 ```
+Makefile            顶层板端构建(tools/apps/spy 分组,RGA/RKNN 能力自动探测)
 driver/ov8858_sm/   从 datasheet 裸写的 OV8858 sensor 驱动(821 行 .c/.h/Makefile)
 zerocopy/           V4L2 零拷贝链路:EXPBUF→dmabuf→RGA→NPU,三模式 perf 对比
 mini3a/             用户态 3A 闭环(采集线程 + AE/AWB 控制环)
@@ -121,7 +122,7 @@ evidence/           实测证据图与原始输出(第一帧/双路预览/anchor
 
 **驱动与内核**:[08-五件套任务书](docs/08-模块四任务书-五件套骨架驱动.md) · [09-L1A 调试复盘(物理口↔总线)](docs/09-L1A-I2C调试复盘-物理口与总线映射.md) · [10-第一帧任务书](docs/10-L1A-Phase3-第一帧任务书.md) · [16-动手手册](docs/16-模块四动手手册-一步一步版.md) · [17-L1-B 对照报告★](docs/17-L1-B对照报告-自写驱动vs厂商.md) · [28-内核问题闭环](docs/28-内核问题闭环.md) · [20-L4 电源管理](docs/20-L4电源管理.md)
 
-**管线与性能**:[18-零拷贝任务书](docs/18-阶段二零拷贝任务书.md) · [19-L3 异构双摄](docs/19-L3异构双摄报告.md) · [29-可靠性工程](docs/29-可靠性工程.md) · [27-稳定性回归](docs/27-稳定性回归.md) · [11-排期与留痕](docs/11-L2.5-管线整合排期与留痕.md)
+**管线与性能**:[18-零拷贝任务书](docs/18-阶段二零拷贝任务书.md) · [19-L3 异构双摄](docs/19-L3异构双摄报告.md) · [29-可靠性工程](docs/29-可靠性工程.md) · [27-稳定性回归](docs/27-稳定性回归.md)
 
 **3A 与画质**:[21-L2-AWB(rkaiq 修复全记录)](docs/21-L2-AWB.md) · [12-rkaiq 任务书](docs/12-L2lite-rkaiq点亮任务书.md) · [22-M1 图像质量](docs/22-M1-图像质量.md) · [23-M3 高光与动态范围](docs/23-M3-高光与动态范围.md) · [24-M4 工程化](docs/24-M4-工程化.md)
 

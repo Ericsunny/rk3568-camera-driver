@@ -1,0 +1,25 @@
+P10 修复后：任务书原文命令，60 s 连续拉流解码
+板端: nohup ./evrec -d /dev/video5 -w 1920 -h 1080 --pre 2 --post 1 --ring-mb 64 --kbps 4000 --rtsp 8554
+      （与修复前基线完全相同的参数；不带 --rtp-trace，排除 trace 对节奏的影响）
+VM  : ffmpeg -rtsp_transport tcp -v error -i rtsp://192.168.10.2:8554/live -t 60 -f null - > log 2>&1
+      GREP_COUNT=$(grep -cE 'error while decoding|corrupted|zero coeffs|Invalid level' log)
+
+$ FFMPEG_EXIT=0
+$ WALL_SECONDS=61
+$ LOG_LINES=6
+$ GREP_COUNT=0
+$ --- 原文输出(全部) ---
+[null @ 0x5558d22bb100] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 104 >= 104
+[null @ 0x5558d22bb100] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 183 >= 183
+[null @ 0x5558d22bb100] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 327 >= 327
+[null @ 0x5558d22bb100] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 329 >= 329
+[null @ 0x5558d22bb100] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 361 >= 361
+[null @ 0x5558d22bb100] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 369 >= 369
+$ --- 原文输出结束 ---
+
+说明 1: 这 6 条 dts 警告修复前同样存在（基线日志开头也有 26>=26 / 32>=32 / ...），
+        与解码错误无关：同一轮的 -vf showinfo 显示 902 帧的 pts 严格单调递增
+        （delta 众数 6000，非递增对 0 个），是 ffmpeg 自身 null muxer 的 dts 换算噪音。
+        它不在任务书的 grep 判据里，也不影响任何一帧的解码。
+说明 2: 同参数的带 showinfo 那一轮（-v info -threads 1 -vf showinfo）为
+        FRAMES=910 / SHOWINFO=1818 / ERRS=0 / frame=907 fps=15 time=00:01:00.00。

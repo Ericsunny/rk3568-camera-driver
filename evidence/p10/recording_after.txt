@@ -1,0 +1,19 @@
+P10 修复后：推流同时录像，录像文件回归（mpp_dec_dump）
+板端同一进程同时 --rtsp 8554 + -o /root/p10rec2 + --trigger（流内触发一次）
+
+evrec 日志:
+>>> 触发 seq=346 ts=23432.4ms -> pre_i=308 pre_seq=308 (ring_cnt=347 head=0 pushed=347)
+>>> 写出 /root/p10rec2_20240618-081002-00.h264 (55 帧, 触发帧 #38) + /root/p10rec2_20240618-081002-00.json
+
+json:  "frames":55
+文件:  -rw-r--r-- 1 root root 1004641 Jun 18 08:10 p10rec2_20240618-081002-00.h264
+
+$ ./mpp_dec_dump /root/p10rec2_20240618-081002-00.h264 /tmp/p10shot
+>>> 码流 1004641 字节
+>>> 首个 SPS 偏移 0
+>>> 分辨率变更 1920x1080
+>>> 首帧 1920x1080 hor_stride=1920 -> /tmp/p10shot_f000_400x100_stride1920.y
+>>> 解出 54 帧
+EXIT=0
+
+判据: 解出 54 == frames 55 - 1  -> PASS（与 docs/35 的「帧数-1」判据一致）

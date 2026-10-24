@@ -1,0 +1,8 @@
+P10 修复后 trace 尾部（/root/p10_after2.trace）
+
+seq=11542 ts=6535586 pt=96 mark=0 nal=1 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=7080/425984
+seq=11543 ts=6535586 pt=96 mark=0 nal=1 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=8496/425984
+seq=11544 ts=6535586 pt=96 mark=1 nal=1 fu=1 s=0 e=1 payload=1108 send=0 why=ok w=1124/1124 errno=0 outq=9912/425984
+
+修复后 11983 包中 send!=0 的包数量 = 0
+修复后 why 直方图 = {'ok': 11983}

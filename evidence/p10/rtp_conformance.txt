@@ -1,0 +1,30 @@
+P10 四类判定原始数据（由 tools 之外的分析脚本对 trace 计算，不改动被测程序）
+
+### 修复前 /root/p10_before.trace
+包=11359  AU=909  会话数=1
+
+1) FU-A 边界: 893 组 FU-A, 异常 16 条; 单 NAL 包 168 个(全部 <=1400, 违反 0 个)
+   ('fu-unterminated', 4, 52)
+   ('fu-unterminated', 225, 304)
+   ('fu-unterminated', 1023, 1116)
+   ('fu-unterminated', 1833, 1938)
+   ('fu-unterminated', 2399, 2502)
+   ('fu-unterminated', 2675, 2784)
+2) marker/STAP-A: AU=909, 提前 marker=0, 末包缺 marker=16, 单 AU 多 marker=0, STAP-A(type24)=0
+   线上视角(只算 send=0 的包): 含丢弃包的 AU=17, 其中线上最后一包缺 marker=17, FU-A 缺 E=1=17
+   SPS/PPS 都是独立单 NAL 包(前 4 个): [(7, 0, 27), (8, 0, 5), (7, 0, 27), (8, 0, 5)]   -> 无聚合, 合法
+3) 短写: 0<w<total 的包=0; w=0 的整包失败=17(其中 why 分布 {'precheck': 17})
+4) EAGAIN: why=eagain 的包=0; why=precheck(旧代码包级预检丢弃) 的包=17
+
+
+### 修复后 /root/p10_after2.trace
+包=11983  AU=938  会话数=2
+
+1) FU-A 边界: 938 组 FU-A, 异常 0 条; 单 NAL 包 176 个(全部 <=1400, 违反 0 个)
+2) marker/STAP-A: AU=938, 提前 marker=0, 末包缺 marker=0, 单 AU 多 marker=0, STAP-A(type24)=0
+   线上视角(只算 send=0 的包): 含丢弃包的 AU=0, 其中线上最后一包缺 marker=0, FU-A 缺 E=1=0
+   SPS/PPS 都是独立单 NAL 包(前 4 个): [(7, 0, 27), (8, 0, 5), (7, 0, 27), (8, 0, 5)]   -> 无聚合, 合法
+3) 短写: 0<w<total 的包=0; w=0 的整包失败=0(其中 why 分布 {})
+4) EAGAIN: why=eagain 的包=0; why=precheck(旧代码包级预检丢弃) 的包=0
+
+

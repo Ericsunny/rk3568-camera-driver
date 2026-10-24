@@ -1,0 +1,94 @@
+[h264 @ 0x562443056b40] Invalid level prefix
+[h264 @ 0x562443056b40] error while decoding MB 32 13
+[h264 @ 0x562443074b80] Invalid level prefix
+[h264 @ 0x562443074b80] error while decoding MB 32 13
+[h264 @ 0x562443098f80] out of range intra chroma pred mode
+[h264 @ 0x562443098f80] error while decoding MB 101 18
+[null @ 0x5624430586c0] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 26 >= 26
+[h264 @ 0x56244316f000] negative number of zero coeffs at 69 14
+[h264 @ 0x56244316f000] error while decoding MB 69 14
+[null @ 0x5624430586c0] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 32 >= 32
+[null @ 0x5624430586c0] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 39 >= 39
+[null @ 0x5624430586c0] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 43 >= 43
+[null @ 0x5624430586c0] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 46 >= 46
+[null @ 0x5624430586c0] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 49 >= 49
+[h264 @ 0x562443151fc0] corrupted macroblock 23 17 (total_coeff=-1)
+[h264 @ 0x562443151fc0] error while decoding MB 23 17
+[null @ 0x5624430586c0] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 61 >= 61
+[null @ 0x5624430586c0] Application provided invalid, non monotonically increasing dts to muxer in stream 0: 65 >= 65
+[h264 @ 0x5624432797c0] Invalid level prefix
+[h264 @ 0x5624432797c0] error while decoding MB 109 18
+[h264 @ 0x562443280400] negative number of zero coeffs at 51 15
+[h264 @ 0x562443280400] error while decoding MB 51 15
+[h264 @ 0x5624432ff800] corrupted macroblock 8 17 (total_coeff=-1)
+[h264 @ 0x5624432ff800] error while decoding MB 8 17
+[h264 @ 0x562443074b80] Invalid level prefix
+[h264 @ 0x562443074b80] error while decoding MB 114 19
+[h264 @ 0x562443098f80] corrupted macroblock 109 18 (total_coeff=-1)
+[h264 @ 0x562443098f80] error while decoding MB 109 18
+[h264 @ 0x56244316f000] negative number of zero coeffs at 22 16
+[h264 @ 0x56244316f000] error while decoding MB 22 16
+[h264 @ 0x562443151fc0] Invalid level prefix
+[h264 @ 0x562443151fc0] error while decoding MB 38 16
+[h264 @ 0x5624432797c0] negative number of zero coeffs at 41 21
+[h264 @ 0x5624432797c0] error while decoding MB 41 21
+[h264 @ 0x562443280400] corrupted macroblock 58 15 (total_coeff=-1)
+[h264 @ 0x562443280400] error while decoding MB 58 15
+[h264 @ 0x5624432ff800] corrupted macroblock 76 16 (total_coeff=-1)
+[h264 @ 0x5624432ff800] error while decoding MB 76 16
+[h264 @ 0x562443074b80] corrupted macroblock 116 19 (total_coeff=-1)
+[h264 @ 0x562443074b80] error while decoding MB 116 19
+[h264 @ 0x562443098f80] corrupted macroblock 26 17 (total_coeff=-1)
+[h264 @ 0x562443098f80] error while decoding MB 26 17
+[h264 @ 0x56244316f000] out of range intra chroma pred mode
+[h264 @ 0x56244316f000] error while decoding MB 26 16
+[h264 @ 0x562443151fc0] Invalid level prefix
+[h264 @ 0x562443151fc0] error while decoding MB 28 17
+[h264 @ 0x5624432797c0] Invalid level prefix
+[h264 @ 0x5624432797c0] error while decoding MB 115 19
+[h264 @ 0x562443280400] Invalid level prefix
+[h264 @ 0x562443280400] error while decoding MB 112 18
+[h264 @ 0x5624432ff800] corrupted macroblock 115 19 (total_coeff=-1)
+[h264 @ 0x5624432ff800] error while decoding MB 115 19
+[h264 @ 0x562443074b80] Invalid level prefix
+[h264 @ 0x562443074b80] error while decoding MB 112 22
+[h264 @ 0x562443098f80] corrupted macroblock 116 19 (total_coeff=-1)
+[h264 @ 0x562443098f80] error while decoding MB 116 19
+[h264 @ 0x56244316f000] corrupted macroblock 117 19 (total_coeff=-1)
+[h264 @ 0x56244316f000] error while decoding MB 117 19
+[h264 @ 0x562443151fc0] Invalid level prefix
+[h264 @ 0x562443151fc0] error while decoding MB 83 21
+[h264 @ 0x5624432797c0] Invalid level prefix
+[h264 @ 0x5624432797c0] error while decoding MB 110 18
+[h264 @ 0x562443280400] Invalid level prefix
+[h264 @ 0x562443280400] error while decoding MB 112 18
+[h264 @ 0x5624432ff800] negative number of zero coeffs at 83 21
+[h264 @ 0x5624432ff800] error while decoding MB 83 21
+[h264 @ 0x562443074b80] Invalid level prefix
+[h264 @ 0x562443074b80] error while decoding MB 118 19
+[h264 @ 0x562443098f80] corrupted macroblock 73 21 (total_coeff=-1)
+[h264 @ 0x562443098f80] error while decoding MB 73 21
+[h264 @ 0x56244316f000] negative number of zero coeffs at 3 20
+[h264 @ 0x56244316f000] error while decoding MB 3 20
+[h264 @ 0x562443151fc0] corrupted macroblock 111 18 (total_coeff=-1)
+[h264 @ 0x562443151fc0] error while decoding MB 111 18
+[h264 @ 0x5624432797c0] Invalid level prefix
+[h264 @ 0x5624432797c0] error while decoding MB 118 19
+[h264 @ 0x562443280400] Invalid level prefix
+[h264 @ 0x562443280400] error while decoding MB 118 19
+[h264 @ 0x5624432ff800] corrupted macroblock 22 20 (total_coeff=-1)
+[h264 @ 0x5624432ff800] error while decoding MB 22 20
+[h264 @ 0x562443074b80] negative number of zero coeffs at 119 19
+[h264 @ 0x562443074b80] error while decoding MB 119 19
+[h264 @ 0x562443098f80] corrupted macroblock 75 15 (total_coeff=-1)
+[h264 @ 0x562443098f80] error while decoding MB 75 15
+[h264 @ 0x56244316f000] Invalid level prefix
+[h264 @ 0x56244316f000] error while decoding MB 84 16
+[h264 @ 0x562443151fc0] out of range intra chroma pred mode
+[h264 @ 0x562443151fc0] error while decoding MB 9 20
+[h264 @ 0x5624432797c0] Invalid level prefix
+[h264 @ 0x5624432797c0] error while decoding MB 87 15
+[h264 @ 0x562443280400] Invalid level prefix
+[h264 @ 0x562443280400] error while decoding MB 90 15
+[h264 @ 0x5624432ff800] corrupted macroblock 115 18 (total_coeff=-1)
+[h264 @ 0x5624432ff800] error while decoding MB 115 18

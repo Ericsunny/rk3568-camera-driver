@@ -1,0 +1,26 @@
+P10 修复前 trace 原始片段（第一次丢弃，seq 44..56）
+最后 3 行是 ffmpeg 同一帧的解码错误
+
+seq=44 ts=821561 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=30976/46080
+seq=45 ts=821561 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=32392/46080
+seq=46 ts=821561 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=33808/46080
+seq=47 ts=821561 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=35224/46080
+seq=48 ts=821561 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=33940/46080
+seq=49 ts=821561 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=35356/46080
+seq=50 ts=821561 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=36772/46080
+seq=51 ts=821561 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=38188/46080
+seq=52 ts=821561 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=-1 why=precheck w=0/1416 errno=0 outq=39604/46080
+seq=53 ts=827563 pt=96 mark=0 nal=1 fu=1 s=1 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=0/46080
+seq=54 ts=827563 pt=96 mark=0 nal=1 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=1416/46080
+seq=55 ts=827563 pt=96 mark=0 nal=1 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=2832/46080
+seq=56 ts=827563 pt=96 mark=0 nal=1 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=4248/46080
+
+（该 AU 从 seq=0 的 SPS 开始，seq=1..2 为 PPS/SEI，seq=3 起为 IDR 的 FU-A，
+  seq=52 被预检丢弃后本帧不再有包；下一行 seq=53 的 ts 已跳到下一帧）
+
+ffmpeg: [h264 @ 0x55a5c2f15c40] corrupted macroblock 17 25 (total_coeff=-1)
+ffmpeg: [h264 @ 0x55a5c2f15c40] error while decoding MB 17 25
+ffmpeg: [h264 @ 0x55a5c2f31c80] corrupted macroblock 17 25 (total_coeff=-1)
+ffmpeg: [h264 @ 0x55a5c2f31c80] error while decoding MB 17 25
+ffmpeg: [h264 @ 0x55a5c2f31c80] error while decoding MB 55 45
+ffmpeg: [h264 @ 0x55a5c2f31c80] corrupted macroblock 20 63 (total_coeff=-1)

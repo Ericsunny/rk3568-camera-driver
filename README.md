@@ -1,160 +1,152 @@
 # RK3568 MIPI 相机子系统 Bring-up
 
-在 **YCKJ-RK3568**(Rockchip RK3568,kernel 4.19.232)开发板上,从零完成 MIPI CSI-2 相机子系统的 bring-up:传感器点亮 → V4L2/media 管线 → 用户态 3A 闭环 → **按 datasheet 裸写 sensor 驱动** → V4L2 零拷贝(EXPBUF/dmabuf → RGA → NPU)→ **异构双摄(ISP + CIF 并行)** → 检测/推流/事件录像的产品化链路。
+在 **YCKJ-RK3568**(Rockchip RK3568,kernel 4.19.232)开发板上,从零完成 MIPI CSI-2 相机子系统的 bring-up 与产品化:传感器点亮 → V4L2/media 管线 → 3A → **按 datasheet 裸写 sensor 驱动** → 零拷贝(EXPBUF/dmabuf → RGA → NPU)→ **异构双摄(ISP + CIF)** → 检测/RTSP 推流/事件录像与可靠性工程。
+
+![双路同时预览:左 IMX415@ISP(NV12),右 OV8858@CIF(RAW10)](evidence/2026-10-21-L3-双路预览.png)
 
 ---
 
 ## 一页纸看懂这个项目
 
-**做了什么**:两个传感器(IMX415 / OV8858)从点不亮做到能检出人、能推流、能自动录像;整个过程的内核缺陷、性能数字和能力边界全部实测记录。
+**做了什么**:两个传感器(IMX415 / OV8858)从点不亮,做到能同时出流、能检出人、能推流、能自动录像;整个过程中的内核缺陷、性能数字与能力边界全部实测记录(118 commits,失败记录与成功记录一样多)。
 
 ### 六个数字
 
 | 数字 | 含义 | 位置 |
 |---|---|---|
-| **0 B/帧** | 零拷贝后每帧 memcpy 从 13.67 MB 降到 0 | §2.3 |
-| **−66%** | 同链路 CPU 从 38.3 → 13.0 ms/帧 | §2.3 |
-| **0/300** | 开关流压测失败数(首帧 445±12 ms) | §2.4 |
-| **30.04 fps** | 1800 帧长跑,零丢帧、零 buffer 泄漏 | §2.4 |
-| **18.9 ms** | RTSP 服务端到客户端延迟(p95 19.9) | §4 |
-| **0/12** | 遮挡 50% 时的检出率——这是能力边界,不是 bug | §3 |
+| **0 B/帧** | 零拷贝后每帧 memcpy 从 13.67 MB 降到 0 | §核心成果 2 |
+| **−66%** | 同链路 CPU 从 38.3 → 13.0 ms/帧 | §核心成果 2 |
+| **0/300** | 开关流压测失败数(首帧 445±12 ms) | [`docs/27`](docs/27-稳定性回归.md) |
+| **30.04 fps** | 1800 帧长跑,零丢帧、零 buffer 泄漏 | [`docs/27`](docs/27-稳定性回归.md) |
+| **18.9 ms** | RTSP 服务端到客户端延迟(p95 19.9) | [`docs/31`](docs/31-M8-RTSP推流.md) |
+| **0 差异** | 自写驱动与厂商驱动逐寄存器对照(311+30 条) | [`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md) |
 
-### 修掉的四个内核/驱动缺陷
+### 核心成果(六条)
 
-| 缺陷 | 症状 | 关键证据 |
-|---|---|---|
-| `TRY_FMT` 污染 ACTIVE 模式 | 探测一次分辨率,实际采集就换了模式 | 落盘 `2211840` → **`2506752`** 字节 |
-| 停流错误被吞 | sensor 停不下来但调用方毫不知情 | `STREAMOFF` 恒 0(V4L2 规范);补 `last_stop_err` |
-| 用户指针裸 `memset` | 32 位进程直接触发内核 **PAN oops** | `__memset ← ov8858_sm_compat_ioctl32` |
-| ISP params 结构体尺寸 | 3A 参数下发失败、画面全黑 | `5813 → 10475` |
+**1. 按 datasheet 裸写 OV8858 V4L2 subdev 驱动并出图**
+821 行 C:上电时序/PLL/link_freq/曝光增益 ctrl/runtime PM 全部自推;与厂商驱动**逐寄存器对照零差异**;双模式 29.3 fps、帧结构 100% 有效;自推 1080p30 并定位修复 BLC anchor 越界致帧结构缺陷(179 空行→0,30 帧零错行)。→ [`driver/ov8858_sm/`](driver/ov8858_sm/) / [`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md)
+
+**2. V4L2 零拷贝:EXPBUF → dmabuf → RGA → NPU**
+每帧 CPU 拷贝 13.67 MB → **0 B**;端到端 92.5 → **69.9 ms**;CPU **−66%**;三线程流水线在 2× 负载下 **+25%** 吞吐。三模式(A 拷贝基线 / B RGA / C 全零拷贝)定量对照,收益拆解到环节。→ [`zerocopy/`](zerocopy/) / [`docs/18`](docs/18-阶段二零拷贝任务书.md)
+
+**3. 异构双摄同时开流(IMX415@ISP + OV8858@CIF),零干扰**
+两路帧率与单路完全一致(15.00 / 30.02 fps),总写入 249.8 MB/s,CPU ≈6.6% 单核——单 ISP 决定了"ISP+CIF 异构"是 RK3568 上双摄的唯一解。→ [`docs/19`](docs/19-L3异构双摄报告.md)
+
+**4. 定位并修复 4 个内核/驱动缺陷(有复现、有根因、有回归)**
+- ISP params 结构体尺寸未随 ISP2.1 更新 → 3A 全链死锁(`5813 → 10475`);
+- `TRY_FMT` 写穿 `cur_mode` → 一次探测就换掉实际采集模式(实测落盘字节 2506752→2211840 才抓到);
+- 停流错误被吞(`stop_streaming` 是 void)→ 补 `last_stop_err` 只读参数;
+- 32 位 compat 路径用户指针裸 `memset` → 内核 **PAN oops**,改 `kzalloc+copy_to_user`。
+→ [`docs/28`](docs/28-内核问题闭环.md) / [`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md) §10
+
+**5. 3A 两层打通:修好厂商栈 + 自写用户态闭环**
+修好 rkaiq(根因是 2024 库配 2022 IQ 的版本错配:AWB 段错误=IQ 缺 `smartRun`,3A 死锁=三件套不同源——整套换回配套 2022 后 `params buffer` 报错 289→0,AE 60 帧收敛);另写 `mini3a` 用户态闭环(AE 双自由度 + AWB 灰世界,Y 1→101 / UV→128/128)与之同场景 A/B。→ [`mini3a/`](mini3a/) / [`docs/21`](docs/21-L2-AWB.md)
+
+**6. 产品化链路:检测触发事件录像 + RTSP 推流 + 可靠性**
+`evrec`(环形缓冲 + 事件切片 + RTSP 服务端:慢客户端丢弃策略、非阻塞整包发送、有界恢复)与 `camd`(双消费者有界队列、buffer 引用计数归还、RGA 直接吃 DMA-BUF fd,4K→640 单帧 24.21→6.34 ms);工程化:systemd 托管 3A + md5 版本闸门 + 6 组一键自检。→ [`tools/`](tools/) / [`docs/29`](docs/29-可靠性工程.md) / [`docs/32`](docs/32-事件录像.md) / [`docs/24`](docs/24-M4-工程化.md)
 
 ### 三个"实现正确但场景不可用"的诚实结论
 
-1. **检测**:`bus.jpg` 4 框全对、真人 1~3 m 12/12;**但遮挡 >30% 或近距离逆光即 0/12**,所以写成安装约束,不用算法硬凑。
-2. **零拷贝**:CPU 降到 1/3,但**帧率没变**——瓶颈在采集,收益在余量。
-3. **suspend/resume**:本板无 RTC、`rk805-pwrkey` 接成硬开关,**没有远程唤醒源,所以无法验证退出**,不写成"通过"。
+1. **检测**:解码/NPS 链路正确(`bus.jpg` 4 框全对、真人 1~3 m 12/12);但遮挡 >30% 即 0/12——写成安装约束,不用算法硬凑。
+2. **零拷贝**:CPU 降到 1/3,但帧率没变——瓶颈在采集,收益在余量。
+3. **suspend**:本板无 RTC、无远程唤醒源,**真实 suspend 退出无法验证**(`pm_test=devices` 模拟通过),不写成"通过"。
+
+> 一句口径:**每个数字都有对应的测量方法([docs/31 对照表](docs/31-程序与证据对照表.md));没有测过的,不写在结果里。**
 
 ### 从哪开始读
 
-- 想复跑 → [`docs/33-总报告.md`](docs/33-总报告.md) §6(7 步顺序,照做不会互相踩)
-- 想看驱动 → [`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md)(与厂商 311 条寄存器逐字节对照)
-- 想看产品链路 → [`docs/32`](docs/32-事件录像.md)(检测触发 → 环形缓冲 → 落盘)
-- 想看踩坑 → 各 docs 的"未完成/边界"节,失败记录和成功记录一样多
-
-> 一句口径:**每个数字都有对应的测量方法;没有测过的,不写在结果里。**
+- 想复跑 → [`docs/33-总报告`](docs/33-总报告.md) §6(7 步顺序)或 [`docs/35-验收环境与复现命令`](docs/35-验收环境与复现命令.md)
+- 想看驱动 → [`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md)(逐寄存器对照)
+- 想看产品链路 → [`docs/32-事件录像`](docs/32-事件录像.md)
+- 想看踩坑 → 各 docs 的"未完成/边界"节
 
 ---
 
-## 关键结果(先看这里)
+<details>
+<summary><b>全部结果明细(点开,19 项)</b></summary>
 
 | # | 结果 | 证据 |
 |---|------|------|
 | 1 | IMX415 从设备树使能到第一帧全链打通(3840×2160 NV12) | 双帧 md5 不同(活水验证):`ec801915…` / `aa25a360…`,均 12,441,600 B |
 | 2 | 手写用户态 3A 闭环,AE/AWB 双收敛 | Y: 1 → 101,U/V → 128/128;约 250 行 C,见 [`mini3a/`](mini3a/) |
-| 3 | 定位并修复厂商 BSP 内核缺陷(params 通路结构体尺寸未随 ISP2.1 更新) | `isp_params.c` v21 分支补 `sizeof(struct isp21_isp_params_cfg)`:5813 → 10475 |
-| 4 | 定位"点不亮"真因:物理接口假设错误(而非供电/时钟) | 三次误判修正链 + 物理口↔总线映射表:[`docs/09`](docs/09-L1A-I2C调试复盘-物理口与总线映射.md) |
-| 5 | **按 datasheet 裸写 OV8858 V4L2 subdev 驱动并出图** | 驱动 821 行,双模式 **29.3 fps / 帧结构 100% 有效**;与厂商逐寄存器对照见 [`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md) |
-| 6 | **V4L2 零拷贝:EXPBUF → dmabuf → RGA → NPU** | `memcpy` **13.67 MB/帧 → 0**;延迟 92.5 → **69.9 ms**;CPU **−66%**(38.3 → 13.0 ms/帧);三线程流水线在 2× 负载下 **+25%** 吞吐,见 [`zerocopy/`](zerocopy/) |
-| 7 | **异构双摄同时开流(IMX415@ISP + OV8858@CIF)** | 两路帧率与单路**完全一致**(15.00 / 30.02 fps,零干扰),总写入 **249.8 MB/s**,CPU ≈6.6% 单核;见 [`docs/19`](docs/19-L3异构双摄报告.md) |
-| 8 | **ISP 白平衡:把绿偏色修掉** | params 通路下发 `gain_r=0x1EC / gain_b=0x1F0`,色度从 `U−21.4/V−27.0` 收敛到 `U−1.4/V−0.9`;四条通路对比见 [`docs/21`](docs/21-L2-AWB.md) |
-| 9 | **驱动补 pm_runtime,suspend/resume 回调链路恢复** | runtime PM 三态迁移实测通过(probe→suspended / 开流→active / 关流→2s→suspended);系统 suspend/resume 用 `pm_test=devices` 模拟通过(**真实 suspend 本板无唤醒源,退出无法验证**,见 [`docs/27`](docs/27-稳定性回归.md) §7);见 [`docs/20`](docs/20-L4电源管理.md) |
-| 10 | **修好 rkaiq 的 AWB:段错误根因是 IQ 缺 `smartRun`** | 2024 的 AIQ 6.0 库 + 2022 的 IQ → `AwbPreProcV201` 拿 `NULL/NULL/len=0` 插值必崩;补 13 行 JSON 后 **600 帧不崩**;见 [`tools/iq_patch_smartrun.py`](tools/iq_patch_smartrun.py)、[`docs/21`](docs/21-L2-AWB.md) |
-| 11 | **同场景 A/B:mini3a 稳定,rkaiq 当时是坏的** | 配对两轮,mini3a 逐位可重复(Y≈113、U/V **128.0/128.0**),rkaiq 末态 Y = **181 / 51 / 75** 三轮漂 3.6 倍;根因是 IQ/库/BSP 版本不配套(每帧 `Can not get isp params buffer`),见 [`docs/21`](docs/21-L2-AWB.md) §8 |
-| 12 | **补 `enum_frame_size` + `compat_ioctl32`,并揪出 PAN oops 真 bug** | 内建驱动(`=y`)必须重编 Image 刷 `/boot` 才生效;`enum` 实测 1632×1224 / 1920×1080;`compat_ioctl32` 一加就让 32 位路径把内核打崩——驱动对**用户指针**直接 `memset`,32 位没走 `video_usercopy` → 改成 `kzalloc + copy_to_user`;**32/64 位均 OK**;见 [`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md) §10 |
-| 13 | **修好 rkaiq 3A:换回配套的 2022 三件套** | 厂商只把 `librkaiq.so`/`rkaiq_3A_server` 升到 2024 版、IQ 还是 2022 的 → 用 SDK 里 2022-04 的 deb(板上有 `.bak-2022`,md5 逐字节相同)整套换回:**AE 60 帧收敛到 Y≈110、AWB 稳定、`params buffer` 报错 114~289 → 0**;重测 A/B:rkaiq **15 ms/帧** vs mini3a 36.3 ms/帧,见 [`docs/21`](docs/21-L2-AWB.md) §9 |
-| 15 | **高光能救回一半,但 DRC 在这套 2022 组合里是死的** | 曝光降到 1/8 时高光 clip **4.66% → 0.00%**(证明传感器未饱和,只是超饱和约 **1.3 档**);把 IQ 的 `adrc_calib` 打开 + `DrcGain`×4 实测**与基线逐项相同**(日志 4 条 `get drc params from 3a result failed` → 2022 库取不到 adrc 参数);唯一可用手段是 AE 侧:`OverExpCtrl=1` 让 clip **2.90% → 1.84%**,代价整幅 Y **63.5 → 40.3**;见 [`docs/23`](docs/23-M3-高光与动态范围.md) |
-| 16 | **开机就能用：3A 自启 + 版本闸门 + 一键自检** | 厂商的 `rkaiq_3A.service` 是 `Type=forking` 无 PIDFile 且 stop 用 `killall`（板上没有该命令，**根本停不掉**）→ 换成 `Type=simple` + `Restart=on-failure` 直接托管；冷启动实测 `active`、单进程、AE 从 Y≈39 收敛到 73；`tools/camera_selfcheck.sh` 6 组断言（内核符号 / media 实体 / 6 个节点 / 三件套 md5 / daemon 唯一 / 实拍 60 帧）**全部通过**;见 [`docs/24`](docs/24-M4-工程化.md) |
-| 17 | **内核问题闭环：TRY_FMT 不再污染 ACTIVE、停流错误可定位** | `S_FMT(TRY)` 早期没区分 `which`，一次 `TRY 1920x1080` 就把 `cur_mode` 改掉——实测采集字节数从 2506752(2048×1224) 变成 2211840(2048×1080)，**而 `G_FMT` 仍报 1632×1224**；修复后 8 例 sweep `changed=0/8`、单次 TRY 不变、出流中改模式返回 `-EBUSY`。停流侧：驱动原本丢弃返回值，且 `stop_streaming` 是 void（`videobuf2-core.h:404`），`VIDIOC_STREAMOFF` 按规范恒返回 0 → 新增只读参数 `last_stop_err` / `stop_err_cnt`（实测 -5 / 1）；见 [`docs/28`](docs/28-内核问题闭环.md) |
-| 18 | **可靠性工程：双消费者 + 有界队列 + RGA 零拷贝消费者** | `tools/camd.c` 单文件服务：采集→实时分析/取证两条**有界队列**（RT 满则丢最旧、EV 限速+有界阻塞），每个 buffer 用 `atomic refs` 记账，**所有消费者 release 后 refcount 归零才 QBUF**；停止用 `atomic` 标志 + `pthread_cond` 广播（不用 `volatile`），故障一次有界恢复、失败即干净退出并打诊断包；板上实测：**buffer 数边界公式** `nbufs >= rt_depth+ev_depth+2`（`-b 4` 被饿死到 5.07 fps，`-b 8` 保持 30.22 fps）；取证队列默认改丢最旧，修掉“背压反压采集 30→5 fps”这个真实设计问题；**RGA 直接吃 DMA-BUF fd** 做缩放，4K→640×360 单帧 24.21→6.34 ms、CPU 7.3× 更少；见 [`docs/29`](docs/29-可靠性工程.md)（进行中，未完成项单列） |
-| [30-产品化改进计划](docs/30-产品化改进计划.md) | M6–M13 的任务清单与能力边界表(**计划,非成果**) |
-| [31-程序与证据对照表](docs/31-程序与证据对照表.md) | 每个性能数字对应哪个程序/提交/拷贝点 |
-| 19 | **NPU 消费链路验收（正确但受限）** | `tools/camd.c --rknn` 接 YOLOv8n：`bus.jpg` 检出 4 个正确框（person 0.76/0.75/0.73、bus 0.71）证明解码/NMS 正确；判据从 `obj x cls` 改为官方 `cls` 后 det 由恒 0 变为每帧有框；但实拍框落在整幅/窗帘/空白桌板（`cls=9` 0.85），**成像质量（失焦+偏色+过曝）是瓶颈，检测在无 3A 直采下不可用**，见 docs/29 §5.10 |
-| **M4** | 工程化:3A 开机自启(systemd 直接托管)+ 版本闸门 + 一键自检 `tools/camera_selfcheck.sh` | ✅ 2026-10-22 |
-| **M5** | 内核问题闭环：TRY/ACTIVE 隔离 + 停流错误可定位（`last_stop_err`） | ✅ 2026-10-22 |
-| 14 | **图像"糊"的真因是镜头物理失焦,不是 ISP 参数** | 手动对焦后同场景全帧 `lap_var` **14.3 → 36.5(+155%)**、边缘宽度 **28 → 11 px**;`A Sharp 未生效` 是误判——同一 AE/AWB 下开关锐化 `lap_var` **81.3 / 14.6（+458%）**,`snr mode:127` 只是回退 LSNR 表;见 [`docs/22`](docs/22-M1-图像质量.md) |
+| 3 | 修复厂商 BSP params 通路结构体尺寸缺陷 | `isp_params.c` v21 分支补 `sizeof(...)`:5813 → 10475 |
+| 4 | "点不亮"真因:物理接口假设错误(非供电/时钟) | 三次误判修正链 + 物理口↔总线映射表:[`docs/09`](docs/09-L1A-I2C调试复盘-物理口与总线映射.md) |
+| 5 | 裸写 OV8858 驱动出图 | 821 行,29.3 fps / 帧结构 100% 有效:[`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md) |
+| 6 | 零拷贝三模式对比 | 0 B/帧、69.9 ms、−66% CPU、+25% 吞吐:[`zerocopy/`](zerocopy/) |
+| 7 | 异构双摄零干扰 | 15.00 / 30.02 fps,249.8 MB/s:[`docs/19`](docs/19-L3异构双摄报告.md) |
+| 8 | ISP 白平衡修正 | 色度 U−21.4/V−27.0 → U−1.4/V−0.9:[`docs/21`](docs/21-L2-AWB.md) |
+| 9 | ov8858_sm 补 pm_runtime | runtime 三态实测;系统 suspend `pm_test` 模拟通过(真机无唤醒源,退出无法验证):[`docs/20`](docs/20-L4电源管理.md) |
+| 10 | 修 rkaiq AWB 段错误(IQ 缺 `smartRun`) | 补 13 行 JSON 后 600 帧不崩:[`tools/iq_patch_smartrun.py`](tools/iq_patch_smartrun.py) |
+| 11 | rkaiq vs mini3a 同场景 A/B | mini3a 逐位可重复;rkaiq 版本错配期三轮漂 3.6 倍:[`docs/21`](docs/21-L2-AWB.md) §8 |
+| 12 | 补 `enum_frame_size` + `compat_ioctl32`,修 32 位 PAN oops | 用户指针裸 `memset` → `kzalloc + copy_to_user`,32/64 位均 OK:[`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md) §10 |
+| 13 | rkaiq 3A 真正跑通(换回配套 2022 三件套) | 报错 289 → 0,AE 60 帧收敛;rkaiq 15 ms/帧 vs mini3a 36.3 ms/帧:[`docs/21`](docs/21-L2-AWB.md) §9 |
+| 14 | 图像"糊"真因 = 镜头物理失焦,非 ISP 参数 | 手动对焦 `lap_var` 14.3→36.5(+155%);`snr mode:127` 是回退表非错误:[`docs/22`](docs/22-M1-图像质量.md) |
+| 15 | 高光边界:DRC 在 2022 组合里不可用 | 传感器未饱和(可救 1.3 档);`OverExpCtrl` 让 clip 2.90→1.84%:[`docs/23`](docs/23-M3-高光与动态范围.md) |
+| 16 | 开机即用:3A 自启 + 版本闸门 + 一键自检 | systemd 直接托管(厂商 forking+killall 根本停不掉);6 组断言全过:[`docs/24`](docs/24-M4-工程化.md) |
+| 17 | 内核问题闭环:TRY_FMT 隔离 + 停流错误可定位 | 8 例 sweep `changed=0/8`;`last_stop_err`:[`docs/28`](docs/28-内核问题闭环.md) |
+| 18 | 可靠性工程:双消费者有界队列 + buffer 引用计数 | 边界公式 `nbufs ≥ rt_depth+ev_depth+2`(-b 4 饿死 5.07 fps,-b 8 保持 30.22):[`docs/29`](docs/29-可靠性工程.md) |
+| 19 | 稳定性回归:开关流/长稳/挂起自动化 | 300 次 0 失败、1800 帧零丢帧:[`docs/27`](docs/27-稳定性回归.md) |
 
-![我们的驱动抓到的第一帧](evidence/2026-10-21-第一帧-我们的驱动-1632x1224.png)
+</details>
 
-- **传感器**:Sony IMX415(4K Starvis,2-lane MIPI,野火模组 EBF410358)+ OmniVision OV8858(8MP,2-lane,R2A)
-- **转接**:野火"树莓派摄像头转鲁班猫"转接板(模组 24P → 板卡 15P FPC)
-- **构建**:SDK 内核源码在 VM(Ubuntu 20.04)交叉编译,工具链为 SDK 自带 buildroot 9.3.0;内核/设备树经 boot 分区 + `boot.scr` 部署到板
+<details>
+<summary><b>里程碑时间线(点开)</b></summary>
+
+| 阶段 | 内容 | 状态 |
+|------|------|------|
+| L1-A | IMX415 点亮:dtb→probe→第一帧(双 md5 活水) | ✅ 2026-10-08 |
+| L2-lite | rkaiq 深水区 → 手写 mini3a 3A 闭环 | ✅ 2026-10-12 |
+| L1-B | OV8858 裸写驱动 + 逐寄存器对照 | ✅ 2026-10-21 |
+| 零拷贝 / L3 双摄 / L4 PM / L2-AWB | 同日四线收官 | ✅ 2026-10-21~22 |
+| M1/M3/M4/M5 | 失焦定位 / 高光边界 / 工程化 / 内核闭环 | ✅ 2026-10-22 |
+| M6+ | 稳定性回归、可靠性工程、evrec 事件录像+RTSP、产品化 | ✅ 2026-10-23~24 |
+| HDR 预研 | 软件多帧融合落地(4K clip 5.74%→0%);2-lane DOL 带宽核算可行但 CSI 侧 overflow,定性为硬件边界 | 🔬 预研 |
+
+</details>
+
+## 仓库结构
+
+```
+driver/ov8858_sm/   从 datasheet 裸写的 OV8858 sensor 驱动(821 行 .c/.h/Makefile)
+zerocopy/           V4L2 零拷贝链路:EXPBUF→dmabuf→RGA→NPU,三模式 perf 对比
+mini3a/             用户态 3A 闭环(采集线程 + AE/AWB 控制环)
+tools/              evrec(事件录像+RTSP)/ camd(双消费者)/ 自检/回归/IQ 补丁/对焦量化等全部工具
+docs/               35 份任务书、排障复盘、对照报告、总报告与验收环境
+evidence/           实测证据图与原始输出(第一帧/双路预览/anchor 修复前后/回归数据…)
+```
+
+## 文档索引
+
+**总览与复现**:[33-总报告](docs/33-总报告.md) · [34-最终验收报告](docs/34-最终验收报告.md) · [35-验收环境与复现命令](docs/35-验收环境与复现命令.md) · [31-程序与证据对照表](docs/31-程序与证据对照表.md) · [30-产品化改进计划](docs/30-产品化改进计划.md)
+
+**驱动与内核**:[08-五件套任务书](docs/08-模块四任务书-五件套骨架驱动.md) · [09-L1A 调试复盘(物理口↔总线)](docs/09-L1A-I2C调试复盘-物理口与总线映射.md) · [10-第一帧任务书](docs/10-L1A-Phase3-第一帧任务书.md) · [16-动手手册](docs/16-模块四动手手册-一步一步版.md) · [17-L1-B 对照报告★](docs/17-L1-B对照报告-自写驱动vs厂商.md) · [28-内核问题闭环](docs/28-内核问题闭环.md) · [20-L4 电源管理](docs/20-L4电源管理.md)
+
+**管线与性能**:[18-零拷贝任务书](docs/18-阶段二零拷贝任务书.md) · [19-L3 异构双摄](docs/19-L3异构双摄报告.md) · [29-可靠性工程](docs/29-可靠性工程.md) · [27-稳定性回归](docs/27-稳定性回归.md) · [11-排期与留痕](docs/11-L2.5-管线整合排期与留痕.md)
+
+**3A 与画质**:[21-L2-AWB(rkaiq 修复全记录)](docs/21-L2-AWB.md) · [12-rkaiq 任务书](docs/12-L2lite-rkaiq点亮任务书.md) · [22-M1 图像质量](docs/22-M1-图像质量.md) · [23-M3 高光与动态范围](docs/23-M3-高光与动态范围.md) · [24-M4 工程化](docs/24-M4-工程化.md)
+
+**产品化与 HDR**:[32-事件录像 evrec](docs/32-事件录像.md) · [31-M8-RTSP 推流](docs/31-M8-RTSP推流.md) · [25-HDR 预研](docs/25-HDR预研.md) · [26-2lane DOL 实验](docs/26-路线B-2laneDOL实验.md)
 
 ## 硬件链路
 
 ```
 IMX415 模组(24P 0.5mm) → 野火转接板 → 15P 1.0mm FPC → 板卡 J10(CAM0, I2C1)
                                               ↓
-              csi2-dphy1(split mode, lane0/1) → RKCSI → RKISP → /dev/video0 (mainpath, NV12)
+              csi2-dphy1(split mode, lane0/1) → RKCSI → RKISP → mainpath(NV12)
 
 OV8858 模组(24P)      → 野火转接板 → 15P 1.0mm FPC → 板卡 J11(CAM1, I2C5)
                                               ↓
-              csi2-dphy2(lane0/1) → rockchip-mipi-csi2 → rkcif → /dev/video0 (stream_cif_mipi_id0, RAW10)
+              csi2-dphy2(lane0/1) → rockchip-mipi-csi2 → rkcif(RAW10)
 ```
 
 两个 15P 座引脚序完全相同,唯一差异是背后的 I2C 控制器与 D-PHY 实例——**物理口与总线号必须先核对再调试**(血的教训,见 [`docs/09`](docs/09-L1A-I2C调试复盘-物理口与总线映射.md))。
 
-## 里程碑
-
-| 阶段 | 内容 | 状态 |
-|------|------|------|
-| L1-A P1 | 设备树使能 i2c1 + `imx415@1a`,dtb 编译部署 | ✅ |
-| L1-A P2 | sensor probe(`Detected imx415 id 0000e0`)+ media 管线端到端挂载 | ✅ 2026-10-07 |
-| L1-A P3 | mainpath 第一帧 NV12 + RAW10 对照(双 md5 活水验证) | ✅ 2026-10-08 |
-| L2-lite | rkaiq 深水区留档 → 改为手写用户态 3A 闭环(`mini3a/`),AE/AWB 双收敛 | ✅ 2026-10-12 |
-| **L1-B** | **按 OV8858 datasheet 裸写 V4L2 subdev 驱动**:自推时序 + 借用模拟块,完成后与厂商逐寄存器对照 | ✅ 2026-10-21 |
-| **零拷贝** | VB2 EXPBUF 导出 dmabuf fd → RGA 零拷贝缩放 → NPU 消费;三模式 perf 对比 + 多路 + 流水线 | ✅ 2026-10-21 |
-| L2.5 | 相机 → NPU 实时检测 | ✅ 已并入零拷贝链路(`zerocopy/zc_npu`) |
-| **L3** | 异构双摄(dphy1@ISP + dphy2@CIF 并行)+ 带宽/负载测量 + 两种格式的消费者设计 | ✅ 2026-10-21 |
-| **L4** | 给 ov8858_sm 补 `pm_runtime`:三态迁移实测 + suspend/resume 回调链路(`pm_test` 模拟) | ⚠️ 2026-10-21 |
-| **L2-AWB** | ISP 白平衡四条通路 + rkaiq 段错误根因(2022 IQ 缺 `smartRun`)+ 修复 | ✅ 2026-10-21 |
-| **收尾** | 补 `enum_frame_size` / `compat_ioctl32`;顺带修掉 32 位路径的 PAN oops;与 mini3a 做同场景 A/B | ✅ 2026-10-21 |
-| **L2-AWB 收尾** | rkaiq 3A 真正跑通:换回与 4.19 BSP 配套的 2022 三件套(库+server+IQ 同源),重测 A/B | ✅ 2026-10-22 |
-| **M1** | 图像质量兜底:P0 物理对焦(量化工具 + 迭代协议 + 判据)+ 锐化真相核查(推翻 `snr mode:127` 的误判) | ✅ 2026-10-22 |
-| **M3** | 高光/动态范围:证明高光未饱和(可救约 1.3 档)、DRC 因 2022 库取不到 adrc 参数不可用、给出 AE 侧"高光优先"档 + 可逆切换脚本 `tools/iq_highlight_mode.py` | ✅ 2026-10-22 |
-| **M4** | 工程化:3A 开机自启(systemd 直接托管)+ 版本闸门 + 一键自检 `tools/camera_selfcheck.sh` | ✅ 2026-10-22 |
-| **M5** | 内核问题闭环：TRY/ACTIVE 隔离 + 停流错误可定位（`last_stop_err`） | ✅ 2026-10-22 |
-| **HDR 预研** | 四层能力盘点(UAPI/ISP/rkaiq/IQ 都有 HDR,卡在传感器 `#if 0` 的 4-lane 表);软件多帧融合**板端落地** `tools/hdr_demo`(4K clip **5.74% → 0.00%**、暗部 **73.5% → 7.07%**,融合 1285 ms/4K 帧、346 ms/1080p 帧);2-lane DOL X2 带宽核算:**1080p ≈15 fps 可行,4K 不可行** | 🔬 预研 2026-10-22 |
-
-## 仓库结构
-
-```
-driver/ov8858_sm/   从 datasheet 裸写的 OV8858 sensor 驱动(.c/.h/Makefile + 说明)
-zerocopy/           V4L2 零拷贝链路:EXPBUF→dmabuf→RGA→NPU,三模式 perf 对比 + 多路 + 流水线
-mini3a/             用户态 3A 闭环(V4L2 MPLANE 采集线程 + AE/AWB 控制环)
-docs/               任务书、排障复盘、对照报告、陪跑手册
-evidence/           实测证据(第一帧 / 厂商对照 / 1080p / anchor 修复前后 / 双路预览 / rkaiq 修复 / M1 对焦前后)
-tools/              IQ 补丁脚本 / 32-64 位 compat 对照 / 换驱动流程 / 同场景 A/B 脚本(tools/ab/) / 对焦量化工具(focus_score.c)+ A4 对焦图生成
-```
-
-## 文档
-
-- [docs/08-模块四任务书-五件套骨架驱动](docs/08-模块四任务书-五件套骨架驱动.md) —— 内核模块构建配方 + 五件套(regulator/clk/runtime PM/ctrl/endpoint)任务书。
-- [docs/09-L1A-I2C调试复盘](docs/09-L1A-I2C调试复盘-物理口与总线映射.md) —— "现象全指向硬件供电、真凶是物理接口假设"的完整排障实录:三次误判修正链、物理口↔总线映射表、bring-up 七条纪律。
-- [docs/10-L1A-Phase3-第一帧任务书](docs/10-L1A-Phase3-第一帧任务书.md) —— V4L2 用户态抓帧实操(NV12/RAW10 双路径 + 预测题 + 验收标准)。
-- [docs/11-L2.5-管线整合排期与留痕](docs/11-L2.5-管线整合排期与留痕.md) —— 管线整合排期 + 工作留痕登记簿(每条含"面试复述要点")。
-- [docs/12-L2lite-rkaiq点亮任务书](docs/12-L2lite-rkaiq点亮任务书.md) —— rkaiq 点亮任务书(目标/资料/手术点/预测题格式)。
-- [docs/16-模块四动手手册](docs/16-模块四动手手册-一步一步版.md) —— 从 hello-module 到出图的逐步手册,§5.9~§5.14 是 L1-B 与 1080p 的完整记录。
-- [docs/17-L1-B对照报告](docs/17-L1-B对照报告-自写驱动vs厂商.md) —— **交付级报告**:与厂商逐寄存器对照、哪些是自推的、实测数据、诚实清单;§10 是补 `enum_frame_size`/`compat_ioctl32` 的收尾记录(含内建驱动刷机流程和 PAN oops 真因)。
-- [docs/18-阶段二零拷贝任务书](docs/18-阶段二零拷贝任务书.md) —— EXPBUF/dmabuf/RGA/NPU 全链路、perf 指标定义、S1~S5 验收、多路与流水线数据。
-- [docs/19-L3异构双摄报告](docs/19-L3异构双摄报告.md) —— 两路同时开流实测、带宽/负载表、NV12 与 RAW10 两套消费者设计,以及"单 ISP 决定了异构是唯一解"的分析。
-- [docs/21-L2-AWB](docs/21-L2-AWB.md) —— ISP 白平衡:四条通路(rkaiq / mini3a / 寄存器直写 / params)实测对比,以及从 U/V 偏差反推增益的方法;§6 是 **rkaiq AWB 段错误的根因(2022 IQ 缺 `smartRun`)与修复**,§8 是 **rkaiq vs mini3a 的同场景配对 A/B**,§9 是 **把 rkaiq 换回与 BSP 配套的 2022 三件套后真正跑通**的根因与复测数据。
-- [tools/iq_patch_smartrun.py](tools/iq_patch_smartrun.py) —— 给旧 IQ 补 `wb_v21.autoExtPara.smartRun.cfg` 的脚本(幂等、文本插入、插入后校验),配 [tools/README](tools/README.md)。
-- [docs/20-L4电源管理](docs/20-L4电源管理.md) —— 给 ov8858_sm 补 pm_runtime 的 4 处改动、runtime PM 三态验证、suspend/resume 回调链路(`pm_test` 模拟),以及"带流 suspend 会挂死"的已知限制。
-- [docs/22-M1-图像质量](docs/22-M1-图像质量.md) —— **"糊"的诊断与修复**:先排"假 4K"、再用同平台 OV8858 交叉验证 ISP 无罪、最后定位到光学失焦;量化对焦工具 `tools/focus_score.c` + 迭代协议 + 收敛判据;以及 `A Sharp 未生效` 的误判纠正(源码 + 开关实测定量)——**结论是锐化一直在工作,`snr mode:127` 只是回退 LSNR 表**。
-- [docs/23-M3-高光与动态范围](docs/23-M3-高光与动态范围.md) —— **逆光过曝怎么办**:先用曝光阶梯证明"高光没饱和、能救",再试 DRC(硬件有、IQ 也有,但 2022 库下发不下去,实测零差异,并附上自我纠错:跨会话比基线不可信),最后给出可落地的三档权衡与 `OverExpCtrl` 高光优先档(字节级可逆)。
-- [docs/24-M4-工程化](docs/24-M4-工程化.md) —— **从手工能跑到开机能用**:厂商 daemon 停不掉的原因(Type=forking 无 PIDFile + 板上没有 killall)、启动顺序这个硬约束(先起 daemon 再开流)、md5 闸门、6 组自检断言与判据,以及用板子换来的 4 条运维铁律(改驱动必须刷 Image / 绝不 rmmod 或 pkill / 脚本是 LF 别做 CR 清洗 / 先查 daemon 和 md5)。
-- [docs/28-内核问题闭环](docs/28-内核问题闭环.md) —— **TRY_FMT 为什么会把实际采集模式改掉**：`which` 不区分导致 TRY 写穿 `cur_mode`，只有比对“实际读出的字节数”才抓得到的 bug；以及 V4L2 的 `stop_streaming` 回调为何注定拿不到错误码、只能用只读参数兜底。
-- [docs/29-可靠性工程](docs/29-可靠性工程.md) —— **进行中**：状态机、双队列策略与丢帧语义、buffer 引用计数与归还时机、buffer 数/队列深度边界公式、RGA 零拷贝消费者 vs CPU 拷贝对照，以及明确列出的未完成项。
-- [docs/26-路线B-2laneDOL实验](docs/26-路线B-2laneDOL实验.md) —— **2-lane 跑 DOL X2 的实测**:用“数据驱动派生寄存器表”的办法把 IMX415 切进了 `HDR_X2`(`set hdr cfg, set mode to 2`、`s_stream: hdr: 5`),但 `rkisp` 侧报 `MIPI error: overflow 0x00010000`、零帧;把 HTS 翻倍排除行速率因素后仍 overflow → 失败点在 CSI/ISP 的 HDR 接收路径,不在传感器侧。附三个工具与下一步清单。
-- [docs/25-HDR预研](docs/25-HDR预研.md) —— **能不能做 HDR**:UAPI/ISP/rkaiq/IQ 四层都有 HDR 能力,唯独传感器驱动把 `HDR_X2/HDR_X3` 的模式表用 `#if 0` 关在 4-lane 分支里(本板走 2-lane);软件多帧融合已板端落地(`tools/hdr_demo`,4K 高光溢出 5.74%→**0.00%**、暗部 73.5%→**7.07%**,融合 4K **1285 ms**/1080p **346 ms**);2-lane DOL X2 带宽核算结论是 **1080p ≈15 fps 可行、4K 不可行**;另附"停 3A 后 ISP 再也开不了流"的运维坑与复现命令。
-
 ## 环境
 
 - 板卡串口 1500000 8N1(CH340);SSH 静态 IP;内核/设备树在 VM 交叉编译后部署到板(boot 分区 + `boot.scr`)
-- 调试三件套:`media-ctl -p`(管线拓扑)/ `v4l2-ctl`(格式与抓流)/ `dmesg`(probe 与运行时日志)
-- 外部内核模块构建要点:工具链 PATH **追加**(其自带 python2 已损坏)、`LD_LIBRARY_PATH` 指向工具链 `lib/`(否则 cc1 报 `libisl.so.15`)、`modinfo | grep vermagic` 必须等于 `4.19.232 SMP mod_unload aarch64`
-- ⚠️ 本 BSP 里 `CONFIG_VIDEO_OV8858_SM=y`(**内建**,`/proc/modules` 为空),改这个驱动必须**重编 `Image` 刷 `/boot`**,`insmod`/`depmod` 一律无效;流程见 [tools/README](tools/README.md)
+- 调试三件套:`media-ctl -p` / `v4l2-ctl` / `dmesg`
+- ⚠️ 本 BSP 里 `CONFIG_VIDEO_OV8858_SM=y`(内建),改驱动必须重编 `Image` 刷 `/boot`,`insmod` 一律无效;流程见 [tools/README](tools/README.md)
 
 ## 许可
 
-代码部分 [GPL-2.0](LICENSE)(与 Linux 内核一致,便于将来向上游提交);`docs/` 下的文档采用 CC BY 4.0。
+代码 [GPL-2.0](LICENSE)(与 Linux 内核一致,便于将来向上游提交);`docs/` 采用 CC BY 4.0。

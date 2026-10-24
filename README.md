@@ -108,7 +108,7 @@
 
 ```
 Makefile            顶层板端构建(tools/apps/spy 分组,RGA/RKNN 能力自动探测)
-driver/ov8858_sm/   从 datasheet 裸写的 OV8858 sensor 驱动(821 行 .c/.h/Makefile)
+driver/ov8858_sm/   从 datasheet 裸写的 OV8858 sensor 驱动(1079 行 .c + 455 行 .h + 自带 Makefile)
 zerocopy/           V4L2 零拷贝链路:EXPBUF→dmabuf→RGA→NPU,三模式 perf 对比
 mini3a/             用户态 3A 闭环(采集线程 + AE/AWB 控制环)
 tools/              evrec(事件录像+RTSP)/ camd(双消费者)/ 自检/回归/IQ 补丁/对焦量化等全部工具

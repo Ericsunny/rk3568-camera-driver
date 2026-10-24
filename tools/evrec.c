@@ -841,6 +841,7 @@ static uint32_t g_rtsp_ts;
 static pthread_t g_rtsp_cli_tid;
 static int g_rtsp_cli_started, g_rtsp_cli_joined;
 static unsigned long g_rtsp_sent, g_rtsp_drop;	/* 累计: 发成的帧 / 丢掉的帧 */
+static unsigned long g_rtsp_disc;		/* 对端主动关闭次数(不计入 drop) */
 static unsigned long g_rtsp_drop_run;	/* 连续丢包数: 任何一帧发成就清零 */
 static int g_rtsp_kick;			/* 本轮连接是被慢客户端策略踢掉的 */
 static double g_rtsp_next_ms = 1000.0;	/* 下一条 rtsp: 聚合日志的时间(相对启动) */
@@ -1168,8 +1169,8 @@ static void rtsp_send_packet(const unsigned char *d, int n, int key,
 		goto out;
 	}
 	/* 失败: 这一帧整帧丢弃, 不重试、不等待, 编码/录像完全不受影响 */
-	g_rtsp_drop++;
 	if (rc == RTSP_TX_DROP) {
+		g_rtsp_drop++;
 		/* 网络侧丢包(内核队列满). 偶尔丢一两帧正常, 连着丢说明对端
 		 * 根本没收: 再发也只是垃圾, 直接断开。fd 由客户端线程 close,
 		 * 这里只 shutdown 叫醒它, 避免 double close。 */
@@ -1183,9 +1184,20 @@ static void rtsp_send_packet(const unsigned char *d, int n, int key,
 				shutdown(g_rtsp_cfd, SHUT_RDWR);
 		}
 	} else {
-		/* FATAL(EPIPE/ECONNRESET/短写): errno 在锁内立即取, 打印后失效 */
-		printf("rtsp: 发送失败(errno=%d %s), 断开客户端\n",
-		       errno, strerror(errno));
+		/* FATAL: EPIPE/ECONNRESET 是"对端关掉了", 不是我们丢包 —— 计入
+		 * disc。短写(errno=0, 半包已上线)才是真故障, 计入 drop。
+		 * errno 在锁内立即取, 打印后失效。 */
+		int e = errno;
+
+		if (e == EPIPE || e == ECONNRESET) {
+			g_rtsp_disc++;
+			printf("rtsp: 客户端已关闭(errno=%d %s), 断开\n",
+			       e, strerror(e));
+		} else {
+			g_rtsp_drop++;
+			printf("rtsp: 发送失败(errno=%d %s), 断开客户端\n",
+			       e, strerror(e));
+		}
 		fflush(stdout);
 		g_rtsp_play = 0;
 		if (g_rtsp_cfd >= 0)
@@ -1214,17 +1226,18 @@ static int rtsp_count_fds(void)
 /* 每秒一行的聚合日志(不是每包一行): 客户端数 / 已发帧 / 丢帧 / fd 数 */
 static void rtsp_stats_report(void)
 {
-	unsigned long sent, drop;
+	unsigned long sent, drop, disc;
 	int clients, fds;
 
 	pthread_mutex_lock(&g_rtsp_lock);
 	clients = (g_rtsp_used && g_rtsp_cfd >= 0) ? 1 : 0;
 	sent = g_rtsp_sent;
 	drop = g_rtsp_drop;
+	disc = g_rtsp_disc;
 	pthread_mutex_unlock(&g_rtsp_lock);
 	fds = rtsp_count_fds();
-	printf("rtsp: clients=%d sent=%lu drop=%lu fds=%d\n",
-	       clients, sent, drop, fds);
+	printf("rtsp: clients=%d sent=%lu drop=%lu disc=%lu fds=%d\n",
+	       clients, sent, drop, disc, fds);
 	fflush(stdout);
 }
 
@@ -1890,6 +1903,44 @@ static int dump(const char *out, unsigned trig_seq, double trig_ts, int pre_i,
 	return 0;
 }
 
+static void usage(void)
+{
+	printf(
+"用法: ./evrec -d <video> -w <宽> -h <高> -o <输出前缀> [选项]\n"
+"\n"
+"必填/常用:\n"
+"  -d DEV            采集设备, 如 /dev/video5\n"
+"  -w W              宽, 如 1920\n"
+"  -h H              高, 如 1080 (单独写 -h 则打印本帮助)\n"
+"  -o PREFIX         输出前缀, 生成 PREFIX-<时间>-<序号>.h264/.json\n"
+"  --pre SEC         事件前保留秒数 (默认 2)\n"
+"  --post SEC        事件后继续录秒数 (默认 1)\n"
+"  --ring-mb MB      环形缓冲上限(默认 24)\n"
+"  --kbps KBPS       编码码率 (默认 4000)\n"
+"\n"
+"触发:\n"
+"  --trigger FILE    监听文件 mtime 变化触发; 不给则等 SIGUSR1\n"
+"  --max-events N    最多录 N 个事件(0=不限, 默认 0)\n"
+"\n"
+"检测(内置 YOLOv8n):\n"
+"  --detect          启用检测, 命中即自动触发\n"
+"  --model PATH      RKNN 模型路径\n"
+"  --det-score F     命中分数阈值 (默认 0.45)\n"
+"  --det-frames N    连续命中帧数才触发 (默认 3)\n"
+"  --obj-thresh F    objectness 阈值 (默认 0)\n"
+"  --rga-size WxH    RGA 缩放目标 (默认 640x360)\n"
+"\n"
+"OSD(叠加源帧序号与时间戳):\n"
+"  --osd / --no-osd  开/关, 默认开\n"
+"\n"
+"RTSP 推流:\n"
+"  --rtsp [PORT]     开推流, 省略端口=8554, 0=关闭(默认关闭)\n"
+"  --rtsp-ring N     推流投递环深度(默认 8)\n"
+"\n"
+"运行时指标: 每秒一行 `rtsp: clients= sent= drop= disc= fds=`;\n"
+"            sent=发成的帧, drop=网络侧整包丢弃, disc=对端主动断开(不计入 drop)\n");
+}
+
 int main(int argc, char **argv)
 {
 	const char *dev = "/dev/video5", *out = "/root/ev/ev";
@@ -1907,7 +1958,19 @@ int main(int argc, char **argv)
 	for (i = 1; i < argc; i++) {
 		if (!strcmp(argv[i], "-d")) dev = argv[++i];
 		else if (!strcmp(argv[i], "-w")) w = atoi(argv[++i]);
-		else if (!strcmp(argv[i], "-h")) h = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "--help") || !strcmp(argv[i], "-?")) {
+			usage();
+			return 0;
+		}
+		else if (!strcmp(argv[i], "-h")) {
+			/* 单独一个 -h 当"帮助"用: 以前直接 atoi(NULL) 段错误。
+			 * 后面跟着数字仍然按"高度"解释, 保持老脚本兼容。 */
+			if (i + 1 >= argc) {
+				usage();
+				return 0;
+			}
+			h = atoi(argv[++i]);
+		}
 		else if (!strcmp(argv[i], "--pre")) pre_sec = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--post")) post_sec = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--ring-mb")) ring_limit = (size_t)atoi(argv[++i]) << 20;

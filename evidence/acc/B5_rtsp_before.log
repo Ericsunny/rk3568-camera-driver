@@ -1,0 +1,8 @@
+OPTIONS  : 200 OK
+DESCRIBE : 503 FAIL (sdp 0 字节)
+SDP_FAIL : 响应体不是 SDP(前 40 字节: b'')
+SDP_MEDIA: m=video=False rtpmap=False sprop=无
+SETUP    : 200 OK
+PLAY     : 200 OK
+RESULT pkts=822 bytes=1109935 seq_first=0 seq_last=821 gaps=0 markers=57 fps=14.74
+VERDICT  : FAIL DESCRIBE,SDP_BODY,SDP_m=video,SDP_rtpmap,SDP_sprop

@@ -1,0 +1,44 @@
+[npu] in: sz=1228800 mean=146 rgb0=7/15/5 int8_0=-121
+[npu] out0 size=409600 b0..b7=4 -31 -43 -44 -43 -39 -45 -58
+[npu] in: sz=1228800 mean=146 rgb0=7/16/5 int8_0=-121
+[npu] out0 size=409600 b0..b7=4 -31 -42 -43 -41 -39 -45 -57
+[npu] in: sz=1228800 mean=146 rgb0=8/16/6 int8_0=-120
+>>> NPU 就绪 640x640 nout=9
+>>> 采集 /dev/video5 1920x1080,pre=2s post=1s ring=64MB gop=22
+librga fail to get driver version! Compatibility mode will be enabled.
+
+341 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver l.
+rga_api version 1.9.2_[1]
+>>> 检测触发 streak=3 score=0.692
+>>> 检测触发 streak=4 score=0.706
+>>> 检测触发 streak=5 score=0.686
+>>> 检测触发 streak=6 score=0.719
+>>> 检测触发 streak=7 score=0.692
+>>> 检测触发 streak=8 score=0.699
+>>> 检测触发 streak=9 score=0.752
+>>> 检测触发 streak=10 score=0.725
+>>> 检测触发 streak=11 score=0.779
+>>> 检测触发 streak=12 score=0.793
+>>> 检测触发 streak=13 score=0.752
+>>> 检测触发 streak=14 score=0.712
+>>> 检测触发 streak=15 score=0.699
+>>> 检测触发 streak=16 score=0.686
+>>> 检测触发 streak=17 score=0.692
+>>> 检测触发 streak=18 score=0.680
+>>> 检测触发 streak=19 score=0.667
+>>> 检测触发 streak=20 score=0.686
+>>> 检测触发 streak=21 score=0.773
+>>> 检测触发 streak=22 score=0.706
+>>> 检测触发 streak=23 score=0.686
+>>> 检测触发 streak=24 score=0.712
+>>> 检测触发 streak=25 score=0.686
+>>> 检测触发 streak=26 score=0.632
+>>> 检测触发 streak=27 score=0.680
+>>> 检测触发 streak=28 score=0.660
+>>> 检测触发 streak=29 score=0.560
+>>> 检测触发 streak=30 score=0.584
+>>> 触发 seq=29 ts=3148.8ms -> pre_i=0 pre_seq=0 (ring_cnt=30 head=0 pushed=30)
+>>> NPU det_total=87 det_max=3 score_max=0.793
+>>> RGA 缩放均值 Y=19.6 (640x360, 采样 590400)
+>>> 写出 /root/acc/A1_20240618-054629-00.h264 (41 帧) + /root/acc/A1_20240618-054629-00.json
+>>> 事件 1 完成, 继续等待下一个事件

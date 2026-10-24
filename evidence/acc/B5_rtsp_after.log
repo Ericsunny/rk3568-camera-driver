@@ -1,0 +1,9 @@
+OPTIONS  : 200 OK
+DESCRIBE : 200 OK (sdp 276 字节)
+SDP_BODY : OK
+SDP_MEDIA: m=video=True rtpmap=True sprop=有
+SDP_PLI  : 声明=641033 SPS解出=641033 一致
+SETUP    : 200 OK
+PLAY     : 200 OK
+RESULT pkts=946 bytes=1266088 seq_first=0 seq_last=945 gaps=0 markers=70 fps=14.79
+VERDICT  : PASS

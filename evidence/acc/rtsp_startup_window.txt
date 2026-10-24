@@ -1,0 +1,14 @@
+# evrec 启动后 RTSP DESCRIBE 可用性窗口（单次实测，2026-10-24 板端）
+# 进程: ./evrec --rtsp 8554 --osd --max-events 0 --recover 0 -o /root/acc/W
+# 探针: python3 /root/rtsp_probe.py 127.0.0.1 8554  （只发 OPTIONS + DESCRIBE，读完即断）
+# t=0 为 evrec 进程启动时刻；每次连接是新 TCP 连接（单客户端槽位，前一探针已断开）
+t=184ms  OPTIONS=200 DESCRIBE=503 SDP_BYTES=0   BODY_OK=False
+t=505ms  OPTIONS=200 DESCRIBE=503 SDP_BYTES=0   BODY_OK=False
+t=817ms  OPTIONS=200 DESCRIBE=503 SDP_BYTES=0   BODY_OK=False
+t=1131ms OPTIONS=200 DESCRIBE=503 SDP_BYTES=0   BODY_OK=False
+t=1448ms OPTIONS=200 DESCRIBE=503 SDP_BYTES=0   BODY_OK=False
+t=1820ms OPTIONS=200 DESCRIBE=503 SDP_BYTES=0   BODY_OK=False
+t=2554ms OPTIONS=200 DESCRIBE=503 SDP_BYTES=0   BODY_OK=False
+t=3557ms OPTIONS=200 DESCRIBE=200 SDP_BYTES=276 BODY_OK=True
+# 说明: 原 WINDOW.log 与 evrec stdout 共用同一文件，O_APPEND 偏移竞争导致探针行被覆盖；
+# 以上为同一脚本的控制台输出，逐行照录。

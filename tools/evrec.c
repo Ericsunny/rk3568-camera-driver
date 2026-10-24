@@ -857,11 +857,11 @@ static int ring_first_idr_from(int from)
  * 服务端只保留一个客户端: 第二个连接 accept 后立即 close, 不影响第一个。
  * sender_thread 从投递环取出编码包后调用 rtsp_send_packet():
  *   - 没有 PLAY / 没有客户端时直接返回, 包照旧 free;
- *   - 发送路径全程非阻塞(MSG_DONTWAIT + O_NONBLOCK): 内核队列放不下就
- *     整包丢弃, 绝不重试/等待, 所以慢客户端反压不到采集/编码/录像;
- *   - 一包要么 4+len 字节整包进内核, 要么一个字节都不发; 出现短写说明
- *     半个包已上线(流会错位), 该客户端直接作废;
- *   - 连续丢包超过 RTSP_SLOW_DROP_MAX 就主动断开这个慢客户端;
+ *   - 发送路径非阻塞(MSG_DONTWAIT + O_NONBLOCK), 队列满时用 poll(POLLOUT)
+ *     有界等待(单包最多 1s), 所以慢客户端反压不到采集/编码/录像;
+ *   - 一包要么 4+len 字节全部进内核, 要么把连接判死; 短写就接着写完,
+ *     绝不把"发了一半"的包留在流里(P10: 帧内截断会造成宏块损坏);
+ *   - 一帧一旦开始发就必须发完, 任何失败都只能断开连接;
  *   - g_rtsp_lock 把 "RTP 数据" 与 "RTSP 响应" 串行化, PLAY 的 200 OK
  *     绝不会被 RTP 插队(interleaved 流里响应必须完整先到)。
  */
@@ -880,6 +880,44 @@ static int ring_first_idr_from(int from)
 #define RTSP_TX_DROP (-1)
 #define RTSP_TX_FATAL (-2)
 #define RTSP_SLOW_DROP_MAX 30	/* 连续丢 30 帧(约 2s@15fps)就踢人 */
+
+/* --rtp-trace 的诊断块: 由 rtsp_send_interleaved() 填, 交给 trace 打印.
+ * 不打印时整个结构体根本不构造(传 NULL), 热路径只多一次指针判空. */
+enum {
+	TX_WHY_OK = 0,		/* 整包(4+RTP)已全部进内核 */
+	TX_WHY_PRECHECK,	/* P10 前的旧行为: 预检命中整包丢弃(仅旧 trace 可见) */
+	TX_WHY_EAGAIN,		/* EAGAIN 且不再等待(保留) */
+	TX_WHY_ERROR,		/* 其它错误 / 对端关闭 */
+	TX_WHY_SHORT,		/* 短写且无法继续(保留) */
+	TX_WHY_STALL,		/* POLLOUT 有界等待超时: 客户端不收 */
+};
+#define RTSP_SNDBUF_REQ (512 * 1024)	/* 内核按 wmem_max 封顶, 实际 >= 2*wmem_max */
+#define RTSP_TX_POLL_MS 100		/* 单次等可写的最长时间 */
+#define RTSP_TX_WAIT_MAX 10		/* 单包累计最多等 1s, 超时即判定客户端已死 */
+struct txdiag {
+	int why;
+	int w;			/* sendmsg 实际收下的字节数 */
+	int total;		/* 本包期望字节数(4 + RTP) */
+	int err;		/* errno(0=无) */
+	int outq;		/* SIOCOUTQ 采样(-1=未采) */
+	int cap;		/* SO_SNDBUF 采样(-1=未采) */
+};
+
+/* --rtp-trace FILE: 每个 RTP 包一行, 只在 --rtsp 时打开; 默认 NULL */
+static FILE *g_rtp_trace;
+static const char *g_rtp_trace_path;
+static char g_rtp_trace_buf[1 << 20];	/* trace 全缓冲: 每包只 memcpy, 不落盘 */
+static unsigned g_rtp_trace_n;
+
+/* 行缓冲 + atexit 收尾: SIGTERM 走正常 return 时也把最后几行落盘 */
+static void rtp_trace_close(void)
+{
+	if (g_rtp_trace) {
+		fflush(g_rtp_trace);
+		fclose(g_rtp_trace);
+		g_rtp_trace = NULL;
+	}
+}
 
 static int g_rtsp_port;			/* 0=关闭, --rtsp PORT 开启 */
 static int g_rtsp_lfd = -1;
@@ -1061,71 +1099,190 @@ static int rtsp_snd_room(int fd, int *used, int *cap)
 	return 1;
 }
 
-/*
- * 发一个 interleaved 包($ + ch + 2 字节长度 + RTP). 整包语义:
- *   - 先查可写空间, 装不下就整包丢弃, 连 sendmsg 都不发(不会产生半个包);
- *     余量留 sndbuf/8: SIOCOUTQ 是"未确认字节", 比 sk_wmem_alloc 少算了
- *     skb 结构开销, 且 TCP 收发缓冲自动调节的边界也在这里 —— 不留余量
- *     的话预检通过、sendmsg 却只塞进半包(实测 sent=148 帧后短写),
- *     慢客户端就永远走不到"连续丢包"计数, 直接被 FATAL 断开了;
- *   - sendmsg 用 MSG_DONTWAIT, EAGAIN/EWOULDBLOCK 视为丢包返回 DROP;
- *   - EPIPE/ECONNRESET/短写视为该客户端失效, 返回 FATAL 让上层断开
- *     (短写到这里只剩防御意义: 半个包已上线, 流会错位)。
- * 所有写都发生在 g_rtsp_lock 里(单写者), 所以预检 + 一次 sendmsg 之后
- * 正常不会出现短写; 一旦出现就是异常, 不能继续往这条流里写。
- */
-static int rtsp_send_interleaved(int fd, int ch, const uint8_t *rtp, int len)
+/* 一行 trace: seq/ts/pt/mark/nal/fu/s/e/payload/send 是固定字段,
+ * 后面 why/w/errno/outq 是"为什么没整包发出去"的诊断, 便于事后定责:
+ *   why=ok        send=0, w=total         整包已进内核
+ *   why=precheck  send=-1, w=0, errno=0   预检命中, 一个字节都没发
+ *                (P10 修复前的旧行为, 保留字符串只为能读旧 trace)
+ *   why=eagain    send=-1, w=0, errno=11  队列满且不再等待
+ *   why=error     send=-2, w=已发字节, errno=e  EPIPE/ECONNRESET 等
+ *   why=short     send=-2, w<total        短写, 只上线了一部分
+ *   why=stall     send=-2, w=已发字节, errno=11  等 POLLOUT 超时(客户端不收) */
+static void rtp_trace_line(uint16_t seq, uint32_t ts, int nal, int fu,
+			   int sbit, int ebit, int marker, int payload,
+			   int rc, const struct txdiag *dg)
 {
-	uint8_t pre[4] = { '$', (uint8_t)ch, (uint8_t)(len >> 8),
-			   (uint8_t)(len & 0xff) };
-	struct iovec iov[2] = { { pre, 4 }, { (void *)rtp, (size_t)len } };
-	struct msghdr mh;
-	size_t total = 4 + (size_t)len;
-	int outq = 0, sndbuf = 0;
-	ssize_t w;
+	static const char * const why[] = { "ok", "precheck", "eagain",
+					    "error", "short", "stall" };
 
-	if (rtsp_snd_room(fd, &outq, &sndbuf) &&
-	    outq + (int)total > sndbuf - sndbuf / 8)
-		return RTSP_TX_DROP;	/* 队列接近满: 这个包直接不要了 */
+	if (!g_rtp_trace)
+		return;
+	fprintf(g_rtp_trace,
+		"seq=%u ts=%u pt=96 mark=%d nal=%d fu=%d s=%d e=%d payload=%d send=%d why=%s w=%d/%d errno=%d outq=%d/%d\n",
+		(unsigned)seq, (unsigned)ts, marker, nal, fu, sbit, ebit,
+		payload, rc, dg ? why[dg->why] : "?", dg ? dg->w : -1,
+		dg ? dg->total : -1, dg ? dg->err : 0,
+		dg ? dg->outq : -1, dg ? dg->cap : -1);
+	/* 每 256 包落一次盘(约每 2s): 既不进热路径, 也不至于丢太多证据 */
+	if (!(++g_rtp_trace_n & 0xff))
+		fflush(g_rtp_trace);
+}
 
-	memset(&mh, 0, sizeof(mh));
-	mh.msg_iov = iov;
-	mh.msg_iovlen = 2;
-	do {
-		w = sendmsg(fd, &mh, MSG_NOSIGNAL | MSG_DONTWAIT);
-	} while (w < 0 && errno == EINTR && !g_rtsp_stopping);
+/*
+ * 发一个 interleaved 包($ + ch + 2 字节长度 + RTP). 整包语义(P10 重写):
+ *
+ * P10 根因(已用 --rtp-trace 证实): 旧实现在每个 RTP 包发送前做
+ * "SIOCOUTQ + total > SO_SNDBUF - SO_SNDBUF/8" 预检, 装不下就 return
+ * RTSP_TX_DROP(一个字节都不发), 而上层 rtsp_send_frame() 又在第一片失败时
+ * 放弃该帧剩余分片 —— 一个 68~155KB 的 IDR 在内核发送队列写满时被从
+ * 中间截断: slice 尾部缺失、FU-A 的 E=1 和 RTP marker 都没发出, 解码器
+ * 就在这一帧看到 "corrupted macroblock / error while decoding MB"。
+ *
+ * 现在的规则:
+ *   - 不做包级丢弃: 一个 RTP 包要么整包进内核, 要么把连接判死(FATAL),
+ *     绝不会留下"发了前缀"的半个包;
+ *   - EAGAIN 用 poll(POLLOUT) 有界等待: 单包累计最多 RTSP_TX_WAIT_MAX×
+ *     RTSP_TX_POLL_MS = 1s, 有进展就继续写, 超时才 FATAL;
+ *   - EPIPE/ECONNRESET/对端关闭/等待超时 → FATAL, 上层 shutdown 该连接;
+ *     "半个访问单元留在线上" 比断开严重得多, 所以帧内失败只能断连。
+ * 所有写都发生在 g_rtsp_lock 里(单写者), 帧内不可能有并发写。
+ */
+static int rtsp_send_interleaved(int fd, int ch, const uint8_t *rtp, int len,
+				 struct txdiag *dg)
+{
+	/* 4 + RTP: RTP 头 12 + 负载 <= 1400, 连续缓冲区让短写可以简单续写 */
+	uint8_t buf[4 + 12 + 1400];
+	int total, off = 0, waited = 0, outq = 0, sndbuf = 0;
 
-	if (w < 0) {
-		if (errno == EAGAIN || errno == EWOULDBLOCK)
-			return RTSP_TX_DROP;	/* 没发出去一个字节 */
-		return RTSP_TX_FATAL;		/* EPIPE/ECONNRESET/其它 */
+	if (dg) {
+		dg->why = TX_WHY_OK;
+		dg->w = 0;
+		dg->total = 4 + len;
+		dg->err = 0;
+		dg->outq = -1;
+		dg->cap = -1;
 	}
-	if (w != (ssize_t)total)
-		return RTSP_TX_FATAL;		/* 半个包已上线: 流会错位 */
+	if (len <= 12 || len > 12 + 1400)
+		return RTSP_TX_FATAL;	/* 调用方 bug: 不可能是合法 RTP 包 */
+	total = 4 + len;
+	buf[0] = '$';
+	buf[1] = (uint8_t)ch;
+	buf[2] = (uint8_t)(len >> 8);
+	buf[3] = (uint8_t)(len & 0xff);
+	memcpy(buf + 4, rtp, (size_t)len);
+	/* 只记录队列/缓冲状态供 trace 定责, 不再据此丢包 */
+	if (rtsp_snd_room(fd, &outq, &sndbuf) && dg) {
+		dg->outq = outq;
+		dg->cap = sndbuf;
+	}
+
+	while (off < total) {
+		ssize_t w;
+
+		if (g_rtsp_stopping) {
+			errno = EINTR;
+			if (dg) {
+				dg->why = TX_WHY_ERROR;
+				dg->w = off;
+				dg->err = errno;
+			}
+			return RTSP_TX_FATAL;
+		}
+		w = send(fd, buf + off, (size_t)(total - off),
+			 MSG_NOSIGNAL | MSG_DONTWAIT);
+		if (w > 0) {
+			off += (int)w;	/* 短写: 继续把剩下的字节发完 */
+			continue;
+		}
+		if (w == 0) {		/* 对端关闭 */
+			errno = EPIPE;
+			if (dg) {
+				dg->why = TX_WHY_ERROR;
+				dg->w = off;
+				dg->err = errno;
+			}
+			return RTSP_TX_FATAL;
+		}
+		if (errno == EINTR)
+			continue;
+		if (errno != EAGAIN && errno != EWOULDBLOCK) {
+			if (dg) {
+				dg->why = TX_WHY_ERROR;
+				dg->w = off;
+				dg->err = errno;
+			}
+			return RTSP_TX_FATAL;	/* EPIPE/ECONNRESET/其它 */
+		}
+		/* 队列满: 有界等待可写, 绝不把 EAGAIN 当成已发送 */
+		if (++waited > RTSP_TX_WAIT_MAX) {
+			if (dg) {
+				dg->why = TX_WHY_STALL;
+				dg->w = off;
+				dg->err = errno;
+			}
+			return RTSP_TX_FATAL;	/* 1s 写不进一个包: 客户端已死 */
+		}
+		{
+			struct pollfd pf;
+			int pr;
+
+			pf.fd = fd;
+			pf.events = POLLOUT;
+			pf.revents = 0;
+			pr = poll(&pf, 1, RTSP_TX_POLL_MS);
+			if (pr < 0) {
+				if (errno == EINTR)
+					continue;
+				if (dg) {
+					dg->why = TX_WHY_ERROR;
+					dg->w = off;
+					dg->err = errno;
+				}
+				return RTSP_TX_FATAL;
+			}
+			if (pr > 0 && (pf.revents &
+				       (POLLERR | POLLHUP | POLLNVAL))) {
+				errno = EPIPE;
+				if (dg) {
+					dg->why = TX_WHY_ERROR;
+					dg->w = off;
+					dg->err = EPIPE;
+				}
+				return RTSP_TX_FATAL;
+			}
+		}
+	}
+	if (dg)
+		dg->w = off;
 	return RTSP_TX_OK;
 }
 
 static int rtsp_send_nal(int fd, int ch, const uint8_t *nal, int len,
-			 uint32_t ts, uint16_t *seq, int marker)
+			 uint32_t ts, uint16_t *seq, int marker,
+			 struct txdiag *dg)
 {
 	const int MAXP = 1400;
 	int rc;
 
 	if (len <= MAXP) {
 		uint8_t pkt[12 + MAXP];
+		uint16_t sq = *seq;
 
 		memset(pkt, 0, 12);
 		pkt[0] = 0x80;
 		pkt[1] = 96 | (marker ? 0x80 : 0);
-		pkt[2] = (uint8_t)(*seq >> 8);
-		pkt[3] = (uint8_t)*seq;
+		pkt[2] = (uint8_t)(sq >> 8);
+		pkt[3] = (uint8_t)sq;
 		pkt[4] = (uint8_t)(ts >> 24);
 		pkt[5] = (uint8_t)(ts >> 16);
 		pkt[6] = (uint8_t)(ts >> 8);
 		pkt[7] = (uint8_t)ts;
 		memcpy(pkt + 12, nal, (size_t)len);
 		(*seq)++;
-		return rtsp_send_interleaved(fd, ch, pkt, 12 + len);
+		rc = rtsp_send_interleaved(fd, ch, pkt, 12 + len, dg);
+		rtp_trace_line(sq, ts, nal[0] & 0x1f, 0, 0, 0, marker,
+			       len, rc, dg);
+		return rc;
 	}
 	{
 		int off = 1, first = 1;
@@ -1134,6 +1291,7 @@ static int rtsp_send_nal(int fd, int ch, const uint8_t *nal, int len,
 			int n = len - off;
 			int end;
 			uint8_t pkt[12 + MAXP];
+			uint16_t sq = *seq;
 
 			if (n > MAXP - 2)
 				n = MAXP - 2;
@@ -1141,8 +1299,8 @@ static int rtsp_send_nal(int fd, int ch, const uint8_t *nal, int len,
 			memset(pkt, 0, 12);
 			pkt[0] = 0x80;
 			pkt[1] = 96 | ((end && marker) ? 0x80 : 0);
-			pkt[2] = (uint8_t)(*seq >> 8);
-			pkt[3] = (uint8_t)*seq;
+			pkt[2] = (uint8_t)(sq >> 8);
+			pkt[3] = (uint8_t)sq;
 			pkt[4] = (uint8_t)(ts >> 24);
 			pkt[5] = (uint8_t)(ts >> 16);
 			pkt[6] = (uint8_t)(ts >> 8);
@@ -1152,9 +1310,12 @@ static int rtsp_send_nal(int fd, int ch, const uint8_t *nal, int len,
 					    (first ? 0x80 : 0) | (end ? 0x40 : 0));
 			memcpy(pkt + 14, nal + off, (size_t)n);
 			(*seq)++;
-			/* 一片发不出去就整帧放弃: 缺片的 FU-A 解不出来,
-			 * 继续发后续片只会浪费带宽 */
-			rc = rtsp_send_interleaved(fd, ch, pkt, 14 + n);
+			/* 一片发不出去只能是连接坏了(整包要么全进内核, 要么
+			 * 有界等待后 FATAL): 返回 FATAL 让上层立刻 shutdown,
+			 * 绝不把缺了后半段的 FU-A 留在线上 */
+			rc = rtsp_send_interleaved(fd, ch, pkt, 14 + n, dg);
+			rtp_trace_line(sq, ts, nal[0] & 0x1f, 1, first,
+				       end, end && marker, n + 2, rc, dg);
 			if (rc != RTSP_TX_OK)
 				return rc;
 			off += n;
@@ -1165,9 +1326,11 @@ static int rtsp_send_nal(int fd, int ch, const uint8_t *nal, int len,
 }
 
 /* 把整帧(Annex-B, 多个 NAL)按 RTP 发出; 最后一个包打 marker。
- * 返回 RTSP_TX_OK / RTSP_TX_DROP / RTSP_TX_FATAL, 任一分片失败即放弃整帧。 */
+ * P10 起: 帧内任何一个包失败都返回 FATAL(连接作废), 不再"放弃整帧"——
+ * 已发出的前缀会构成一个缺 slice 尾部的访问单元, 解码器只能报宏块错误。
+ * 只有 RTSP_TX_OK / RTSP_TX_FATAL 两种返回值会从这里出现。 */
 static int rtsp_send_frame(int fd, int ch, const uint8_t *d, int n, int key,
-			   uint32_t ts, uint16_t *seq)
+			   uint32_t ts, uint16_t *seq, struct txdiag *dg)
 {
 	struct { const uint8_t *p; int len; } nal[64];
 	int nn = 0, i = 0, k, rc;
@@ -1220,19 +1383,19 @@ static int rtsp_send_frame(int fd, int ch, const uint8_t *d, int n, int key,
 		pthread_mutex_unlock(&g_nal_lock);
 
 		if (sl > 0 && !rtsp_has_nal(d, n, 7)) {
-			rc = rtsp_send_nal(fd, ch, sps, sl, ts, seq, 0);
+			rc = rtsp_send_nal(fd, ch, sps, sl, ts, seq, 0, dg);
 			if (rc != RTSP_TX_OK)
 				return rc;
 		}
 		if (pl > 0 && !rtsp_has_nal(d, n, 8)) {
-			rc = rtsp_send_nal(fd, ch, pps, pl, ts, seq, 0);
+			rc = rtsp_send_nal(fd, ch, pps, pl, ts, seq, 0, dg);
 			if (rc != RTSP_TX_OK)
 				return rc;
 		}
 	}
 	for (k = 0; k < nn; k++) {
 		rc = rtsp_send_nal(fd, ch, nal[k].p, nal[k].len, ts, seq,
-				   k == nn - 1);
+				   k == nn - 1, dg);
 		if (rc != RTSP_TX_OK)
 			return rc;
 	}
@@ -1243,6 +1406,7 @@ static int rtsp_send_frame(int fd, int ch, const uint8_t *d, int n, int key,
 static void rtsp_send_packet(const unsigned char *d, int n, int key,
 			     uint32_t ts90)
 {
+	struct txdiag dg;
 	int rc;
 
 	pthread_mutex_lock(&g_rtsp_lock);
@@ -1273,30 +1437,24 @@ static void rtsp_send_packet(const unsigned char *d, int n, int key,
 	}
 	g_rtsp_ts = ts90;
 	rc = rtsp_send_frame(g_rtsp_cfd, g_rtsp_ch, d, n, key, g_rtsp_ts,
-			     &g_rtsp_seq);
+			     &g_rtsp_seq, g_rtp_trace ? &dg : NULL);
 	if (rc == RTSP_TX_OK) {
 		g_rtsp_sent++;
 		g_rtsp_drop_run = 0;
 		goto out;
 	}
-	/* 失败: 这一帧整帧丢弃, 不重试、不等待, 编码/录像完全不受影响 */
+	/* 失败: 连接作废, 立刻 shutdown; 已发出的帧前缀随连接一起丢, 绝不让
+	 * 半个访问单元继续流下去(编码/录像完全不受影响) */
 	if (rc == RTSP_TX_DROP) {
+		/* P10 起帧内不再返回 DROP, 这里只作防御保留 */
 		g_rtsp_drop++;
-		/* 网络侧丢包(内核队列满). 偶尔丢一两帧正常, 连着丢说明对端
-		 * 根本没收: 再发也只是垃圾, 直接断开。fd 由客户端线程 close,
-		 * 这里只 shutdown 叫醒它, 避免 double close。 */
-		if (++g_rtsp_drop_run > RTSP_SLOW_DROP_MAX) {
-			printf("rtsp: drop slow client (dropped=%lu)\n",
-			       g_rtsp_drop);
-			fflush(stdout);
-			g_rtsp_kick = 1;
-			g_rtsp_play = 0;
-			if (g_rtsp_cfd >= 0)
-				shutdown(g_rtsp_cfd, SHUT_RDWR);
-		}
+		g_rtsp_kick = 1;
+		g_rtsp_play = 0;
+		if (g_rtsp_cfd >= 0)
+			shutdown(g_rtsp_cfd, SHUT_RDWR);
 	} else {
 		/* FATAL: EPIPE/ECONNRESET 是"对端关掉了", 不是我们丢包 —— 计入
-		 * disc。短写(errno=0, 半包已上线)才是真故障, 计入 drop。
+		 * disc。EAGAIN(POLLOUT 等 1s 仍写不进)是客户端不收, 计入 drop。
 		 * errno 在锁内立即取, 打印后失效。 */
 		int e = errno;
 
@@ -1304,6 +1462,10 @@ static void rtsp_send_packet(const unsigned char *d, int n, int key,
 			g_rtsp_disc++;
 			printf("rtsp: 客户端已关闭(errno=%d %s), 断开\n",
 			       e, strerror(e));
+		} else if (e == EAGAIN || e == EWOULDBLOCK) {
+			g_rtsp_drop++;
+			printf("rtsp: 客户端不收(等待可写超时, errno=%d), 断开客户端\n",
+			       e);
 		} else {
 			g_rtsp_drop++;
 			printf("rtsp: 发送失败(errno=%d %s), 断开客户端\n",
@@ -1651,6 +1813,22 @@ static void *rtsp_accept_thread(void *arg)
 			break;
 		}
 		setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &one, sizeof(one));
+		{
+			/* P10: 1080p@4Mbps 的 IDR 有 68~155KB, 而默认 SO_SNDBUF
+			 * 只有 16KB(内核加倍 32KB) —— 一帧 IDR 必然把队列写满,
+			 * 旧实现就在这里把帧截断。把发送缓冲要到位(内核按
+			 * wmem_max 封顶后加倍, 实测 416KB), 单个 IDR 就能整体
+			 * 进内核, 正常网络下根本不会出现 EAGAIN。 */
+			int want = RTSP_SNDBUF_REQ, got = 0;
+			socklen_t gl = sizeof(got);
+
+			setsockopt(fd, SOL_SOCKET, SO_SNDBUF, &want, sizeof(want));
+			if (getsockopt(fd, SOL_SOCKET, SO_SNDBUF, &got, &gl) == 0) {
+				printf("rtsp: SO_SNDBUF=%d (请求 %d, wmem_max 封顶)\n",
+				       got, want);
+				fflush(stdout);
+			}
+		}
 		{
 			/* 发送全链路非阻塞: 慢客户端只会让包被丢掉, 绝不会
 			 * 让 RTSP 线程卡在 send 上(原来的 SO_SNDTIMEO 2s
@@ -2177,6 +2355,8 @@ static void usage(void)
 "RTSP 推流:\n"
 "  --rtsp [PORT]     开推流, 省略端口=8554, 0=关闭(默认关闭)\n"
 "  --rtsp-ring N     推流投递环深度(默认 8)\n"
+"  --rtp-trace FILE  每个 RTP 包一行(seq/ts/mark/nal/fu/s/e/payload/send),\n"
+"                    仅 --rtsp 时生效; 默认关闭, 不影响正常发送路径\n"
 "\n"
 "链路恢复与退出:\n"
 "  --recover N       链路故障后重开设备次数 (默认 2, 0=不恢复)\n"
@@ -2212,6 +2392,7 @@ int main(int argc, char **argv)
 			"--trigger", "--kbps", "--model", "--max-events",
 			"--det-score", "--det-frames", "--obj-thresh",
 			"--rga-size", "--rtsp-ring", "--recover", "--fault-sim",
+			"--rtp-trace",
 		};
 		size_t j;
 
@@ -2266,6 +2447,7 @@ int main(int argc, char **argv)
 				g_rtsp_port = 8554;
 		}
 		else if (!strcmp(argv[i], "--rtsp-ring")) g_pkb_depth = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "--rtp-trace")) g_rtp_trace_path = argv[++i];
 		else if (!strcmp(argv[i], "--recover")) {
 			g_recover = atoi(argv[++i]);
 			if (g_recover < 0)
@@ -2283,6 +2465,29 @@ int main(int argc, char **argv)
 	if (g_rtsp_port < 0 || g_rtsp_port > 65535) {
 		fprintf(stderr, "--rtsp 取值 0..65535 (0=关闭)\n");
 		return 1;
+	}
+	/* --rtp-trace 只对 --rtsp 的数据面有意义: 没开推流就提示并忽略,
+	 * 不建空文件, 也不让录像路径多一次判空之外的任何开销 */
+	if (g_rtp_trace_path) {
+		if (g_rtsp_port <= 0) {
+			fprintf(stderr, "--rtp-trace 只与 --rtsp 一起生效, 已忽略\n");
+			g_rtp_trace_path = NULL;
+		} else {
+			g_rtp_trace = fopen(g_rtp_trace_path, "w");
+			if (!g_rtp_trace) {
+				fprintf(stderr, "--rtp-trace 打开 %s 失败: %s\n",
+					g_rtp_trace_path, strerror(errno));
+				return 1;
+			}
+			/* 全缓冲 1MB, 每 256 包刷一次: 每包只有一次 snprintf 的内存
+			 * 拷贝, 不产生 write 系统调用。P10 实测: 行缓冲(每包一次
+			 * write)会把发送节奏拖慢到队列永远不满, 丢包/宏块错误一起
+			 * 消失 —— 那是测量改变了被测对象, 不能用。 */
+			setvbuf(g_rtp_trace, g_rtp_trace_buf, _IOFBF,
+				sizeof(g_rtp_trace_buf));
+			atexit(rtp_trace_close);
+			printf(">>> RTP trace -> %s\n", g_rtp_trace_path);
+		}
 	}
 	gop = (pre_sec + post_sec) * 15 / 2;
 	if (gop < 8)

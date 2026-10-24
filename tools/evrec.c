@@ -455,6 +455,7 @@ static int g_no_obj_mul = 0;
 static float g_det_score = 0.45f;   /* 触发所需分数 */
 static int g_det_frames = 3;        /* 连续命中帧数 */
 static int g_streak;
+static int g_det_announced;	    /* 本轮连击是否已打过"检测触发" */
 static int g_npu_w = 640, g_npu_h = 640;
 struct dbox {
 	float x1, y1, x2, y2, score;
@@ -726,8 +727,19 @@ static void npu_run(const unsigned char *rgb)
 	}
 	rknn_outputs_release(g_nctx, g_nout, outs);
 
-	{	/* 触发判定: 目标类 + 分数门限, 且必须连续 N 帧 */
-		int hit = 0, k;
+	{	/* 触发判定: 目标类 + 分数门限, 且必须连续 N 帧。
+		 * P5: 只在状态变化时打印, 不再每帧一行 ——
+		 *   ① 连击开始(streak 0->1)一行: 本次连击的首帧分数;
+		 *   ② 本次连击首次达标(streak 达到 g_det_frames)一行:
+		 *      "检测触发", 报达标帧的 streak 与分数。
+		 * 预热期主循环会把 g_trigger 复位(见 main 里"预热未满"),
+		 * 因此不能用 "!g_trigger" 判断是否打印 —— 那样预热期每帧都会
+		 * 重开一次门限, A1 曾连刷 28 行(streak=3..30)。这里用
+		 * g_det_announced 记住"本轮连击已报过", 预热复位 g_trigger
+		 * 不会影响它; 置位仍用 s >= g_det_frames, 预热结束后哪怕
+		 * streak 已经很大也能立刻触发。连击中断(streak 归零)或事件
+		 * 完成时清 g_det_announced, 下一轮连击照常各打一行。 */
+		int hit = 0, k, s;
 
 		for (k = 0; k < nd; k++)
 			if (boxes[k].cls == 0 && boxes[k].score >= g_det_score) {
@@ -735,13 +747,23 @@ static void npu_run(const unsigned char *rgb)
 				break;
 			}
 		if (hit) {
-			if (++g_streak >= g_det_frames && !g_trigger) {
+			s = ++g_streak;
+			if (s == 1 && g_det_frames > 1)
+				printf(">>> 检测连击开始 streak=1 score=%.3f "
+				       "(阈值 %.2f, 需连续 %d 帧)\n",
+				       (double)boxes[k].score, (double)g_det_score,
+				       g_det_frames);
+			if (s >= g_det_frames) {
+				if (!g_det_announced) {
+					g_det_announced = 1;
+					printf(">>> 检测触发 streak=%d score=%.3f\n",
+					       s, (double)boxes[k].score);
+				}
 				g_trigger = 1;
-				printf(">>> 检测触发 streak=%d score=%.3f\n",
-				       g_streak, (double)boxes[k].score);
 			}
 		} else {
 			g_streak = 0;
+			g_det_announced = 0;
 		}
 	}
 
@@ -1923,12 +1945,19 @@ static void pkb_stop(void)
 	pthread_mutex_unlock(&g_pkb_lock);
 }
 
+/* P6: fps 在 dump 内部按"文件内帧数 / (末包 ts - 首包 ts)"计算 ——
+ * 三个调用点不再各算一遍(旧代码用 trig_ts + post 当分母, 触发晚时虚低)。 */
 static int dump(const char *out, unsigned trig_seq, double trig_ts, int pre_i,
-		int end_i, unsigned w, unsigned h, double fps)
+		int end_i, unsigned w, unsigned h)
 {
 	char path[512], jpath[512];
 	FILE *f, *j;
 	int i, n = 0;
+	int nf = 0;		/* 源帧数(按 seq 去重; 一帧多包时 n > nf) */
+	int trig_idx = -1;	/* 触发帧在文件内的 0 基帧序号 */
+	int have_prev = 0, last_i;
+	unsigned prev_seq = 0;
+	double first_ts, span, fps;
 
 	snprintf(path, sizeof(path), "%s.h264", out);
 	snprintf(jpath, sizeof(jpath), "%s.json", out);
@@ -1972,6 +2001,15 @@ static int dump(const char *out, unsigned trig_seq, double trig_ts, int pre_i,
 			fclose(f);
 			return -1;
 		}
+		/* 帧数按源帧去重(同一帧的多个包 seq 相同) */
+		if (!have_prev || r->seq != prev_seq) {
+			have_prev = 1;
+			prev_seq = r->seq;
+			nf++;
+		}
+		/* 触发帧(首个包)在文件内的帧序号: 0 基, 与 list[] 的帧顺序一致 */
+		if (trig_idx < 0 && r->seq == trig_seq)
+			trig_idx = nf - 1;
 		n++;
 	}
 	if (fclose(f) != 0) {
@@ -1986,12 +2024,21 @@ static int dump(const char *out, unsigned trig_seq, double trig_ts, int pre_i,
 			jpath, strerror(errno), errno);
 		return -1;
 	}
+	/* fps 分母 = 文件内实际时间跨度(末包 ts - 首包 ts); 单帧文件 span=0,
+	 * 兜底 1 ms 防 0 除, 此时 fps 无物理意义但不会写出 inf。 */
+	last_i = (end_i < ring_cnt) ? end_i : ring_cnt - 1;
+	first_ts = ring_at(pre_i)->ts_ms;
+	span = ring_at(last_i)->ts_ms - first_ts;
+	if (span < 1)
+		span = 1;
+	fps = (double)nf * 1000.0 / span;
 	fprintf(j, "{\"file\":\"%s.h264\",\"trigger_seq\":%u,"
-		"\"trigger_ts_ms\":%.1f,\"first_idr_seq\":%u,"
-		"\"first_idr_ts_ms\":%.1f,\"frames\":%d,"
+		"\"trigger_frame_index\":%d,\"trigger_ts_ms\":%.1f,"
+		"\"first_idr_seq\":%u,\"first_idr_ts_ms\":%.1f,"
+		"\"frames\":%d,\"frame_count\":%d,\"span_ms\":%.1f,"
 		"\"width\":%u,\"height\":%u,\"fps\":%.2f,\"list\":[",
-		out, trig_seq, trig_ts, ring_at(pre_i)->seq,
-		ring_at(pre_i)->ts_ms, n, w, h, fps);
+		out, trig_seq, trig_idx, trig_ts, ring_at(pre_i)->seq,
+		ring_at(pre_i)->ts_ms, n, nf, span, w, h, fps);
 	for (i = pre_i; i <= end_i && i < ring_cnt; i++) {
 		struct rec *r = ring_at(i);
 
@@ -2019,8 +2066,36 @@ static int dump(const char *out, unsigned trig_seq, double trig_ts, int pre_i,
 	if (g_rga_n)
 		printf(">>> RGA 缩放均值 Y=%.1f (%ux%u, 采样 %lu)\n",
 		       (double)g_rga_sum / g_rga_n, g_rga_w, g_rga_h, g_rga_n);
-	printf(">>> 写出 %s.h264 (%d 帧) + %s.json\n", out, n, out);
+	if (nf == n)
+		printf(">>> 写出 %s.h264 (%d 帧, 触发帧 #%d) + %s.json\n",
+		       out, n, trig_idx, out);
+	else
+		printf(">>> 写出 %s.h264 (%d 包/%d 帧, 触发帧 #%d) + %s.json\n",
+		       out, n, nf, trig_idx, out);
 	return 0;
+}
+
+/* ---------------- 阶段耗时(P9 观察项的证据) ----------------
+ * 只统计 --detect 的帧, 三段严格串行在同一采集线程内:
+ *   RGA 缩放 -> RKNN 推理 -> 编码(拷入编码缓冲 + OSD + 送帧到取包)
+ * 三者均值之和直接解释"检测开启时 ~10 fps、纯录像 ~15 fps"。 */
+static double g_t_rga, g_t_npu, g_t_enc;	/* 累计 ms */
+static unsigned long g_t_frames;		/* 累计帧数 */
+static double g_t_next_ms = 5000.0;		/* 下次打印时刻(相对 t_start) */
+
+static void stage_report(void)
+{
+	double tot;
+
+	if (!g_t_frames)
+		return;
+	tot = g_t_rga + g_t_npu + g_t_enc;
+	printf(">>> 阶段耗时(均值, %lu 帧): RGA %.2f + RKNN %.2f + 编码 %.2f "
+	       "= %.2f ms/帧 -> %.1f fps\n",
+	       g_t_frames, g_t_rga / g_t_frames, g_t_npu / g_t_frames,
+	       g_t_enc / g_t_frames, tot / g_t_frames,
+	       tot > 0 ? 1000.0 * (double)g_t_frames / tot : 0.0);
+	fflush(stdout);
 }
 
 /* --fault-sim dqbuf:N[,N...]: 解析注入点(仅测试用) */
@@ -2123,7 +2198,8 @@ int main(int argc, char **argv)
 	int unstable = -1;	/* >=0: 恢复后已采到的帧数(-1=已判定稳定) */
 	unsigned seq = 0;	/* 源帧序号: 只有 DQBUF 成功才 +1, 编码包循环不碰 */
 	unsigned frame_seq = 0;	/* 当前帧的源帧序号(编码包循环内只读) */
-	double trig_ts = 0, trig_abs = 0, t_start;
+	unsigned trig_seq = 0;	/* P6: 触发帧的源帧序号(写进 json 的 trigger_seq) */
+	double trig_ts = 0, t_start;
 	struct stat st;
 	time_t trig_mtime = 0;
 
@@ -2277,7 +2353,7 @@ int main(int argc, char **argv)
 		struct v4l2_plane pl;
 		MppFrame frame = NULL;
 		MppPacket pkt = NULL;
-		double ts;
+		double ts, t_stage = 0, t_rga = 0, t_npu = 0;
 
 		if (g_stop)
 			break;
@@ -2309,15 +2385,24 @@ int main(int argc, char **argv)
 		 * 多个包(SPS/PPS 单独成包等), 但包循环里只读 frame_seq, 所以
 		 * OSD 的 # 与 .json 的 seq 永远按源帧递增, 不会被包数带偏。 */
 		frame_seq = seq++;
+		/* 阶段计时: t_stage 从"送 RGA"起算, 编码段在取包循环结束后补上 */
+		t_stage = now_ms(CLOCK_MONOTONIC);
 #ifdef HAVE_RGA
 #ifdef HAVE_RKNN
 		if (g_detect) {
 			rga_scale(cap.map[b.index], w, h);
+			t_rga = now_ms(CLOCK_MONOTONIC) - t_stage;
+			t_stage += t_rga;
 			npu_run(g_rgb);
+			t_npu = now_ms(CLOCK_MONOTONIC) - t_stage;
+			t_stage += t_npu;
 		}
 #else
-		if (g_detect)
+		if (g_detect) {
 			rga_scale(cap.map[b.index], w, h);
+			t_rga = now_ms(CLOCK_MONOTONIC) - t_stage;
+			t_stage += t_rga;
+		}
 #endif
 #endif
 		memcpy(mpp_buffer_get_ptr(g_fbuf), cap.map[b.index],
@@ -2394,6 +2479,18 @@ int main(int argc, char **argv)
 				goto link_fault;
 		}
 
+		/* 阶段耗时累计(仅 --detect): 编码段 = 拷入缓冲 + OSD + 送帧到取包 */
+		if (g_detect) {
+			g_t_rga += t_rga;
+			g_t_npu += t_npu;
+			g_t_enc += now_ms(CLOCK_MONOTONIC) - t_stage;
+			g_t_frames++;
+			if (ts - t_start >= g_t_next_ms) {
+				stage_report();
+				g_t_next_ms += 5000.0;
+			}
+		}
+
 		/* --rtsp 时每 5 秒报一次投递环收支; 未开推流不打印(P4) */
 		if (g_rtsp_port > 0)
 			while (ts - t_start >= g_pkb_next_ms) {
@@ -2420,8 +2517,16 @@ int main(int argc, char **argv)
 		}
 		if (g_trigger && trigger_i < 0) {
 			trigger_i = ring_cnt;
-			trig_ts = ts - t_start;
-			trig_abs = now_ms(CLOCK_REALTIME);
+			/* P6: 触发帧 = 本次循环 DQBUF 到的那一帧(检测/触发文件/信号
+			 * 都在这一帧的循环里被看到); 旧代码 dump 时传的是末帧
+			 * frame_seq, 导致 json 的 trigger_seq 指向文件最后一帧。
+			 * trig_ts 也取该帧的环形时间戳(而不是 DQBUF 时刻的 ts):
+			 * 环形 ts 是"编码送帧"时刻, 与 json list 的 ts_ms 同源,
+			 * 这样 trigger_ts_ms 恒等于 list 中 trigger_seq 那条的
+			 * ts_ms, 前后窗口计算也不会错位。 */
+			trig_seq = frame_seq;
+			trig_ts = ring_cnt > 0 ? ring_at(ring_cnt - 1)->ts_ms
+					       : ts - t_start;
 			/* pre: 从触发点往前按时间回退 pre_sec */
 			for (i = ring_cnt - 1; i >= 0; i--)
 				if (ring_at(i)->ts_ms < trig_ts - pre_sec * 1000.0)
@@ -2439,7 +2544,7 @@ int main(int argc, char **argv)
 			g_pre_seq = ring_at(pre_i)->seq;
 			printf(">>> 触发 seq=%u ts=%.1fms -> pre_i=%d pre_seq=%u "
 			       "(ring_cnt=%d head=%d pushed=%lu)\n",
-			       frame_seq, trig_ts, pre_i, g_pre_seq,
+			       trig_seq, trig_ts, pre_i, g_pre_seq,
 			       ring_cnt, ring_head, g_pushed);
 		}
 		if (trigger_i >= 0 && ts - t_start > trig_ts + post_sec * 1000.0) {
@@ -2453,9 +2558,7 @@ int main(int argc, char **argv)
 					if (ring_at(k)->seq == g_pre_seq) { pi = k; break; }
 			if (pi >= 0) {
 				snprintf(outn, sizeof(outn), "%s-%02d", out, g_events);
-				ok = dump(outn, frame_seq, trig_ts, pi, end_i, w, h,
-					  (double)(end_i - pi + 1) * 1000.0 /
-					  (trig_ts + post_sec * 1000.0)) == 0;
+				ok = dump(outn, trig_seq, trig_ts, pi, end_i, w, h) == 0;
 			}
 			if (!ok) {
 				/* 落盘失败 = 真错误: 不计数, 也不再等下一个事件 */
@@ -2469,6 +2572,7 @@ int main(int argc, char **argv)
 			ring_clear();
 			g_trigger = 0;
 			g_streak = 0;
+			g_det_announced = 0;
 			g_pre_seq = 0;
 			trigger_i = pre_i = end_i = -1;
 			if (g_max_events && g_events >= g_max_events) {
@@ -2507,6 +2611,9 @@ link_fault:
 		}
 	}
 
+	/* P9: 检测开启时收尾打一行三阶段均值(每 5 s 也打过), 作为
+	 * "RGA+RKNN+编码三者串行 -> ~10 fps" 的可复核数字 */
+	stage_report();
 	/* 先记下退出原因: 停线程会唤醒发送线程, 不能事后区分 */
 	got_term = g_stop;
 	/* SIGTERM 且正在录制: 先把当前事件落盘(环还完整), 再停 RTSP/线程/采集。
@@ -2524,16 +2631,10 @@ link_fault:
 			pi = ring_first_idr_from(0);
 		if (pi >= 0) {
 			char outn[512];
-			/* 事件没走完就被 TERM: fps 按环内实际时间跨度算,
-			 * 不能用 trig+post 的理论时长(会低估) */
-			double span = ring_at(ring_cnt - 1)->ts_ms -
-				      ring_at(pi)->ts_ms;
 
-			if (span < 1)
-				span = 1;
+			/* 事件没走完就被 TERM: dump 内部按环内实际时间跨度算 fps */
 			snprintf(outn, sizeof(outn), "%s-%02d", out, g_events);
-			if (dump(outn, frame_seq, trig_ts, pi, ring_cnt - 1, w, h,
-				 (double)(ring_cnt - pi) * 1000.0 / span) == 0) {
+			if (dump(outn, trig_seq, trig_ts, pi, ring_cnt - 1, w, h) == 0) {
 				printf(">>> SIGTERM: 进行中的事件已落盘 %s\n", outn);
 				fflush(stdout);
 			} else {
@@ -2572,9 +2673,7 @@ link_fault:
 		fprintf(stderr, "未触发或无数据, 不落盘\n");
 		return 1;
 	}
-	if (dump(out, frame_seq, trig_ts, pre_i, end_i, w, h,
-		 (double)(end_i - pre_i + 1) * 1000.0 /
-		 (trig_ts + post_sec * 1000.0)) < 0) {
+	if (dump(out, trig_seq, trig_ts, pre_i, end_i, w, h) < 0) {
 		fprintf(stderr, ">>> 事件落盘失败\n");
 		return 1;
 	}

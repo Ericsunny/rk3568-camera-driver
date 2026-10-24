@@ -81,6 +81,15 @@ static volatile sig_atomic_t g_trigger;
 static volatile sig_atomic_t g_stop;	/* SIGTERM: 优雅退出 */
 static const char *g_trig_path;
 static int g_osd;		/* --osd 烧 OSD; 默认关闭, 不加参数行为不变 */
+static int g_recover = 2;	/* --recover N: 链路故障重开设备次数(0=不恢复) */
+/* --fault-sim dqbuf:N[,N...]: 第 N 次 DQBUF 强制失败(仅测试) */
+static int g_fault_dqbuf[8];
+static int g_fault_done[8];
+static int g_fault_cnt;
+static unsigned g_dqbuf_calls;
+
+/* 恢复后连续采到多少帧才算"链路稳定", 稳定后恢复计数复位 */
+#define RECOVER_STABLE_FRAMES 30
 
 static double now_ms(clockid_t c)
 {
@@ -109,7 +118,7 @@ static struct {
 	unsigned w, h, stride;	/* stride 来自 S_FMT 回填, 不等于 width */
 	void *map[8];
 	size_t len[8];
-} cap;
+} cap = { .fd = -1 };
 
 static int xioctl(int fd, unsigned long req, void *arg)
 {
@@ -121,6 +130,36 @@ static int xioctl(int fd, unsigned long req, void *arg)
 		 * 让阻塞中的 DQBUF 真正返回, 主线程才能 join 发送线程并退出 */
 	} while (r < 0 && errno == EINTR && !g_stop);
 	return r;
+}
+
+/*
+ * 只释放采集侧: STREAMOFF -> munmap -> REQBUFS(count=0) -> close.
+ * MPP 编码器与 RTSP 服务端一律不动 —— 恢复链路时它们必须活下来,
+ * 否则 RTSP 客户端会断开、编码参数集也要重建。
+ */
+static void cap_release(void)
+{
+	enum v4l2_buf_type t = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+	struct v4l2_requestbuffers rb;
+	int i;
+
+	if (cap.fd < 0)
+		return;
+	xioctl(cap.fd, VIDIOC_STREAMOFF, &t);
+	for (i = 0; i < cap.nbufs; i++) {
+		if (cap.map[i] && cap.map[i] != MAP_FAILED)
+			munmap(cap.map[i], cap.len[i]);
+		cap.map[i] = NULL;
+		cap.len[i] = 0;
+	}
+	memset(&rb, 0, sizeof(rb));
+	rb.count = 0;		/* 释放 vb2 buffer */
+	rb.type = t;
+	rb.memory = V4L2_MEMORY_MMAP;
+	xioctl(cap.fd, VIDIOC_REQBUFS, &rb);
+	close(cap.fd);
+	cap.fd = -1;
+	cap.nbufs = 0;
 }
 
 static int cap_open(const char *dev, int w, int h, int nbufs)
@@ -142,7 +181,7 @@ static int cap_open(const char *dev, int w, int h, int nbufs)
 	f.fmt.pix_mp.field = V4L2_FIELD_NONE;
 	if (xioctl(cap.fd, VIDIOC_S_FMT, &f) < 0) {
 		perror("S_FMT");
-		return -1;
+		goto fail;
 	}
 	cap.w = f.fmt.pix_mp.width;
 	cap.h = f.fmt.pix_mp.height;
@@ -160,7 +199,7 @@ static int cap_open(const char *dev, int w, int h, int nbufs)
 	rb.memory = V4L2_MEMORY_MMAP;
 	if (xioctl(cap.fd, VIDIOC_REQBUFS, &rb) < 0) {
 		perror("REQBUFS");
-		return -1;
+		goto fail;
 	}
 	cap.nbufs = rb.count;
 	for (i = 0; i < rb.count; i++) {
@@ -177,18 +216,18 @@ static int cap_open(const char *dev, int w, int h, int nbufs)
 		b.m.planes = &pl;
 		if (xioctl(cap.fd, VIDIOC_QUERYBUF, &b) < 0) {
 			perror("QUERYBUF");
-			return -1;
+			goto fail;
 		}
 		cap.len[i] = pl.length;
 		cap.map[i] = mmap(NULL, pl.length, PROT_READ | PROT_WRITE,
 				  MAP_SHARED, cap.fd, pl.m.mem_offset);
 		if (cap.map[i] == MAP_FAILED) {
 			perror("mmap");
-			return -1;
+			goto fail;
 		}
 		if (xioctl(cap.fd, VIDIOC_QBUF, &b) < 0) {
 			perror("QBUF");
-			return -1;
+			goto fail;
 		}
 		(void)ex;
 	}
@@ -197,10 +236,14 @@ static int cap_open(const char *dev, int w, int h, int nbufs)
 
 		if (xioctl(cap.fd, VIDIOC_STREAMON, &t) < 0) {
 			perror("STREAMON");
-			return -1;
+			goto fail;
 		}
 	}
 	return 0;
+fail:
+	/* 重开失败必须把半开的设备关掉, 否则恢复重试会 EBUSY/fd 泄漏 */
+	cap_release();
+	return -1;
 }
 
 /* ---------------- OSD: 源帧 seq + 相对时间(烧在 NV12 的 Y 平面) ---------------- */
@@ -851,6 +894,57 @@ static double g_rtsp_next_ms = 1000.0;	/* 下一条 rtsp: 聚合日志的时间(
 static pthread_mutex_t g_nal_lock = PTHREAD_MUTEX_INITIALIZER;
 static uint8_t g_sps[128], g_pps[128];
 static int g_sps_len, g_pps_len;
+
+/* 丢掉恢复前编码器里残留的包: 否则旧包会顶着恢复后的新 frame_seq 入环,
+ * .json/OSD 的序号就和码流内容对不上了。最多清 64 个, 防驱动异常时死循环。 */
+static void enc_drain_packets(void)
+{
+	MppPacket pkt = NULL;
+	int guard = 0;
+
+	while (g_mpi->encode_get_packet(g_ctx, &pkt) == MPP_OK && pkt &&
+	       ++guard < 64) {
+		mpp_packet_deinit(&pkt);
+		pkt = NULL;
+	}
+}
+
+/*
+ * 有界恢复: 只重建 V4L2 采集侧, MPP 编码器与 RTSP 服务端原样保留。
+ *
+ * used = 本次故障链已经用掉的尝试次数: STREAMON 后一帧都没采到就又失败,
+ * 说明设备还在抖, 继续用同一轮的剩余次数, 不要无限重开。
+ * 返回新的已用次数(>=1), 全部失败返回 -1; 调用方打印最终失败并 return 2。
+ */
+static int link_recover(const char *dev, int w, int h, int used)
+{
+	int i;
+
+	for (i = used; i < g_recover; i++) {
+		int r;
+
+		/* SIGTERM 后不再重开: 保证优雅退出的 2s 上限不被坏设备拖长 */
+		if (g_stop)
+			return -1;
+		cap_release();
+		r = cap_open(dev, w, h, 4);
+		printf(">>> 恢复 第 %d/%d 次: 重开设备 %s\n", i + 1, g_recover,
+		       r == 0 ? "成功" : "失败");
+		fflush(stdout);
+		if (r < 0)
+			continue;
+		enc_drain_packets();
+		/* 恢复后立刻要一个 IDR: 录像环/事件切片从这里重新对齐; RTSP
+		 * 发送端等 IDR, EACH_IDR 模式下参数集随该 IDR 一起补发 */
+		g_mpi->control(g_ctx, MPP_ENC_SET_IDR_FRAME, NULL);
+		pthread_mutex_lock(&g_rtsp_lock);
+		g_rtsp_started = 0;
+		g_rtsp_need_key = 1;
+		pthread_mutex_unlock(&g_rtsp_lock);
+		return i + 1;
+	}
+	return -1;
+}
 
 /* 从 Annex-B 缓冲解析 NAL, 记录 SPS/PPS(与 cam_rtsp.c 相同) */
 static void rtsp_scan_nals(const uint8_t *d, int n)
@@ -1903,6 +1997,52 @@ static int dump(const char *out, unsigned trig_seq, double trig_ts, int pre_i,
 	return 0;
 }
 
+/* --fault-sim dqbuf:N[,N...]: 解析注入点(仅测试用) */
+static int parse_fault_sim(const char *s)
+{
+	const char *p;
+	int maxn = (int)(sizeof(g_fault_dqbuf) / sizeof(g_fault_dqbuf[0]));
+
+	if (strncmp(s, "dqbuf:", 6) != 0)
+		return -1;
+	p = s + 6;
+	while (*p) {
+		char *end = NULL;
+		long n;
+
+		if (g_fault_cnt >= maxn)
+			return -1;
+		n = strtol(p, &end, 10);
+		if (end == p || n <= 0 || n > 100000000L)
+			return -1;
+		g_fault_dqbuf[g_fault_cnt++] = (int)n;
+		p = end;
+		if (*p == ',')
+			p++;
+		else if (*p)
+			return -1;
+	}
+	return g_fault_cnt > 0 ? 0 : -1;
+}
+
+/* 第 N 次 DQBUF 强制返回 -1(模拟链路断开), 每个注入点只生效一次 */
+static int fault_sim_dqbuf(void)
+{
+	int i;
+
+	g_dqbuf_calls++;
+	for (i = 0; i < g_fault_cnt; i++)
+		if (!g_fault_done[i] && g_fault_dqbuf[i] == (int)g_dqbuf_calls) {
+			g_fault_done[i] = 1;
+			fprintf(stderr, ">>> [fault-sim] 第 %u 次 DQBUF 注入失败\n",
+				g_dqbuf_calls);
+			fflush(stderr);
+			errno = EIO;
+			return -1;
+		}
+	return 0;
+}
+
 static void usage(void)
 {
 	printf(
@@ -1937,6 +2077,10 @@ static void usage(void)
 "  --rtsp [PORT]     开推流, 省略端口=8554, 0=关闭(默认关闭)\n"
 "  --rtsp-ring N     推流投递环深度(默认 8)\n"
 "\n"
+"链路恢复与退出:\n"
+"  --recover N       链路故障后重开设备次数 (默认 2, 0=不恢复)\n"
+"  --fault-sim dqbuf:N  第 N 次 DQBUF 强制失败(仅测试, 可逗号列多个)\n"
+"\n"
 "运行时指标: 每秒一行 `rtsp: clients= sent= drop= disc= fds=`;\n"
 "            sent=发成的帧, drop=网络侧整包丢弃, disc=对端主动断开(不计入 drop)\n");
 }
@@ -1946,14 +2090,40 @@ int main(int argc, char **argv)
 	const char *dev = "/dev/video5", *out = "/root/ev/ev";
 	int w = 1920, h = 1080, pre_sec = 3, post_sec = 2, kbps = 8000, gop;
 	int i, k, trigger_i = -1, pre_i = -1, end_i = -1;
-	int rc = 0;		/* 进程退出码: 0=正常, 1=真错误 */
+	int rc = 0;		/* 进程退出码: 0=正常, 1=真错误, 2=链路恢复失败 */
 	int reached_max = 0;	/* 因 --max-events 正常结束 */
 	int got_term;		/* 主循环退出时是否已收到 SIGTERM */
+	int recover_used = 0;	/* 本轮故障链已用掉的恢复次数 */
+	int unstable = -1;	/* >=0: 恢复后已采到的帧数(-1=已判定稳定) */
 	unsigned seq = 0;	/* 源帧序号: 只有 DQBUF 成功才 +1, 编码包循环不碰 */
 	unsigned frame_seq = 0;	/* 当前帧的源帧序号(编码包循环内只读) */
 	double trig_ts = 0, trig_abs = 0, t_start;
 	struct stat st;
 	time_t trig_mtime = 0;
+
+	/* 带值参数缺值时 argv[++i] 取到 argv[argc](NULL), atoi/sscanf(NULL)
+	 * 直接段错误 —— 与 "-h 单独出现"是同一个坑, 其余带值参数在这里统一
+	 * 预检一遍; 缺值报错退出 1, 不再崩在解析里。 */
+	{
+		static const char * const need_val[] = {
+			"-d", "-w", "--pre", "--post", "--ring-mb", "-o",
+			"--trigger", "--kbps", "--model", "--max-events",
+			"--det-score", "--det-frames", "--obj-thresh",
+			"--rga-size", "--rtsp-ring", "--recover", "--fault-sim",
+		};
+		size_t j;
+
+		for (i = 1; i < argc; i++)
+			for (j = 0; j < sizeof(need_val) / sizeof(need_val[0]); j++)
+				if (!strcmp(argv[i], need_val[j])) {
+					if (i + 1 >= argc) {
+						fprintf(stderr, "%s 缺少参数值\n", argv[i]);
+						return 1;
+					}
+					i++;	/* 跳过参数值, 吃法与主循环一致 */
+					break;
+				}
+	}
 
 	for (i = 1; i < argc; i++) {
 		if (!strcmp(argv[i], "-d")) dev = argv[++i];
@@ -1994,6 +2164,19 @@ int main(int argc, char **argv)
 				g_rtsp_port = 8554;
 		}
 		else if (!strcmp(argv[i], "--rtsp-ring")) g_pkb_depth = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "--recover")) {
+			g_recover = atoi(argv[++i]);
+			if (g_recover < 0)
+				g_recover = 0;
+			if (g_recover > 100)
+				g_recover = 100;
+		}
+		else if (!strcmp(argv[i], "--fault-sim")) {
+			if (parse_fault_sim(argv[++i]) < 0) {
+				fprintf(stderr, "--fault-sim 只支持 dqbuf:N[,N...] (N>0)\n");
+				return 1;
+			}
+		}
 	}
 	if (g_rtsp_port < 0 || g_rtsp_port > 65535) {
 		fprintf(stderr, "--rtsp 取值 0..65535 (0=关闭)\n");
@@ -2078,15 +2261,24 @@ int main(int argc, char **argv)
 		b.memory = V4L2_MEMORY_MMAP;
 		b.length = 1;
 		b.m.planes = &pl;
-		if (xioctl(cap.fd, VIDIOC_DQBUF, &b) < 0) {
+		if (fault_sim_dqbuf() < 0 ||
+		    xioctl(cap.fd, VIDIOC_DQBUF, &b) < 0) {
 			if (g_stop)
 				break;	/* SIGTERM: 不再重试, 尽快退出 */
 			if (errno == EINTR)
 				continue;
 			perror("DQBUF");
-			break;
+			goto link_fault;
 		}
 		ts = now_ms(CLOCK_MONOTONIC);
+		/* 恢复后连采 30 帧才算链路稳定, 复位"同一故障链"的尝试计数 */
+		if (unstable >= 0 && ++unstable >= RECOVER_STABLE_FRAMES) {
+			unstable = -1;
+			recover_used = 0;
+			printf(">>> 链路稳定 %d 帧, 恢复计数复位\n",
+			       RECOVER_STABLE_FRAMES);
+			fflush(stdout);
+		}
 		/* 帧序号在这里 +1: 一次 DQBUF = 一个源帧。编码器一帧可能吐出
 		 * 多个包(SPS/PPS 单独成包等), 但包循环里只读 frame_seq, 所以
 		 * OSD 的 # 与 .json 的 seq 永远按源帧递增, 不会被包数带偏。 */
@@ -2121,19 +2313,33 @@ int main(int argc, char **argv)
 		mpp_frame_set_buffer(frame, g_fbuf);
 		if (g_mpi->encode_put_frame(g_ctx, frame) != MPP_OK) {
 			mpp_frame_deinit(&frame);
-			continue;
+			fprintf(stderr, ">>> encode_put_frame 失败\n");
+			goto link_fault;
 		}
 		mpp_frame_deinit(&frame);
 
 		{
 			unsigned pkn = 0;	/* 帧内包序号, 只用于 json 的 pkt */
+			int enc_fault = 0;
 
-			while (g_mpi->encode_get_packet(g_ctx, &pkt) == MPP_OK && pkt) {
-				void *pos = mpp_packet_get_pos(pkt);
-				size_t len = mpp_packet_get_length(pkt);
+			for (;;) {
+				MPP_RET er = g_mpi->encode_get_packet(g_ctx, &pkt);
+				void *pos;
+				size_t len;
 				unsigned char *copy;
 				int isk;
 
+				if (er != MPP_OK) {
+					fprintf(stderr,
+						">>> encode_get_packet 失败 ret=%d\n",
+						(int)er);
+					enc_fault = 1;
+					break;
+				}
+				if (!pkt)
+					break;
+				pos = mpp_packet_get_pos(pkt);
+				len = mpp_packet_get_length(pkt);
 				if (len == 0) {
 					mpp_packet_deinit(&pkt);
 					continue;
@@ -2150,6 +2356,8 @@ int main(int argc, char **argv)
 				pkn++;
 				mpp_packet_deinit(&pkt);
 			}
+			if (enc_fault)
+				goto link_fault;
 		}
 
 		/* 每 5 秒报一次投递环收支, 用于观察是否有丢包 */
@@ -2233,22 +2441,84 @@ int main(int argc, char **argv)
 				break;
 			}
 		}
+		continue;
+
+link_fault:
+		/* 采集链路故障: 只重建 V4L2, MPP 编码器与 RTSP 服务端不动 */
+		{
+			int used;
+
+			printf(">>> 链路故障, 开始恢复(上限 %d 次)\n", g_recover);
+			fflush(stdout);
+			/* 还没恢复成功就又坏 -> 沿用本轮剩余次数, 防无限重开 */
+			used = link_recover(dev, w, h,
+					    unstable >= 0 ? recover_used : 0);
+			if (used < 0) {
+				if (g_stop) {
+					printf(">>> 恢复中止(SIGTERM)\n");
+					fflush(stdout);
+					break;	/* 走优雅退出, 不算链路失败 */
+				}
+				printf(">>> 恢复失败, 退出\n");
+				fflush(stdout);
+				rc = 2;
+				break;
+			}
+			recover_used = used;
+			unstable = 0;
+			printf(">>> 恢复成功, 继续采集(frame_seq 从 %u 起)\n",
+			       frame_seq);
+			fflush(stdout);
+		}
 	}
 
 	/* 先记下退出原因: 停线程会唤醒发送线程, 不能事后区分 */
 	got_term = g_stop;
-	{
-		enum v4l2_buf_type t = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+	/* SIGTERM 且正在录制: 先把当前事件落盘(环还完整), 再停 RTSP/线程/采集。
+	 * 主循环已退出, 环不再变化, dump 只读环与全局状态, 无并发风险。 */
+	if (got_term && trigger_i >= 0 && !rc && ring_cnt > 0) {
+		int pi = pre_i;
 
-		xioctl(cap.fd, VIDIOC_STREAMOFF, &t);
+		if (g_pre_seq)
+			for (i = 0; i < ring_cnt; i++)
+				if (ring_at(i)->seq == g_pre_seq) {
+					pi = i;
+					break;
+				}
+		if (pi < 0)
+			pi = ring_first_idr_from(0);
+		if (pi >= 0) {
+			char outn[512];
+			/* 事件没走完就被 TERM: fps 按环内实际时间跨度算,
+			 * 不能用 trig+post 的理论时长(会低估) */
+			double span = ring_at(ring_cnt - 1)->ts_ms -
+				      ring_at(pi)->ts_ms;
+
+			if (span < 1)
+				span = 1;
+			snprintf(outn, sizeof(outn), "%s-%02d", out, g_events);
+			if (dump(outn, frame_seq, trig_ts, pi, ring_cnt - 1, w, h,
+				 (double)(ring_cnt - pi) * 1000.0 / span) == 0) {
+				printf(">>> SIGTERM: 进行中的事件已落盘 %s\n", outn);
+				fflush(stdout);
+			} else {
+				fprintf(stderr, ">>> SIGTERM: 事件落盘失败\n");
+			}
+		}
 	}
 	/* 信号 handler 只置 g_stop: 这里在锁内把它同步成 sender 的停止条件,
 	 * 先让 RTSP 线程退, 再 join sender 并释放投递环残留 */
 	pkb_set_stop();
 	rtsp_stop();
 	pkb_stop();
-	/* SIGTERM: 优雅退出; 未完成的事件不再落盘 */
-	if (got_term && !reached_max && !rc) {
+	if (cap.fd >= 0) {
+		enum v4l2_buf_type t = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+
+		xioctl(cap.fd, VIDIOC_STREAMOFF, &t);
+	}
+	/* SIGTERM: 优雅退出; 进行中的事件已在上面的 dump 落盘。
+	 * 若同时已有真错误(rc!=0), 以错误码为准, 不掩盖失败。 */
+	if (got_term && !rc) {
 		printf(">>> 收到 SIGTERM, 已停止\n");
 		return 0;
 	}

@@ -1,0 +1,40 @@
+=== kick context (grep -B6 -A4) ===
+52-rtsp: clients=1 sent=11 drop=0 disc=0 fds=16
+53-rtsp: clients=1 sent=26 drop=0 disc=0 fds=16
+54->>> NPU det_total=0 det_max=0 score_max=0.000
+55->>> 写出 /root/p11ev_20240618-094521-00.h264 (102 帧, 触发帧 #55) + /root/p11ev_20240618-094521-00.json
+56->>> 事件 1 完成, 继续等待下一个事件
+57-rtsp-ring: in=597 drop=0 (深度上限 8)
+58:rtsp: 客户端不收(等待可写超时, errno=11), 断开客户端
+59-rtsp: 客户端断开
+60-rtsp: clients=0 sent=37 drop=1 disc=0 fds=15
+61-rtsp: clients=0 sent=37 drop=1 disc=0 fds=15
+62-rtsp: clients=0 sent=37 drop=1 disc=0 fds=15
+=== client lifecycle with line numbers ===
+38:rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+39:rtsp: 客户端接入
+48:rtsp: 客户端开始播放
+50:>>> 触发 seq=536 ts=36078.8ms -> pre_i=481 pre_seq=481 (ring_cnt=537 head=0 pushed=537)
+55:>>> 写出 /root/p11ev_20240618-094521-00.h264 (102 帧, 触发帧 #55) + /root/p11ev_20240618-094521-00.json
+56:>>> 事件 1 完成, 继续等待下一个事件
+58:rtsp: 客户端不收(等待可写超时, errno=11), 断开客户端
+59:rtsp: 客户端断开
+137:rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+138:rtsp: 客户端接入
+139:rtsp: 客户端开始播放
+154:rtsp: 客户端断开
+=== reconnect counters ===
+41:rtsp: clients=1 sent=0 drop=0 disc=0 fds=16
+42:rtsp: clients=1 sent=0 drop=0 disc=0 fds=16
+43:rtsp: clients=1 sent=0 drop=0 disc=0 fds=16
+147:rtsp: clients=1 sent=121 drop=1 disc=0 fds=16
+148:rtsp: clients=1 sent=135 drop=1 disc=0 fds=16
+149:rtsp: clients=1 sent=150 drop=1 disc=0 fds=16
+150:rtsp: clients=1 sent=165 drop=1 disc=0 fds=16
+151:rtsp: clients=1 sent=180 drop=1 disc=0 fds=16
+153:rtsp: clients=1 sent=196 drop=1 disc=0 fds=16
+=== ping / ssh sanity ===
+--- 192.168.10.1 ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max/stddev = 0.656/1.017/1.287/0.266 ms
+SSH_OK=Tue Jun 18 09:48:45 CST 2024

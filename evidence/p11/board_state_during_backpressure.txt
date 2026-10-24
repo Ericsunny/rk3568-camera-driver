@@ -1,0 +1,120 @@
+--- date ---
+Tue Jun 18 09:46:08 CST 2024
+--- tc qdisc ---
+RTNETLINK answers: Operation not supported
+Dump terminated
+--- evrec alive ---
+34619
+--- socket to :8554 (ss -tin) ---
+State        Recv-Q   Send-Q      Local Address:Port       Peer Address:Port    Process                                                                         
+ESTAB        0        68           192.168.10.2:22         192.168.10.1:53668    rto:0.2 ato:0.03 qack:6 cwnd:10 reordering:0                                   
+FIN-WAIT-1   0        449681       192.168.10.2:8554       192.168.10.1:60498    rto:0.2 ato:0.03 cwnd:10 ssthresh:20 reordering:0                              
+--- /proc/net/tcp rows with port 216A (8554) ---
+  sl  local_address rem_address   st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode                                                     
+   2: 00000000:216A 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 146463 1 ffffffc07841eb40 99 0 0 10 0                     
+   4: 020AA8C0:216A 010AA8C0:EC52 04 0006DC91:00000000 04:0000014F 00000000     0        0 0 2 ffffffc07841a700 20 3 1 10 20                         
+--- phase log ---
+=== date: Tue Jun 18 09:45:21 CST 2024 ===
+--- baseline qdisc ---
+RTNETLINK answers: Operation not supported
+Dump terminated
+BASELINE_TC_RC=1
+--- try tbf 500kbit ---
+RTNETLINK answers: Operation not supported
+TC_ADD_RC=2
+RTNETLINK answers: Operation not supported
+Dump terminated
+TC_SHOW_RC=1
+FALLBACK_STARTED pid=34618
+EVREC_PID=34619
+TRIGGER_ON_PLAY at Tue Jun 18 09:45:57 CST 2024 loop=331
+--- evrec log (full) ---
+>>> RTP trace -> /root/p11_rtp.trace
+>>> 采集 /dev/video5 1920x1080,pre=2s post=3s ring=64MB gop=37
+>>> RTSP 监听 :8554 (单客户端模式)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp-ring: in=72 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp-ring: in=147 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp-ring: in=222 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp-ring: in=297 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp-ring: in=372 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=15
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入
+rtsp-ring: in=447 drop=0 (深度上限 8)
+rtsp: clients=1 sent=0 drop=0 disc=0 fds=16
+rtsp: clients=1 sent=0 drop=0 disc=0 fds=16
+rtsp: clients=1 sent=0 drop=0 disc=0 fds=16
+rtsp: clients=1 sent=0 drop=0 disc=0 fds=16
+rtsp: clients=1 sent=0 drop=0 disc=0 fds=16
+rtsp-ring: in=522 drop=0 (深度上限 8)
+rtsp: clients=1 sent=0 drop=0 disc=0 fds=16
+rtsp: 客户端开始播放
+rtsp: clients=1 sent=0 drop=0 disc=0 fds=16
+>>> 触发 seq=536 ts=36078.8ms -> pre_i=481 pre_seq=481 (ring_cnt=537 head=0 pushed=537)
+rtsp: clients=1 sent=0 drop=0 disc=0 fds=16
+rtsp: clients=1 sent=11 drop=0 disc=0 fds=16
+rtsp: clients=1 sent=26 drop=0 disc=0 fds=16
+>>> NPU det_total=0 det_max=0 score_max=0.000
+>>> 写出 /root/p11ev_20240618-094521-00.h264 (102 帧, 触发帧 #55) + /root/p11ev_20240618-094521-00.json
+>>> 事件 1 完成, 继续等待下一个事件
+rtsp-ring: in=597 drop=0 (深度上限 8)
+rtsp: 客户端不收(等待可写超时, errno=11), 断开客户端
+rtsp: 客户端断开
+rtsp: clients=0 sent=37 drop=1 disc=0 fds=15
+rtsp: clients=0 sent=37 drop=1 disc=0 fds=15
+rtsp: clients=0 sent=37 drop=1 disc=0 fds=15
+rtsp: clients=0 sent=37 drop=1 disc=0 fds=15
+rtsp: clients=0 sent=37 drop=1 disc=0 fds=15
+rtsp-ring: in=663 drop=0 (深度上限 8)
+rtsp: clients=0 sent=37 drop=1 disc=0 fds=15
+rtsp: clients=0 sent=37 drop=1 disc=0 fds=15
+rtsp: clients=0 sent=37 drop=1 disc=0 fds=15
+--- records ---
+ls: cannot access '/root/p11ev-*': No such file or directory
+--- trace size/lines ---
+-rw-r--r-- 1 root root 29484 Jun 18 09:45 /root/p11_rtp.trace
+256 /root/p11_rtp.trace
+--- trace: why counts ---
+why=ok 256
+why=precheck 0
+why=eagain 0
+why=error 0
+why=short 0
+why=stall 0
+--- trace tail ---
+seq=244 ts=3449886 pt=96 mark=0 nal=1 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=128970/425984
+seq=245 ts=3449886 pt=96 mark=1 nal=1 fu=1 s=0 e=1 payload=1347 send=0 why=ok w=1363/1363 errno=0 outq=130386/425984
+seq=246 ts=3455889 pt=96 mark=0 nal=1 fu=1 s=1 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=131749/425984
+seq=247 ts=3455889 pt=96 mark=0 nal=1 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=133165/425984
+seq=248 ts=3455889 pt=96 mark=0 nal=1 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=134581/425984
+seq=249 ts=3455889 pt=96 mark=0 nal=1 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=135997/425984
+seq=250 ts=3455889 pt=96 mark=0 nal=1 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=137413/425984
+seq=251 ts=3455889 pt=96 mark=0 nal=1 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=138829/425984

@@ -1,0 +1,12 @@
+seq=472 ts=3581886 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=436994/425984
+seq=473 ts=3581886 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=438410/425984
+seq=474 ts=3581886 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=439826/425984
+seq=475 ts=3581886 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=441242/425984
+seq=476 ts=3581886 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=442658/425984
+seq=477 ts=3581886 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=444074/425984
+seq=478 ts=3581886 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=445490/425984
+seq=479 ts=3581886 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=446906/425984
+seq=480 ts=3581886 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=-2 why=stall w=1358/1416 errno=11 outq=448322/425984
+seq=0 ts=9407760 pt=96 mark=0 nal=7 fu=0 s=0 e=0 payload=27 send=0 why=ok w=43/43 errno=0 outq=0/425984
+seq=1 ts=9407760 pt=96 mark=0 nal=8 fu=0 s=0 e=0 payload=5 send=0 why=ok w=21/21 errno=0 outq=43/425984
+seq=2 ts=9407760 pt=96 mark=0 nal=6 fu=0 s=0 e=0 payload=109 send=0 why=ok w=125/125 errno=0 outq=64/425984

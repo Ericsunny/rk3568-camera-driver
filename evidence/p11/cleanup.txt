@@ -1,0 +1,35 @@
+=== date ===
+Tue Jun 18 09:50:38 CST 2024
+=== evrec processes (expect 1 = the grep itself only if [e] trick) ===
+NO_EVREC
+=== evrec pidof (expect empty) ===
+PIDOF_EMPTY
+=== tc qdisc (kernel has no CONFIG_NET_SCHED, expect Operation not supported) ===
+RTNETLINK answers: Operation not supported
+Dump terminated
+=== tc qdisc del attempt (must not leave anything) ===
+RTNETLINK answers: Operation not supported
+DEL_RC=2
+=== routing/iface ===
+eth0             UP             192.168.10.2/24 fe80::f0e3:66ff:fef4:9e20/64 
+192.168.10.0/24 dev eth0 proto kernel scope link src 192.168.10.2 
+=== ping VM ===
+ssh : ping: sending packet: Network is unreachable
+所在位置 行:1 字符: 247
++ ... .2:/root/ ; ssh -i D:\vm\.ssh-tmp\id_ed25519 -o StrictHostKeyChecking ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ping: sending p... is unreachable:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+PING 192.168.239.128 (192.168.239.128): 56 data bytes
+=== temp trigger ===
+ls: cannot access '/tmp/t': No such file or directory
+NO_TRIGGER_FILE
+=== disk artifacts kept for evidence ===
+-rw-r--r-- 1 root root    1686 Jun 18 09:42 /root/p11_build.log
+-rw-r--r-- 1 root root     178 Jun 18 09:47 /root/p11_dec.log
+-rw-r--r-- 1 root root   10056 Jun 18 09:48 /root/p11_evrec.log
+-rw-r--r-- 1 root root     443 Jun 18 09:47 /root/p11_phase.log
+-rw-r--r-- 1 root root  298205 Jun 18 09:48 /root/p11_rtp.trace
+-rw-r--r-- 1 root root 1718723 Jun 18 09:46 /root/p11ev_20240618-094521-00.h264
+-rw-r--r-- 1 root root   10357 Jun 18 09:46 /root/p11ev_20240618-094521-00.json

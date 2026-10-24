@@ -1,0 +1,10 @@
+t=0.003 CONNECTED local 192.168.239.128:57444 rcvbuf=8192
+t=0.007 RTSP/1.0 200 OK
+t=0.008 DESCRIBE RTSP/1.0 200 OK
+t=0.008 SDP [body 276 bytes]
+t=0.010 RTSP/1.0 200 OK
+t=0.010 WAIT 6.0s for evrec pre-roll ring
+t=6.020 RTSP/1.0 200 OK
+t=6.020 STOP_READING (no recv) hold=30.0s
+t=36.020 NO_FIN_SEEN within 30.0s (peer still streaming)
+t=36.020 DONE peeked=True

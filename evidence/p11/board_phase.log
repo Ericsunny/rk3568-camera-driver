@@ -1,0 +1,15 @@
+=== date: Tue Jun 18 09:45:21 CST 2024 ===
+--- baseline qdisc ---
+RTNETLINK answers: Operation not supported
+Dump terminated
+BASELINE_TC_RC=1
+--- try tbf 500kbit ---
+RTNETLINK answers: Operation not supported
+TC_ADD_RC=2
+RTNETLINK answers: Operation not supported
+Dump terminated
+TC_SHOW_RC=1
+FALLBACK_STARTED pid=34618
+EVREC_PID=34619
+TRIGGER_ON_PLAY at Tue Jun 18 09:45:57 CST 2024 loop=331
+FALLBACK_DEL rc=2 at Tue Jun 18 09:47:21 CST 2024

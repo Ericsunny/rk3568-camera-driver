@@ -1,0 +1,71 @@
+=== stop evrec (graceful SIGTERM, atexit flushes rtp trace) ===
+alive_after_kill=
+=== key log lines ===
+170:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+172:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+173:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+174:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+175:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+176:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+178:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+179:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+180:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+181:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+182:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+184:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+185:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+186:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+187:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+188:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+190:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+191:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+192:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+193:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+194:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+196:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+197:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+198:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+199:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+200:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+202:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+203:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+204:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+205:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+206:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+208:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+209:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+210:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+211:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+212:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+214:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+215:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+216:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+217:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+218:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+220:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+221:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+222:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+223:rtsp: clients=0 sent=202 drop=1 disc=0 fds=15
+=== trace stats ===
+2576 /root/p11_rtp.trace
+why=ok 2575
+why=precheck 0
+why=eagain 0
+why=error 0
+why=short 0
+why=stall 1
+outq_at_cap=0
+=== first eagain/stall lines ===
+481:seq=480 ts=3581886 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=-2 why=stall w=1358/1416 errno=11 outq=448322/425984
+=== last eagain/stall lines ===
+481:seq=480 ts=3581886 pt=96 mark=0 nal=5 fu=1 s=0 e=0 payload=1400 send=-2 why=stall w=1358/1416 errno=11 outq=448322/425984
+=== post-kick trace tail (reconnect client) ===
+seq=2092 ts=10391742 pt=96 mark=0 nal=1 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=2832/425984
+seq=2093 ts=10391742 pt=96 mark=0 nal=1 fu=1 s=0 e=0 payload=1400 send=0 why=ok w=1416/1416 errno=0 outq=4248/425984
+seq=2094 ts=10391742 pt=96 mark=1 nal=1 fu=1 s=0 e=1 payload=1013 send=0 why=ok w=1029/1029 errno=0 outq=5664/425984
+=== qdisc after ===
+RTNETLINK answers: Operation not supported
+Dump terminated
+=== leftover ===
+-rw-r--r-- 1 root root 1718723 Jun 18 09:46 /root/p11ev_20240618-094521-00.h264
+-rw-r--r-- 1 root root   10357 Jun 18 09:46 /root/p11ev_20240618-094521-00.json

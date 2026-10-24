@@ -1,0 +1,11 @@
+# 板端原始输出: 链路恢复回归 (--fault-sim dqbuf:60 --recover 2)
+# 命令: ./run_recover.sh
+>>> [fault-sim] 第 60 次 DQBUF 注入失败
+DQBUF: Input/output error
+>>> 采集 /dev/video5 1920x1080,pre=1s post=1s ring=64MB gop=15
+>>> 链路故障, 开始恢复(上限 2 次)
+>>> 恢复 第 1/2 次: 重开设备 成功
+>>> 恢复成功, 继续采集(frame_seq 从 58 起)
+>>> 链路稳定 30 帧, 恢复计数复位
+>>> 收到 SIGTERM, 已停止
+EXIT=0

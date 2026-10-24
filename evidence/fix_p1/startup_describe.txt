@@ -1,0 +1,7 @@
+# 板端原始输出: 进程启动后 t=0.2/0.5/1.0/2.0 s 各发一次 DESCRIBE
+# 运行: ./evrec_fix ... --rtsp 8554 --max-events 3   (修复后二进制)
+# 探测: python3 /root/rtsp_window.py 8554
+t=202ms RTSP/1.0 200 OK sdp_len=276
+t=501ms RTSP/1.0 200 OK sdp_len=276
+t=1001ms RTSP/1.0 200 OK sdp_len=276
+t=2002ms RTSP/1.0 200 OK sdp_len=276

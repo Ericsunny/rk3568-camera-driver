@@ -1,0 +1,34 @@
+# 板端原始输出: 编码器首帧参数集探针 (probe_variants.c, 640x480 CBR gop=30, EACH_IDR)
+# 命令: for m in none null good null_then_good; do echo "====$m===="; /root/probe_variants $m; done
+
+====none====
+[none] frame  0 len=1152 flag=0x0 sps=1 pps=1: SPS PPS SEI SEI I
+[none] frame  1 len=14 flag=0x0 sps=0 pps=0: P
+[none] frame  2 len=13 flag=0x0 sps=0 pps=0: P
+[none] frame 30 len=1154 flag=0x0 sps=1 pps=1: SPS PPS SEI SEI I
+[none] frame 31 len=15 flag=0x0 sps=0 pps=0: P
+====null====
+[null] control(&hdr) ret=0 hdr=(nil)
+[null] frame  0 len=1114 flag=0x0 sps=0 pps=0: SEI SEI I
+[null] frame  1 len=14 flag=0x0 sps=0 pps=0: P
+[null] frame  2 len=13 flag=0x0 sps=0 pps=0: P
+[null] frame 30 len=1154 flag=0x0 sps=1 pps=1: SPS PPS SEI SEI I
+[null] frame 31 len=15 flag=0x0 sps=0 pps=0: P
+====good====
+[good] packet_init hdr=0x5594cba1a8 len_before=4096
+[good] control(hdr) ret=0 len=38 pos=0x5594cb9170
+[good] hdr nals: SPS PPS
+[good] frame  0 len=1114 flag=0x0 sps=0 pps=0: SEI SEI I
+[good] frame  1 len=14 flag=0x0 sps=0 pps=0: P
+[good] frame  2 len=13 flag=0x0 sps=0 pps=0: P
+[good] frame 30 len=1154 flag=0x0 sps=1 pps=1: SPS PPS SEI SEI I
+[good] frame 31 len=15 flag=0x0 sps=0 pps=0: P
+====null_then_good====
+[null_then_good] pre control(&hdr) ret=0 hdr=(nil)
+[null_then_good] frame  0 len=1114 flag=0x0 sps=0 pps=0: SEI SEI I
+[null_then_good] post-frame0 control(hdr) ret=0 len=38
+[null_then_good] post hdr nals: SPS PPS
+[null_then_good] frame  1 len=14 flag=0x0 sps=0 pps=0: P
+[null_then_good] frame  2 len=13 flag=0x0 sps=0 pps=0: P
+[null_then_good] frame 30 len=1154 flag=0x0 sps=1 pps=1: SPS PPS SEI SEI I
+[null_then_good] frame 31 len=15 flag=0x0 sps=0 pps=0: P

@@ -1,0 +1,11 @@
+# 板端原始输出: 不开 --rtsp 时不再打印 rtsp-ring (P4)
+# 命令: ./run_nortsp.sh
+EXIT=0
+rtsp-ring lines: 0
+====LOG====
+>>> 采集 /dev/video5 1920x1080,pre=1s post=1s ring=64MB gop=15
+>>> 收到 SIGTERM, 已停止
+
+# -h 帮助文本 (P3)
+$ /root/evrec_fix -h | grep osd
+  --osd / --no-osd  开/关, 默认关(不开参数时行为与旧版一致)

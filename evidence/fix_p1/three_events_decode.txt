@@ -1,0 +1,45 @@
+# 板端原始输出: 连续 3 个事件 + 每个文件 mpp_dec_dump 解码
+# 命令: ./run_events.sh   (--pre 2 --post 1 --ring-mb 64 --rtsp 8554 --max-events 3)
+
+t=202ms RTSP/1.0 200 OK sdp_len=276
+t=501ms RTSP/1.0 200 OK sdp_len=276
+t=1001ms RTSP/1.0 200 OK sdp_len=276
+t=2002ms RTSP/1.0 200 OK sdp_len=276
+EXIT=0
+
+>>> 触发 seq=63 ts=4531.4ms -> pre_i=22 pre_seq=22 (ring_cnt=64 head=0 pushed=64)
+>>> 写出 /root/evtest/ev_20240618-062819-00.h264 (57 帧) + /root/evtest/ev_20240618-062819-00.json
+>>> 触发 seq=115 ts=7998.0ms -> pre_i=9 pre_seq=88 (ring_cnt=37 head=0 pushed=37)
+>>> 写出 /root/evtest/ev_20240618-062819-01.h264 (43 帧) + /root/evtest/ev_20240618-062819-01.json
+>>> 触发 seq=166 ts=11397.8ms -> pre_i=1 pre_seq=132 (ring_cnt=36 head=0 pushed=36)
+>>> 写出 /root/evtest/ev_20240618-062819-02.h264 (50 帧) + /root/evtest/ev_20240618-062819-02.json
+
+# NAL 头 (python3 /root/nal_head.py)
+/root/evtest/ev_20240618-062819-00.h264: bytes=2182434 nals=69 first=SPS PPS SEI SEI I P P P P P P P sps_off=0
+/root/evtest/ev_20240618-062819-01.h264: bytes=1416814 nals=51 first=SPS PPS SEI SEI I P P P P P P P sps_off=0
+/root/evtest/ev_20240618-062819-02.h264: bytes=1868523 nals=62 first=SPS PPS SEI SEI I P P P P P P P sps_off=0
+
+# json frames
+ev_...-00.json frames= 57 first_idr_seq= 22 fps= 10.3
+ev_...-01.json frames= 43 first_idr_seq= 88 fps= 4.78
+ev_...-02.json frames= 50 first_idr_seq= 132 fps= 4.03
+
+# mpp_dec_dump 解码
+==== ev_20240618-062819-00 ====
+DEC_EXIT=0
+>>> 码流 2182434 字节
+>>> 首个 SPS 偏移 0
+>>> 分辨率变更 1920x1080
+>>> 解出 56 帧
+==== ev_20240618-062819-01 ====
+DEC_EXIT=0
+>>> 码流 1416814 字节
+>>> 首个 SPS 偏移 0
+>>> 分辨率变更 1920x1080
+>>> 解出 42 帧
+==== ev_20240618-062819-02 ====
+DEC_EXIT=0
+>>> 码流 1868523 字节
+>>> 首个 SPS 偏移 0
+>>> 分辨率变更 1920x1080
+>>> 解出 49 帧

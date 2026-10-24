@@ -343,8 +343,6 @@ static MppApi *g_mpi;
 static MppBufferGroup g_grp;
 static MppBuffer g_fbuf;
 static size_t g_fsize;
-static unsigned char *g_hdr;
-static size_t g_hdr_len;
 
 static int enc_init(int w, int h, int stride, int kbps, int gop)
 {
@@ -381,17 +379,14 @@ static int enc_init(int w, int h, int stride, int kbps, int gop)
 	}
 	{
 		MppEncHeaderMode hm = MPP_ENC_HEADER_MODE_EACH_IDR;
-		MppPacket hdr = NULL;
 
+		/* 不要在这里调 MPP_ENC_GET_HDR_SYNC: 这个 control 会把编码器
+		 * 内部头标记为"已由 ctrl 交付"(added_by_ctrl), 于是首个 IDR
+		 * 不再自动带 SPS/PPS; 用户侧若没接住(旧代码传 NULL), 头就丢
+		 * 了, 要等第二个 IDR 才恢复(2026-10 板端实测)。
+		 * EACH_IDR 模式下让编码器自己在首个 IDR 里带头即可: 启动后
+		 * 第一帧(~70 ms)就能从码流扫描到参数集, 供 SDP/dump 使用。 */
 		g_mpi->control(g_ctx, MPP_ENC_SET_HEADER_MODE, &hm);
-
-		if (g_mpi->control(g_ctx, MPP_ENC_GET_HDR_SYNC, &hdr) == MPP_OK && hdr) {
-			g_hdr_len = mpp_packet_get_length(hdr);
-			g_hdr = malloc(g_hdr_len);
-			memcpy(g_hdr, mpp_packet_get_pos(hdr), g_hdr_len);
-			mpp_packet_deinit(&hdr);
-			printf(">>> SPS/PPS 头 %zu 字节\n", g_hdr_len);
-		}
 	}
 	mpp_buffer_group_get_internal(&g_grp, MPP_BUFFER_TYPE_ION);
 	g_fsize = (size_t)stride * h * 3 / 2;
@@ -1473,7 +1468,21 @@ static void *rtsp_client_thread(void *arg)
 		} else if (!strncmp(req, "DESCRIBE", 8)) {
 			uint8_t sps[sizeof(g_sps)], pps[sizeof(g_pps)];
 			char plid[8];
-			int rc, sl, pl;
+			int rc, sl, pl, waited;
+
+			/* 参数集随首个 IDR 才出现(启动后约 70 ms): 有界等待,
+			 * 让与设备同时启动的客户端也能拿到 SDP, 而不是 503。
+			 * 最多等 1000 ms; 进程退出/客户端断开时立即放弃。 */
+			for (waited = 0; waited < 1000; waited += 10) {
+				int ready;
+
+				pthread_mutex_lock(&g_nal_lock);
+				ready = g_sps_len > 0 && g_pps_len > 0;
+				pthread_mutex_unlock(&g_nal_lock);
+				if (ready || g_rtsp_stopping || g_stop)
+					break;
+				usleep(10 * 1000);
+			}
 
 			/* 参数集可能在首帧 IDR 才出现: 拷贝快照, 不在发送锁里做 IO */
 			pthread_mutex_lock(&g_nal_lock);
@@ -1682,12 +1691,6 @@ static int rtsp_start(int port)
 {
 	struct sockaddr_in sa;
 	int one = 1;
-
-	if (g_hdr_len > 0) {
-		pthread_mutex_lock(&g_nal_lock);
-		rtsp_scan_nals(g_hdr, (int)g_hdr_len);
-		pthread_mutex_unlock(&g_nal_lock);
-	}
 
 	g_rtsp_lfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (g_rtsp_lfd < 0) {
@@ -1935,11 +1938,34 @@ static int dump(const char *out, unsigned trig_seq, double trig_ts, int pre_i,
 			path, strerror(errno), errno);
 		return -1;
 	}
+	/* 防御: EACH_IDR 下每个 IDR 都自带 SPS/PPS, 正常不会进这里; 若流首
+	 * IDR 仍缺参数集(旧固件/异常), 用已缓存参数集在文件最前面补一次。
+	 * 只检查首个包且只补一次, 多 IDR 文件不会重复。 */
+	if (pre_i >= 0 && pre_i <= end_i && pre_i < ring_cnt &&
+	    ring_at(pre_i)->key &&
+	    !rtsp_has_nal(ring_at(pre_i)->data, ring_at(pre_i)->len, 7)) {
+		uint8_t sps[sizeof(g_sps)], pps[sizeof(g_pps)];
+		static const uint8_t sc[4] = { 0, 0, 0, 1 };
+		int sl, pl;
+
+		pthread_mutex_lock(&g_nal_lock);
+		sl = g_sps_len;
+		pl = g_pps_len;
+		if (sl > 0)
+			memcpy(sps, g_sps, (size_t)sl);
+		if (pl > 0)
+			memcpy(pps, g_pps, (size_t)pl);
+		pthread_mutex_unlock(&g_nal_lock);
+		if (sl > 0 && pl > 0) {
+			fwrite(sc, 1, sizeof(sc), f);
+			fwrite(sps, 1, (size_t)sl, f);
+			fwrite(sc, 1, sizeof(sc), f);
+			fwrite(pps, 1, (size_t)pl, f);
+		}
+	}
 	for (i = pre_i; i <= end_i && i < ring_cnt; i++) {
 		struct rec *r = ring_at(i);
 
-		if (0 && r->key && g_hdr_len)
-			fwrite(g_hdr, 1, g_hdr_len, f);
 		if (fwrite(r->data, 1, (size_t)r->len, f) != (size_t)r->len) {
 			fprintf(stderr, ">>> 写 %s 失败(seq=%u len=%d): %s (errno=%d)\n",
 				path, r->seq, r->len, strerror(errno), errno);
@@ -2071,7 +2097,7 @@ static void usage(void)
 "  --rga-size WxH    RGA 缩放目标 (默认 640x360)\n"
 "\n"
 "OSD(叠加源帧序号与时间戳):\n"
-"  --osd / --no-osd  开/关, 默认开\n"
+"  --osd / --no-osd  开/关, 默认关(不开参数时行为与旧版一致)\n"
 "\n"
 "RTSP 推流:\n"
 "  --rtsp [PORT]     开推流, 省略端口=8554, 0=关闭(默认关闭)\n"
@@ -2347,6 +2373,14 @@ int main(int argc, char **argv)
 				copy = malloc(len);
 				memcpy(copy, pos, len);
 				isk = is_key(copy, (int)len);
+				/* 首个 IDR 到达即缓存参数集: DESCRIBE 的有界等待和
+				 * dump 兜底都依赖它, 不要求开 --rtsp */
+				if (isk) {
+					pthread_mutex_lock(&g_nal_lock);
+					if (g_sps_len == 0 || g_pps_len == 0)
+						rtsp_scan_nals(copy, (int)len);
+					pthread_mutex_unlock(&g_nal_lock);
+				}
 				/* seq 只读: 同一帧的所有包共用 frame_seq */
 				ring_push(copy, (int)len, frame_seq, pkn, isk);
 				/* 同一包的副本进投递环; malloc/memcpy 后立即返回,
@@ -2360,11 +2394,12 @@ int main(int argc, char **argv)
 				goto link_fault;
 		}
 
-		/* 每 5 秒报一次投递环收支, 用于观察是否有丢包 */
-		while (ts - t_start >= g_pkb_next_ms) {
-			rtsp_ring_report();
-			g_pkb_next_ms += 5000.0;
-		}
+		/* --rtsp 时每 5 秒报一次投递环收支; 未开推流不打印(P4) */
+		if (g_rtsp_port > 0)
+			while (ts - t_start >= g_pkb_next_ms) {
+				rtsp_ring_report();
+				g_pkb_next_ms += 5000.0;
+			}
 		/* --rtsp 开启时每秒一行聚合日志(不是每包一行) */
 		if (g_rtsp_port > 0)
 			while (ts - t_start >= g_rtsp_next_ms) {

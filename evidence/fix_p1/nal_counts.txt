@@ -1,0 +1,6 @@
+# 板端原始输出: SPS/PPS 数量 == IDR 数量, 前置兜底没有造成重复
+# 命令: python3 /root/count_nal.py /root/evtest/*.h264 /root/evtest2/*.h264
+/root/evtest/ev_20240618-062819-00.h264 SPS=3 PPS=3 IDR=3 P=54 SEI=6
+/root/evtest/ev_20240618-062819-01.h264 SPS=2 PPS=2 IDR=2 P=41 SEI=4
+/root/evtest/ev_20240618-062819-02.h264 SPS=3 PPS=3 IDR=3 P=47 SEI=6
+/root/evtest2/ev_20240618-063033-00.h264 SPS=3 PPS=3 IDR=3 P=53 SEI=6

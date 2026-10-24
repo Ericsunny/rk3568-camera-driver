@@ -1,0 +1,22 @@
+# 板端原始输出: 首个事件从流首 IDR 开始 (修复前正是该场景 45% 处才有 SPS)
+# 命令: ./run_first.sh
+#   ./evrec_fix -d /dev/video5 -w 1920 -h 1080 --pre 2 --post 1 --ring-mb 64 \
+#       -o /root/evtest2/ev --rtsp 8554 --osd --max-events 1
+#   启动后 3.0 s 发 SIGUSR1
+
+>>> S_FMT 回填 1920x1080 stride=1920 sizeimage=3110400
+>>> 采集 /dev/video5 1920x1080,pre=2s post=1s ring=64MB gop=22
+>>> OSD 开启: #<seq> + t mm:ss.mmm @左上角(4px, sc=2), stride=1920
+>>> RTSP 监听 :8554 (单客户端模式)
+>>> 触发 seq=40 ts=3015.1ms -> pre_i=0 pre_seq=0 (ring_cnt=41 head=0 pushed=41)
+>>> 写出 /root/evtest2/ev_20240618-063033-00.h264 (56 帧) + /root/evtest2/ev_20240618-063033-00.json
+>>> 事件 1 完成, 继续等待下一个事件
+
+/root/evtest2/ev_20240618-063033-00.h264: bytes=1765939 nals=68 first=SPS PPS SEI SEI I P P P sps_off=0
+ev_20240618-063033-00.json frames= 56 first_idr_seq= 0 fps= 13.95
+
+DEC_EXIT=0
+>>> 码流 1765939 字节
+>>> 首个 SPS 偏移 0
+>>> 分辨率变更 1920x1080
+>>> 解出 55 帧

@@ -1,0 +1,12 @@
+# 板端原始输出: RTSP 拉流回归 (修复后二进制)
+# 命令: ./run_rtsp.sh  ->  python3 /root/rtsp_check.py 127.0.0.1 8554 5
+OPTIONS  : 200 OK
+DESCRIBE : 200 OK (sdp 276 字节)
+SDP_BODY : OK
+SDP_MEDIA: m=video=True rtpmap=True sprop=有
+SDP_PLI  : 声明=641033 SPS解出=641033 一致
+SETUP    : 200 OK
+PLAY     : 200 OK
+RESULT pkts=1726 bytes=2363747 seq_first=0 seq_last=1725 gaps=0 markers=63 fps=14.76
+VERDICT  : PASS
+RTSP_RC=0 EXIT=0

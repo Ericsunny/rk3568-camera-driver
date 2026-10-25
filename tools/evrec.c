@@ -67,6 +67,7 @@ struct rec {
 	unsigned pkt;		/* 帧内包序号, 0 起; 与 seq 一起唯一标识一个包 */
 	int key;
 	double abs_ms;		/* 绝对 CLOCK_REALTIME, 写 json 用 */
+	double cap_ms;		/* vb2 采集时间戳(自启动); MONOTONIC flag 时与 ts_ms 同零点 */
 };
 
 static struct rec ring[MAX_FRAMES];
@@ -267,6 +268,7 @@ static const unsigned char font5x7[14][7] = {
 
 static unsigned g_osd_seq;	/* 源帧序号, 与写进 .json 的 seq/frame_seq 同源 */
 static double g_osd_ms;		/* 相对首帧的毫秒数, 与 .json 的 ts_ms 同口径 */
+static int g_ts_flags = -1;	/* 首帧的 V4L2_BUF_FLAG_TIMESTAMP_*(<0=还没见过帧) */
 
 /* NV12 的 Y 平面单字节写: 步长用 S_FMT 回填的 stride, 不是 width */
 static void put_y_px(unsigned char *y_plane, int stride, int W, int H,
@@ -799,7 +801,7 @@ static int is_key(const unsigned char *p, int len)
 }
 
 static void ring_push(unsigned char *d, int len, unsigned seq, unsigned pkt,
-		      int key)
+		      int key, double cap_ms)
 {
 	struct rec *r;
 
@@ -818,6 +820,7 @@ static void ring_push(unsigned char *d, int len, unsigned seq, unsigned pkt,
 	r->key = key;
 	r->ts_ms = now_ms(CLOCK_MONOTONIC) - t0_ms;
 	r->abs_ms = now_ms(CLOCK_REALTIME);
+	r->cap_ms = cap_ms;	/* 采集时刻(自启动); proc = ts_ms - cap_ms */
 	ring_cnt++;
 	g_pushed++;
 	ring_bytes += (size_t)len;
@@ -2223,8 +2226,10 @@ static int dump(const char *out, unsigned trig_seq, double trig_ts, int pre_i,
 		/* list 是"每包一条"; seq 与 frame_seq 都是源帧序号(多包时重复),
 		 * pkt 是该帧内第几个包。保留 seq 是为了兼容既有解析脚本。 */
 		fprintf(j, "%s{\"seq\":%u,\"frame_seq\":%u,\"pkt\":%u,\"ts_ms\":%.1f,"
+			"\"cap_ms\":%.1f,\"proc_ms\":%.1f,"
 			"\"abs_ms\":%.1f,\"bytes\":%d,\"key\":%d}",
 			(i == pre_i) ? "" : ",", r->seq, r->seq, r->pkt, r->ts_ms,
+			r->cap_ms, r->ts_ms - r->cap_ms,
 			r->abs_ms, r->len, r->key);
 	}
 	fprintf(j, "]}\n");
@@ -2558,7 +2563,7 @@ int main(int argc, char **argv)
 		struct v4l2_plane pl;
 		MppFrame frame = NULL;
 		MppPacket pkt = NULL;
-		double ts, t_stage = 0, t_rga = 0, t_npu = 0;
+		double ts, cap_ms, t_stage = 0, t_rga = 0, t_npu = 0;
 
 		if (g_stop)
 			break;
@@ -2578,6 +2583,30 @@ int main(int argc, char **argv)
 			goto link_fault;
 		}
 		ts = now_ms(CLOCK_MONOTONIC);
+		{
+			/* vb2 采集时间戳: 帧在驱动里完成采集的时刻, 比 DQBUF
+			 * 时刻更接近真实曝光完成点。MONOTONIC flag 下它与
+			 * CLOCK_MONOTONIC 同零点, cap_ms 与 ts_ms 可直接相减;
+			 * 驱动没给(时间戳为 0/非 MONOTONIC)则退化为 DQBUF 时刻,
+			 * 口径由首帧打印的 flags 与 json 的 cap_ms 诚实标明。 */
+			double vb2_ms = (double)b.timestamp.tv_sec * 1000.0 +
+					(double)b.timestamp.tv_usec / 1000.0;
+			int flags = (int)(b.flags & V4L2_BUF_FLAG_TIMESTAMP_MASK);
+
+			if (g_ts_flags < 0) {
+				g_ts_flags = flags;
+				if (flags == V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC)
+					printf(">>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)\n");
+				else
+					printf(">>> vb2 ts flags=0x%x(非 MONOTONIC, cap 退化为 DQBUF 时刻)\n",
+					       flags);
+				fflush(stdout);
+			}
+			if (vb2_ms <= 0 || flags != V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC)
+				cap_ms = ts;
+			else
+				cap_ms = vb2_ms - t0_ms;
+		}
 		/* 恢复后连采 30 帧才算链路稳定, 复位"同一故障链"的尝试计数 */
 		if (unstable >= 0 && ++unstable >= RECOVER_STABLE_FRAMES) {
 			unstable = -1;
@@ -2615,7 +2644,8 @@ int main(int argc, char **argv)
 		/* OSD 画在编码输入缓冲(最终被编码的那块内存)上, 必须在 encode_put_frame 之前 */
 		if (g_osd) {
 			g_osd_seq = frame_seq;	/* 与 .json 的 seq/frame_seq 同源 */
-			g_osd_ms = ts - t_start;
+			/* 时间标签用 vb2 采集时刻(口径统一), 首帧 ≈ 0 */
+			g_osd_ms = cap_ms;
 			draw_osd(mpp_buffer_get_ptr(g_fbuf), (int)cap.stride, w, h);
 		}
 		xioctl(cap.fd, VIDIOC_QBUF, &b);
@@ -2672,7 +2702,8 @@ int main(int argc, char **argv)
 					pthread_mutex_unlock(&g_nal_lock);
 				}
 				/* seq 只读: 同一帧的所有包共用 frame_seq */
-				ring_push(copy, (int)len, frame_seq, pkn, isk);
+				ring_push(copy, (int)len, frame_seq, pkn, isk,
+					  cap_ms);
 				/* 同一包的副本进投递环; malloc/memcpy 后立即返回,
 				 * 与录像环完全独立, 环满由 pkb_push 丢最旧 */
 				pkb_push(copy, (int)len, frame_seq, isk,

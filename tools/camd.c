@@ -127,7 +127,9 @@ struct node {
 	int dmabuf_fd;
 	int stride;		/* 行 stride(bytesperline),RGA 按它解释内存 */
 	uint64_t seq;
-	int64_t ts_us;
+	int64_t ts_us;		/* DQBUF 出队时刻(CLOCK_MONOTONIC us) */
+	uint64_t capture_us;	/* vb2 b.timestamp 采集完成时刻(0=驱动未给,退化为 ts_us) */
+	uint32_t ts_flags;	/* b.flags & V4L2_BUF_FLAG_TIMESTAMP_MASK */
 	atomic_int refs;
 };
 
@@ -159,6 +161,8 @@ static atomic_bool g_draining;
 static atomic_int g_fatal;
 static char g_fatal_msg[256];
 static atomic_uint g_frames, g_frames_done, g_qbuf_err;
+static uint64_t g_last_capture_us, g_last_dequeue_us;	/* 末帧双时间戳(json ts 段) */
+static uint32_t g_last_ts_flags;
 static int64_t g_first_us, g_start_us, g_last_us;
 static pthread_mutex_t g_first_mu = PTHREAD_MUTEX_INITIALIZER;
 
@@ -306,8 +310,10 @@ static void stage(const char *fmt, ...)
 	fsync(g_stage_fd);
 }
 
-/* ---------------- RKNN 消费者(零拷贝:RGA 直写 NPU 输入 tensor) ---------------- */
+/* ---------------- RKNN 消费者(输入路径两条:拷贝 / native 直写) ---------------- */
 static const char *g_rknn_model;	/* --rknn <model> 打开 */
+static int g_npu_native;	/* --npu-native: RGA 直写 NPU dmabuf + mem_sync, 绕过 inputs_set */
+static int g_npu_ab;		/* --npu-ab N: 前 N 帧同帧双路径对比(拷贝基准 vs native) */
 #ifdef HAVE_RKNN
 #define MAX_OUT 16
 static rknn_context g_npu_ctx;
@@ -321,6 +327,11 @@ static atomic_uint g_npu_ok, g_npu_err;
 static char g_npu_msg[192];
 static lat_t npu_lat, npu_rga_lat, npu_post_lat;
 static unsigned g_det_total, g_det_max;
+/* 输入路径计量: 拷贝路径每帧 inputs_set 拷贝 w*h*3 字节, native 路径 0。
+ * ab 对比累计输出逐字节差与检出不一致帧数, "输出全常数"单独计数。 */
+static unsigned long g_cpu_copy_bytes;
+static unsigned g_ab_frames, g_ab_det_mismatch, g_ab_const_frames;
+static unsigned long g_ab_out_diff_bytes;
 static atomic_uint g_score_maxi;	/* maxscore x1000 */
 static char g_det_last[128];
 static char *g_draw_file;		/* --draw: 把框画到 RGB 上存 PPM */
@@ -563,8 +574,15 @@ g_npu_dst = wrapbuffer_virtualaddr_t(g_npu_rgb, g_npu_w, g_npu_h,
 	printf(">>> RKNN 消费者: %s  输入 %dx%d type=%d zp=%d scale=%f 输出 %u 个\n",
 	       g_rknn_model, g_npu_w, g_npu_h, in_native.type, in_native.zp,
 	       in_native.scale, g_npu_nout);
-	printf(">>> 零拷贝: RGA 写 fd=%d (mem %u B) -> rknn_run, pass_through=1\n",
+	printf(">>> NPU 输入 tensor: dmabuf fd=%d (%u B), io_mem 已绑定(pass_through=1)\n",
 	       g_npu_in->fd, g_npu_in->size);
+	if (g_npu_native)
+		printf(">>> 输入路径: native(实验): RGA 直写 dmabuf + rknn_mem_sync(TO_DEVICE), 每帧 0 B CPU 拷贝\n");
+	else if (g_npu_ab)
+		printf(">>> 输入路径: ab: 前 %d 帧同帧双路径对比(拷贝基准 vs native)\n", g_npu_ab);
+	else
+		printf(">>> 输入路径: 拷贝: RGA -> 本地 RGB -> rknn_inputs_set(每帧 %d B CPU 拷贝)\n",
+		       g_npu_w * g_npu_h * 3);
 	return 0;
 }
 
@@ -767,131 +785,61 @@ static void draw_boxes(struct dbox *b, int n)
 	}
 }
 
-/* 连续 N 帧检出目标类才触发, 避免单帧误检 */
-
-static void rknn_process(struct node *n)
+/* 跑一次推理并解码。use_copy=1 走基准拷贝路径(inputs_set, 计入 g_cpu_copy_bytes);
+ * 0 走 native(init 时 set_io_mem 绑定的 dmabuf, 输入已由 RGA+mem_sync 备好)。
+ * 成功返回 0 并填 nd/maxscore, outs[] 未 release(调用者负责); 失败返回 -1, 无未释放资源。 */
+static int npu_run_decode(int use_copy, rknn_output outs[MAX_OUT],
+			  struct dbox *boxes, int *p_nd, float *p_ms)
 {
-	int fmt = (cap.fourcc == V4L2_PIX_FMT_NV12) ? RK_FORMAT_YCbCr_420_SP
-						    : RK_FORMAT_YCbCr_400;
-	int64_t t0 = now_us(), t1, t2;
-	rga_buffer_t src;
+	rknn_input in;
+	int8_t *od[MAX_OUT];
+	int i, ret;
 
-	g_osd_seq = n->seq;
-	g_osd_ts_us = n->ts_us;
-	if (!g_osd_t0_us)
-		g_osd_t0_us = n->ts_us;
-	IM_STATUS st;
-	rknn_output outs[MAX_OUT];
-	int8_t *odata[MAX_OUT];
-	struct dbox boxes[MAX_BOX];
-	float maxscore = 0;
-	int ret, i, nd = 0;
-
-	src = wrapbuffer_fd_t(n->dmabuf_fd, cap.w, cap.h,
-			      n->stride > 0 ? n->stride : cap.w, cap.h, fmt);
-	stage("rt seq=%u rga in fd=%d", n->seq, n->dmabuf_fd);
-	/* 目标用 CPU 可写缓冲:RGA 直接写 rknn 的 fd 实测不可靠(结果张量全常数),
-	 * 这里退回"RGA 缩放到本地 RGB + 一次 memcpy/xor 进 NPU 输入"的稳妥路径 */
-	st = imresize_t(src, g_npu_dst, 0, 0, 0, 1);
-	stage("rt seq=%u rga out st=%d", n->seq, (int)st);
-	if (st != IM_STATUS_SUCCESS) {
-		atomic_fetch_add(&g_npu_err, 1);
-		if (!g_npu_msg[0])
-			snprintf(g_npu_msg, sizeof(g_npu_msg), "rga: %s",
-				 imStrError(st));
-		return;
-	}
-	if (g_dump_rgb && !g_dump_done && n->seq >= 10) {
-		FILE *df = fopen(g_dump_rgb, "wb");
-
-		if (df) {
-			/* 在 xor 之前转储:这里才是 RGA 产出的 RGB888 */
-			fwrite(g_npu_rgb, 1, (size_t)g_npu_w * g_npu_h * 3, df);
-			fclose(df);
-			g_dump_done = 1;
-			stage("rt seq=%u dump rgb %s", n->seq, g_dump_rgb);
-		}
-	}
-	/* 送入模型的缓冲:可选白平衡 + 可选旋转。
-	 * 注意:必须改 g_npu_rgb 本身或它的替代缓冲 —— rknn_inputs_set 从 in.buf 拷贝,
-	 * 之前写 dst(NPU 内存)对 inputs_set 路径无效(遗留自 set_io_mem 版本)。*/
-	{
-		const unsigned char *use = g_npu_rgb;
-		int W = g_npu_w, H = g_npu_h, xx, yy;
-
-		if (g_wb)
-			wb_grayworld(g_npu_rgb, W * H);
-		if (g_rot90 && g_rgb_alt) {
-			for (yy = 0; yy < H; yy++) {
-				for (xx = 0; xx < W; xx++) {
-					unsigned char *d = g_rgb_alt + ((size_t)xx * H + (H - 1 - yy)) * 3;
-					const unsigned char *sp = g_npu_rgb + ((size_t)yy * W + xx) * 3;
-
-					d[0] = sp[0]; d[1] = sp[1]; d[2] = sp[2];
-				}
-			}
-			use = g_rgb_alt;
-		}
-		g_npu_inbuf = use;
-	}
-	t1 = now_us();
-	lat_add(&npu_rga_lat, t1 - t0);
-	/* 走 rknn_inputs_set(标准拷贝路径)而不是 set_io_mem:
-	 * 实测绑定 native 输入内存后网络输出全常数(cls 全 = zero_point),
-	 * 怀疑 NPU 没看到 CPU 写进去的内容(缺 rknn_mem_sync 或 coherency 问题)。
-	 * 先用标准路径证明模型本身能出框,零拷贝再回来接。 */
-	{
-		rknn_input in;
-
+	if (use_copy) {
 		memset(&in, 0, sizeof(in));
 		in.index = 0;
 		in.type = RKNN_TENSOR_UINT8;
 		in.fmt = RKNN_TENSOR_NHWC;
 		in.size = (uint32_t)(g_npu_w * g_npu_h * 3);
 		in.buf = (void *)g_npu_inbuf;
-		stage("rt seq=%u npu run in", n->seq);
 		ret = rknn_inputs_set(g_npu_ctx, 1, &in);
 		if (ret < 0) {
 			atomic_fetch_add(&g_npu_err, 1);
 			if (!g_npu_msg[0])
 				snprintf(g_npu_msg, sizeof(g_npu_msg),
 					 "inputs_set=%d", ret);
-			return;
+			return -1;
 		}
-		ret = rknn_run(g_npu_ctx, NULL);
+		g_cpu_copy_bytes += in.size;
 	}
-	stage("rt seq=%u npu run out ret=%d", n->seq, ret);
+	ret = rknn_run(g_npu_ctx, NULL);
 	if (ret < 0) {
 		atomic_fetch_add(&g_npu_err, 1);
 		if (!g_npu_msg[0])
 			snprintf(g_npu_msg, sizeof(g_npu_msg), "rknn_run=%d", ret);
-		return;
+		return -1;
 	}
-	/* 输出用 rknn_outputs_get 取回(普通 NCHW int8),再做 YOLOv8 解码 + NMS */
-	memset(outs, 0, sizeof(outs));
+	memset(outs, 0, sizeof(rknn_output) * MAX_OUT);
 	for (i = 0; i < (int)g_npu_nout; i++) {
 		outs[i].index = i;
 		outs[i].want_float = 0;
 		outs[i].is_prealloc = 0;
 	}
-	stage("rt seq=%u out get", n->seq);
 	ret = rknn_outputs_get(g_npu_ctx, g_npu_nout, outs, NULL);
 	if (ret < 0) {
 		atomic_fetch_add(&g_npu_err, 1);
 		if (!g_npu_msg[0])
 			snprintf(g_npu_msg, sizeof(g_npu_msg), "outputs_get=%d", ret);
-		return;
+		return -1;
 	}
-	t2 = now_us();
-	lat_add(&npu_lat, t2 - t1);
 	for (i = 0; i < (int)g_npu_nout; i++)
-		odata[i] = (int8_t *)outs[i].buf;
-	if (g_dump_rgb && !g_outs_done) {
+		od[i] = (int8_t *)outs[i].buf;
+	if (g_dump_rgb && !g_outs_done && use_copy) {
 		char p[64];
 
 		for (i = 0; i < (int)g_npu_nout; i++) {
 			rknn_tensor_attr *a = &g_npu_out_attr[i];
-			int8_t *d = odata[i];
+			int8_t *d = od[i];
 			size_t k, cnt = 1;
 			int mn = 127, mx = -128;
 			long sum = 0;
@@ -921,8 +869,167 @@ static void rknn_process(struct node *n)
 		}
 		g_outs_done = 1;
 	}
-	nd = decode_yolov8(g_npu_out_attr, odata, boxes, MAX_BOX, &maxscore);
-	rknn_outputs_release(g_npu_ctx, g_npu_nout, outs);
+	*p_nd = decode_yolov8(g_npu_out_attr, od, boxes, MAX_BOX, p_ms);
+	return 0;
+}
+
+/* 连续 N 帧检出目标类才触发, 避免单帧误检 */
+
+static void rknn_process(struct node *n)
+{
+	int fmt = (cap.fourcc == V4L2_PIX_FMT_NV12) ? RK_FORMAT_YCbCr_420_SP
+						    : RK_FORMAT_YCbCr_400;
+	int64_t t0 = now_us(), t1, t2 = 0;
+	rga_buffer_t src;
+
+	g_osd_seq = n->seq;
+	/* OSD 时间轴统一用 vb2 采集时刻(口径一致, 首帧 ≈ 0) */
+	g_osd_ts_us = n->capture_us;
+	if (!g_osd_t0_us)
+		g_osd_t0_us = n->ts_us;
+	IM_STATUS st;
+	rknn_output outs[MAX_OUT], outs2[MAX_OUT];
+	struct dbox boxes[MAX_BOX], boxes2[MAX_BOX];
+	float maxscore = 0, ms2 = 0;
+	int ret, i, nd = 0, nd2 = 0;
+	/* ab=本帧做双路径对比; want_copy/want_native 决定走哪条(可同帧同走) */
+	int ab = g_npu_ab && n->seq < (unsigned)g_npu_ab;
+	int want_copy = !g_npu_native || ab;
+	int want_native = g_npu_native || ab;
+
+	src = wrapbuffer_fd_t(n->dmabuf_fd, cap.w, cap.h,
+			      n->stride > 0 ? n->stride : cap.w, cap.h, fmt);
+	stage("rt seq=%u rga in fd=%d", n->seq, n->dmabuf_fd);
+	if (want_copy) {
+		/* 基准路径: RGA 缩放到 CPU 可写本地 RGB(经 wb/rot90 后由 inputs_set 拷入) */
+		st = imresize_t(src, g_npu_dst, 0, 0, 0, 1);
+		stage("rt seq=%u rga out st=%d", n->seq, (int)st);
+		if (st != IM_STATUS_SUCCESS) {
+			atomic_fetch_add(&g_npu_err, 1);
+			if (!g_npu_msg[0])
+				snprintf(g_npu_msg, sizeof(g_npu_msg), "rga: %s",
+					 imStrError(st));
+			return;
+		}
+		if (g_dump_rgb && !g_dump_done && n->seq >= 10) {
+			FILE *df = fopen(g_dump_rgb, "wb");
+
+			if (df) {
+				/* 在后处理之前转储:这里才是 RGA 产出的 RGB888 */
+				fwrite(g_npu_rgb, 1, (size_t)g_npu_w * g_npu_h * 3, df);
+				fclose(df);
+				g_dump_done = 1;
+				stage("rt seq=%u dump rgb %s", n->seq, g_dump_rgb);
+			}
+		}
+		/* 送入模型的缓冲:可选白平衡 + 可选旋转。
+		 * 注意:必须改 g_npu_rgb 本身或它的替代缓冲 —— rknn_inputs_set 从 in.buf 拷贝。 */
+		{
+			const unsigned char *use = g_npu_rgb;
+
+			if (g_wb)
+				wb_grayworld(g_npu_rgb, g_npu_w * g_npu_h);
+			if (g_rot90 && g_rgb_alt) {
+				int W = g_npu_w, H = g_npu_h, xx, yy;
+
+				for (yy = 0; yy < H; yy++) {
+					for (xx = 0; xx < W; xx++) {
+						unsigned char *d = g_rgb_alt + ((size_t)xx * H + (H - 1 - yy)) * 3;
+						const unsigned char *sp = g_npu_rgb + ((size_t)yy * W + xx) * 3;
+
+						d[0] = sp[0]; d[1] = sp[1]; d[2] = sp[2];
+					}
+				}
+				use = g_rgb_alt;
+			}
+			g_npu_inbuf = use;
+		}
+	}
+	if (want_native) {
+		/* native 路径: RGA 直写 NPU 输入 tensor 的 dmabuf, 再显式 mem_sync
+		 * 保证 NPU 可见 —— 上一版绑 io_mem 输出全常数, 差的就是这两步;
+		 * 该路径不调 inputs_set, 输入用 init 时 set_io_mem 绑定的内存。 */
+		rga_buffer_t nfd = wrapbuffer_fd_t(g_npu_in->fd, g_npu_w, g_npu_h,
+						   g_npu_w, g_npu_h, RK_FORMAT_RGB_888);
+		IM_STATUS st2 = imresize_t(src, nfd, 0, 0, 0, 1);
+
+		stage("rt seq=%u rga->npu dmabuf st=%d", n->seq, (int)st2);
+		if (st2 != IM_STATUS_SUCCESS) {
+			atomic_fetch_add(&g_npu_err, 1);
+			if (!g_npu_msg[0])
+				snprintf(g_npu_msg, sizeof(g_npu_msg), "rga->npu: %s",
+					 imStrError(st2));
+			return;
+		}
+		ret = rknn_mem_sync(g_npu_ctx, g_npu_in, RKNN_MEMORY_SYNC_TO_DEVICE);
+		if (ret != 0) {
+			atomic_fetch_add(&g_npu_err, 1);
+			if (!g_npu_msg[0])
+				snprintf(g_npu_msg, sizeof(g_npu_msg),
+					 "mem_sync=%d", ret);
+			return;
+		}
+	}
+	t1 = now_us();
+	lat_add(&npu_rga_lat, t1 - t0);
+	if (want_copy) {
+		stage("rt seq=%u npu run in(copy)", n->seq);
+		if (npu_run_decode(1, outs, boxes, &nd, &maxscore) < 0)
+			return;
+		t2 = now_us();
+	}
+	if (want_native) {
+		stage("rt seq=%u npu run in(native)", n->seq);
+		if (npu_run_decode(0, outs2, boxes2, &nd2, &ms2) < 0) {
+			if (want_copy)
+				rknn_outputs_release(g_npu_ctx, g_npu_nout, outs);
+			return;
+		}
+		if (!want_copy) {
+			nd = nd2;
+			maxscore = ms2;
+			t2 = now_us();
+		}
+	}
+	lat_add(&npu_lat, t2 - t1);
+
+	if (ab) {
+		/* 同帧双路径对比: 输出逐字节差 + 检出一致性 + 全常数输出检测 */
+		unsigned long diff = 0;
+		int const_out = 0;
+
+		for (i = 0; i < (int)g_npu_nout; i++) {
+			int8_t *a = (int8_t *)outs[i].buf, *b = (int8_t *)outs2[i].buf;
+			int mn = 127, mx = -128;
+			size_t k, sz = outs[i].size < outs2[i].size ?
+				      (size_t)outs[i].size : (size_t)outs2[i].size;
+
+			for (k = 0; k < sz; k++) {
+				int va = a[k], vb = b[k];
+
+				if (va != vb)
+					diff++;
+				if (va < mn)
+					mn = va;
+				if (va > mx)
+					mx = va;
+			}
+			if (mn == mx)
+				const_out = 1;
+		}
+		g_ab_frames++;
+		g_ab_out_diff_bytes += diff;
+		if (const_out)
+			g_ab_const_frames++;
+		if (nd != nd2 || fabsf(maxscore - ms2) > 0.01f)
+			g_ab_det_mismatch++;
+		stage("ab seq=%u det=%d/%.3f vs %d/%.3f outdiff=%lu const=%d",
+		      n->seq, nd, maxscore, nd2, ms2, diff, const_out);
+	}
+	if (want_copy)
+		rknn_outputs_release(g_npu_ctx, g_npu_nout, outs);
+	if (want_native)
+		rknn_outputs_release(g_npu_ctx, g_npu_nout, outs2);
 	lat_add(&npu_post_lat, now_us() - t2);
 	if (maxscore * 1000 > (float)atomic_load(&g_score_maxi))
 		atomic_store(&g_score_maxi, (unsigned)(maxscore * 1000));
@@ -1509,6 +1616,16 @@ static void *capture_thread(void *arg)
 		n = cap.nodes[b.index];
 		n->seq = atomic_fetch_add(&g_frames, 1);
 		n->ts_us = now_us();
+		/* vb2 采集时间戳: MONOTONIC flag 下与 now_us() 同钟源, 两者之差
+		 * 就是"采集完成 -> 用户态出队"的真实滞后; 驱动没给则退化。 */
+		n->capture_us = (uint64_t)b.timestamp.tv_sec * 1000000ULL +
+				b.timestamp.tv_usec;
+		n->ts_flags = b.flags & V4L2_BUF_FLAG_TIMESTAMP_MASK;
+		if (!n->capture_us)
+			n->capture_us = (uint64_t)n->ts_us;
+		g_last_capture_us = n->capture_us;
+		g_last_dequeue_us = (uint64_t)n->ts_us;
+		g_last_ts_flags = n->ts_flags;
 		atomic_store(&n->refs, 1);	/* capture 自己一份 */
 		if ((n->seq % 10) == 0)
 			stage("cap seq=%u idx=%d", n->seq, b.index);
@@ -1674,6 +1791,16 @@ static void dump_json(FILE *f, int rc)
 				  (double)(g_last_us - g_first_us)
 			: -1.0);
 	fprintf(f,
+		"  \"ts\": {\"flags\": \"%s\", \"capture_ts_us\": %llu, \"dequeue_ts_us\": %llu, \"process_ms\": %.3f},\n",
+		g_last_ts_flags == V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC ? "monotonic" :
+		g_last_ts_flags == V4L2_BUF_FLAG_TIMESTAMP_COPY ? "copy" :
+		g_last_ts_flags ? "reserved" : "unset",
+		(unsigned long long)g_last_capture_us,
+		(unsigned long long)g_last_dequeue_us,
+		g_last_capture_us ?
+			(double)((int64_t)g_last_dequeue_us -
+				 (int64_t)g_last_capture_us) / 1000.0 : -1.0);
+	fprintf(f,
 		"  \"rt\": {\"processed\": %llu, \"dropped\": %llu, \"avg_us\": %.1f, \"max_us\": %llu, \"p95_us\": %.0f, \"p99_us\": %.0f},\n",
 		(unsigned long long)rt_lat.n, (unsigned long long)q[Q_RT].dropped,
 		rt_lat.n ? (double)rt_lat.sum_us / rt_lat.n : -1.0,
@@ -1699,16 +1826,20 @@ static void dump_json(FILE *f, int rc)
 #ifdef HAVE_RKNN
 	if (g_rknn_model)
 		fprintf(f,
-			"  \"npu\": {\"model\": \"%s\", \"in\": \"%dx%d\", \"ok\": %u, \"err\": %u, \"rga_us\": %.1f, \"run_us\": %.1f, \"run_p99_us\": %.0f, \"post_us\": %.1f, \"det_total\": %u, \"det_max\": %u, \"score_max\": %.3f, \"det_last\": \"%s\", \"msg\": \"%s\"},\n",
+			"  \"npu\": {\"model\": \"%s\", \"in\": \"%dx%d\", \"mode\": \"%s\", \"ok\": %u, \"err\": %u, \"rga_us\": %.1f, \"run_us\": %.1f, \"run_p99_us\": %.0f, \"post_us\": %.1f, \"cpu_copy_mb\": %.3f, \"det_total\": %u, \"det_max\": %u, \"score_max\": %.3f, \"det_last\": \"%s\", \"ab\": {\"frames\": %u, \"out_diff_bytes\": %lu, \"det_mismatch\": %u, \"const_out_frames\": %u}, \"msg\": \"%s\"},\n",
 			g_rknn_model, g_npu_w, g_npu_h,
+			g_npu_native ? "native" : (g_npu_ab ? "copy+ab" : "copy"),
 			atomic_load(&g_npu_ok), atomic_load(&g_npu_err),
 			npu_rga_lat.n ? (double)npu_rga_lat.sum_us / npu_rga_lat.n : -1.0,
 			npu_lat.n ? (double)npu_lat.sum_us / npu_lat.n : -1.0,
 			lat_pct(&npu_lat, 0.99),
 			npu_post_lat.n ? (double)npu_post_lat.sum_us / npu_post_lat.n : -1.0,
+			(double)g_cpu_copy_bytes / 1048576.0,
 			atomic_load(&g_det_total), atomic_load(&g_det_max),
 			atomic_load(&g_score_maxi) / 1000.0,
-			g_det_last, g_npu_msg);
+			g_det_last,
+			g_ab_frames, g_ab_out_diff_bytes, g_ab_det_mismatch,
+			g_ab_const_frames, g_npu_msg);
 #endif
 	fprintf(f, "  \"queue\": {\"rt_cap\": %d, \"ev_cap\": %d}\n", q[Q_RT].cap,
 		q[Q_EV].cap);
@@ -1863,7 +1994,9 @@ static void usage(void)
 "  --rga             实时消费者改用 RGA 零拷贝缩放(需 -DHAVE_RGA -lrga)\n"
 "  --rga-size WxH    RGA 目标尺寸(默认 640x360)\n"
 "  --cpu-copy        对照组:CPU memcpy 整帧 + 降采样(不开 RGA)\n"
-"  --rknn MODEL      实时消费者改用 RKNN 推理(RGA 直写 NPU 输入,零拷贝)\n"
+"  --rknn MODEL      RKNN 推理(默认拷贝路径: RGA->本地RGB->inputs_set)\n"
+"  --npu-native      实验: RGA 直写 NPU dmabuf + mem_sync, 每帧 0 B CPU 拷贝\n"
+"  --npu-ab N        前 N 帧同帧双路径对比(拷贝 vs native), native 验收用\n"
 "  --obj-thresh F    检测置信度阈值(默认 0.35,调试时可降到 0.10)\n"
 "  --fault-once      故障只注入一次(验证恢复后能继续跑)\n"
 		"  --ev-fps F        取证限速帧率(默认 5)\n"
@@ -1901,6 +2034,8 @@ int main(int argc, char **argv)
 		{ "fault-at", required_argument, 0, 1040 },
 		{ "stopfail-n", required_argument, 0, 1041 },
 		{ "rknn", required_argument, 0, 1015 },
+		{ "npu-native", no_argument, 0, 1036 },
+		{ "npu-ab", required_argument, 0, 1037 },
 		{ "obj-thresh", required_argument, 0, 1016 },
         { "no-obj-mul", no_argument, 0, 1034 },
 		{ "dump-rgb", required_argument, 0, 1017 },
@@ -1969,6 +2104,12 @@ int main(int argc, char **argv)
 		case 1015:
 			g_rknn_model = optarg;
 			break;
+		case 1036: g_npu_native = 1; break;
+		case 1037:
+			g_npu_ab = atoi(optarg);
+			if (g_npu_ab < 0)
+				g_npu_ab = 0;
+			break;
 		case 1034: g_no_obj_mul = 1; break;
 		case 1016:
 			g_obj_thresh = (float)atof(optarg);
@@ -1996,6 +2137,17 @@ int main(int argc, char **argv)
 
 	if (cap.nbufs <= 0 || cap.nbufs > MAX_BUFS)
 		cap.nbufs = 4;
+	/* native/ab 的对比有效性要求两条路径吃同一份输入: CPU 后处理(wb/rot90)
+	 * 只在拷贝路径存在, 会人为制造差异, 一律拒绝;
+	 * 单 native 路径不产生本地 RGB, --draw/--dump-rgb 无从取图。 */
+	if ((g_npu_native || g_npu_ab) && (g_wb || g_rot90)) {
+		fprintf(stderr, "--npu-native/--npu-ab 与 --wb/--rot90 互斥(对比要求两侧输入完全一致)\n");
+		return 2;
+	}
+	if (g_npu_native && !g_npu_ab && (g_draw_file || g_dump_rgb)) {
+		fprintf(stderr, "--npu-native(不带 --npu-ab) 与 --draw/--dump-rgb 互斥(单 native 路径不产生本地 RGB)\n");
+		return 2;
+	}
 	if (g_dq_timeout_ms <= 0)
 		g_dq_timeout_ms = 2000;
 	cap.w = w;

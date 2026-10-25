@@ -1,0 +1,22 @@
+{
+  "rc": 0,
+  "device": "/dev/video5",
+  "size": "1920x1080",
+  "frames": 100,
+  "frames_returned": 100,
+  "dq_timeouts": 0,
+  "rss_max_kb": 23888,
+  "rss_end_kb": 23888,
+  "cpu_pct": 45.79,
+  "stop_err_param": 0,
+  "qbuf_errors": 0,
+  "fatal": 0,
+  "fatal_msg": "",
+  "first_frame_ms": 137.68,
+  "elapsed_ms": 6737.37,
+  "fps": 15.15,
+  "rt": {"processed": 71, "dropped": 29, "avg_us": 96923.5, "max_us": 106272, "p95_us": 0, "p99_us": 95839},
+  "ev": {"processed": 100, "dropped": 0, "avg_us": 0.6, "max_us": 1, "p95_us": 0, "p99_us": 1},
+  "npu": {"model": "/root/npu/examples/yolov8/model/yolov8n_rk3568_i8.rknn", "in": "640x640", "mode": "copy", "ok": 71, "err": 0, "rga_us": 9841.6, "run_us": 80381.8, "run_p99_us": 79655, "post_us": 28.1, "cpu_copy_mb": 83.203, "det_total": 71, "det_max": 1, "score_max": 0.745, "det_last": "cls=0 score=0.73 @276,208", "ab": {"frames": 0, "out_diff_bytes": 0, "det_mismatch": 0, "const_out_frames": 0}, "msg": ""},
+  "queue": {"rt_cap": 3, "ev_cap": 2}
+}

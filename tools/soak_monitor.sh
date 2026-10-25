@@ -36,6 +36,7 @@ echo "# evrec pid=$EPID start=$(date +%s) secs=$SECS" >> "$DIR/samples.csv"
 TPID=$!
 
 i=0
+SCOUNT=0
 while [ "$i" -lt "$SECS" ] && kill -0 "$EPID" 2>/dev/null; do
 	RSS=$(grep VmRSS "/proc/$EPID/status" 2>/dev/null | awk '{print $2}')
 	THR=$(grep Threads "/proc/$EPID/status" 2>/dev/null | awk '{print $2}')
@@ -43,6 +44,7 @@ while [ "$i" -lt "$SECS" ] && kill -0 "$EPID" 2>/dev/null; do
 	TMP=$(cat /sys/class/thermal/thermal_zone0/temp 2>/dev/null)
 	EV=$(ls "$DIR"/ev_*.h264 2>/dev/null | wc -l)
 	echo "$(date +%s),$i,${RSS:-NA},${THR:-NA},${FD:-NA},${TMP:-NA},${EV}" >> "$DIR/samples.csv"
+	SCOUNT=$((SCOUNT + 1))
 	sleep "$INTERVAL"
 	i=$((i + INTERVAL))
 done
@@ -50,5 +52,5 @@ done
 kill "$TPID" 2>/dev/null
 kill -TERM "$EPID" 2>/dev/null
 sleep 3
-echo "# soak 结束: 样本 $i 行, 事件 $(ls "$DIR"/ev_*.h264 2>/dev/null | wc -l) 个" >> "$DIR/samples.csv"
-echo "soak 完成: $DIR/samples.csv (样本 $i, 事件 $(ls "$DIR"/ev_*.h264 2>/dev/null | wc -l))"
+echo "# soak 结束: 有效样本 $SCOUNT 行, 运行 $i 秒, 事件 $(ls "$DIR"/ev_*.h264 2>/dev/null | wc -l) 个" >> "$DIR/samples.csv"
+echo "soak 完成: $DIR/samples.csv (有效样本 $SCOUNT 行, 运行 $i 秒, 事件 $(ls "$DIR"/ev_*.h264 2>/dev/null | wc -l))"

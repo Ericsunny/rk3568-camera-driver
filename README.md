@@ -14,7 +14,7 @@
 
 | 数字 | 含义 | 位置 |
 |---|---|---|
-| **0 B/帧** | 零拷贝后每帧 memcpy 从 13.67 MB 降到 0 | §核心成果 2 |
+| **0 B/帧** | 零拷贝后每帧 memcpy 从 13.67 MB 降到 0(**历史 zerocopy/ 实验;当前 evrec 仍为拷贝路径**,见下方边界) | §核心成果 2 |
 | **−66%** | 同链路 CPU 从 38.3 → 13.0 ms/帧 | §核心成果 2 |
 | **0/300** | 开关流压测失败数(首帧 445±12 ms) | [`docs/27`](docs/27-稳定性回归.md) |
 | **30.04 fps** | 1800 帧长跑,零丢帧、零 buffer 泄漏 | [`docs/27`](docs/27-稳定性回归.md) |
@@ -51,7 +51,7 @@
 2. **零拷贝**:CPU 降到 1/3,但帧率没变——瓶颈在采集,收益在余量。
 3. **suspend**:本板无 RTC、无远程唤醒源,**真实 suspend 退出无法验证**(`pm_test=devices` 模拟通过),不写成"通过"。
 
-**当前工程边界(诚实清单)**:**零拷贝三口径**——`zerocopy/` 实验链路输入+输出全 native(首屏"0 B/帧"指它);`camd --npu-native` 仅输入 native(RGA 直写输入 dmabuf+mem_sync;ab 108 帧字节级一致),**输出仍经 `rknn_outputs_get` 拷回**(输出 native 已试过:~5%/帧字节差、FROM_DEVICE sync 无效,疑 runtime requant——字节级验收不过,回退,证据见 `evidence/2026-10-25-质量保障线/`);`evrec` 检测路径当前为全拷贝。RTSP **只支持单客户端**(第二连接被拒绝,见 `cam_rtsp.c` 头注);稳定性证据:12 分钟事件录像 / 300 次开关流 / 1800 帧长跑 / **2h 服务级 soak(80 事件,RSS 21.7~43.6MB 有界、fd 恒 14、40.6~46.1°C,见 evidence/)**,仍**没有 24 小时连续、没有真实播放器 >10 分钟、没有掉电与 SD 卡写满场景**;**带流 suspend 已加双层保护**(驱动 streaming 时返回 `-EBUSY` 拒绝挂起 + `tools/suspend_guard.sh` 应用层护栏),但**不宣称 suspend 已修复**——真实唤醒仍无验证手段(`pm_test=devices` 干跑通过);OV8858 走 CIF RAW10 链路,**没有也不做 ISP 3A**(RK3568 单 ISP 给了 IMX415;OV8858 只有 mini3a 软件闭环,非产品级 IQ),bring-up 自测手段是 sensor 内部 test pattern ctrl(寄存器依据厂商驱动+datasheet 对照,非猜测)。
+**当前工程边界(诚实清单)**:**零拷贝三口径**——`zerocopy/` 实验链路输入+输出全 native(首屏"0 B/帧"指它);`camd --npu-native` 仅输入 native(RGA 直写输入 dmabuf+mem_sync;ab 108 帧字节级一致,证据 `evidence/2026-10-25-质量保障线/fv_ab_input_only.json`),**输出仍经 `rknn_outputs_get` 拷回**(输出 native 已试过:~5%/帧字节差、FROM_DEVICE sync 无效,疑 runtime requant——字节级验收不过,回退,证据同目录);`evrec` 检测路径当前为全拷贝。RTSP **只支持单客户端**(第二连接被拒绝,见 `cam_rtsp.c` 头注);稳定性证据:12 分钟事件录像 / 300 次开关流 / 1800 帧长跑 / **2h 服务级 soak(80 事件,RSS 21.7~43.6MB 有界、fd 恒 14、40.6~46.1°C,见 evidence/)**,仍**没有 24 小时连续、没有真实播放器 >10 分钟、没有掉电与 SD 卡写满场景**;**带流 suspend 已加双层保护**(驱动 streaming 时返回 `-EBUSY` 拒绝挂起 + `tools/suspend_guard.sh` 应用层护栏),但**不宣称 suspend 已修复**——真实唤醒仍无验证手段(`pm_test=devices` 干跑通过);OV8858 走 CIF RAW10 链路,**没有也不做 ISP 3A**(RK3568 单 ISP 给了 IMX415;OV8858 只有 mini3a 软件闭环,非产品级 IQ),bring-up 自测手段是 sensor 内部 test pattern ctrl(寄存器依据厂商驱动+datasheet 对照,非猜测)。
 
 > 一句口径:**每个数字都有对应的测量方法([docs/31 对照表](docs/31-程序与证据对照表.md));没有测过的,不写在结果里。**
 

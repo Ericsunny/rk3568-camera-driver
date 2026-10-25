@@ -161,7 +161,8 @@ bash /root/install_rkaiq_2022.sh --rollback  # 回滚到 2024 版
 
 > 口径:输入 native(RGA 直写输入 tensor dmabuf + `mem_sync(TO_DEVICE)`)仅 `--npu-native` 可选,
 > 输出仍走 `rknn_outputs_get` 拷回;输入+输出全 native 的只有历史实验 `zerocopy/` mode C。
-> json 的 `cpu_copy_bytes` 只统计输入侧。
+> 输出 native 已试过并回退(~5%/帧字节差,FROM_DEVICE sync 无效,疑 runtime requant;见
+> `evidence/2026-10-25-质量保障线/`)。json 的 `cpu_copy_mb` 只统计输入侧。
 
 ```bash
 # 板上编译(需要 rknn 头 + librknnrt + librga)

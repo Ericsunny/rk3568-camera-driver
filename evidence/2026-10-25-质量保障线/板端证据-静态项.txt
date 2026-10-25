@@ -1,0 +1,35 @@
+== uname / kernel md5 ==
+Linux yckj 4.19.232 #47 SMP Sun Oct 25 08:17:39 UTC 2026 aarch64 aarch64 aarch64 GNU/Linux
+0eee16fc8df7aa8470323c11699699b1  /boot/Image-4.19.232
+
+== enum_mbus_code (v4l2-ctl pad0) ==
+ioctl: VIDIOC_SUBDEV_ENUM_MBUS_CODE (pad=0)
+	0x3007: MEDIA_BUS_FMT_SBGGR10_1X10
+
+== enum_mbus_code EINVAL (直调 ioctl) ==
+(ec 工具不在,见会话记录: pad=0 idx=1 errno=22 / pad=1 errno=22)
+
+== enum_frame_size 回归 ==
+ioctl: VIDIOC_SUBDEV_ENUM_FRAME_SIZE (pad=0)
+	Size Range: 1632x1224 - 1632x1224
+	Size Range: 1920x1080 - 1920x1080
+
+== TEST_PATTERN ctrl ==
+                       exposure 0x00980911 (int)    : min=1 max=65534 step=1 default=256 value=256
+                   test_pattern 0x009f0903 (menu)   : min=0 max=4 default=0 value=0
+
+== 彩条实测判据(2026-10-25 #47 会话记录) ==
+kernel: test_pattern 1 re-applied after init table
+ON 列段: 1023 1012 743 740 792 792 512 512 511 512 242 231 274 281 22 0 (Type1 五级台阶)
+OFF 列段: 238 251 252 260 261 265 263 260 249 245 230 229 218 211 205 202 (自然场景)
+
+== suspend 保护(2026-10-25 #47 会话记录) ==
+空闲 pm_test=devices: rc=0 通过
+带流: MEM_RC=1 I/O error; dmesg: Abort: Callback failed on 5-0036 in ov8858_sm_system_suspend+0x0/0x6c returned -16
+
+== last_stop_err ==
+0
+
+== st_burn 回归(#47 会话) ==
+CYCLE cycles=3 ok=3 fail=0 fail_pct=0.00
+regress.sh v46acc2: 总体 PASS(启停 10/10, 长跑 1800/1800 无泄漏)

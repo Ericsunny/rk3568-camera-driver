@@ -51,7 +51,7 @@
 2. **零拷贝**:CPU 降到 1/3,但帧率没变——瓶颈在采集,收益在余量。
 3. **suspend**:本板无 RTC、无远程唤醒源,**真实 suspend 退出无法验证**(`pm_test=devices` 模拟通过),不写成"通过"。
 
-**当前工程边界(诚实清单)**:RTSP **只支持单客户端**(第二连接被拒绝,见 `cam_rtsp.c` 头注);稳定性证据目前是 12 分钟事件录像 / 300 次开关流 / 1800 帧长跑,**没有 24 小时连续、没有真实播放器 >10 分钟、没有掉电与 SD 卡写满场景**——补测计划与采样方法见 `tools/soak_monitor.sh`;**带流 suspend 已加双层保护**(驱动 streaming 时返回 `-EBUSY` 拒绝挂起 + `tools/suspend_guard.sh` 应用层护栏),但**不宣称 suspend 已修复**——真实唤醒仍无验证手段(`pm_test=devices` 干跑通过);OV8858 走 CIF RAW10 链路,**没有也不做 ISP 3A**(RK3568 单 ISP 给了 IMX415;OV8858 只有 mini3a 软件闭环,非产品级 IQ),bring-up 自测手段是 sensor 内部 test pattern ctrl(寄存器依据厂商驱动+datasheet 对照,非猜测)。
+**当前工程边界(诚实清单)**:**零拷贝三口径**——`zerocopy/` 实验链路输入+输出全 native(首屏"0 B/帧"指它);`camd --npu-native` 仅输入 native(RGA 直写输入 dmabuf+mem_sync),**输出仍经 `rknn_outputs_get` 拷回**;`evrec` 检测路径当前为全拷贝。RTSP **只支持单客户端**(第二连接被拒绝,见 `cam_rtsp.c` 头注);稳定性证据目前是 12 分钟事件录像 / 300 次开关流 / 1800 帧长跑,**没有 24 小时连续、没有真实播放器 >10 分钟、没有掉电与 SD 卡写满场景**——补测计划与采样方法见 `tools/soak_monitor.sh`;**带流 suspend 已加双层保护**(驱动 streaming 时返回 `-EBUSY` 拒绝挂起 + `tools/suspend_guard.sh` 应用层护栏),但**不宣称 suspend 已修复**——真实唤醒仍无验证手段(`pm_test=devices` 干跑通过);OV8858 走 CIF RAW10 链路,**没有也不做 ISP 3A**(RK3568 单 ISP 给了 IMX415;OV8858 只有 mini3a 软件闭环,非产品级 IQ),bring-up 自测手段是 sensor 内部 test pattern ctrl(寄存器依据厂商驱动+datasheet 对照,非猜测)。
 
 > 一句口径:**每个数字都有对应的测量方法([docs/31 对照表](docs/31-程序与证据对照表.md));没有测过的,不写在结果里。**
 

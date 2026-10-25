@@ -157,7 +157,11 @@ bash /root/install_rkaiq_2022.sh --rollback  # 回滚到 2024 版
 换完要 **reboot**:rkaiq 被杀后 ISP 可能停在 stream 未停的状态,紧接着开 `/dev/video5` 拿不到帧。
 装好后 2022 daemon 的 AE/AWB 才真的闭环(实测 15 ms/帧,mini3a 36.3 ms/帧)。
 
-## `camd.c --rknn` —— NPU 零拷贝消费者(RGA 直写 NPU 输入 tensor)
+## `camd.c --rknn` —— NPU 消费者(默认拷贝路径;`--npu-native` 为输入 native 实验)
+
+> 口径:输入 native(RGA 直写输入 tensor dmabuf + `mem_sync(TO_DEVICE)`)仅 `--npu-native` 可选,
+> 输出仍走 `rknn_outputs_get` 拷回;输入+输出全 native 的只有历史实验 `zerocopy/` mode C。
+> json 的 `cpu_copy_bytes` 只统计输入侧。
 
 ```bash
 # 板上编译(需要 rknn 头 + librknnrt + librga)

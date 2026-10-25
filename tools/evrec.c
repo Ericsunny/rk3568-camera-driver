@@ -2226,7 +2226,7 @@ static int dump(const char *out, unsigned trig_seq, double trig_ts, int pre_i,
 		/* list 是"每包一条"; seq 与 frame_seq 都是源帧序号(多包时重复),
 		 * pkt 是该帧内第几个包。保留 seq 是为了兼容既有解析脚本。 */
 		fprintf(j, "%s{\"seq\":%u,\"frame_seq\":%u,\"pkt\":%u,\"ts_ms\":%.1f,"
-			"\"cap_ms\":%.1f,\"proc_ms\":%.1f,"
+			"\"cap_ms\":%.1f,\"dq_lag_ms\":%.1f,"
 			"\"abs_ms\":%.1f,\"bytes\":%d,\"key\":%d}",
 			(i == pre_i) ? "" : ",", r->seq, r->seq, r->pkt, r->ts_ms,
 			r->cap_ms, r->ts_ms - r->cap_ms,

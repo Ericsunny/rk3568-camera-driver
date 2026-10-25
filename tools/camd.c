@@ -577,11 +577,11 @@ g_npu_dst = wrapbuffer_virtualaddr_t(g_npu_rgb, g_npu_w, g_npu_h,
 	printf(">>> NPU 输入 tensor: dmabuf fd=%d (%u B), io_mem 已绑定(pass_through=1)\n",
 	       g_npu_in->fd, g_npu_in->size);
 	if (g_npu_native)
-		printf(">>> 输入路径: native(实验): RGA 直写 dmabuf + rknn_mem_sync(TO_DEVICE), 每帧 0 B CPU 拷贝\n");
+		printf(">>> 输入路径: native(实验): RGA 直写 dmabuf + mem_sync(TO_DEVICE), 输入 0 B CPU 拷贝(输出仍经 rknn_outputs_get 拷回)\n");
 	else if (g_npu_ab)
 		printf(">>> 输入路径: ab: 前 %d 帧同帧双路径对比(拷贝基准 vs native)\n", g_npu_ab);
 	else
-		printf(">>> 输入路径: 拷贝: RGA -> 本地 RGB -> rknn_inputs_set(每帧 %d B CPU 拷贝)\n",
+		printf(">>> 输入路径: 拷贝: RGA -> 本地 RGB -> rknn_inputs_set(每帧 %d B 输入 CPU 拷贝; 输出另计)\n",
 		       g_npu_w * g_npu_h * 3);
 	return 0;
 }
@@ -885,8 +885,9 @@ static void rknn_process(struct node *n)
 	g_osd_seq = n->seq;
 	/* OSD 时间轴统一用 vb2 采集时刻(口径一致, 首帧 ≈ 0) */
 	g_osd_ts_us = n->capture_us;
+	/* 首帧基准必须与标签同源(capture), 否则 OSD 时间轴差一个出队滞后 */
 	if (!g_osd_t0_us)
-		g_osd_t0_us = n->ts_us;
+		g_osd_t0_us = n->capture_us;
 	IM_STATUS st;
 	rknn_output outs[MAX_OUT], outs2[MAX_OUT];
 	struct dbox boxes[MAX_BOX], boxes2[MAX_BOX];
@@ -1621,7 +1622,10 @@ static void *capture_thread(void *arg)
 		n->capture_us = (uint64_t)b.timestamp.tv_sec * 1000000ULL +
 				b.timestamp.tv_usec;
 		n->ts_flags = b.flags & V4L2_BUF_FLAG_TIMESTAMP_MASK;
-		if (!n->capture_us)
+		/* 与 evrec 同规: 非 MONOTONIC 时 vb2 时间戳与 CLOCK_MONOTONIC
+		 * 不同源, 相减无意义 → 退化为出队时刻(由 ts_flags 诚实标明) */
+		if (!n->capture_us ||
+		    n->ts_flags != V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC)
 			n->capture_us = (uint64_t)n->ts_us;
 		g_last_capture_us = n->capture_us;
 		g_last_dequeue_us = (uint64_t)n->ts_us;
@@ -1791,7 +1795,7 @@ static void dump_json(FILE *f, int rc)
 				  (double)(g_last_us - g_first_us)
 			: -1.0);
 	fprintf(f,
-		"  \"ts\": {\"flags\": \"%s\", \"capture_ts_us\": %llu, \"dequeue_ts_us\": %llu, \"process_ms\": %.3f},\n",
+		"  \"ts\": {\"flags\": \"%s\", \"capture_ts_us\": %llu, \"dequeue_ts_us\": %llu, \"dequeue_lag_ms\": %.3f},\n",
 		g_last_ts_flags == V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC ? "monotonic" :
 		g_last_ts_flags == V4L2_BUF_FLAG_TIMESTAMP_COPY ? "copy" :
 		g_last_ts_flags ? "reserved" : "unset",
@@ -1995,7 +1999,7 @@ static void usage(void)
 "  --rga-size WxH    RGA 目标尺寸(默认 640x360)\n"
 "  --cpu-copy        对照组:CPU memcpy 整帧 + 降采样(不开 RGA)\n"
 "  --rknn MODEL      RKNN 推理(默认拷贝路径: RGA->本地RGB->inputs_set)\n"
-"  --npu-native      实验: RGA 直写 NPU dmabuf + mem_sync, 每帧 0 B CPU 拷贝\n"
+"  --npu-native      实验: 输入 native(RGA 直写 dmabuf+mem_sync, 0 B), 输出仍拷回\n"
 "  --npu-ab N        前 N 帧同帧双路径对比(拷贝 vs native), native 验收用\n"
 "  --obj-thresh F    检测置信度阈值(默认 0.35,调试时可降到 0.10)\n"
 "  --fault-once      故障只注入一次(验证恢复后能继续跑)\n"

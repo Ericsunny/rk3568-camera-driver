@@ -24,7 +24,7 @@
 ### 核心成果(六条)
 
 **1. 按 datasheet 裸写 OV8858 V4L2 subdev 驱动并出图**
-1079 行 C:上电时序/PLL/link_freq/曝光增益 ctrl/runtime PM 全部自推;与厂商驱动**逐寄存器对照零差异**;双模式 30.0 fps、帧结构 100% 有效;自推 1080p30 并定位修复 BLC anchor 越界致帧结构缺陷(179 空行→0,30 帧零错行)。→ [`driver/ov8858_sm/`](driver/ov8858_sm/) / [`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md)
+1158 行 C:上电时序/PLL/link_freq/曝光增益 ctrl/runtime PM 全部自推;与厂商驱动**逐寄存器对照零差异**;双模式 30.0 fps、帧结构 100% 有效;自推 1080p30 并定位修复 BLC anchor 越界致帧结构缺陷(179 空行→0,30 帧零错行)。→ [`driver/ov8858_sm/`](driver/ov8858_sm/) / [`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md)
 
 **2. V4L2 零拷贝:EXPBUF → dmabuf → RGA → NPU**
 每帧 CPU 拷贝 13.67 MB → **0 B**;端到端 92.5 → **69.9 ms**;CPU **−66%**;三线程流水线在 2× 负载下 **+25%** 吞吐。三模式(A 拷贝基线 / B RGA / C 全零拷贝)定量对照,收益拆解到环节。→ [`zerocopy/`](zerocopy/) / [`docs/18`](docs/18-阶段二零拷贝任务书.md)
@@ -110,11 +110,11 @@
 
 ```
 Makefile            顶层板端构建(tools/apps/spy 分组,RGA/RKNN 能力自动探测)
-driver/ov8858_sm/   从 datasheet 裸写的 OV8858 sensor 驱动(1079 行 .c + 455 行 .h + 自带 Makefile)
+driver/ov8858_sm/   从 datasheet 裸写的 OV8858 sensor 驱动(1158 行 .c + 455 行 .h + 自带 Makefile)
 zerocopy/           V4L2 零拷贝链路:EXPBUF→dmabuf→RGA→NPU,三模式 perf 对比
 mini3a/             用户态 3A 闭环(采集线程 + AE/AWB 控制环)
 tools/              evrec(事件录像+RTSP)/ camd(双消费者)/ 自检/回归/IQ 补丁/对焦量化等全部工具
-docs/               35 份任务书、排障复盘、对照报告、总报告与验收环境
+docs/               25 份任务书、排障复盘、对照报告、总报告与验收环境
 evidence/           实测证据图与原始输出(第一帧/双路预览/anchor 修复前后/回归数据…)
 ```
 

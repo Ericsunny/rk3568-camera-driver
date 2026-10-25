@@ -84,6 +84,7 @@ struct ov8858_sm {
 	bool is_1080p;
 	bool powered;		/* 电源/时钟是否已打开,保证上电断电严格配对 */
 	bool streaming;		/* 是否正在出流:流期间拒绝改 ACTIVE 格式 */
+	unsigned int test_pattern;	/* 彩条缓存:start_stream 重灌表后被 0x5e00=0 擦掉,需重放 */
 };
 
 static const struct i2c_device_id ov8858_sm_id[] = {
@@ -153,6 +154,17 @@ static int ov8858_sm_start_stream(struct ov8858_sm *ov8858)
 					    ov8858_sm_mode_1632x1224_regs);
 	if (ret)
 		return ret;
+
+	/* 初始化表把 0x5e00 写回 0, 会擦掉用户设的彩条 —— 重放缓存值。
+	 * 实测教训: 只在 set_ctrl 写一次的话, 彩条在开流瞬间被表覆盖。 */
+	if (ov8858->test_pattern) {
+		ret = ov8858_sm_write_reg(ov8858->client, 0x5e00,
+					  (u8)((ov8858->test_pattern - 1) | 0x80));
+		if (ret)
+			return ret;
+		dev_info(&ov8858->client->dev, "test_pattern %u re-applied after init table\n",
+			 ov8858->test_pattern);
+	}
 
 	/* 回读关键寄存器:确认"以为切了模式"和"sensor 真的切了"是一回事 */
 	{
@@ -489,6 +501,28 @@ static int ov8858_sm_set_fmt(struct v4l2_subdev *sd,
 }
 
 /*
+ * L1-B 收尾: pad.enum_mbus_code
+ *
+ * 之前没实现它: 标准的 subdev 用户态无法枚举 pad 支持哪些 media bus 格式,
+ * 只能靠试。sensor 只有一种输出 —— RAW10 Bayer SBGGR, 枚举表就一项:
+ * index 0 返回 OV8858_SM_MBUS_CODE, 其余 index / 非 0 pad 一律 -EINVAL。
+ */
+static int ov8858_sm_enum_mbus_code(struct v4l2_subdev *sd,
+				    struct v4l2_subdev_pad_config *cfg,
+				    struct v4l2_subdev_mbus_code_enum *code)
+{
+	if (code->pad != 0)
+		return -EINVAL;
+
+	if (code->index >= 1)
+		return -EINVAL;
+
+	code->code = OV8858_SM_MBUS_CODE;
+
+	return 0;
+}
+
+/*
  * L1-B 收尾: pad.enum_frame_size
  *
  * 厂商驱动实现了它, 我们之前没有: 结果是 v4l2-ctl --list-formats-ext
@@ -601,6 +635,7 @@ static int ov8858_sm_s_frame_interval(struct v4l2_subdev *sd,
 }
 
 static const struct v4l2_subdev_pad_ops ov8858_sm_pad_ops = {
+	.enum_mbus_code = ov8858_sm_enum_mbus_code,
 	.enum_frame_size = ov8858_sm_enum_frame_size,
 	.enum_frame_interval = ov8858_sm_enum_frame_interval,
 	.get_fmt = ov8858_sm_get_fmt,
@@ -806,6 +841,9 @@ static int ov8858_sm_set_ctrl(struct v4l2_ctrl *ctrl)
 	 * 传感器未上电时不写:power_on() 会重新灌整张初始化表,
 	 * 此时写进去的值会在下一次开流被覆盖, 徒增一次 I2C 失败日志。
 	 */
+	if (ctrl->id == V4L2_CID_TEST_PATTERN)
+		ov8858->test_pattern = ctrl->val;	/* 先缓存: 未上电时只记值,
+							 * 由 start_stream 重放(实测上电前设值会被 early-return 跳过) */
 	if (!ov8858->powered)
 		return 0;
 
@@ -833,6 +871,22 @@ static int ov8858_sm_set_ctrl(struct v4l2_ctrl *ctrl)
 		dev_dbg(&client->dev, "gain %d -> 0x%02x (int %u, frac %u/16)\n",
 			ctrl->val, val, (val >> 4) & 0x1f, val & 0x0f);
 		break;
+	case V4L2_CID_TEST_PATTERN: {
+		/*
+		 * OV8858 内嵌 ISP 的自测图案: 0x5e00 bit7=使能, [2:0]选图案。
+		 * 取值依据 = 本 BSP 厂商驱动 ov8858.c(与 datasheet 逐条对照过,
+		 * 见 docs/17): val=0 关闭写 0x00; val=N 写 (N-1)|0x80。
+		 * 用途: bring-up 时先出内部彩条验证 CSI/DMA, 再查光学与后端。
+		 */
+		u8 pval = ctrl->val ? ((u8)(ctrl->val - 1) | 0x80) : 0x00;
+
+		ret = ov8858_sm_write_reg(client, 0x5e00, pval);
+		if (ret)
+			break;
+		dev_dbg(&client->dev, "test_pattern %d -> 0x5e00=0x%02x\n",
+			ctrl->val, pval);
+		break;
+	}
 	default:
 		return 0;
 	}
@@ -846,6 +900,15 @@ static int ov8858_sm_set_ctrl(struct v4l2_ctrl *ctrl)
 
 static const struct v4l2_ctrl_ops ov8858_sm_ctrl_ops = {
 	.s_ctrl = ov8858_sm_set_ctrl,
+};
+
+/* 与厂商 ov8858.c 同款菜单(0=关, 1-4=四种竖向彩条), 取值即 menu 索引 */
+static const char * const ov8858_sm_test_pattern_menu[] = {
+	"Disabled",
+	"Vertical Color Bar Type 1",
+	"Vertical Color Bar Type 2",
+	"Vertical Color Bar Type 3",
+	"Vertical Color Bar Type 4",
 };
 
 static int ov8858_sm_initialize_controls(struct ov8858_sm *ov8858)
@@ -877,6 +940,11 @@ static int ov8858_sm_initialize_controls(struct ov8858_sm *ov8858)
 					      OV8858_SM_GAIN_MIN,
 					      OV8858_SM_GAIN_MAX, 1,
 					      OV8858_SM_GAIN_DEF);
+
+	v4l2_ctrl_new_std_menu_items(handler, &ov8858_sm_ctrl_ops,
+				     V4L2_CID_TEST_PATTERN,
+				     ARRAY_SIZE(ov8858_sm_test_pattern_menu) - 1,
+				     0, 0, ov8858_sm_test_pattern_menu);
 
 	if (handler->error) {
 		ret = handler->error;
@@ -1045,8 +1113,19 @@ static int __maybe_unused ov8858_sm_system_suspend(struct device *dev)
 	struct ov8858_sm *ov8858 = container_of(sd, struct ov8858_sm, subdev);
 
 	dev_info(dev, "system_suspend\n");
+	/*
+	 * 带流拒绝挂起(-EBUSY): 本板无 RTC/唤醒源, 真实 suspend 只能断电
+	 * (docs/27 §7)。之前"静默停流断电再睡"等于把正在跑的流杀了还睡死,
+	 * 双重损失; 返回 -EBUSY 让 PM core 中止整个挂起, 上层看得到拒绝。
+	 * 注意: 这只是"保护", 不宣称 suspend 流程已可交付 —— 真实唤醒
+	 * 仍然无法验证, 验证手段只有 pm_test=devices 的干跑路径。
+	 */
+	if (ov8858->streaming) {
+		dev_err(dev,
+			"refuse system suspend while streaming (-EBUSY): stop the stream first\n");
+		return -EBUSY;
+	}
 	if (ov8858->powered) {
-		ov8858_sm_stop_stream(ov8858);
 		ov8858_sm_power_off(ov8858);
 	}
 	return 0;

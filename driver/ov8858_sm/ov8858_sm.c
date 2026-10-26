@@ -443,8 +443,14 @@ static int ov8858_sm_get_fmt(struct v4l2_subdev *sd,
 {
 	struct ov8858_sm *ov8858 = container_of(sd, struct ov8858_sm, subdev);
 
+	/* 同 set_fmt: pad 防御 + TRY 的 cfg 判空, 否则管线传播路径可 Oops */
+	if (fmt->pad != 0)
+		return -EINVAL;
+
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
 #ifdef CONFIG_VIDEO_V4L2_SUBDEV_API
+		if (!cfg)
+			return -EINVAL;
 		fmt->format = *v4l2_subdev_get_try_format(sd, cfg, fmt->pad);
 #else
 		return -ENOTTY;
@@ -477,11 +483,20 @@ static int ov8858_sm_set_fmt(struct v4l2_subdev *sd,
 	 */
 	want_1080p = (fmt->format.width == 1920 && fmt->format.height == 1080);
 
-	/* 无论 TRY 还是 ACTIVE,都先按请求把 fmt 夹到最近的支持模式 */
+	/* pad 防御 + TRY 的 cfg 判空:
+	 * 管线传播(dphy/rkcif 协商)可能带越界 pad 或 NULL cfg 进来,
+	 * 直接解引用 v4l2_subdev_get_try_format 会 Oops(v4l2-compliance
+	 * -m 实测打过: ov8858_sm_get_fmt+0x5c ← csi2_dphy_get_set_fmt)。 */
+	if (fmt->pad != 0)
+		return -EINVAL;
+
+	/*无论 TRY 还是 ACTIVE,都先按请求把 fmt 夹到最近的支持模式 */
 	ov8858_sm_fill_fmt_mode(want_1080p, &fmt->format);
 
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
 #ifdef CONFIG_VIDEO_V4L2_SUBDEV_API
+		if (!cfg)
+			return -EINVAL;
 		*v4l2_subdev_get_try_format(sd, cfg, fmt->pad) = fmt->format;
 		return 0;
 #else
@@ -591,7 +606,25 @@ static int ov8858_sm_enum_frame_interval(struct v4l2_subdev *sd,
 					 struct v4l2_subdev_pad_config *cfg,
 					 struct v4l2_subdev_frame_interval_enum *fie)
 {
+	bool size_ok = false;
+	int i;
+
 	if (fie->pad != 0)
+		return -EINVAL;
+
+	/*
+	 * 帧间隔必须按尺寸回答: rkcif 的 video 节点把
+	 * VIDIOC_ENUM_FRAMEINTERVALS 原样转发到 subdev(capture.c:3608),
+	 * 不校验宽高的话, 任意无效尺寸(如 63x64)也会拿到帧间隔 ——
+	 * v4l2-compliance 的 ENUM_FMT/FRAMESIZES/FRAMEINTERVALS 项会抓这个。
+	 */
+	for (i = 0; i < ARRAY_SIZE(ov8858_sm_frmsizes); i++)
+		if (fie->width == ov8858_sm_frmsizes[i].width &&
+		    fie->height == ov8858_sm_frmsizes[i].height) {
+			size_ok = true;
+			break;
+		}
+	if (!size_ok)
 		return -EINVAL;
 
 	if (fie->index >= ARRAY_SIZE(ov8858_sm_timings))

@@ -17,4 +17,4 @@ A2/A5 wedge 后执行 1 次重启(预算 2 次内):重启后 st_burn 2/2 OK(fail
 
 ## 长稳(启动于矩阵完成时)
 
-`run_3a_stack.sh 7200 /root/soak3a`:2h soak,**3A 常驻形态**(此前 2026-10-25 的 soak2h 是停 3A 形态)。收集:`ssh rk3568 ssh rkboard tail /root/soak3a/samples.csv`。
+`run_3a_stack.sh 7200 /root/soak3a`:**已完成**——120 有效样本,运行 7200s,**80 个事件全部落盘**(脚本结束行确认),3A 全程 active 未动。RSS 1.25~43.5MB 有界波动(与停 3A 形态的 soak2h 同型,无单调增长),fd 恒 14(一次瞬时 15=事件文件打开竞态,首样本 3=采样器与进程启动竞态伪值)。**诚实口径:该脚本未采样温度列**(与 soak_monitor.sh 的差异),温度证据以 soak2h(40.6~46.1°C)为参考。文件:`soak3a-samples.csv`(列:unix,i,RSS,fd,事件数,rtsp 状态行)。

@@ -1,0 +1,5 @@
+# evrec pid=1141 3A=active start=1718656281 secs=150
+1718656281,0,4,4,0,
+1718656342,60,35848,14,0,rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+1718656402,120,28440,14,1,rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+# stack 结束: 有效样本 3 行, 运行 180 秒, 事件 2 个, 3A 全程未动

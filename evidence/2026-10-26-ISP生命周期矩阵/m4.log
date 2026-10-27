@@ -1,0 +1,29 @@
+== A1补: RTSP 实拉流(VM lat_probe 会从外面连) ==
+(等外部 RTSP 拉流 15s)
+rtsp: 客户端开始播放
+== A6: fault-sim 第400次 DQBUF 注入失败, 3A active 下恢复 ==
+>>> [fault-sim] 第 400 次 DQBUF 注入失败
+>>> 链路故障, 开始恢复(上限 2 次)
+>>> 恢复 第 1/2 次: 重开设备 成功
+>>> 恢复成功, 继续采集(frame_seq 从 398 起)
+>>> 链路稳定 30 帧, 恢复计数复位
+rtsp: clients=0 sent=69 drop=0 disc=0 fds=14
+== A2: 采流中 systemctl stop rkaiq_3A ==
+-- evrec 反应(--recover 尝试) --
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+>>> [fault-sim] 第 400 次 DQBUF 注入失败
+DQBUF: Input/output error
+>>> 链路故障, 开始恢复(上限 2 次)
+>>> 恢复 第 1/2 次: 重开设备 成功
+>>> 恢复成功, 继续采集(frame_seq 从 398 起)
+>>> 链路稳定 30 帧, 恢复计数复位
+-- 60s 后最终状态 --
+rtsp-ring: in=663 drop=0 (深度上限 8)
+rtsp: clients=0 sent=69 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=69 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=69 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=69 drop=0 disc=0 fds=14
+>>> 收到 SIGTERM, 已停止
+== A5: 脏态独立验证(st_burn 3 轮) ==
+CYCLE cycles=3 ok=0 fail=3 fail_pct=100.0 ff_min=-1 ff_avg=-1 ff_p50=-1 ff_max=-1
+ST_RC=0

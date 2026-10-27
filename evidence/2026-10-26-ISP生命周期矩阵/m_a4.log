@@ -1,0 +1,70 @@
+>>> 采集 /dev/video5 1920x1080,pre=2s post=1s ring=32MB gop=22
+>>> RTSP 监听 :8554 (单客户端模式)
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=71 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+>>> 触发 seq=144 ts=9972.4ms -> pre_i=110 pre_seq=110 (ring_cnt=145 head=0 pushed=145)
+rtsp-ring: in=146 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+>>> NPU det_total=0 det_max=0 score_max=0.000
+>>> 写出 /root/m_a4_20240618-043515-00.h264 (51 帧, 触发帧 #34) + /root/m_a4_20240618-043515-00.json
+>>> 事件 1 完成, 继续等待下一个事件
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=221 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=296 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+>>> 触发 seq=325 ts=22034.9ms -> pre_i=125 pre_seq=286 (ring_cnt=165 head=0 pushed=165)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+>>> NPU det_total=0 det_max=0 score_max=0.000
+>>> 写出 /root/m_a4_20240618-043515-01.h264 (56 帧, 触发帧 #39) + /root/m_a4_20240618-043515-01.json
+>>> 事件 2 完成, 继续等待下一个事件
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=371 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=446 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+>>> 触发 seq=505 ts=34034.7ms -> pre_i=120 pre_seq=462 (ring_cnt=164 head=0 pushed=164)
+rtsp-ring: in=521 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+>>> NPU det_total=0 det_max=0 score_max=0.000
+>>> 写出 /root/m_a4_20240618-043515-02.h264 (60 帧, 触发帧 #43) + /root/m_a4_20240618-043515-02.json
+>>> 事件 3 完成, 继续等待下一个事件
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=596 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=671 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+>>> 收到 SIGTERM, 已停止

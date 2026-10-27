@@ -81,3 +81,28 @@ if (!ret) v4l2_warn(..., "waiting on params stream on event timeout");
 1. 确认 `systemctl is-active rkaiq_3A` = inactive(且未启动过);
 2. `v4l2-ctl -d /dev/video5 --stream-count=60` → 预期 PASS(15 fps);
 3. 完成后 `systemctl enable rkaiq_3A` 恢复默认(下一次 boot 再验 A1)。
+
+## E2 结果(2026-10-27,已确认)
+
+- 前提:`systemctl disable rkaiq_3A` 后重启 → `3A enabled=disabled active=inactive`、`params event` 计数 0;
+- `v4l2-ctl -d /dev/video5 --stream-count=60` → **PASS**:15.00 fps,RC=0,dmesg 无 `params stream on event`/`rkisp_stream_stop`/`timeout`。
+
+⇒ **"3A 从未在本 boot 启动"时,不重启直接采是安全的**;A4 成立的前提就是这一条。
+
+## A2 复测(2026-10-27,修正旧表述)
+
+- 序列:3A active → 后台长流 → `systemctl stop rkaiq_3A` → 观察 4 s;
+- 结果:**在跑的流立即停止产出**——采集进程 CPU ticks 15 → 15(零增长),阻塞在 DQBUF;
+  终止该进程 → `rkisp_stream_stop id:0 timeout`;新开流 **RC=124**(A5 复现)。
+- **旧表述"在跑的流暂时无恙"作废**:停 3A 瞬间帧就停了,只是进程还挂着没报错。
+
+## 最终模型(#52 实测,A1/A2/A4/A4′/E1/E2)
+
+| 前提 | 直接采集 | 依据 |
+|---|---|---|
+| 3A 常驻(active) | **可用** | A1(60 帧 15.00 fps) |
+| 3A 本 boot 从未启动(disabled) | **可用** | E2(60 帧 15.00 fps) |
+| 3A 启动过 → stop | **wedge**(params 超时 + STREAMOFF 超时) | A4′、E1 |
+| 采流中 stop 3A | **帧立即停** → STREAMOFF 超时 → wedge | A2 |
+
+恢复手段只有重启。机制见 §源码级机制。

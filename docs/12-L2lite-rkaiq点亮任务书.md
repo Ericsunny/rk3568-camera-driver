@@ -63,6 +63,11 @@ scp 拷回,YUView 并排对比 frame0 vs frame_iq,截图。
 ## ④ 预测题(含两笔上阶段欠债)
 
 1. **(还债·重答)** 上阶段你答 video0/video1 之别时写"驱动写失败不上报 vb2 桥,sensor 按老状态出货"——这句其实描述的是另一个现象。先用一句话说清你当时想描述什么(提示:s_stream 首写失败但流未断,那 sensor 到底在不在按新状态出货?读 09 复盘 §2 的 dmesg 再答);然后正式答:**mainpath / selfpath / rawwr0-3 三类节点的分工各是什么,4K 第一帧为什么必须 mainpath**
+> **2026-10-27 勘误(节点号)**:本任务书正文里的 "video7=stats / video8=params" 是早期枚举,**已作废**。
+> 在 #52 内核上实测:`/dev/video12`=`rkisp-statistics`(META_CAPTURE)、`/dev/video13`=`rkisp-input-params`(META_OUTPUT),
+> `video7/video8` 实为 `rkisp_rawwr0/rawwr2`。换内核后用 `v4l2-ctl --info` 的 Card type 复核,不要硬编码。
+> 详见 docs/29 §10.3。
+
 2. rkaiq 跑起来后,video7(statistics)和 video8(params)会被**谁**打开?你的抓帧程序还要不要碰它们?为什么?(提示:硬件统计的消费者)
 3. IQ JSON 里,改 `blc`(黑电平补偿)会改变画面什么?改 `ccm`(色彩矩阵)呢?各对应生图的哪个症状?
 4. **(还债)** 抓帧得到全 0x00 文件的**四类可能原因**+每种用什么手段区分(dmesg 关键字/od 看什么/多帧互比)

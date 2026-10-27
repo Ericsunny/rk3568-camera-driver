@@ -75,6 +75,9 @@
 **边界**:15 次冷启动均为同一块板、45 分钟出流为单次长跑,只覆盖这一个故障模式,不代表板级硬件(供电/eMMC)已被全面排除;合规检查仅部分通过(5/2/2)且发现厂商 `vb2_dma_sg` Oops,不能写成"compliance 通过";
 `driver/patches/rkcif-null-check.patch` 是独立的厂商代码加固补丁,**不属于已验收的 #52 修复,本轮未部署**。
 
+**3A 生命周期检查**:`tools/check_3a_lifecycle.sh` —— 默认安全模式验 A1(3A 常驻可开流);
+`--wedge --yes` 才会跑 A2 红线测试(会让 ISP wedge,必须重启)。规则与机制见 `docs/29 §10`。
+
 **回归门禁(改 get_fmt/set_fmt 后必须过)**:`tools/gate_camera_boot.sh` —— 摄像头在位冷启动后执行,
 校验 `uname` 含期望内核标识、`Detected OV8858 id 0x8858`、无 `sensor fmt invalid` / `rkcif_set_fmt` / `Kernel panic`、
 `media-ctl -p` 的 ENABLED 链路 ≥12;任一不满足退出码非 0。

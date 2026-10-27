@@ -86,3 +86,26 @@ media-ctl -d /dev/media1 --set-v4l2 '"rkisp-isp-subdev":2[fmt:YUYV8_2X8/1920x108
 
 - 1080p 尝试后 ISP 再次 wedge(`rkisp_stream_stop timeout`),需重启恢复;
 - 已 `systemctl enable rkaiq_3A` 恢复默认(重启后 3A 自动 active)。
+
+## 8. E0 探针结果(2026-10-27,定点到 sensor MIPI 输出)
+
+按用户 E0 规格做定位(未改内核,用驱动自带日志 + 中断计数 + 静态表对比):
+
+| 假设 | 判定 | 依据 |
+|---|---|---|
+| 3A 生命周期干扰 | **排除** | 3A `disabled/inactive`(本 boot 从未启动)下同样 0 帧 |
+| `write reg array error` = 表写失败 | **排除** | 该日志来自 `imx415_write_array()` 的 `if (!regs)`,而 `global_reg_list` 在 2-lane 模式里本就是 NULL;`reg_list` 随后照常写(`imx415.c:2696`) |
+| 模式选择错误 | **排除** | dmesg:`imx415_find_best_fit: cur_best_fit(1)`、`set fmt: cur_mode: 1944x1096, hdr: 0, bpp: 10`、`mipi_freq_idx(1)` |
+| DPHY 速率 | **排除** | `rockchip-csi2-dphy1: dphy1, data_rate_mbps 891`(与 idx=1 一致) |
+| sensor 是否输出数据 | **确认没有** | 流式期间 `rockchip-mipi-csi2` 两路 IRQ 计数 **增量 0**;`s_stream: 1. 1944x1096` 已进流 |
+
+**结论**:sensor 进入 1080p 模式、dphy 配好,但 MIPI 上无数据 → 问题在 sensor 的 1080p 输出通路(寄存器表/时序)。
+
+静态表对比(1080p 141 项 vs 4K 131 项):
+- 仅 4K 有:`0x3051 = 0x07`(SHR0 高字节,驱动随后会按曝光重写,疑无关);
+- 仅 1080p 有:`0x301c=0x04`、`0x3020/21/22=0x01`、`0x3024/25=0x08ca`(VTS 2250,设计如此)、`0x3034=0x05`、`0x30d9/30da=0x02/0x01`、`0x4023=0x00`。
+
+## 9. 下一步(E0 继续,需重启后做)
+
+在**流式期间**用 `i2cget` 回读上述寄存器(以及 0x3000/0x3001 等模式/待机位),与 4K 模式的同一组值对照,
+找出"1080p 模式下取值异常"的那一条;若一天内无法定位到具体寄存器,按时间盒转方案 2(暂停 HDR,记为独立驱动任务)。

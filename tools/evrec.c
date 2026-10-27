@@ -2566,7 +2566,10 @@ int main(int argc, char **argv)
 		else if (!strcmp(argv[i], "--pre")) pre_sec = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--post")) post_sec = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--ring-mb")) ring_limit = (size_t)atoi(argv[++i]) << 20;
-		else if (!strcmp(argv[i], "-o")) out = argv[++i];
+		else if (!strcmp(argv[i], "-o")) {
+			out = argv[++i];
+			snprintf(g_out_base, sizeof(g_out_base), "%s", out);
+		}
 		else if (!strcmp(argv[i], "--trigger")) g_trig_path = argv[++i];
 		else if (!strcmp(argv[i], "--kbps")) kbps = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--detect")) g_detect = 1;
@@ -2924,6 +2927,10 @@ int main(int argc, char **argv)
 			g_trigger = 0;
 			trigger_i = pre_i = end_i = -1;
 			g_pre_seq = 0;
+		}
+		else {
+			g_trigger = 0;   /* S2: 触发已消费; 事件延长由 last_detect_ms 判定,
+			                 * 后续命中不再重开文件 */
 		}
 		/* S1(docs/37 §3.1): 事件结束 = 目标离开(最近命中 + post 窗口),
 		 * 不再锚定首次触发时刻;检测漏帧不会把持续目标拆成碎事件。

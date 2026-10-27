@@ -49,8 +49,10 @@ while [ "$i" -lt "$SECS" ] && kill -0 "$EPID" 2>/dev/null; do
 	i=$((i + INTERVAL))
 done
 
-kill "$TPID" 2>/dev/null
-kill -TERM "$EPID" 2>/dev/null
-sleep 3
-echo "# soak 结束: 有效样本 $SCOUNT 行, 运行 $i 秒, 事件 $(ls "$DIR"/ev_*.h264 2>/dev/null | wc -l) 个" >> "$DIR/samples.csv"
-echo "soak 完成: $DIR/samples.csv (有效样本 $SCOUNT 行, 运行 $i 秒, 事件 $(ls "$DIR"/ev_*.h264 2>/dev/null | wc -l))"
+[ -n "$TPID" ] && kill "$TPID" 2>/dev/null
+if [ -z "$ATTACH_PID" ]; then
+	kill -TERM "$EPID" 2>/dev/null
+	sleep 3
+fi
+echo "# soak 结束: 有效样本 $SCOUNT 行, 运行 $i 秒" >> "$DIR/samples.csv"
+echo "soak 完成: $DIR/samples.csv (有效样本 $SCOUNT 行, 运行 $i 秒)"

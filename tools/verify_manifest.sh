@@ -9,7 +9,7 @@ chk() { # chk <路径> <期望md5前8位或全值>
   fi
   got=$(md5sum "$1" | cut -d' ' -f1)
   case "$got" in
-    "$2"*) echo "OK    $1 ${2:0:8}..";;
+    "$2"*) echo "OK    $1 $(echo $2 | cut -c1-8)..";;
     *) echo "DIFF  $1 期望 $2 实得 $got"; FAIL=1;;
   esac
 }

@@ -63,3 +63,26 @@ media-ctl -d /dev/media1 --set-v4l2 '"rkisp-isp-subdev":2[fmt:YUYV8_2X8/1920x108
 
 ⇒ **1080p 基线必须在 3A 从未启动的环境里做**(`systemctl disable rkaiq_3A` + 重启,即 A4/E2 路径),
 这既是生命周期规则的要求,也是唯一不 wedge 的路径。已停用 3A,等重启后补测。
+
+## 6. 1080p 基线结论:被厂商 1080p 模式挡住(重要)
+
+在 **3A 从未启动**(`disabled/inactive`)的干净环境下,按 §5 设好整条管线(拓扑一致:
+`1944×1096 → crop(12,8)/1920×1080 → pad2 YUYV 1920×1080`)后:
+
+- `st_burn -w 1920 -h 1080 -t 30` → **0 帧 / loss 100%**,dmesg `rkisp_stream_stop id:0 timeout`;
+- sensor 侧:`s_stream: 1. 1944x1096, hdr: 0, bpp: 10` → **`write reg array error` ×2** →
+  `write reg array, sleep 30ms` 重试 → 随后 `set vblank 0x482 vts 2250`、`set exposure`、`set analog gain`;
+- **CSI/MIPI 侧无任何 error/overflow/fifo 日志**。
+
+判读:sensor 的 1080p 寄存器表(驱动内 `imx415_linear_10bit_1920x1080_891M_regs_2lane`,模式 1944×1096)
+在本板**没能完成写入/没真正切到 1080p 输出**,于是 ISP 等不到 1944 宽的帧 → 0 帧。
+4K 模式(3864×2192)同路径正常,排除 I2C 硬件问题。
+
+**对 HDR 的影响(关键)**:`docs/26` 的 HDR 派生表以这张 1080p 表为基底、尺寸 1944×1096。
+**基底模式本身在本板不出帧,HDR 的 1080p 前提不成立** —— HDR 时间盒的第一步不应是 op_mode 矩阵,
+而是先把"1080p 线性模式能出帧"这件事解决(查厂商表/补表)。
+
+## 7. 当前状态
+
+- 1080p 尝试后 ISP 再次 wedge(`rkisp_stream_stop timeout`),需重启恢复;
+- 已 `systemctl enable rkaiq_3A` 恢复默认(重启后 3A 自动 active)。

@@ -1,0 +1,61 @@
+name: host-static-checks
+on:
+  push:
+    paths: [ 'tools/**', 'mini3a/**', '.github/**' ]
+  pull_request:
+    paths: [ 'tools/**', 'mini3a/**', '.github/**' ]
+
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: shell 语法检查(sh -n,全部脚本)
+        run: |
+          rc=0
+          for f in $(git ls-files '*.sh'); do
+            if sh -n "$f"; then echo "OK  $f"; else echo "FAIL $f"; rc=1; fi
+          done
+          exit $rc
+
+      - name: shellcheck(有则报,不阻断)
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck >/dev/null
+          for f in $(git ls-files '*.sh'); do
+            shellcheck -S warning "$f" || true
+          done
+
+      - name: python 语法检查(py_compile)
+        run: |
+          rc=0
+          for f in $(git ls-files '*.py'); do
+            if python3 -m py_compile "$f"; then echo "OK  $f"; else echo "FAIL $f"; rc=1; fi
+          done
+          exit $rc
+
+      - name: C 纯 glibc 工具组语法检查(-fsyntax-only)
+        run: |
+          rc=0
+          # 仅纯 glibc 工具:不依赖板端 rockchip/MPP/RKNN 头(那些只能在板上编译)
+          for f in tools/focus_score.c tools/hdr_demo.c tools/st_burn.c \
+                   tools/reg_switch.c tools/fi_probe.c tools/fi_test.c \
+                   tools/streamoff_test.c tools/tryfmt_test.c; do
+            [ -f "$f" ] || continue
+            if gcc -fsyntax-only -Wall "$f" 2>warn.txt; then
+              echo "OK  $f ($(wc -l < warn.txt) warnings)"
+            else
+              echo "FAIL $f"; cat warn.txt; rc=1
+            fi
+          done
+          exit $rc
+
+      - name: 补丁文件可应用性(patch --dry-run 仅格式)
+        run: |
+          for p in driver/patches/*.patch; do
+            [ -f "$p" ] || continue
+            # 只验证 unified diff 语法(目标树不在主机上,用 --batch 校验格式)
+            patch --dry-run --batch -p1 -d / < "$p" >/dev/null 2>&1 || \
+              grep -q "^--- " "$p" || { echo "FAIL patch format: $p"; exit 1; }
+            echo "OK  $p (format)"
+          done

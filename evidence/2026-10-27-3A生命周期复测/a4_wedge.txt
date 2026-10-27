@@ -1,0 +1,26 @@
+[   40.112193] imx415 1-001a: set analog gain 0x22
+[   40.379208] imx415 1-001a: set analog gain 0x23
+[   40.645597] imx415 1-001a: set analog gain 0x24
+[   40.850299] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[   40.852400] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[   40.852418] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[   56.344250] rkisp-vir0: waiting on params stream on event timeout
+[   56.345550] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[   56.345586] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[   56.345595] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[   56.345602] imx415 1-001a: write reg array error
+[   56.434260] imx415 1-001a: write reg array, sleep 30ms
+[   56.435844] imx415 1-001a: set vblank 0x3a vts 2250
+[   56.437154] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[   56.438043] imx415 1-001a: set analog gain 0x24
+[   95.730868] rkisp-vir0: rkisp_stream_stop id:0 timeout
+[   95.730912] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[   95.732473] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[   95.732481] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[  104.267560] rkisp-vir0: waiting on params stream on event timeout
+[  104.268821] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[  104.268858] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[  104.268866] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[  104.268873] imx415 1-001a: write reg array error
+[  104.356615] imx415 1-001a: write reg array, sleep 30ms
+[  104.358040] imx415 1-001a: set vblank 0x3a vts 2250

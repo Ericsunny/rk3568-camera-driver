@@ -1,0 +1,205 @@
+>>> NPU 就绪 640x640 nout=9
+>>> 采集 /dev/video5 1920x1080,pre=2s post=1s ring=32MB gop=22
+>>> RTSP 监听 :8554 (单客户端模式)
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+[npu] in: sz=1228800 mean=127 rgb0=2/2/2 int8_0=-126
+[npu] out0 size=409600 b0..b7=8 -27 -39 -46 -54 -56 -56 -59
+[npu] in: sz=1228800 mean=127 rgb0=0/1/0 int8_0=-128
+[npu] out0 size=409600 b0..b7=8 -26 -39 -46 -54 -56 -57 -58
+[npu] in: sz=1228800 mean=128 rgb0=0/1/0 int8_0=-128
+librga fail to get driver version! Compatibility mode will be enabled.
+
+rga_api version 1.9.2_[1]
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 检测连击开始 streak=1 score=0.614 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.745
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 检测连击开始 streak=1 score=0.608 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.745
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=29 ts=3363.0ms -> pre_i=0 pre_seq=0 (ring_cnt=30 head=0 pushed=30)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=62 det_max=3 score_max=0.835
+>>> RGA 缩放均值 Y=80.8 (640x360, 采样 604800)
+>>> 写出 /root/m_a1_20240618-043642-00.h264 (42 帧, 触发帧 #29) + /root/m_a1_20240618-043642-00.json
+>>> 事件 1 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.773 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.814
+>>> 阶段耗时(均值, 48 帧): RGA 5.71 + RKNN 76.12 + 编码 15.72 = 97.55 ms/帧 -> 10.3 fps
+rtsp-ring: in=48 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=71 ts=7477.4ms -> pre_i=2 pre_seq=44 (ring_cnt=30 head=0 pushed=30)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=135 det_max=3 score_max=0.835
+>>> RGA 缩放均值 Y=106.2 (640x360, 采样 1209600)
+>>> 写出 /root/m_a1_20240618-043642-01.h264 (40 帧, 触发帧 #27) + /root/m_a1_20240618-043642-01.json
+>>> 事件 2 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.800 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.752
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 99 帧): RGA 5.70 + RKNN 76.30 + 编码 15.60 = 97.60 ms/帧 -> 10.2 fps
+rtsp-ring: in=99 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=113 ts=11633.2ms -> pre_i=4 pre_seq=88 (ring_cnt=30 head=0 pushed=30)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=217 det_max=3 score_max=0.835
+>>> RGA 缩放均值 Y=114.9 (640x360, 采样 1814400)
+>>> 写出 /root/m_a1_20240618-043642-02.h264 (38 帧, 触发帧 #25) + /root/m_a1_20240618-043642-02.json
+>>> 事件 3 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.745 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.673
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 150 帧): RGA 5.65 + RKNN 76.31 + 编码 15.52 = 97.48 ms/帧 -> 10.3 fps
+rtsp-ring: in=150 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=155 ts=15661.3ms -> pre_i=6 pre_seq=132 (ring_cnt=30 head=0 pushed=30)
+>>> 检测连击开始 streak=1 score=0.626 (阈值 0.45, 需连续 3 帧)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.566 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.692
+>>> NPU det_total=305 det_max=3 score_max=0.835
+>>> RGA 缩放均值 Y=119.3 (640x360, 采样 2419200)
+>>> 写出 /root/m_a1_20240618-043642-03.h264 (36 帧, 触发帧 #23) + /root/m_a1_20240618-043642-03.json
+>>> 事件 4 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.632 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.712
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=197 ts=19825.0ms -> pre_i=8 pre_seq=176 (ring_cnt=30 head=0 pushed=30)
+>>> 阶段耗时(均值, 201 帧): RGA 5.66 + RKNN 76.49 + 编码 15.54 = 97.69 ms/帧 -> 10.2 fps
+rtsp-ring: in=201 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=391 det_max=3 score_max=0.850
+>>> RGA 缩放均值 Y=122.0 (640x360, 采样 3024000)
+>>> 写出 /root/m_a1_20240618-043642-04.h264 (34 帧, 触发帧 #21) + /root/m_a1_20240618-043642-04.json
+>>> 事件 5 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.800 (阈值 0.45, 需连续 3 帧)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 检测触发 streak=3 score=0.793
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=239 ts=23992.7ms -> pre_i=10 pre_seq=220 (ring_cnt=30 head=0 pushed=30)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 252 帧): RGA 5.67 + RKNN 76.60 + 编码 15.54 = 97.81 ms/帧 -> 10.2 fps
+rtsp-ring: in=252 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=467 det_max=3 score_max=0.850
+>>> RGA 缩放均值 Y=123.7 (640x360, 采样 3628800)
+>>> 写出 /root/m_a1_20240618-043642-05.h264 (32 帧, 触发帧 #19) + /root/m_a1_20240618-043642-05.json
+>>> 事件 6 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.779 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.773
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 检测连击开始 streak=1 score=0.835 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.712
+>>> 检测连击开始 streak=1 score=0.786 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.667
+>>> 触发 seq=281 ts=28069.3ms -> pre_i=12 pre_seq=264 (ring_cnt=30 head=0 pushed=30)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=548 det_max=3 score_max=0.850
+>>> RGA 缩放均值 Y=125.0 (640x360, 采样 4233600)
+>>> 写出 /root/m_a1_20240618-043642-06.h264 (30 帧, 触发帧 #17) + /root/m_a1_20240618-043642-06.json
+>>> 事件 7 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.800 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.807
+>>> 阶段耗时(均值, 304 帧): RGA 5.66 + RKNN 76.31 + 编码 15.54 = 97.51 ms/帧 -> 10.3 fps
+rtsp-ring: in=304 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=323 ts=32091.2ms -> pre_i=14 pre_seq=308 (ring_cnt=30 head=0 pushed=30)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=630 det_max=3 score_max=0.850
+>>> RGA 缩放均值 Y=126.0 (640x360, 采样 4838400)
+>>> 写出 /root/m_a1_20240618-043642-07.h264 (28 帧, 触发帧 #15) + /root/m_a1_20240618-043642-07.json
+>>> 事件 8 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.626 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.706
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 356 帧): RGA 5.65 + RKNN 76.11 + 编码 15.53 = 97.29 ms/帧 -> 10.3 fps
+rtsp-ring: in=356 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=365 ts=36112.6ms -> pre_i=16 pre_seq=352 (ring_cnt=30 head=0 pushed=30)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=707 det_max=3 score_max=0.850
+>>> RGA 缩放均值 Y=126.7 (640x360, 采样 5443200)
+>>> 写出 /root/m_a1_20240618-043642-08.h264 (26 帧, 触发帧 #13) + /root/m_a1_20240618-043642-08.json
+>>> 事件 9 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.680 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.673
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 407 帧): RGA 5.65 + RKNN 76.04 + 编码 15.53 = 97.22 ms/帧 -> 10.3 fps
+rtsp-ring: in=407 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=407 ts=40208.1ms -> pre_i=18 pre_seq=396 (ring_cnt=30 head=0 pushed=30)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=788 det_max=3 score_max=0.850
+>>> RGA 缩放均值 Y=127.3 (640x360, 采样 6048000)
+>>> 写出 /root/m_a1_20240618-043642-09.h264 (24 帧, 触发帧 #11) + /root/m_a1_20240618-043642-09.json
+>>> 事件 10 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.779 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.759
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=449 ts=44304.8ms -> pre_i=20 pre_seq=440 (ring_cnt=30 head=0 pushed=30)
+>>> 阶段耗时(均值, 459 帧): RGA 5.65 + RKNN 75.97 + 编码 15.51 = 97.13 ms/帧 -> 10.3 fps
+rtsp-ring: in=459 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=869 det_max=3 score_max=0.871
+>>> RGA 缩放均值 Y=127.8 (640x360, 采样 6652800)
+>>> 写出 /root/m_a1_20240618-043642-10.h264 (22 帧, 触发帧 #9) + /root/m_a1_20240618-043642-10.json
+>>> 事件 11 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.857 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.871
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=491 ts=48338.1ms -> pre_i=0 pre_seq=462 (ring_cnt=30 head=0 pushed=30)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=959 det_max=3 score_max=0.879
+>>> RGA 缩放均值 Y=128.2 (640x360, 采样 7257600)
+>>> 写出 /root/m_a1_20240618-043642-11.h264 (42 帧, 触发帧 #29) + /root/m_a1_20240618-043642-11.json
+>>> 事件 12 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.871 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.828
+>>> 阶段耗时(均值, 511 帧): RGA 5.65 + RKNN 75.84 + 编码 15.50 = 96.98 ms/帧 -> 10.3 fps
+rtsp-ring: in=511 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=533 ts=52378.3ms -> pre_i=2 pre_seq=506 (ring_cnt=30 head=0 pushed=30)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=1058 det_max=3 score_max=0.879
+>>> RGA 缩放均值 Y=128.6 (640x360, 采样 7862400)
+>>> 写出 /root/m_a1_20240618-043642-12.h264 (40 帧, 触发帧 #27) + /root/m_a1_20240618-043642-12.json
+>>> 事件 13 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.850 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.857
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 563 帧): RGA 5.65 + RKNN 75.80 + 编码 15.49 = 96.94 ms/帧 -> 10.3 fps
+rtsp-ring: in=563 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=575 ts=56414.8ms -> pre_i=4 pre_seq=550 (ring_cnt=30 head=0 pushed=30)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=1144 det_max=3 score_max=0.886
+>>> RGA 缩放均值 Y=128.9 (640x360, 采样 8467200)
+>>> 写出 /root/m_a1_20240618-043642-13.h264 (38 帧, 触发帧 #25) + /root/m_a1_20240618-043642-13.json
+>>> 事件 14 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.786 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.793
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 613 帧): RGA 5.65 + RKNN 75.77 + 编码 15.50 = 96.92 ms/帧 -> 10.3 fps
+>>> 收到 SIGTERM, 已停止

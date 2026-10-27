@@ -7,3 +7,7 @@
 *.nv12 binary
 *.rknn binary
 *.ko binary
+
+# 补丁文件是 unified diff:上下文行以空格+Tab 开头、空行表示为一行空格,
+# 这是格式本身,不是脏空白;因此对这些路径关闭 whitespace 检查。
+*.patch -whitespace

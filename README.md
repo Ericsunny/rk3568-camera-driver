@@ -55,6 +55,34 @@
 
 > 一句口径:**每个数字都有对应的测量方法([docs/31 对照表](docs/31-程序与证据对照表.md));没有测过的,不写在结果里。**
 
+### 故障 → 根因 → 修复 → 验证(2026-10-27)
+
+一段曾被误判为"板级硬件间歇故障"的 3 天事故,最终定位为**我们自己引入的过度防御**。完整复盘见 [docs/36](docs/36-硬件事故与恢复手册.md)。
+
+| 环节 | 证据 |
+|---|---|
+| 现象 | 摄像头在位时开机 1.9 s panic,**3/3 确定性复现**;拔掉摄像头则干净引导 |
+| 崩溃点 | `rkcif_set_fmt+0x2cc` NULL 解引用 → `Kernel panic - Attempted to kill init` |
+| 调用约定 | 本 BSP 的 rkcif 把**流编号当 pad** 传入(`get_input_fmt(..., stream->id, ...)`,video0~3 → pad 0~3) |
+| 触发条件 | #49/#51 的 `ov8858_sm` 对 **ACTIVE** 路径也做 `pad != 0 → -EINVAL`,流 1/2/3 全被拒 → `get_input_fmt()` 返回 NULL → 厂商代码不查空 |
+| 为什么以前没暴露 | video0 = pad 0 被放行,历史测试全部只用 video0 |
+| 修复 | #52(`04672f71`):ACTIVE 不再拒 pad(对齐同 SDK `imx415` 约定),**TRY 路径 `!cfg || pad != 0` 防御原样保留**;`enum_*` 未动 |
+| 验证 | 无摄像头冷启动 PASS;**带摄像头冷启动 15/15 PASS**(逐次台账 `evidence/2026-10-27-上电调试/cold-boot-ledger.csv`)(`Detected OV8858`、无 `sensor fmt invalid`、无 `rkcif_set_fmt`、到 `login:`、media 12 条链路 ENABLED);`media-ctl -p` ×3 零 Oops |
+
+证据目录:[`evidence/2026-10-27-上电调试/`](evidence/2026-10-27-上电调试/)(panic 全栈、通过日志、media 拓扑、A0 只读基线)。
+**回退**:`/boot/Image-4.19.232` 的 #51 备份在板上 `/root/Image.p51`、主机 `rk_recovery/backup+stage`(均 `48b72b8d`),
+出厂镜像备份 `/boot/Image-4.19.232.factory`(`ed86c707`)未动;dtb/extlinux 备份在 `/root/*.p51`。
+**边界**:15 次冷启动均为同一块板、45 分钟出流为单次长跑,只覆盖这一个故障模式,不代表板级硬件(供电/eMMC)已被全面排除;合规检查仅部分通过(5/2/2)且发现厂商 `vb2_dma_sg` Oops,不能写成"compliance 通过";
+`driver/patches/rkcif-null-check.patch` 是独立的厂商代码加固补丁,**不属于已验收的 #52 修复,本轮未部署**。
+
+**回归门禁(改 get_fmt/set_fmt 后必须过)**:`tools/gate_camera_boot.sh` —— 摄像头在位冷启动后执行,
+校验 `uname` 含期望内核标识、`Detected OV8858 id 0x8858`、无 `sensor fmt invalid` / `rkcif_set_fmt` / `Kernel panic`、
+`media-ctl -p` 的 ENABLED 链路 ≥12;任一不满足退出码非 0。
+
+**两处旧认知修正**:①引导链**确实加载** `/boot/initrd-4.19.232`(日志 `Freeing initrd memory: 23996K`),
+此前"extlinux 无 initrd 行即不加载"的推断作废;②`rk-kernel.dtb` 是**符号链接** → `dtb/rk3568-lubancat-2io.dtb`,
+与 `rk356x-yckj.dtb` **内容相同**(均 `ba47c41c`),不是两份不同设备树。
+
 ### 从哪开始读
 
 - 想复跑 → [`docs/33-总报告`](docs/33-总报告.md) §6(7 步顺序)或 [`docs/35-验收环境与复现命令`](docs/35-验收环境与复现命令.md)

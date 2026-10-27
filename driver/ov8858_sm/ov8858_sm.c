@@ -443,19 +443,30 @@ static int ov8858_sm_get_fmt(struct v4l2_subdev *sd,
 {
 	struct ov8858_sm *ov8858 = container_of(sd, struct ov8858_sm, subdev);
 
-	/* 同 set_fmt: pad 防御 + TRY 的 cfg 判空, 否则管线传播路径可 Oops */
-	if (fmt->pad != 0)
-		return -EINVAL;
-
+	/* TRY 路径保留双重防御: cfg 判空 + pad 边界。
+	 * v4l2_subdev_get_try_format 遇 NULL cfg / 越界 pad 就是原 Oops 根因
+	 * (v4l2-compliance -m 实测: ov8858_sm_get_fmt+0x5c ← csi2_dphy_get_set_fmt)。
+	 */
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
 #ifdef CONFIG_VIDEO_V4L2_SUBDEV_API
-		if (!cfg)
+		if (!cfg || fmt->pad != 0)
 			return -EINVAL;
 		fmt->format = *v4l2_subdev_get_try_format(sd, cfg, fmt->pad);
 #else
 		return -ENOTTY;
 #endif
 	} else {
+		/* ACTIVE 不校验 pad: 本 BSP 的 rkcif 把流编号当 pad 传入
+		 * (capture.c get_input_fmt: fmt.pad = stream->id, 0..3,
+		 * 开机对每条流都会查一次)。返回负值会被 get_input_fmt 判为
+		 * "sensor fmt invalid" 而返回 NULL, rkcif_set_fmt 不查空直接
+		 * 解引用 → init 被杀 → 开机 panic(2026-10-27 摄像头在位
+		 * 冷启动 1.9s 实证)。对齐同 SDK imx415 的约定: ACTIVE 一律
+		 * 应答当前格式, 非 0 pad 仅 dbg 留痕。
+		 */
+		if (fmt->pad != 0)
+			dev_dbg(sd->dev, "active get_fmt pad=%d (rkcif stream id)\n",
+				fmt->pad);
 		ov8858_sm_fill_fmt(ov8858, &fmt->format);
 	}
 
@@ -483,11 +494,13 @@ static int ov8858_sm_set_fmt(struct v4l2_subdev *sd,
 	 */
 	want_1080p = (fmt->format.width == 1920 && fmt->format.height == 1080);
 
-	/* pad 防御 + TRY 的 cfg 判空:
-	 * 管线传播(dphy/rkcif 协商)可能带越界 pad 或 NULL cfg 进来,
-	 * 直接解引用 v4l2_subdev_get_try_format 会 Oops(v4l2-compliance
-	 * -m 实测打过: ov8858_sm_get_fmt+0x5c ← csi2_dphy_get_set_fmt)。 */
-	if (fmt->pad != 0)
+	/* TRY 的防御提前(cfg 判空 + pad 边界, 同 get_fmt);ACTIVE 不再拒
+	 * 非 0 pad: rkcif 以流编号当 pad 的 BSP 约定下, ACTIVE 拒绝 =
+	 * 开机 panic(详见 get_fmt 注释)。ACTIVE 语义保持原样 —— 夹到
+	 * 最近支持模式 + 提交 is_1080p。
+	 */
+	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY &&
+	    (!cfg || fmt->pad != 0))
 		return -EINVAL;
 
 	/*无论 TRY 还是 ACTIVE,都先按请求把 fmt 夹到最近的支持模式 */
@@ -495,14 +508,15 @@ static int ov8858_sm_set_fmt(struct v4l2_subdev *sd,
 
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
 #ifdef CONFIG_VIDEO_V4L2_SUBDEV_API
-		if (!cfg)
-			return -EINVAL;
 		*v4l2_subdev_get_try_format(sd, cfg, fmt->pad) = fmt->format;
 		return 0;
 #else
 		return -ENOTTY;
 #endif
 	}
+
+	if (fmt->pad != 0)
+		dev_dbg(sd->dev, "active set_fmt pad=%d (ignored)\n", fmt->pad);
 
 	if (ov8858->streaming) {
 		dev_err(sd->dev, "set_fmt(ACTIVE) refused while streaming\n");

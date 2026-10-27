@@ -807,6 +807,129 @@ static int is_key(const unsigned char *p, int len)
 	return 0;
 }
 
+/* ---------------- S2: 流式事件写入(docs/37 §3.3) ----------------
+ * 事件 = 临时文件(.part)打开后逐包 append;结束才 close+rename+JSON。
+ * pre-roll 在事件开启时从 ring 取(自最近 IDR);之后 ring_push 单点 append。
+ * 背压: 用户态 4MB 缓冲批量写, 不逐包 fsync; flush 失败/超时立即收尾当前
+ * 文件并停录(write_error), 绝不阻塞采集(docs/37 §3.5)。
+ * 注意: ring_push 在主循环线程内调用, writer 写失败只置标志, 文件收尾
+ * 延迟到主循环的事件状态机里做(避免 IO 在 push 路径上拖采集)。 */
+static FILE *g_ev_fp;			/* 当前事件 .part 文件 */
+static char g_ev_path[512];		/* 最终名(不含 .part) */
+static unsigned g_ev_start_seq;		/* 事件首包 seq(seq 去重用) */
+static int g_ev_have_first;		/* 已写过首个包 */
+static unsigned long g_ev_bytes;	/* 当前事件已写字节 */
+static double g_ev_open_ms;		/* 事件开启时刻 */
+static const unsigned EV_BUF_CAP = 4u << 20;
+static int g_ev_werr;			/* 写失败标志(主循环收尾时清) */
+static char g_out_base[512];		/* 输出前缀(main 里 -o 的值) */
+static unsigned g_ev_last_seq;		/* 已写入 ring 内容的最大 seq */
+
+static unsigned char ev_buf[4 << 20];	/* 用户态写缓冲(批量, 不逐包 fsync) */
+static unsigned ev_bn;
+
+static void ev_flush(void)
+{
+	if (ev_bn == 0)
+		return;
+	if (g_ev_fp && fwrite(ev_buf, 1, ev_bn, g_ev_fp) != ev_bn)
+		g_ev_werr = 1;
+	g_ev_bytes += ev_bn;
+	ev_bn = 0;
+}
+
+static void evw_write(const unsigned char *d, int len, unsigned seq)
+{
+
+	/* seq 过滤: 开启时已从 ring 写到 g_ev_last_seq, 之前的包跳过 */
+	if (seq <= g_ev_last_seq)
+		return;
+	g_ev_have_first = 1;
+
+	if (ev_bn + (unsigned)len > EV_BUF_CAP)
+		ev_flush();
+	if (ev_bn + (unsigned)len <= EV_BUF_CAP) {
+		memcpy(ev_buf + ev_bn, d, (size_t)len);
+		ev_bn += (unsigned)len;
+	} else {
+		/* 单包超缓冲(理论不会): 直写 */
+		if (g_ev_fp && fwrite(d, 1, (size_t)len, g_ev_fp) != (size_t)len)
+			g_ev_werr = 1;
+		g_ev_bytes += (unsigned)len;
+	}
+}
+
+/* S2: 事件开启 —— 开 .part, 从 ring 写 pre-roll(自 IDR 到 ring 尾),
+ * 并把 g_ev_last_seq 置为 ring 尾 seq; 之后 ring_push 的新包按 seq>last 过滤。 */
+
+static struct rec *ring_at(int i);	/* 前向声明 */
+static int evw_open(int pre_i)
+{
+	char path[560];
+	int i;
+	unsigned last = 0;
+
+	snprintf(g_ev_path, sizeof(g_ev_path), "%s-%02u", g_out_base,
+		 (unsigned)(g_events + 1));
+	snprintf(path, sizeof(path), "%s.part", g_ev_path);
+	g_ev_fp = fopen(path, "wb");
+	if (!g_ev_fp) {
+		fprintf(stderr, ">>> evw_open %s 失败: %s\n",
+			path, strerror(errno));
+		return -1;
+	}
+	g_ev_have_first = 0;
+	g_ev_bytes = 0;
+	g_ev_werr = 0;
+	g_ev_open_ms = now_ms(CLOCK_MONOTONIC);
+	/* pre-roll: pre_i(IDR) 到 ring 尾; 这些 seq 之后由 evw_write 过滤 */
+	for (i = (pre_i >= 0 ? pre_i : 0); g_ev_fp && i < ring_cnt; i++) {
+		struct rec *r = ring_at(i);
+		if (fwrite(r->data, 1, (size_t)r->len, g_ev_fp) != (size_t)r->len) {
+			g_ev_werr = 1;
+			break;
+		}
+		g_ev_bytes += (unsigned)r->len;
+		last = r->seq;
+	}
+	g_ev_last_seq = last;
+	return 0;
+}
+
+/* S2: 事件收尾 —— flush+close+rename+JSON。close_reason 由调用方给。 */
+static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
+{
+	char path[560], jpath[560];
+	FILE *j;
+	double now = now_ms(CLOCK_MONOTONIC);
+
+	ev_flush();
+	if (g_ev_fp && fclose(g_ev_fp) != 0)
+		g_ev_werr = 1;
+	g_ev_fp = NULL;
+	snprintf(path, sizeof(path), "%s.part", g_ev_path);
+	snprintf(jpath, sizeof(jpath), "%s.json", g_ev_path);
+	if (rename(path, g_ev_path) != 0) {
+		fprintf(stderr, ">>> rename %s 失败: %s\n",
+			path, strerror(errno));
+		return -1;
+	}
+	j = fopen(jpath, "w");
+	if (j) {
+		fprintf(j,
+			"{\"file\":\"%s.h264\",\"trigger_seq\":%u,"
+			"\"trigger_ts_ms\":%.1f,\"close_reason\":\"%s\","
+			"\"bytes\":%lu,\"duration_ms\":%.1f,"
+			"\"write_error\":%s}\n",
+			g_ev_path, trig_seq, trig_ts, reason,
+			g_ev_bytes, now - g_ev_open_ms,
+			g_ev_werr ? "true" : "false");
+		fclose(j);
+	}
+	g_events++;
+	return 0;
+}
+
 static void ring_push(unsigned char *d, int len, unsigned seq, unsigned pkt,
 		      int key, double cap_ms)
 {
@@ -831,6 +954,10 @@ static void ring_push(unsigned char *d, int len, unsigned seq, unsigned pkt,
 	ring_cnt++;
 	g_pushed++;
 	ring_bytes += (size_t)len;
+	/* S2: 事件进行中, 新包实时 append 到当前事件(单点挂在 ring_push,
+	 * 天然带 seq/key; 写失败只置 g_ev_werr, 由主循环收尾) */
+	if (g_ev_fp && g_ev_have_first)
+		evw_write(d, len, seq);
 }
 
 static struct rec *ring_at(int i)
@@ -2790,6 +2917,14 @@ int main(int argc, char **argv)
 			       trig_seq, trig_ts, pre_i, g_pre_seq,
 			       ring_cnt, ring_head, g_pushed);
 		}
+		/* S2: 事件开流式写入(pre-roll 从 pre_i 到 ring 尾;
+		 * 之后新包由 ring_push → evw_write 按 seq 过滤追加) */
+		if (evw_open(pre_i) != 0) {
+			fprintf(stderr, ">>> 事件写入器打开失败, 事件放弃\n");
+			g_trigger = 0;
+			trigger_i = pre_i = end_i = -1;
+			g_pre_seq = 0;
+		}
 		/* S1(docs/37 §3.1): 事件结束 = 目标离开(最近命中 + post 窗口),
 		 * 不再锚定首次触发时刻;检测漏帧不会把持续目标拆成碎事件。
 		 * close_reason 四值(target_left/max_duration/disk_low/sigterm)
@@ -2797,25 +2932,16 @@ int main(int argc, char **argv)
 		if (trigger_i >= 0 &&
 		    g_last_detect_ms > 0 &&
 		    now_ms(CLOCK_MONOTONIC) - g_last_detect_ms > post_sec * 1000.0) {
-			char outn[512];
-			int pi = pre_i, ok = 0;
+			int ok;
 
 			end_i = ring_cnt - 1;
-			/* 触发到此刻环形可能已前移 -> 按 seq 重新定位 */
-			if (g_pre_seq)
-				for (k = 0; k < ring_cnt; k++)
-					if (ring_at(k)->seq == g_pre_seq) { pi = k; break; }
-			if (pi >= 0) {
-				snprintf(outn, sizeof(outn), "%s-%02d", out, g_events);
-				ok = dump(outn, trig_seq, trig_ts, pi, end_i, w, h) == 0;
-			}
+			/* S2: 事件已在流式写入, 这里只收尾(flush+close+rename+JSON) */
+			ok = evw_close("target_left", trig_seq, trig_ts) == 0 && !g_ev_werr;
 			if (!ok) {
-				/* 落盘失败 = 真错误: 不计数, 也不再等下一个事件 */
 				fprintf(stderr, ">>> 事件落盘失败\n");
 				rc = 1;
 				break;
 			}
-			g_events++;
 			printf(">>> 事件 %d 完成, 继续等待下一个事件\n", g_events);
 			/* S1(docs/37 §3.4): 不再 ring_clear —— ring 照滚,
 			 * 下一个事件的 pre-roll 从这里取; 复位集合只收窄到

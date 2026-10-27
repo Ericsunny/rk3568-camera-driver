@@ -121,8 +121,9 @@ IMX415 的 HDR 是 DOL（Digital Overlap）：一帧内出长/短两次曝光，
 | 项 | 值 | 来源 |
 |---|---|---|
 | D-PHY 每 lane 上限 | **2499 Mbps** | `drivers/phy/rockchip/phy-rockchip-csi2-dphy-hw.c:288` 的 `rk3568_csi2_dphy_hw_hsfreq_ranges[]`，最高档 `{2499, 0x46}` |
-| 传感器可选 link 频率 | 297 / 446 / 743 / **891** / **1188** Mbps | `imx415.c:1774` `link_freq_items[]` |
+| 传感器可选 link 时钟 | 297 / 446 / 743 / 891 / 1188 MHz(`mipi_freq_idx` 0~4) | `imx415.c` `link_freq_items[]` |
 | 当前 4K linear 实际链路 | **891 Mbps/lane** | dmesg：`rockchip-csi2-dphy1: dphy1, data_rate_mbps 891` |
+| 口径说明 | `mipi_freq_idx` 是 `link_freq_items[]` 的**下标**;dphy 侧按 `data_rate_mbps = item × 2 / 1e6` 换算(`phy-rockchip-csi2-dphy.c:93`)。<br>故 **idx=1(446 MHz)→ 891 Mbps/lane**,与 dmesg 的 `data_rate_mbps 891` 是同一件事——**docs/26 的"891 Mbps/lane"与 HDR 表的 `mipi_freq_idx = 1` 不矛盾**。<br>换算表:idx0=594 / idx1=891 / idx2=1486 / idx3=1782 / idx4=2376 Mbps |
 | 当前 4K linear 实测帧率 | 11.6 fps（无 3A）/ 8.2 fps（有 3A） | `grab` 实测 |
 | 1080p linear 实测帧率 | 29.3 fps | docs/17 的 1080p 实验 |
 | 4K 模式时序 | HTS 8800、VTS 2250 | `imx415.c` 2-lane 表 `hts_def = 0x0898 * 2 * 2`、`vts_def = 0x08ca` |
@@ -172,7 +173,9 @@ DOL X2 下 ISP 每输出一帧要处理两份输入，所以：
 1. **路线 B 应该按 1080p DOL X2 @ ~15 fps 来投**，这个目标在 PHY 和 ISP 两侧都成立。
 2. **4K DOL X2 直接放弃**：MIPI 或 ISP 总有一侧顶不住，做出来也只有 6–7 fps。
 3. 附带结论：1080p linear 现在是 29.3 fps，改 HDR 后掉到 ~15 fps，**"分辨率减半换动态范围"等价于"帧率减半"**，取舍要在应用层定。
-4. 2-lane HDR 寄存器表需要把 link 定在 **1188 Mbps/lane**（对应 `mipi_freq_idx = 4`，驱动里已有这一档），这样 1080p30 有 14% 余量。
+4. 2-lane HDR 寄存器表若要把 link 提到更高档：`mipi_freq_idx = 4` 对应 **2376 Mbps/lane**（1188 MHz 时钟 ×2）；
+   1080p DOL X2 @30 fps 需要 1380 Mbps/lane，因此 **idx=2（1486 Mbps，余量 7.7%）已够**，idx=4 余量 72%。
+   （原文把 1188 MHz 写成了 "1188 Mbps"，单位差 2 倍，已勘误。）
 
 ---
 

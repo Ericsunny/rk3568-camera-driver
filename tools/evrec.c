@@ -458,6 +458,10 @@ static float g_det_score = 0.45f;   /* 触发所需分数 */
 static int g_det_frames = 3;        /* 连续命中帧数 */
 static int g_streak;
 static int g_det_announced;	    /* 本轮连击是否已打过"检测触发" */
+/* S1(事件治理,docs/37): 事件延长判定用 last_detect_ms,不用 streak ——
+ * 检测偶尔漏一帧会清 streak,但"目标是否持续在场"应以最近一次命中时间
+ * 加 post 窗口来判;streak 只保留触发门限语义。 */
+static double g_last_detect_ms; /* 最近一次检测命中(ms,同 ring ts 基准) */
 static int g_npu_w = 640, g_npu_h = 640;
 struct dbox {
 	float x1, y1, x2, y2, score;
@@ -750,6 +754,9 @@ static void npu_run(const unsigned char *rgb)
 			}
 		if (hit) {
 			s = ++g_streak;
+			/* S1: 命中即刷新"目标在场"时刻(事件延长判定唯一依据);
+			 * 与主循环 ts 同用 CLOCK_MONOTONIC, 基准一致 */
+			g_last_detect_ms = now_ms(CLOCK_MONOTONIC);
 			if (s == 1 && g_det_frames > 1)
 				printf(">>> 检测连击开始 streak=1 score=%.3f "
 				       "(阈值 %.2f, 需连续 %d 帧)\n",
@@ -2783,7 +2790,13 @@ int main(int argc, char **argv)
 			       trig_seq, trig_ts, pre_i, g_pre_seq,
 			       ring_cnt, ring_head, g_pushed);
 		}
-		if (trigger_i >= 0 && ts - t_start > trig_ts + post_sec * 1000.0) {
+		/* S1(docs/37 §3.1): 事件结束 = 目标离开(最近命中 + post 窗口),
+		 * 不再锚定首次触发时刻;检测漏帧不会把持续目标拆成碎事件。
+		 * close_reason 四值(target_left/max_duration/disk_low/sigterm)
+		 * 在 S3/S4 引入,本步先用 target_left 语义。 */
+		if (trigger_i >= 0 &&
+		    g_last_detect_ms > 0 &&
+		    now_ms(CLOCK_MONOTONIC) - g_last_detect_ms > post_sec * 1000.0) {
 			char outn[512];
 			int pi = pre_i, ok = 0;
 
@@ -2804,11 +2817,12 @@ int main(int argc, char **argv)
 			}
 			g_events++;
 			printf(">>> 事件 %d 完成, 继续等待下一个事件\n", g_events);
-			/* 复位状态, 复用同一块环 */
-			ring_clear();
+			/* S1(docs/37 §3.4): 不再 ring_clear —— ring 照滚,
+			 * 下一个事件的 pre-roll 从这里取; 复位集合只收窄到
+			 * 触发/事件状态。g_streak/g_det_announced 不动:
+			 * 目标仍在场时 streak 已在增长, 清零会让下一个触发
+			 * 重新等门限, 反而漏事件。 */
 			g_trigger = 0;
-			g_streak = 0;
-			g_det_announced = 0;
 			g_pre_seq = 0;
 			trigger_i = pre_i = end_i = -1;
 			if (g_max_events && g_events >= g_max_events) {

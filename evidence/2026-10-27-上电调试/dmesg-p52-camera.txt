@@ -1,0 +1,23 @@
+Linux yckt 4.19.232 #52 SMP Tue Oct 27 06:43:24 UTC 2026 aarch64 aarch64 aarch64 GNU/Linux
+04672f71fffb580fe7c9b48a61b81e2d  /boot/Image-4.19.232
+[    1.534208] ov8858-sm 5-0036: Looking up dovdd-supply from device tree
+[    1.534275] ov8858-sm 5-0036: Linked as a consumer to regulator.8
+[    1.534317] ov8858-sm 5-0036: Looking up avdd-supply from device tree
+[    1.534376] ov8858-sm 5-0036: Linked as a consumer to regulator.9
+[    1.534403] ov8858-sm 5-0036: Looking up dvdd-supply from device tree
+[    1.534451] ov8858-sm 5-0036: Linked as a consumer to regulator.10
+[    1.534535] ov8858-sm 5-0036: resources: xvclk=24000000 Hz, pwdn=ok, reset=ok
+[    1.539697] ov8858-sm 5-0036: Detected OV8858 id 0x8858
+[    1.539761] ov8858-sm 5-0036: OV8858 SM camera driver probed (runtime PM on)
+[    1.540501] iommu: Adding device fdfe0000.rkcif to group 7
+[    1.540542] rkcifhw fdfe0000.rkcif: Linked as a consumer to fdfe0800.iommu
+[    1.541036] rkcifhw fdfe0000.rkcif: can't request region for resource [mem 0xfdfe0000-0xfdfe7fff]
+[    1.541321] rkcif rkcif_mipi_lvds: rkcif driver version: v00.01.0a
+[    1.541375] rkcif rkcif_mipi_lvds: attach to cif hw node
+[    1.541397] rkcif rkcif_mipi_lvds: rkcif wait line 0
+[    1.543315] rkcif rkcif_mipi_lvds: Entity type for entity rockchip-mipi-csi2 was not initialized!
+[    1.543372] rockchip-csi2-dphy csi2-dphy2: dphy2 matches m01_b_ov8858-sm 5-0036:bus type 4
+[    1.543407] rockchip-mipi-csi2: probe success, v4l2_dev:rkcif_mipi_lvds!
+[    1.782150] rkcif rkcif_mipi_lvds: clear unready subdev num: 4
+[    1.783062] rkcif_mipi_lvds: Async subdev notifier completed
+[    3.540650] ov8858-sm 5-0036: runtime_suspend

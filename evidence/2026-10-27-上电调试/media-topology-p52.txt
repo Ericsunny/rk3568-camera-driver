@@ -1,0 +1,110 @@
+Media controller API version 4.19.255
+
+Media device information
+------------------------
+driver          rkcif
+model           rkcif_mipi_lvds
+serial          
+bus info        
+hw revision     0x0
+driver version  4.19.255
+
+Device topology
+- entity 1: stream_cif_mipi_id0 (1 pad, 4 links)
+            type Node subtype V4L flags 0
+            device node name /dev/video0
+	pad0: Sink
+		<- "rockchip-mipi-csi2":1 [ENABLED]
+		<- "rockchip-mipi-csi2":2 []
+		<- "rockchip-mipi-csi2":3 []
+		<- "rockchip-mipi-csi2":4 []
+
+- entity 5: stream_cif_mipi_id1 (1 pad, 4 links)
+            type Node subtype V4L flags 0
+            device node name /dev/video1
+	pad0: Sink
+		<- "rockchip-mipi-csi2":1 []
+		<- "rockchip-mipi-csi2":2 [ENABLED]
+		<- "rockchip-mipi-csi2":3 []
+		<- "rockchip-mipi-csi2":4 []
+
+- entity 9: stream_cif_mipi_id2 (1 pad, 4 links)
+            type Node subtype V4L flags 0
+            device node name /dev/video2
+	pad0: Sink
+		<- "rockchip-mipi-csi2":1 []
+		<- "rockchip-mipi-csi2":2 []
+		<- "rockchip-mipi-csi2":3 [ENABLED]
+		<- "rockchip-mipi-csi2":4 []
+
+- entity 13: stream_cif_mipi_id3 (1 pad, 4 links)
+             type Node subtype V4L flags 0
+             device node name /dev/video3
+	pad0: Sink
+		<- "rockchip-mipi-csi2":1 []
+		<- "rockchip-mipi-csi2":2 []
+		<- "rockchip-mipi-csi2":3 []
+		<- "rockchip-mipi-csi2":4 [ENABLED]
+
+- entity 17: rkcif-mipi-luma (0 pad, 0 link)
+             type Node subtype V4L flags 0
+             device node name /dev/video4
+
+- entity 20: rockchip-mipi-csi2 (5 pads, 17 links)
+             type V4L2 subdev subtype Unknown flags 0
+             device node name /dev/v4l-subdev0
+	pad0: Sink
+		[fmt:SBGGR10_1X10/1632x1224 field:none colorspace:srgb
+		 crop.bounds:(0,0)/1632x1224
+		 crop:(0,0)/1632x1224]
+		<- "rockchip-csi2-dphy2":1 [ENABLED]
+	pad1: Source
+		[fmt:SBGGR10_1X10/1632x1224 field:none colorspace:srgb
+		 crop.bounds:(0,0)/1632x1224
+		 crop:(0,0)/1632x1224]
+		-> "stream_cif_mipi_id0":0 [ENABLED]
+		-> "stream_cif_mipi_id1":0 []
+		-> "stream_cif_mipi_id2":0 []
+		-> "stream_cif_mipi_id3":0 []
+	pad2: Source
+		[fmt:SBGGR10_1X10/1632x1224 field:none colorspace:srgb
+		 crop.bounds:(0,0)/1632x1224
+		 crop:(0,0)/1632x1224]
+		-> "stream_cif_mipi_id0":0 []
+		-> "stream_cif_mipi_id1":0 [ENABLED]
+		-> "stream_cif_mipi_id2":0 []
+		-> "stream_cif_mipi_id3":0 []
+	pad3: Source
+		[fmt:SBGGR10_1X10/1632x1224 field:none colorspace:srgb
+		 crop.bounds:(0,0)/1632x1224
+		 crop:(0,0)/1632x1224]
+		-> "stream_cif_mipi_id0":0 []
+		-> "stream_cif_mipi_id1":0 []
+		-> "stream_cif_mipi_id2":0 [ENABLED]
+		-> "stream_cif_mipi_id3":0 []
+	pad4: Source
+		[fmt:SBGGR10_1X10/1632x1224 field:none colorspace:srgb
+		 crop.bounds:(0,0)/1632x1224
+		 crop:(0,0)/1632x1224]
+		-> "stream_cif_mipi_id0":0 []
+		-> "stream_cif_mipi_id1":0 []
+		-> "stream_cif_mipi_id2":0 []
+		-> "stream_cif_mipi_id3":0 [ENABLED]
+
+- entity 26: rockchip-csi2-dphy2 (2 pads, 2 links)
+             type V4L2 subdev subtype Unknown flags 0
+             device node name /dev/v4l-subdev1
+	pad0: Sink
+		[fmt:SBGGR10_1X10/1632x1224@1/30 field:none colorspace:srgb]
+		<- "m01_b_ov8858-sm 5-0036":0 [ENABLED]
+	pad1: Source
+		[fmt:SBGGR10_1X10/1632x1224@1/30 field:none colorspace:srgb]
+		-> "rockchip-mipi-csi2":0 [ENABLED]
+
+- entity 31: m01_b_ov8858-sm 5-0036 (1 pad, 1 link)
+             type V4L2 subdev subtype Sensor flags 0
+             device node name /dev/v4l-subdev2
+	pad0: Source
+		[fmt:SBGGR10_1X10/1632x1224@1/30 field:none colorspace:srgb]
+		-> "rockchip-csi2-dphy2":0 [ENABLED]
+

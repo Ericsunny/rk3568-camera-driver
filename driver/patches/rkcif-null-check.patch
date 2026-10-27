@@ -1,5 +1,5 @@
 From: Ericsunny <noreply@example.com>
-Subject: [PATCH] media: rockchip: cif: reject NULL input fmt in rkcif_set_fmt
+Subject: [PATCH] media: rockchip: cif: handle NULL input fmt in rkcif_set_fmt
 
 `get_input_fmt()` returns NULL when the terminal sensor's `get_fmt` fails
 (it logs "sensor fmt invalid, set to default size" and falls back to a
@@ -25,11 +25,14 @@ This is a vendor-code robustness fix, independent of the sensor side.
 Sensor-side root cause is fixed in ov8858_sm (#52); this patch is not
 required for that fix and is not deployed in the current image.
 
+Status: INTERNAL vendor patch. Reviewed only -- NOT applied to the validated #52
+        image, NOT compile-tested, NOT submitted upstream.
+
 Apply from the kernel tree root:
     git apply driver/patches/rkcif-null-check.patch
 (or `patch -p1 < ...`).
 
-Signed-off-by: Ericsunny <noreply@example.com>
+Signed-off-by: Ericsunny <Ericsunny@users.noreply.github.com>
 ---
  drivers/media/platform/rockchip/cif/capture.c | 11 +++++++++++
  1 file changed, 11 insertions(+)

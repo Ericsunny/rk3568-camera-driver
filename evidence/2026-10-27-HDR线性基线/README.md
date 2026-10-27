@@ -43,3 +43,23 @@ LONG secs=30 frames=444 fps=14.73 gaps=0 loss_pct=0.000
 1. 用"整条管线"的方式设 1080p(sensor 1944×1096 → isp-subdev pad0 → pad2 NV12 1920×1080 → video5),
    再跑 `st_burn 1080p 30s`,补齐 HDR 所需的 1080p 基线;
 2. 之后才进 op_mode {5,8,9} 矩阵(时间盒)。
+
+## 5. 1080p 管线切换的完整步骤(本轮摸清,但 3A 在跑时仍 0 帧)
+
+按顺序设四件(crop 是关键,漏了它 pad2 会拒绝改尺寸):
+
+```bash
+media-ctl -d /dev/media1 --set-v4l2 '"m00_b_imx415 1-001a":0[fmt:SGBRG10_1X10/1944x1096]'
+media-ctl -d /dev/media1 --set-v4l2 '"rkisp-csi-subdev":1[fmt:SGBRG10_1X10/1944x1096]'
+media-ctl -d /dev/media1 --set-v4l2 '"rkisp-isp-subdev":0[fmt:SGBRG10_1X10/1944x1096]'
+media-ctl -d /dev/media1 --set-v4l2 '"rkisp-isp-subdev":0[crop:(0,0)/1944x1096]'   # ★ 必须先修 crop
+media-ctl -d /dev/media1 --set-v4l2 '"rkisp-isp-subdev":2[fmt:YUYV8_2X8/1920x1080]'
+```
+
+设完后拓扑一致:`1944×1096 → crop(12,8)/1920×1080 → pad2 YUYV 1920×1080`。
+
+**但在 3A 运行中执行这套后,采集仍然 0 帧 + 1 次 timeout**——rkaiq 的 ISP params 是按 4K 配置的,
+格式被换掉后 params 对不上;而按 docs/29 §10(A4′/E1)又不能"停 3A 继续采"。
+
+⇒ **1080p 基线必须在 3A 从未启动的环境里做**(`systemctl disable rkaiq_3A` + 重启,即 A4/E2 路径),
+这既是生命周期规则的要求,也是唯一不 wedge 的路径。已停用 3A,等重启后补测。

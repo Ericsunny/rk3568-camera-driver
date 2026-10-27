@@ -173,3 +173,5 @@ RK3568 的 CSI 是**两组独立 2-lane DPHY**,不是一个 4-lane PHY。单 sen
 ### 7.6 遗留
 
 `#39` 上 `rkaiq_3A` 起来后 `grab` 取不到帧(dmesg 有 `rkisp_stream_stop id:0 timeout`,`set exposure(shr0) 2149 = cur_vts(2250) - val(101)`),与 §6 记录的 "3A 与出流时序冲突" 同源,需在干净状态下重新验证一次;该问题不影响 B-1 的结论,B-2 演示时本就要求 `systemctl stop rkaiq_3A`。
+> **2026-10-27 提示**:按 docs/29 §10(A4′/E1),3A 在本 boot 启动过之后 stop,再开 mainpath 会 params 超时 wedge;
+> 需要无 3A 环境请 `systemctl disable rkaiq_3A` 后重启,不要"stop 后直接采"。

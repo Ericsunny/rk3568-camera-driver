@@ -65,3 +65,12 @@
 | `oops_reqbufs_compliance.txt` / `compliance_0618_0521.txt` | 合规检查发现的厂商 Oops 与工具原始输出 |
 
 > 串口日志中的出厂默认口令已脱敏为 `<redacted>`。
+
+## 5. 合规检查后的恢复(留档)
+
+合规 Oops 导致 `video0` 被 D 状态进程占用、`kill -9` 无效,**断电重启后完全恢复**:
+
+- 第 15 次带摄像头冷启动 PASS(`cold-boot-15.log`):`#52`、`Detected OV8858`、无 panic、到 `login:`;
+- 重启后 `v4l2-ctl -d /dev/video0 --stream-mmap --stream-count=30` **RC=0**,dmesg 内核错误 **0**,拓扑 **12 条 ENABLED**。
+
+> 经验:D 状态(`vb2_fop_release`)进程不可杀,只能重启;`/tmp` 是 tmpfs,重启后临时工具需重传。

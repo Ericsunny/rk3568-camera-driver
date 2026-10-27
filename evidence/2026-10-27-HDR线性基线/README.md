@@ -123,5 +123,7 @@ media-ctl -d /dev/media1 --set-v4l2 '"rkisp-isp-subdev":2[fmt:YUYV8_2X8/1920x108
 `/root/Image.p53`(`811f6a32`)保留供复现。实验补丁见 `driver/patches/imx415-1080p-0x301c-experimental.patch`
 (标记 EXPERIMENTAL / NOT validated)。
 
-**结论**:厂商 1080p 线性模式在当前 BSP 下不可用(缺表 + 一条注释掉的寄存器),修好还需寄存器级资料对照;
-HDR 的 1080p 前提因此不成立 —— 建议把"IMX415 1080p 模式 bring-up"作为独立驱动任务,暂停 HDR 时间盒。
+**结论(收窄口径)**:当前 BSP 的这张 2-lane 1080p 寄存器表**未打通**——已确认表内 `0x301C` 被注释是一个真实缺陷,
+但取消注释后仍 0 帧,说明它不是充分原因;`0x3034` 回读异常(写 0x05 读 0x00,可能是只读/自清零,也可能是缺失初始化)尚未解释,
+**根因未完全闭合**。HDR 时间盒暂停待 1080p bring-up;恢复 HDR 时的第一项工作是对照 720p/4K 正常模式的 `0x3034` 回读,
+确认它是否本来就自清零,再决定是否需要 datasheet。不写"IMX415 1080p 永久不可用"。

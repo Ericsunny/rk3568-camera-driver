@@ -75,6 +75,10 @@
 **边界**:15 次冷启动均为同一块板、45 分钟出流为单次长跑,只覆盖这一个故障模式,不代表板级硬件(供电/eMMC)已被全面排除;合规检查仅部分通过(5/2/2)且发现厂商 `vb2_dma_sg` Oops,不能写成"compliance 通过";
 `driver/patches/rkcif-null-check.patch` 是独立的厂商代码加固补丁,**不属于已验收的 #52 修复,本轮未部署**。
 
+**回归门禁(改 get_fmt/set_fmt 后必须过)**:`tools/gate_camera_boot.sh` —— 摄像头在位冷启动后执行,
+校验 `uname` 含期望内核标识、`Detected OV8858 id 0x8858`、无 `sensor fmt invalid` / `rkcif_set_fmt` / `Kernel panic`、
+`media-ctl -p` 的 ENABLED 链路 ≥12;任一不满足退出码非 0。
+
 **两处旧认知修正**:①引导链**确实加载** `/boot/initrd-4.19.232`(日志 `Freeing initrd memory: 23996K`),
 此前"extlinux 无 initrd 行即不加载"的推断作废;②`rk-kernel.dtb` 是**符号链接** → `dtb/rk3568-lubancat-2io.dtb`,
 与 `rk356x-yckj.dtb` **内容相同**(均 `ba47c41c`),不是两份不同设备树。

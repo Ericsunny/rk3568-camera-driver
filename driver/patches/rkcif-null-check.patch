@@ -1,0 +1,58 @@
+From: Ericsunny <noreply@example.com>
+Subject: [PATCH] media: rockchip: cif: reject NULL input fmt in rkcif_set_fmt
+
+`get_input_fmt()` returns NULL when the terminal sensor's `get_fmt` fails
+(it logs "sensor fmt invalid, set to default size" and falls back to a
+default rect, but still returns NULL).  `rkcif_set_fmt()` assigns that
+NULL to `cif_fmt_in` and later dereferences it without a check:
+
+    cif_fmt_in = get_input_fmt(dev->terminal_sensor.sd,
+                               &input_rect, stream->id, &vc);
+    stream->cif_fmt_in = cif_fmt_in;
+    ...
+    /* cif_fmt_in->mbus_code used below */
+
+Observed on RK3568 (YC_RK3568_MB1V0, 4.19.232 BSP) with an OV8858 on the
+CIF chain: when the sensor subdev rejected the query (pad handling), boot
+died at `rkcif_set_fmt+0x2cc` with a NULL pointer dereference, killing
+PID 1 and panicking the board ("Attempted to kill init").
+
+`rkcif_sanity_check_fmt()` already checks this return value; make
+`rkcif_set_fmt()` do the same and fall back to the first supported input
+format so a single bad subdev response cannot take down the boot.
+
+This is a vendor-code robustness fix, independent of the sensor side.
+Sensor-side root cause is fixed in ov8858_sm (#52); this patch is not
+required for that fix and is not deployed in the current image.
+
+Apply from the kernel tree root:
+    git apply driver/patches/rkcif-null-check.patch
+(or `patch -p1 < ...`).
+
+Signed-off-by: Ericsunny <noreply@example.com>
+---
+ drivers/media/platform/rockchip/cif/capture.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/drivers/media/platform/rockchip/cif/capture.c b/drivers/media/platform/rockchip/cif/capture.c
+--- a/drivers/media/platform/rockchip/cif/capture.c
++++ b/drivers/media/platform/rockchip/cif/capture.c
+@@ -3279,6 +3279,16 @@ static void rkcif_set_fmt(struct rkcif_stream *stream,
+ 		cif_fmt_in = get_input_fmt(dev->terminal_sensor.sd,
+ 			      &input_rect, stream->id, &vc);
+ 		stream->cif_fmt_in = cif_fmt_in;
++
++		/*
++		 * get_input_fmt() returns NULL when the sensor's get_fmt
++		 * fails; dereferencing it below kills PID 1 at boot.
++		 * Fall back to the first supported input format instead.
++		 */
++		if (!cif_fmt_in) {
++			v4l2_err(&dev->v4l2_dev,
++				 "input fmt invalid, use default input fmt\n");
++			cif_fmt_in = &in_fmts[0];
++			stream->cif_fmt_in = cif_fmt_in;
++		}
+ 	}
+ 
+ 	if (dev->terminal_sensor.sd) {

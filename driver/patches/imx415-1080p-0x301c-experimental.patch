@@ -1,0 +1,17 @@
+Status: EXPERIMENTAL, NOT validated. Un-comments the `{0x301C, 0x04}` entry that was
+        commented out in the vendor 1080p 2-lane reg table. On kernel #53 the register
+        now reads back 0x04 (confirmed), but 1080p still emits no MIPI data
+        (rockchip-mipi-csi2 IRQ delta = 0, 0 frames). Not sufficient; needs datasheet work.
+        Built as #53 (md5 811f6a32...); board reverted to validated #52 (04672f71...).
+
+--- a/drivers/media/i2c/imx415.c
++++ b/drivers/media/i2c/imx415.c
+@@ -1035,7 +1035,7 @@
+ 	{0x3008, 0x7f},
+ 	{0x300A, 0x5b},
+ 	{0x3034, 0x05},
+-	// {0x301C, 0x04},
++	{0x301C, 0x04},   /* E0: 1080p 表原有此行被注释,导致 0x301C 从未写入 */
+ 	{0x3020, 0x01},
+ 	{0x3021, 0x01},
+ 	{0x3022, 0x01},

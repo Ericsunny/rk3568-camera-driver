@@ -19,13 +19,18 @@
 | 项 | 结果 | 证据文件 |
 |---|---|---|
 | 摄像头在位 + #51 | **3/3 确定性 panic** | `boot3-camera-in-panic.log` |
-| 摄像头在位 + #52 冷启动 | **14/14 PASS**(`Detected OV8858`、无 `sensor fmt invalid`、无 `rkcif_set_fmt`、到 `login:`) | `cold-boot-1..4.log`、`boot-52-camera-ok.log`、主串口日志 |
+| 摄像头在位 + #52 冷启动 | **15/15 PASS**(`Detected OV8858`、无 `sensor fmt invalid`、无 `rkcif_set_fmt`、到 `login:`) | `cold-boot-ledger.csv`(逐次时间戳)、`cold-boot-1..4.log`、`cold-boot-15.log`、`boot-52-camera-ok.log`、主串口日志 |
 | 摄像头拔掉 + #52 冷启动 | PASS(变量分离) | `boot-52-nocamera-ok.log` |
 | 45 分钟连续出流(BG10 1632×1224) | **81054 帧 / 30.02 fps / 最大帧间隔 61 ms / ret=0 / 内核错误 0** | `soak_cif_45m.log` |
 | `media-ctl -p` ×3 | rc=0、零 Oops、拓扑 12 条 ENABLED | `media-topology-p52.txt` |
 | A0 只读基线 | `/boot` 三件套 md5、温度、eMMC 错误计数 0、工具清单 | `A0-只读基线体检.md` |
 
-**边界**:14 次冷启动只覆盖这一个故障模式,不代表板级硬件(供电/eMMC)已全面排除。
+**边界(精确口径)**
+
+- 15 次冷启动**都是同一块板**(YC_RK3568_MB1V0),不是多板统计;
+- 45 分钟出流是**单次长跑**(TOTAL 行:`frames=81054 elapsed=2700.0s avg_fps=30.02 maxgap=0.061s ret=0`),不是多次重复的分布;
+- 这 15 次只覆盖"摄像头在位 + 本内核"这一种故障模式,**不代表板级硬件(供电/eMMC)已全面排除**;
+- 合规检查是**部分通过**(5 succeeded / 2 failed / 2 warnings),且发现厂商 `vb2_dma_sg` Oops,不能写成"compliance 通过"。
 
 ## 3. 合规检查发现(厂商栈缺陷,与本修复无关)
 

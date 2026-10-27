@@ -1,0 +1,16 @@
+index,timestamp,kernel,image_md5,camera_detected,panic,login_reached,note
+1,2026-10-27 15:35:20,#52,04672f71fffb580fe7c9b48a61b81e2d,yes,0,yes,boot-52-camera-ok.log
+2,2026-10-27 15:39:12,#52,04672f71fffb580fe7c9b48a61b81e2d,yes,0,yes,cold-boot-1.log
+3,2026-10-27 15:40:50,#52,04672f71fffb580fe7c9b48a61b81e2d,yes,0,yes,cold-boot-2.log
+4,2026-10-27 15:42:22,#52,04672f71fffb580fe7c9b48a61b81e2d,yes,0,yes,cold-boot-3.log
+5,2026-10-27 15:45:12,#52,04672f71fffb580fe7c9b48a61b81e2d,yes,0,yes,cold-boot-4.log
+6,2026-10-27 15:47:13,#52,04672f71fffb580fe7c9b48a61b81e2d,yes,0,yes,master serial log only
+7,2026-10-27 15:48:11,#52,04672f71fffb580fe7c9b48a61b81e2d,yes,0,yes,master serial log only
+8,2026-10-27 15:50:05,#52,04672f71fffb580fe7c9b48a61b81e2d,yes,0,yes,master serial log only
+9,2026-10-27 15:50:59,#52,04672f71fffb580fe7c9b48a61b81e2d,yes,0,yes,master serial log only
+10,2026-10-27 15:53:06,#52,04672f71fffb580fe7c9b48a61b81e2d,yes,0,yes,master serial log only
+11,2026-10-27 15:54:24,#52,04672f71fffb580fe7c9b48a61b81e2d,yes,0,yes,master serial log only
+12,2026-10-27 15:56:19,#52,04672f71fffb580fe7c9b48a61b81e2d,yes,0,yes,master serial log only
+13,2026-10-27 15:58:18,#52,04672f71fffb580fe7c9b48a61b81e2d,yes,0,yes,master serial log only
+14,2026-10-27 16:00:26,#52,04672f71fffb580fe7c9b48a61b81e2d,yes,0,yes,master serial log only
+15,2026-10-27 17:19:17,#52,04672f71fffb580fe7c9b48a61b81e2d,yes,0,yes,"cold-boot-15.log, after vendor-Oops reboot"

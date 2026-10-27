@@ -67,12 +67,12 @@
 | 触发条件 | #49/#51 的 `ov8858_sm` 对 **ACTIVE** 路径也做 `pad != 0 → -EINVAL`,流 1/2/3 全被拒 → `get_input_fmt()` 返回 NULL → 厂商代码不查空 |
 | 为什么以前没暴露 | video0 = pad 0 被放行,历史测试全部只用 video0 |
 | 修复 | #52(`04672f71`):ACTIVE 不再拒 pad(对齐同 SDK `imx415` 约定),**TRY 路径 `!cfg || pad != 0` 防御原样保留**;`enum_*` 未动 |
-| 验证 | 无摄像头冷启动 PASS;**带摄像头冷启动 14/14 PASS**(`Detected OV8858`、无 `sensor fmt invalid`、无 `rkcif_set_fmt`、到 `login:`、media 12 条链路 ENABLED);`media-ctl -p` ×3 零 Oops |
+| 验证 | 无摄像头冷启动 PASS;**带摄像头冷启动 15/15 PASS**(逐次台账 `evidence/2026-10-27-上电调试/cold-boot-ledger.csv`)(`Detected OV8858`、无 `sensor fmt invalid`、无 `rkcif_set_fmt`、到 `login:`、media 12 条链路 ENABLED);`media-ctl -p` ×3 零 Oops |
 
 证据目录:[`evidence/2026-10-27-上电调试/`](evidence/2026-10-27-上电调试/)(panic 全栈、通过日志、media 拓扑、A0 只读基线)。
 **回退**:`/boot/Image-4.19.232` 的 #51 备份在板上 `/root/Image.p51`、主机 `rk_recovery/backup+stage`(均 `48b72b8d`),
 出厂镜像备份 `/boot/Image-4.19.232.factory`(`ed86c707`)未动;dtb/extlinux 备份在 `/root/*.p51`。
-**边界**:14 次冷启动只覆盖这一个故障模式,不代表板级硬件(供电/eMMC)已被全面排除;
+**边界**:15 次冷启动均为同一块板、45 分钟出流为单次长跑,只覆盖这一个故障模式,不代表板级硬件(供电/eMMC)已被全面排除;合规检查仅部分通过(5/2/2)且发现厂商 `vb2_dma_sg` Oops,不能写成"compliance 通过";
 `driver/patches/rkcif-null-check.patch` 是独立的厂商代码加固补丁,**不属于已验收的 #52 修复,本轮未部署**。
 
 **两处旧认知修正**:①引导链**确实加载** `/boot/initrd-4.19.232`(日志 `Freeing initrd memory: 23996K`),

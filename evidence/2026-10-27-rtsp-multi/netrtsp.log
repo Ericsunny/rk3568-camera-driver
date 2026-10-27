@@ -1,0 +1,1340 @@
+>>> NPU 就绪 640x640 nout=9
+>>> 采集 /dev/video5 3840x2160,pre=3s post=2s ring=64MB gop=37
+>>> RTSP 监听 :8554 (单客户端模式)
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+[npu] in: sz=1228800 mean=101 rgb0=165/216/226 int8_0=37
+[npu] out0 size=409600 b0..b7=-2 -30 -39 -45 -55 -58 -59 -61
+[npu] in: sz=1228800 mean=102 rgb0=173/214/225 int8_0=45
+[npu] out0 size=409600 b0..b7=2 -30 -41 -45 -54 -59 -60 -63
+[npu] in: sz=1228800 mean=102 rgb0=176/214/221 int8_0=48
+librga fail to get driver version! Compatibility mode will be enabled.
+
+rga_api version 1.9.2_[1]
+>>> 检测连击开始 streak=1 score=0.814 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.814
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 34 帧): RGA 19.97 + RKNN 62.27 + 编码 56.69 = 138.93 ms/帧 -> 7.2 fps
+rtsp-ring: in=34 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=44 ts=6699.1ms -> pre_i=0 pre_seq=0 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=291 det_max=5 score_max=0.835
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 878400)
+>>> 写出 /root/netrtsp_20240618-071229-00.h264 (61 帧, 触发帧 #44) + /root/netrtsp_20240618-071229-00.json
+>>> 事件 1 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.766 (阈值 0.45, 需连续 3 帧)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 检测触发 streak=3 score=0.766
+>>> 阶段耗时(均值, 70 帧): RGA 19.88 + RKNN 62.77 + 编码 55.66 = 138.31 ms/帧 -> 7.2 fps
+rtsp-ring: in=70 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 106 帧): RGA 19.73 + RKNN 63.26 + 编码 55.27 = 138.27 ms/帧 -> 7.2 fps
+rtsp-ring: in=106 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=105 ts=15142.7ms -> pre_i=13 pre_seq=74 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=577 det_max=5 score_max=0.835
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 1756800)
+>>> 写出 /root/netrtsp_20240618-071229-01.h264 (48 帧, 触发帧 #31) + /root/netrtsp_20240618-071229-01.json
+>>> 事件 2 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.807 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.814
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 143 帧): RGA 19.75 + RKNN 63.32 + 编码 55.10 = 138.17 ms/帧 -> 7.2 fps
+rtsp-ring: in=143 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=166 ts=23526.7ms -> pre_i=26 pre_seq=148 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 179 帧): RGA 19.73 + RKNN 63.02 + 编码 55.03 = 137.78 ms/帧 -> 7.3 fps
+rtsp-ring: in=179 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=854 det_max=5 score_max=0.835
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 2635200)
+>>> 写出 /root/netrtsp_20240618-071229-02.h264 (35 帧, 触发帧 #18) + /root/netrtsp_20240618-071229-02.json
+>>> 事件 3 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.739 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.786
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 216 帧): RGA 19.65 + RKNN 62.75 + 编码 54.77 = 137.17 ms/帧 -> 7.3 fps
+rtsp-ring: in=216 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=227 ts=31790.4ms -> pre_i=2 pre_seq=185 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=1087 det_max=5 score_max=0.835
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 3513600)
+>>> 写出 /root/netrtsp_20240618-071229-03.h264 (59 帧, 触发帧 #42) + /root/netrtsp_20240618-071229-03.json
+>>> 事件 4 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.766 (阈值 0.45, 需连续 3 帧)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 检测触发 streak=3 score=0.786
+>>> 阶段耗时(均值, 253 帧): RGA 19.67 + RKNN 62.65 + 编码 54.66 = 136.98 ms/帧 -> 7.3 fps
+rtsp-ring: in=253 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=288 ts=40111.4ms -> pre_i=15 pre_seq=259 (ring_cnt=45 head=0 pushed=45)
+>>> 阶段耗时(均值, 290 帧): RGA 19.63 + RKNN 62.65 + 编码 54.63 = 136.91 ms/帧 -> 7.3 fps
+rtsp-ring: in=290 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=1238 det_max=5 score_max=0.835
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 4392000)
+>>> 写出 /root/netrtsp_20240618-071229-04.h264 (46 帧, 触发帧 #29) + /root/netrtsp_20240618-071229-04.json
+>>> 事件 5 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.786 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.779
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 326 帧): RGA 19.65 + RKNN 62.61 + 编码 54.56 = 136.82 ms/帧 -> 7.3 fps
+rtsp-ring: in=326 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=349 ts=48449.7ms -> pre_i=28 pre_seq=333 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 363 帧): RGA 19.68 + RKNN 62.57 + 编码 54.63 = 136.88 ms/帧 -> 7.3 fps
+rtsp-ring: in=363 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=1408 det_max=5 score_max=0.835
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 5270400)
+>>> 写出 /root/netrtsp_20240618-071229-05.h264 (33 帧, 触发帧 #16) + /root/netrtsp_20240618-071229-05.json
+>>> 事件 6 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.800 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.779
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 399 帧): RGA 19.74 + RKNN 62.52 + 编码 54.61 = 136.87 ms/帧 -> 7.3 fps
+rtsp-ring: in=399 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=410 ts=56813.2ms -> pre_i=4 pre_seq=370 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=1581 det_max=6 score_max=0.835
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 6148800)
+>>> 写出 /root/netrtsp_20240618-071229-06.h264 (57 帧, 触发帧 #40) + /root/netrtsp_20240618-071229-06.json
+>>> 事件 7 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.768 (阈值 0.45, 需连续 3 帧)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 检测触发 streak=3 score=0.773
+>>> 阶段耗时(均值, 436 帧): RGA 19.71 + RKNN 62.60 + 编码 54.60 = 136.91 ms/帧 -> 7.3 fps
+rtsp-ring: in=436 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 472 帧): RGA 19.70 + RKNN 62.48 + 编码 54.57 = 136.75 ms/帧 -> 7.3 fps
+rtsp-ring: in=472 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=471 ts=65138.6ms -> pre_i=17 pre_seq=444 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=1741 det_max=6 score_max=0.835
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 7027200)
+>>> 写出 /root/netrtsp_20240618-071229-07.h264 (44 帧, 触发帧 #27) + /root/netrtsp_20240618-071229-07.json
+>>> 事件 8 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.779 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.807
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 509 帧): RGA 19.67 + RKNN 62.60 + 编码 54.56 = 136.83 ms/帧 -> 7.3 fps
+rtsp-ring: in=509 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=532 ts=73504.4ms -> pre_i=30 pre_seq=518 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 546 帧): RGA 19.63 + RKNN 62.56 + 编码 54.58 = 136.76 ms/帧 -> 7.3 fps
+rtsp-ring: in=546 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=1927 det_max=6 score_max=0.835
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 7905600)
+>>> 写出 /root/netrtsp_20240618-071229-08.h264 (31 帧, 触发帧 #14) + /root/netrtsp_20240618-071229-08.json
+>>> 事件 9 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.793 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.800
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 582 帧): RGA 19.63 + RKNN 62.55 + 编码 54.56 = 136.74 ms/帧 -> 7.3 fps
+rtsp-ring: in=582 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=593 ts=81860.6ms -> pre_i=6 pre_seq=555 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=2136 det_max=6 score_max=0.835
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 8784000)
+>>> 写出 /root/netrtsp_20240618-071229-09.h264 (55 帧, 触发帧 #38) + /root/netrtsp_20240618-071229-09.json
+>>> 事件 10 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.765 (阈值 0.45, 需连续 3 帧)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 检测触发 streak=3 score=0.773
+>>> 阶段耗时(均值, 619 帧): RGA 19.63 + RKNN 62.51 + 编码 54.55 = 136.70 ms/帧 -> 7.3 fps
+rtsp-ring: in=619 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 655 帧): RGA 19.62 + RKNN 62.54 + 编码 54.57 = 136.73 ms/帧 -> 7.3 fps
+rtsp-ring: in=655 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=654 ts=90211.2ms -> pre_i=19 pre_seq=629 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=2347 det_max=6 score_max=0.835
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 9662400)
+>>> 写出 /root/netrtsp_20240618-071229-10.h264 (42 帧, 触发帧 #25) + /root/netrtsp_20240618-071229-10.json
+>>> 事件 11 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.771 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.768
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 691 帧): RGA 19.62 + RKNN 62.61 + 编码 54.57 = 136.79 ms/帧 -> 7.3 fps
+rtsp-ring: in=691 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=715 ts=98604.9ms -> pre_i=32 pre_seq=703 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 728 帧): RGA 19.62 + RKNN 62.63 + 编码 54.56 = 136.81 ms/帧 -> 7.3 fps
+rtsp-ring: in=728 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=2498 det_max=6 score_max=0.835
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 10540800)
+>>> 写出 /root/netrtsp_20240618-071229-11.h264 (29 帧, 触发帧 #12) + /root/netrtsp_20240618-071229-11.json
+>>> 事件 12 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.781 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.779
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 764 帧): RGA 19.61 + RKNN 62.61 + 编码 54.54 = 136.75 ms/帧 -> 7.3 fps
+rtsp-ring: in=764 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=776 ts=106949.8ms -> pre_i=8 pre_seq=740 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=2708 det_max=6 score_max=0.835
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 11419200)
+>>> 写出 /root/netrtsp_20240618-071229-12.h264 (53 帧, 触发帧 #36) + /root/netrtsp_20240618-071229-12.json
+>>> 事件 13 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.775 (阈值 0.45, 需连续 3 帧)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 检测触发 streak=3 score=0.786
+>>> 阶段耗时(均值, 801 帧): RGA 19.58 + RKNN 62.59 + 编码 54.51 = 136.68 ms/帧 -> 7.3 fps
+rtsp-ring: in=801 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 838 帧): RGA 19.58 + RKNN 62.52 + 编码 54.52 = 136.63 ms/帧 -> 7.3 fps
+rtsp-ring: in=838 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=837 ts=115189.1ms -> pre_i=21 pre_seq=814 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=2914 det_max=6 score_max=0.835
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 12297600)
+>>> 写出 /root/netrtsp_20240618-071229-13.h264 (40 帧, 触发帧 #23) + /root/netrtsp_20240618-071229-13.json
+>>> 事件 14 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.766 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.766
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 875 帧): RGA 19.60 + RKNN 62.49 + 编码 54.53 = 136.62 ms/帧 -> 7.3 fps
+rtsp-ring: in=875 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=898 ts=123535.4ms -> pre_i=34 pre_seq=888 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 911 帧): RGA 19.60 + RKNN 62.49 + 编码 54.51 = 136.60 ms/帧 -> 7.3 fps
+rtsp-ring: in=911 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=3067 det_max=6 score_max=0.835
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 13176000)
+>>> 写出 /root/netrtsp_20240618-071229-14.h264 (27 帧, 触发帧 #10) + /root/netrtsp_20240618-071229-14.json
+>>> 事件 15 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.784 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.775
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 948 帧): RGA 19.60 + RKNN 62.47 + 编码 54.49 = 136.56 ms/帧 -> 7.3 fps
+rtsp-ring: in=948 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=959 ts=131870.4ms -> pre_i=10 pre_seq=925 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=3213 det_max=6 score_max=0.835
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 14054400)
+>>> 写出 /root/netrtsp_20240618-071229-15.h264 (51 帧, 触发帧 #34) + /root/netrtsp_20240618-071229-15.json
+>>> 事件 16 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.775 (阈值 0.45, 需连续 3 帧)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 检测触发 streak=3 score=0.771
+>>> 阶段耗时(均值, 984 帧): RGA 19.60 + RKNN 62.47 + 编码 54.49 = 136.57 ms/帧 -> 7.3 fps
+rtsp-ring: in=984 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1021 帧): RGA 19.61 + RKNN 62.47 + 编码 54.49 = 136.57 ms/帧 -> 7.3 fps
+rtsp-ring: in=1021 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=1020 ts=140198.4ms -> pre_i=23 pre_seq=999 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=3402 det_max=6 score_max=0.835
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 14932800)
+>>> 写出 /root/netrtsp_20240618-071229-16.h264 (38 帧, 触发帧 #21) + /root/netrtsp_20240618-071229-16.json
+>>> 事件 17 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.781 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.773
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1058 帧): RGA 19.62 + RKNN 62.42 + 编码 54.49 = 136.54 ms/帧 -> 7.3 fps
+rtsp-ring: in=1058 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=1081 ts=148519.0ms -> pre_i=36 pre_seq=1073 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1094 帧): RGA 19.62 + RKNN 62.42 + 编码 54.50 = 136.54 ms/帧 -> 7.3 fps
+rtsp-ring: in=1094 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=3629 det_max=6 score_max=0.835
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 15811200)
+>>> 写出 /root/netrtsp_20240618-071229-17.h264 (25 帧, 触发帧 #8) + /root/netrtsp_20240618-071229-17.json
+>>> 事件 18 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.768 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.775
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1131 帧): RGA 19.61 + RKNN 62.43 + 编码 54.52 = 136.55 ms/帧 -> 7.3 fps
+rtsp-ring: in=1131 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=1142 ts=156856.9ms -> pre_i=12 pre_seq=1110 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=3873 det_max=6 score_max=0.835
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 16689600)
+>>> 写出 /root/netrtsp_20240618-071229-18.h264 (49 帧, 触发帧 #32) + /root/netrtsp_20240618-071229-18.json
+>>> 事件 19 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.773 (阈值 0.45, 需连续 3 帧)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 检测触发 streak=3 score=0.814
+>>> 阶段耗时(均值, 1167 帧): RGA 19.61 + RKNN 62.43 + 编码 54.51 = 136.55 ms/帧 -> 7.3 fps
+rtsp-ring: in=1167 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1204 帧): RGA 19.60 + RKNN 62.45 + 编码 54.51 = 136.56 ms/帧 -> 7.3 fps
+rtsp-ring: in=1204 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=1203 ts=165227.6ms -> pre_i=25 pre_seq=1184 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=4159 det_max=6 score_max=0.835
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 17568000)
+>>> 写出 /root/netrtsp_20240618-071229-19.h264 (36 帧, 触发帧 #19) + /root/netrtsp_20240618-071229-19.json
+>>> 事件 20 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.800 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.800
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1240 帧): RGA 19.59 + RKNN 62.47 + 编码 54.49 = 136.55 ms/帧 -> 7.3 fps
+rtsp-ring: in=1240 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=1264 ts=173593.2ms -> pre_i=1 pre_seq=1221 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1277 帧): RGA 19.59 + RKNN 62.51 + 编码 54.49 = 136.60 ms/帧 -> 7.3 fps
+rtsp-ring: in=1277 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=4439 det_max=6 score_max=0.835
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 18446400)
+>>> 写出 /root/netrtsp_20240618-071229-20.h264 (60 帧, 触发帧 #43) + /root/netrtsp_20240618-071229-20.json
+>>> 事件 21 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.800 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.793
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1313 帧): RGA 19.58 + RKNN 62.53 + 编码 54.49 = 136.61 ms/帧 -> 7.3 fps
+rtsp-ring: in=1313 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=1325 ts=181979.8ms -> pre_i=14 pre_seq=1295 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=4669 det_max=6 score_max=0.835
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 19324800)
+>>> 写出 /root/netrtsp_20240618-071229-21.h264 (47 帧, 触发帧 #30) + /root/netrtsp_20240618-071229-21.json
+>>> 事件 22 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.814 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.814
+>>> 阶段耗时(均值, 1350 帧): RGA 19.59 + RKNN 62.53 + 编码 54.48 = 136.60 ms/帧 -> 7.3 fps
+rtsp-ring: in=1350 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1386 帧): RGA 19.59 + RKNN 62.55 + 编码 54.49 = 136.63 ms/帧 -> 7.3 fps
+rtsp-ring: in=1386 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=1386 ts=190361.6ms -> pre_i=27 pre_seq=1369 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=4907 det_max=6 score_max=0.843
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 20203200)
+>>> 写出 /root/netrtsp_20240618-071229-22.h264 (34 帧, 触发帧 #17) + /root/netrtsp_20240618-071229-22.json
+>>> 事件 23 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.821 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.821
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1422 帧): RGA 19.58 + RKNN 62.60 + 编码 54.49 = 136.67 ms/帧 -> 7.3 fps
+rtsp-ring: in=1422 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=1447 ts=198733.0ms -> pre_i=3 pre_seq=1406 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1459 帧): RGA 19.58 + RKNN 62.58 + 编码 54.49 = 136.65 ms/帧 -> 7.3 fps
+rtsp-ring: in=1459 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=5175 det_max=6 score_max=0.843
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 21081600)
+>>> 写出 /root/netrtsp_20240618-071229-23.h264 (58 帧, 触发帧 #41) + /root/netrtsp_20240618-071229-23.json
+>>> 事件 24 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.814 (阈值 0.45, 需连续 3 帧)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 检测触发 streak=3 score=0.821
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1495 帧): RGA 19.58 + RKNN 62.60 + 编码 54.49 = 136.66 ms/帧 -> 7.3 fps
+rtsp-ring: in=1495 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=1508 ts=207101.6ms -> pre_i=16 pre_seq=1480 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=5471 det_max=6 score_max=0.850
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 21960000)
+>>> 写出 /root/netrtsp_20240618-071229-24.h264 (45 帧, 触发帧 #28) + /root/netrtsp_20240618-071229-24.json
+>>> 事件 25 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.814 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.821
+>>> 阶段耗时(均值, 1532 帧): RGA 19.58 + RKNN 62.57 + 编码 54.47 = 136.62 ms/帧 -> 7.3 fps
+rtsp-ring: in=1532 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1569 帧): RGA 19.58 + RKNN 62.54 + 编码 54.48 = 136.60 ms/帧 -> 7.3 fps
+rtsp-ring: in=1569 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=1569 ts=215377.5ms -> pre_i=29 pre_seq=1554 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=5700 det_max=6 score_max=0.850
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 22838400)
+>>> 写出 /root/netrtsp_20240618-071229-25.h264 (32 帧, 触发帧 #15) + /root/netrtsp_20240618-071229-25.json
+>>> 事件 26 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.807 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.821
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1605 帧): RGA 19.56 + RKNN 62.55 + 编码 54.48 = 136.60 ms/帧 -> 7.3 fps
+rtsp-ring: in=1605 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=1630 ts=223720.5ms -> pre_i=5 pre_seq=1591 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1642 帧): RGA 19.55 + RKNN 62.55 + 编码 54.48 = 136.58 ms/帧 -> 7.3 fps
+rtsp-ring: in=1642 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=5902 det_max=6 score_max=0.850
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 23716800)
+>>> 写出 /root/netrtsp_20240618-071229-26.h264 (56 帧, 触发帧 #39) + /root/netrtsp_20240618-071229-26.json
+>>> 事件 27 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.793 (阈值 0.45, 需连续 3 帧)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 检测触发 streak=3 score=0.807
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1679 帧): RGA 19.55 + RKNN 62.53 + 编码 54.48 = 136.57 ms/帧 -> 7.3 fps
+rtsp-ring: in=1679 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=1691 ts=232050.0ms -> pre_i=18 pre_seq=1665 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=6090 det_max=6 score_max=0.850
+>>> RGA 缩放均值 Y=147.9 (640x360, 采样 24595200)
+>>> 写出 /root/netrtsp_20240618-071229-27.h264 (43 帧, 触发帧 #26) + /root/netrtsp_20240618-071229-27.json
+>>> 事件 28 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.779 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.793
+>>> 阶段耗时(均值, 1715 帧): RGA 19.54 + RKNN 62.54 + 编码 54.48 = 136.56 ms/帧 -> 7.3 fps
+rtsp-ring: in=1715 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1752 帧): RGA 19.55 + RKNN 62.53 + 编码 54.49 = 136.57 ms/帧 -> 7.3 fps
+rtsp-ring: in=1752 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=1752 ts=240380.3ms -> pre_i=31 pre_seq=1739 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=6293 det_max=6 score_max=0.850
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 25473600)
+>>> 写出 /root/netrtsp_20240618-071229-28.h264 (30 帧, 触发帧 #13) + /root/netrtsp_20240618-071229-28.json
+>>> 事件 29 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.800 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.793
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1788 帧): RGA 19.55 + RKNN 62.55 + 编码 54.50 = 136.60 ms/帧 -> 7.3 fps
+rtsp-ring: in=1788 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=1813 ts=248830.9ms -> pre_i=7 pre_seq=1776 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1824 帧): RGA 19.56 + RKNN 62.55 + 编码 54.52 = 136.64 ms/帧 -> 7.3 fps
+rtsp-ring: in=1824 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=6487 det_max=6 score_max=0.857
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 26352000)
+>>> 写出 /root/netrtsp_20240618-071229-29.h264 (54 帧, 触发帧 #37) + /root/netrtsp_20240618-071229-29.json
+>>> 事件 30 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.800 (阈值 0.45, 需连续 3 帧)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 检测触发 streak=3 score=0.814
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1860 帧): RGA 19.58 + RKNN 62.54 + 编码 54.52 = 136.64 ms/帧 -> 7.3 fps
+rtsp-ring: in=1860 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=1874 ts=257200.3ms -> pre_i=20 pre_seq=1850 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=6720 det_max=6 score_max=0.864
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 27230400)
+>>> 写出 /root/netrtsp_20240618-071229-30.h264 (41 帧, 触发帧 #24) + /root/netrtsp_20240618-071229-30.json
+>>> 事件 31 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.793 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.807
+>>> 阶段耗时(均值, 1897 帧): RGA 19.59 + RKNN 62.53 + 编码 54.52 = 136.64 ms/帧 -> 7.3 fps
+rtsp-ring: in=1897 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1933 帧): RGA 19.59 + RKNN 62.54 + 编码 54.52 = 136.66 ms/帧 -> 7.3 fps
+rtsp-ring: in=1933 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=1935 ts=265590.6ms -> pre_i=33 pre_seq=1924 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=6964 det_max=6 score_max=0.864
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 28108800)
+>>> 写出 /root/netrtsp_20240618-071229-31.h264 (28 帧, 触发帧 #11) + /root/netrtsp_20240618-071229-31.json
+>>> 事件 32 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.807 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.807
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 1969 帧): RGA 19.58 + RKNN 62.55 + 编码 54.54 = 136.67 ms/帧 -> 7.3 fps
+rtsp-ring: in=1969 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=1996 ts=273968.6ms -> pre_i=9 pre_seq=1961 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 2006 帧): RGA 19.57 + RKNN 62.57 + 编码 54.55 = 136.69 ms/帧 -> 7.3 fps
+rtsp-ring: in=2006 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=7207 det_max=6 score_max=0.864
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 28987200)
+>>> 写出 /root/netrtsp_20240618-071229-32.h264 (52 帧, 触发帧 #35) + /root/netrtsp_20240618-071229-32.json
+>>> 事件 33 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.821 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.814
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 2042 帧): RGA 19.58 + RKNN 62.56 + 编码 54.56 = 136.69 ms/帧 -> 7.3 fps
+rtsp-ring: in=2042 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=2057 ts=282328.1ms -> pre_i=22 pre_seq=2035 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=7448 det_max=6 score_max=0.864
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 29865600)
+>>> 写出 /root/netrtsp_20240618-071229-33.h264 (39 帧, 触发帧 #22) + /root/netrtsp_20240618-071229-33.json
+>>> 事件 34 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.835 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.814
+>>> 阶段耗时(均值, 2079 帧): RGA 19.58 + RKNN 62.54 + 编码 54.55 = 136.67 ms/帧 -> 7.3 fps
+rtsp-ring: in=2079 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 2116 帧): RGA 19.58 + RKNN 62.51 + 编码 54.56 = 136.65 ms/帧 -> 7.3 fps
+rtsp-ring: in=2116 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=2118 ts=290661.3ms -> pre_i=35 pre_seq=2109 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=7677 det_max=6 score_max=0.864
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 30744000)
+>>> 写出 /root/netrtsp_20240618-071229-34.h264 (26 帧, 触发帧 #9) + /root/netrtsp_20240618-071229-34.json
+>>> 事件 35 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.828 (阈值 0.45, 需连续 3 帧)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 检测触发 streak=3 score=0.828
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 2152 帧): RGA 19.58 + RKNN 62.52 + 编码 54.56 = 136.67 ms/帧 -> 7.3 fps
+rtsp-ring: in=2152 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=2179 ts=298984.8ms -> pre_i=11 pre_seq=2146 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 2189 帧): RGA 19.58 + RKNN 62.52 + 编码 54.56 = 136.66 ms/帧 -> 7.3 fps
+rtsp-ring: in=2189 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=7918 det_max=6 score_max=0.864
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 31622400)
+>>> 写出 /root/netrtsp_20240618-071229-35.h264 (50 帧, 触发帧 #33) + /root/netrtsp_20240618-071229-35.json
+>>> 事件 36 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.807 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.814
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 2225 帧): RGA 19.59 + RKNN 62.51 + 编码 54.56 = 136.66 ms/帧 -> 7.3 fps
+rtsp-ring: in=2225 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=2240 ts=307422.0ms -> pre_i=24 pre_seq=2220 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=8158 det_max=6 score_max=0.864
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 32500800)
+>>> 写出 /root/netrtsp_20240618-071229-36.h264 (37 帧, 触发帧 #20) + /root/netrtsp_20240618-071229-36.json
+>>> 事件 37 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.821 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.807
+>>> 阶段耗时(均值, 2261 帧): RGA 19.60 + RKNN 62.52 + 编码 54.56 = 136.68 ms/帧 -> 7.3 fps
+rtsp-ring: in=2261 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 2298 帧): RGA 19.60 + RKNN 62.53 + 编码 54.56 = 136.69 ms/帧 -> 7.3 fps
+rtsp-ring: in=2298 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=2301 ts=315803.5ms -> pre_i=0 pre_seq=2257 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=8398 det_max=6 score_max=0.864
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 33379200)
+>>> 写出 /root/netrtsp_20240618-071229-37.h264 (61 帧, 触发帧 #44) + /root/netrtsp_20240618-071229-37.json
+>>> 事件 38 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.766 (阈值 0.45, 需连续 3 帧)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 检测触发 streak=3 score=0.773
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 2334 帧): RGA 19.60 + RKNN 62.52 + 编码 54.56 = 136.68 ms/帧 -> 7.3 fps
+rtsp-ring: in=2334 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=2362 ts=324159.7ms -> pre_i=13 pre_seq=2331 (ring_cnt=45 head=0 pushed=45)
+>>> 阶段耗时(均值, 2371 帧): RGA 19.59 + RKNN 62.52 + 编码 54.57 = 136.69 ms/帧 -> 7.3 fps
+rtsp-ring: in=2371 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=8623 det_max=6 score_max=0.864
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 34257600)
+>>> 写出 /root/netrtsp_20240618-071229-38.h264 (48 帧, 触发帧 #31) + /root/netrtsp_20240618-071229-38.json
+>>> 事件 39 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.793 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.779
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 2407 帧): RGA 19.59 + RKNN 62.52 + 编码 54.58 = 136.69 ms/帧 -> 7.3 fps
+rtsp-ring: in=2407 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> 触发 seq=2423 ts=332530.3ms -> pre_i=26 pre_seq=2405 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+>>> NPU det_total=8839 det_max=6 score_max=0.864
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 35136000)
+>>> 写出 /root/netrtsp_20240618-071229-39.h264 (35 帧, 触发帧 #18) + /root/netrtsp_20240618-071229-39.json
+>>> 事件 40 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.766 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.786
+>>> 阶段耗时(均值, 2444 帧): RGA 19.59 + RKNN 62.52 + 编码 54.57 = 136.69 ms/帧 -> 7.3 fps
+rtsp-ring: in=2444 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=30
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入
+rtsp: 客户端开始播放
+>>> 阶段耗时(均值, 2479 帧): RGA 19.60 + RKNN 62.55 + 编码 54.58 = 136.73 ms/帧 -> 7.3 fps
+rtsp-ring: in=2479 drop=0 (深度上限 8)
+rtsp: clients=1 sent=0 drop=0 disc=0 fds=31
+>>> 触发 seq=2484 ts=340967.4ms -> pre_i=2 pre_seq=2442 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=1 sent=7 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=14 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=21 drop=0 disc=0 fds=31
+>>> NPU det_total=9031 det_max=6 score_max=0.864
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 36014400)
+>>> 写出 /root/netrtsp_20240618-071229-40.h264 (59 帧, 触发帧 #42) + /root/netrtsp_20240618-071229-40.json
+>>> 事件 41 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.786 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.793
+rtsp: clients=1 sent=28 drop=0 disc=0 fds=31
+rtsp: 客户端断开
+>>> 阶段耗时(均值, 2516 帧): RGA 19.60 + RKNN 62.55 + 编码 54.58 = 136.73 ms/帧 -> 7.3 fps
+rtsp-ring: in=2516 drop=0 (深度上限 8)
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=30
+>>> 触发 seq=2545 ts=349248.9ms -> pre_i=15 pre_seq=2516 (ring_cnt=45 head=0 pushed=45)
+>>> 阶段耗时(均值, 2553 帧): RGA 19.60 + RKNN 62.52 + 编码 54.58 = 136.70 ms/帧 -> 7.3 fps
+rtsp-ring: in=2553 drop=0 (深度上限 8)
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=30
+>>> NPU det_total=9220 det_max=6 score_max=0.864
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 36892800)
+>>> 写出 /root/netrtsp_20240618-071229-41.h264 (46 帧, 触发帧 #29) + /root/netrtsp_20240618-071229-41.json
+>>> 事件 42 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.843 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.857
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 2589 帧): RGA 19.60 + RKNN 62.53 + 编码 54.58 = 136.70 ms/帧 -> 7.3 fps
+rtsp-ring: in=2589 drop=0 (深度上限 8)
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=30
+>>> 触发 seq=2606 ts=357609.0ms -> pre_i=28 pre_seq=2590 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=30
+>>> NPU det_total=9453 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.8 (640x360, 采样 37771200)
+>>> 写出 /root/netrtsp_20240618-071229-42.h264 (33 帧, 触发帧 #16) + /root/netrtsp_20240618-071229-42.json
+>>> 事件 43 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.807 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.821
+>>> 阶段耗时(均值, 2626 帧): RGA 19.60 + RKNN 62.53 + 编码 54.58 = 136.71 ms/帧 -> 7.3 fps
+rtsp-ring: in=2626 drop=0 (深度上限 8)
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=30
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入
+rtsp: 客户端开始播放
+rtsp: clients=1 sent=29 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=29 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=29 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=29 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 2662 帧): RGA 19.60 + RKNN 62.53 + 编码 54.58 = 136.71 ms/帧 -> 7.3 fps
+rtsp-ring: in=2662 drop=0 (深度上限 8)
+rtsp: clients=1 sent=29 drop=0 disc=0 fds=31
+>>> 触发 seq=2667 ts=365998.7ms -> pre_i=4 pre_seq=2627 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=1 sent=34 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=42 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=49 drop=0 disc=0 fds=31
+>>> NPU det_total=9695 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 38649600)
+>>> 写出 /root/netrtsp_20240618-071229-43.h264 (57 帧, 触发帧 #40) + /root/netrtsp_20240618-071229-43.json
+>>> 事件 44 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.828 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.807
+rtsp: clients=1 sent=55 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 2699 帧): RGA 19.60 + RKNN 62.53 + 编码 54.58 = 136.71 ms/帧 -> 7.3 fps
+rtsp-ring: in=2699 drop=0 (深度上限 8)
+rtsp: clients=1 sent=64 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=70 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=77 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=84 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=92 drop=0 disc=0 fds=31
+>>> 触发 seq=2728 ts=374374.0ms -> pre_i=17 pre_seq=2701 (ring_cnt=45 head=0 pushed=45)
+>>> 阶段耗时(均值, 2735 帧): RGA 19.60 + RKNN 62.53 + 编码 54.58 = 136.71 ms/帧 -> 7.3 fps
+rtsp-ring: in=2735 drop=0 (深度上限 8)
+rtsp: clients=1 sent=100 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=107 drop=0 disc=0 fds=31
+>>> NPU det_total=9936 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 39528000)
+>>> 写出 /root/netrtsp_20240618-071229-44.h264 (44 帧, 触发帧 #27) + /root/netrtsp_20240618-071229-44.json
+>>> 事件 45 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.828 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.814
+rtsp: clients=1 sent=114 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=122 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=128 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 2772 帧): RGA 19.59 + RKNN 62.54 + 编码 54.58 = 136.71 ms/帧 -> 7.3 fps
+rtsp-ring: in=2772 drop=0 (深度上限 8)
+rtsp: clients=1 sent=137 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=143 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=150 drop=0 disc=0 fds=31
+>>> 触发 seq=2789 ts=382749.6ms -> pre_i=30 pre_seq=2775 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=1 sent=157 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=164 drop=0 disc=0 fds=31
+>>> NPU det_total=10175 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 40406400)
+>>> 写出 /root/netrtsp_20240618-071229-45.h264 (31 帧, 触发帧 #14) + /root/netrtsp_20240618-071229-45.json
+>>> 事件 46 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.828 (阈值 0.45, 需连续 3 帧)
+>>> 阶段耗时(均值, 2808 帧): RGA 19.59 + RKNN 62.55 + 编码 54.59 = 136.73 ms/帧 -> 7.3 fps
+rtsp-ring: in=2808 drop=0 (深度上限 8)
+rtsp: clients=1 sent=173 drop=0 disc=0 fds=31
+>>> 检测触发 streak=3 score=0.843
+rtsp: clients=1 sent=179 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=186 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=193 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=201 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 2844 帧): RGA 19.59 + RKNN 62.54 + 编码 54.59 = 136.73 ms/帧 -> 7.3 fps
+rtsp-ring: in=2844 drop=0 (深度上限 8)
+rtsp: clients=1 sent=209 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=215 drop=0 disc=0 fds=31
+>>> 触发 seq=2850 ts=391165.5ms -> pre_i=6 pre_seq=2812 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=1 sent=223 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=230 drop=0 disc=0 fds=31
+>>> NPU det_total=10419 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 41284800)
+>>> 写出 /root/netrtsp_20240618-071229-46.h264 (55 帧, 触发帧 #38) + /root/netrtsp_20240618-071229-46.json
+>>> 事件 47 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.843 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.835
+rtsp: clients=1 sent=237 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 2881 帧): RGA 19.60 + RKNN 62.54 + 编码 54.59 = 136.73 ms/帧 -> 7.3 fps
+rtsp-ring: in=2881 drop=0 (深度上限 8)
+rtsp: clients=1 sent=246 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=253 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=259 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=267 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=274 drop=0 disc=0 fds=31
+>>> 触发 seq=2911 ts=399499.9ms -> pre_i=19 pre_seq=2886 (ring_cnt=45 head=0 pushed=45)
+>>> 阶段耗时(均值, 2917 帧): RGA 19.59 + RKNN 62.54 + 编码 54.59 = 136.72 ms/帧 -> 7.3 fps
+rtsp-ring: in=2917 drop=0 (深度上限 8)
+rtsp: clients=1 sent=282 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=288 drop=0 disc=0 fds=31
+>>> NPU det_total=10669 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 42163200)
+>>> 写出 /root/netrtsp_20240618-071229-47.h264 (42 帧, 触发帧 #25) + /root/netrtsp_20240618-071229-47.json
+>>> 事件 48 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.814 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.800
+rtsp: clients=1 sent=296 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=304 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=311 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 2953 帧): RGA 19.59 + RKNN 62.56 + 编码 54.59 = 136.74 ms/帧 -> 7.3 fps
+rtsp-ring: in=2953 drop=0 (深度上限 8)
+rtsp: clients=1 sent=318 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=325 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=332 drop=0 disc=0 fds=31
+>>> 触发 seq=2972 ts=407878.5ms -> pre_i=32 pre_seq=2960 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=1 sent=339 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=347 drop=0 disc=0 fds=31
+>>> NPU det_total=10913 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 43041600)
+>>> 写出 /root/netrtsp_20240618-071229-48.h264 (29 帧, 触发帧 #12) + /root/netrtsp_20240618-071229-48.json
+>>> 事件 49 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.793 (阈值 0.45, 需连续 3 帧)
+>>> 阶段耗时(均值, 2990 帧): RGA 19.59 + RKNN 62.55 + 编码 54.59 = 136.73 ms/帧 -> 7.3 fps
+rtsp-ring: in=2990 drop=0 (深度上限 8)
+rtsp: clients=1 sent=355 drop=0 disc=0 fds=31
+>>> 检测触发 streak=3 score=0.808
+rtsp: clients=1 sent=361 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=370 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=376 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=383 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 3026 帧): RGA 19.59 + RKNN 62.55 + 编码 54.59 = 136.73 ms/帧 -> 7.3 fps
+rtsp-ring: in=3026 drop=0 (深度上限 8)
+rtsp: clients=1 sent=391 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=398 drop=0 disc=0 fds=31
+>>> 触发 seq=3033 ts=416262.4ms -> pre_i=8 pre_seq=2997 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=1 sent=405 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=412 drop=0 disc=0 fds=31
+>>> NPU det_total=11157 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 43920000)
+>>> 写出 /root/netrtsp_20240618-071229-49.h264 (53 帧, 触发帧 #36) + /root/netrtsp_20240618-071229-49.json
+>>> 事件 50 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.781 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.794
+rtsp: clients=1 sent=420 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 3062 帧): RGA 19.61 + RKNN 62.56 + 编码 54.60 = 136.76 ms/帧 -> 7.3 fps
+rtsp-ring: in=3062 drop=0 (深度上限 8)
+rtsp: clients=1 sent=427 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=433 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=441 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=448 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=455 drop=0 disc=0 fds=31
+>>> 触发 seq=3094 ts=424694.7ms -> pre_i=21 pre_seq=3071 (ring_cnt=45 head=0 pushed=45)
+>>> 阶段耗时(均值, 3099 帧): RGA 19.60 + RKNN 62.55 + 编码 54.60 = 136.75 ms/帧 -> 7.3 fps
+rtsp-ring: in=3099 drop=0 (深度上限 8)
+rtsp: clients=1 sent=464 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=470 drop=0 disc=0 fds=31
+>>> NPU det_total=11401 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 44798400)
+>>> 写出 /root/netrtsp_20240618-071229-50.h264 (40 帧, 触发帧 #23) + /root/netrtsp_20240618-071229-50.json
+>>> 事件 51 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.791 (阈值 0.45, 需连续 3 帧)
+rtsp: clients=1 sent=477 drop=0 disc=0 fds=31
+>>> 检测触发 streak=3 score=0.794
+rtsp: 客户端断开
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 3136 帧): RGA 19.60 + RKNN 62.52 + 编码 54.60 = 136.73 ms/帧 -> 7.3 fps
+rtsp-ring: in=3136 drop=0 (深度上限 8)
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+>>> 触发 seq=3155 ts=432945.5ms -> pre_i=34 pre_seq=3145 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+>>> NPU det_total=11645 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 45676800)
+>>> 写出 /root/netrtsp_20240618-071229-51.h264 (27 帧, 触发帧 #10) + /root/netrtsp_20240618-071229-51.json
+>>> 事件 52 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.804 (阈值 0.45, 需连续 3 帧)
+>>> 阶段耗时(均值, 3173 帧): RGA 19.59 + RKNN 62.51 + 编码 54.60 = 136.71 ms/帧 -> 7.3 fps
+rtsp-ring: in=3173 drop=0 (深度上限 8)
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+>>> 检测触发 streak=3 score=0.850
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 3210 帧): RGA 19.59 + RKNN 62.50 + 编码 54.60 = 136.69 ms/帧 -> 7.3 fps
+rtsp-ring: in=3210 drop=0 (深度上限 8)
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+>>> 触发 seq=3216 ts=441211.5ms -> pre_i=10 pre_seq=3182 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+>>> NPU det_total=11889 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 46555200)
+>>> 写出 /root/netrtsp_20240618-071229-52.h264 (51 帧, 触发帧 #34) + /root/netrtsp_20240618-071229-52.json
+>>> 事件 53 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.804 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.843
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 3246 帧): RGA 19.59 + RKNN 62.51 + 编码 54.60 = 136.70 ms/帧 -> 7.3 fps
+rtsp-ring: in=3246 drop=0 (深度上限 8)
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=482 drop=0 disc=0 fds=30
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入
+rtsp: 客户端开始播放
+rtsp: clients=1 sent=482 drop=0 disc=0 fds=31
+>>> 触发 seq=3277 ts=449624.2ms -> pre_i=23 pre_seq=3256 (ring_cnt=45 head=0 pushed=45)
+>>> 阶段耗时(均值, 3282 帧): RGA 19.59 + RKNN 62.52 + 编码 54.61 = 136.71 ms/帧 -> 7.3 fps
+rtsp-ring: in=3282 drop=0 (深度上限 8)
+rtsp: clients=1 sent=482 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=482 drop=0 disc=0 fds=31
+>>> NPU det_total=12133 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 47433600)
+>>> 写出 /root/netrtsp_20240618-071229-53.h264 (38 帧, 触发帧 #21) + /root/netrtsp_20240618-071229-53.json
+>>> 事件 54 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.850 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.828
+rtsp: clients=1 sent=485 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=492 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=499 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 3318 帧): RGA 19.59 + RKNN 62.53 + 编码 54.60 = 136.72 ms/帧 -> 7.3 fps
+rtsp-ring: in=3318 drop=0 (深度上限 8)
+rtsp: clients=1 sent=507 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=514 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=521 drop=0 disc=0 fds=31
+>>> 触发 seq=3338 ts=457948.4ms -> pre_i=36 pre_seq=3330 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=1 sent=529 drop=0 disc=0 fds=31
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: reject extra client
+rtsp: clients=1 sent=538 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 3356 帧): RGA 19.58 + RKNN 62.49 + 编码 54.59 = 136.66 ms/帧 -> 7.3 fps
+rtsp-ring: in=3356 drop=0 (深度上限 8)
+rtsp: clients=1 sent=545 drop=0 disc=0 fds=31
+>>> NPU det_total=12381 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 48326400)
+>>> 写出 /root/netrtsp_20240618-071229-54.h264 (26 帧, 触发帧 #8) + /root/netrtsp_20240618-071229-54.json
+>>> 事件 55 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.864 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.843
+rtsp: clients=1 sent=552 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=559 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=566 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=574 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 3393 帧): RGA 19.58 + RKNN 62.49 + 编码 54.60 = 136.66 ms/帧 -> 7.3 fps
+rtsp-ring: in=3393 drop=0 (深度上限 8)
+rtsp: clients=1 sent=582 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=588 drop=0 disc=0 fds=31
+>>> 触发 seq=3400 ts=466292.9ms -> pre_i=11 pre_seq=3367 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=1 sent=596 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=603 drop=0 disc=0 fds=31
+>>> NPU det_total=12567 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 49204800)
+>>> 写出 /root/netrtsp_20240618-071229-55.h264 (50 帧, 触发帧 #33) + /root/netrtsp_20240618-071229-55.json
+>>> 事件 56 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.835 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.850
+rtsp: clients=1 sent=610 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 3430 帧): RGA 19.58 + RKNN 62.47 + 编码 54.60 = 136.65 ms/帧 -> 7.3 fps
+rtsp-ring: in=3430 drop=0 (深度上限 8)
+rtsp: clients=1 sent=619 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=625 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=632 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=640 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=647 drop=0 disc=0 fds=31
+>>> 触发 seq=3461 ts=474604.6ms -> pre_i=24 pre_seq=3441 (ring_cnt=45 head=0 pushed=45)
+>>> 阶段耗时(均值, 3466 帧): RGA 19.58 + RKNN 62.47 + 编码 54.60 = 136.65 ms/帧 -> 7.3 fps
+rtsp-ring: in=3466 drop=0 (深度上限 8)
+rtsp: clients=1 sent=655 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=662 drop=0 disc=0 fds=31
+>>> NPU det_total=12748 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 50083200)
+>>> 写出 /root/netrtsp_20240618-071229-56.h264 (37 帧, 触发帧 #20) + /root/netrtsp_20240618-071229-56.json
+>>> 事件 57 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.814 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.800
+rtsp: clients=1 sent=669 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=677 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=683 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 3502 帧): RGA 19.59 + RKNN 62.48 + 编码 54.60 = 136.67 ms/帧 -> 7.3 fps
+rtsp-ring: in=3502 drop=0 (深度上限 8)
+rtsp: clients=1 sent=691 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=698 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=705 drop=0 disc=0 fds=31
+>>> 触发 seq=3522 ts=483035.1ms -> pre_i=0 pre_seq=3478 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=1 sent=713 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=720 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 3539 帧): RGA 19.58 + RKNN 62.48 + 编码 54.60 = 136.66 ms/帧 -> 7.3 fps
+rtsp-ring: in=3539 drop=0 (深度上限 8)
+rtsp: clients=1 sent=728 drop=0 disc=0 fds=31
+>>> NPU det_total=12931 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 50961600)
+>>> 写出 /root/netrtsp_20240618-071229-57.h264 (61 帧, 触发帧 #44) + /root/netrtsp_20240618-071229-57.json
+>>> 事件 58 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.814 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.843
+rtsp: clients=1 sent=734 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=742 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=749 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=757 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 3576 帧): RGA 19.58 + RKNN 62.47 + 编码 54.60 = 136.65 ms/帧 -> 7.3 fps
+rtsp-ring: in=3576 drop=0 (深度上限 8)
+rtsp: clients=1 sent=765 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=771 drop=0 disc=0 fds=31
+>>> 触发 seq=3583 ts=491351.1ms -> pre_i=13 pre_seq=3552 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=1 sent=779 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=785 drop=0 disc=0 fds=31
+>>> NPU det_total=13115 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 51840000)
+>>> 写出 /root/netrtsp_20240618-071229-58.h264 (48 帧, 触发帧 #31) + /root/netrtsp_20240618-071229-58.json
+>>> 事件 59 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.699 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.739
+rtsp: clients=1 sent=793 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 3612 帧): RGA 19.58 + RKNN 62.47 + 编码 54.60 = 136.66 ms/帧 -> 7.3 fps
+rtsp-ring: in=3612 drop=0 (深度上限 8)
+rtsp: clients=1 sent=801 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=807 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=814 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=822 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=829 drop=0 disc=0 fds=31
+>>> 触发 seq=3644 ts=499740.3ms -> pre_i=26 pre_seq=3626 (ring_cnt=45 head=0 pushed=45)
+>>> 阶段耗时(均值, 3648 帧): RGA 19.59 + RKNN 62.47 + 编码 54.60 = 136.66 ms/帧 -> 7.3 fps
+rtsp-ring: in=3648 drop=0 (深度上限 8)
+rtsp: clients=1 sent=837 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=844 drop=0 disc=0 fds=31
+>>> NPU det_total=13337 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 52718400)
+>>> 写出 /root/netrtsp_20240618-071229-59.h264 (35 帧, 触发帧 #18) + /root/netrtsp_20240618-071229-59.json
+>>> 事件 60 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.807 (阈值 0.45, 需连续 3 帧)
+rtsp: clients=1 sent=851 drop=0 disc=0 fds=31
+>>> 检测触发 streak=3 score=0.807
+rtsp: clients=1 sent=858 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=866 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 3685 帧): RGA 19.59 + RKNN 62.47 + 编码 54.60 = 136.66 ms/帧 -> 7.3 fps
+rtsp-ring: in=3685 drop=0 (深度上限 8)
+rtsp: clients=1 sent=874 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=880 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=887 drop=0 disc=0 fds=31
+>>> 触发 seq=3705 ts=508130.7ms -> pre_i=2 pre_seq=3663 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=1 sent=895 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=903 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 3721 帧): RGA 19.58 + RKNN 62.48 + 编码 54.60 = 136.66 ms/帧 -> 7.3 fps
+rtsp-ring: in=3721 drop=0 (深度上限 8)
+rtsp: clients=1 sent=910 drop=0 disc=0 fds=31
+>>> NPU det_total=13573 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 53596800)
+>>> 写出 /root/netrtsp_20240618-071229-60.h264 (59 帧, 触发帧 #42) + /root/netrtsp_20240618-071229-60.json
+>>> 事件 61 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.807 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.814
+rtsp: clients=1 sent=917 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=924 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=931 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=938 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 3757 帧): RGA 19.58 + RKNN 62.48 + 编码 54.61 = 136.67 ms/帧 -> 7.3 fps
+rtsp-ring: in=3757 drop=0 (深度上限 8)
+rtsp: clients=1 sent=946 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=953 drop=0 disc=0 fds=31
+>>> 触发 seq=3766 ts=516519.7ms -> pre_i=15 pre_seq=3737 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=1 sent=960 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=967 drop=0 disc=0 fds=31
+>>> NPU det_total=13808 det_max=6 score_max=0.871
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 54475200)
+>>> 写出 /root/netrtsp_20240618-071229-61.h264 (46 帧, 触发帧 #29) + /root/netrtsp_20240618-071229-61.json
+>>> 事件 62 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.807 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.821
+rtsp: clients=1 sent=975 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 3794 帧): RGA 19.59 + RKNN 62.47 + 编码 54.61 = 136.67 ms/帧 -> 7.3 fps
+rtsp-ring: in=3794 drop=0 (深度上限 8)
+rtsp: clients=1 sent=983 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=989 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=996 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1005 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1011 drop=0 disc=0 fds=31
+>>> 触发 seq=3827 ts=524922.6ms -> pre_i=28 pre_seq=3811 (ring_cnt=45 head=0 pushed=45)
+>>> 阶段耗时(均值, 3830 帧): RGA 19.59 + RKNN 62.48 + 编码 54.61 = 136.69 ms/帧 -> 7.3 fps
+rtsp-ring: in=3830 drop=0 (深度上限 8)
+rtsp: clients=1 sent=1019 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1025 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1032 drop=0 disc=0 fds=31
+>>> NPU det_total=14060 det_max=6 score_max=0.879
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 55353600)
+>>> 写出 /root/netrtsp_20240618-071229-62.h264 (33 帧, 触发帧 #16) + /root/netrtsp_20240618-071229-62.json
+>>> 事件 63 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.786 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.835
+rtsp: clients=1 sent=1040 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1047 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 3866 帧): RGA 19.59 + RKNN 62.49 + 编码 54.62 = 136.70 ms/帧 -> 7.3 fps
+rtsp-ring: in=3866 drop=0 (深度上限 8)
+rtsp: clients=1 sent=1055 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1061 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1069 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1076 drop=0 disc=0 fds=31
+>>> 触发 seq=3888 ts=533333.5ms -> pre_i=4 pre_seq=3848 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=1 sent=1083 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 3903 帧): RGA 19.59 + RKNN 62.49 + 编码 54.62 = 136.70 ms/帧 -> 7.3 fps
+rtsp-ring: in=3903 drop=0 (深度上限 8)
+rtsp: clients=1 sent=1092 drop=0 disc=0 fds=31
+>>> NPU det_total=14317 det_max=6 score_max=0.879
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 56232000)
+>>> 写出 /root/netrtsp_20240618-071229-63.h264 (57 帧, 触发帧 #40) + /root/netrtsp_20240618-071229-63.json
+>>> 事件 64 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.786 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.786
+rtsp: clients=1 sent=1099 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1105 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1112 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1121 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 3939 帧): RGA 19.59 + RKNN 62.49 + 编码 54.62 = 136.70 ms/帧 -> 7.3 fps
+rtsp-ring: in=3939 drop=0 (深度上限 8)
+rtsp: clients=1 sent=1128 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1134 drop=0 disc=0 fds=31
+>>> 触发 seq=3949 ts=541694.2ms -> pre_i=17 pre_seq=3922 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=1 sent=1142 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1149 drop=0 disc=0 fds=31
+>>> NPU det_total=14613 det_max=6 score_max=0.879
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 57110400)
+>>> 写出 /root/netrtsp_20240618-071229-64.h264 (44 帧, 触发帧 #27) + /root/netrtsp_20240618-071229-64.json
+>>> 事件 65 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.835 (阈值 0.45, 需连续 3 帧)
+rtsp: clients=1 sent=1156 drop=0 disc=0 fds=31
+>>> 检测触发 streak=3 score=0.814
+>>> 阶段耗时(均值, 3976 帧): RGA 19.59 + RKNN 62.49 + 编码 54.61 = 136.69 ms/帧 -> 7.3 fps
+rtsp-ring: in=3976 drop=0 (深度上限 8)
+rtsp: clients=1 sent=1165 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1171 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1178 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1186 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1193 drop=0 disc=0 fds=31
+>>> 触发 seq=4010 ts=550037.6ms -> pre_i=30 pre_seq=3996 (ring_cnt=45 head=0 pushed=45)
+>>> 阶段耗时(均值, 4012 帧): RGA 19.60 + RKNN 62.48 + 编码 54.62 = 136.69 ms/帧 -> 7.3 fps
+rtsp-ring: in=4012 drop=0 (深度上限 8)
+rtsp: clients=1 sent=1201 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1208 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1215 drop=0 disc=0 fds=31
+>>> NPU det_total=14905 det_max=6 score_max=0.879
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 57988800)
+>>> 写出 /root/netrtsp_20240618-071229-65.h264 (31 帧, 触发帧 #14) + /root/netrtsp_20240618-071229-65.json
+>>> 事件 66 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.814 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.800
+rtsp: clients=1 sent=1222 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1229 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 4049 帧): RGA 19.60 + RKNN 62.47 + 编码 54.61 = 136.69 ms/帧 -> 7.3 fps
+rtsp-ring: in=4049 drop=0 (深度上限 8)
+rtsp: clients=1 sent=1238 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1245 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1251 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1259 drop=0 disc=0 fds=31
+>>> 触发 seq=4071 ts=558390.9ms -> pre_i=6 pre_seq=4033 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=1 sent=1266 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 4085 帧): RGA 19.60 + RKNN 62.47 + 编码 54.61 = 136.69 ms/帧 -> 7.3 fps
+rtsp-ring: in=4085 drop=0 (深度上限 8)
+rtsp: clients=1 sent=1274 drop=0 disc=0 fds=31
+>>> NPU det_total=15156 det_max=6 score_max=0.879
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 58867200)
+>>> 写出 /root/netrtsp_20240618-071229-66.h264 (55 帧, 触发帧 #38) + /root/netrtsp_20240618-071229-66.json
+>>> 事件 67 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.821 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.807
+rtsp: clients=1 sent=1281 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1288 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1295 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1303 drop=0 disc=0 fds=31
+>>> 阶段耗时(均值, 4122 帧): RGA 19.61 + RKNN 62.46 + 编码 54.61 = 136.68 ms/帧 -> 7.3 fps
+rtsp-ring: in=4122 drop=0 (深度上限 8)
+rtsp: clients=1 sent=1311 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1318 drop=0 disc=0 fds=31
+>>> 触发 seq=4132 ts=566698.1ms -> pre_i=19 pre_seq=4107 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=1 sent=1326 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1332 drop=0 disc=0 fds=31
+>>> NPU det_total=15450 det_max=6 score_max=0.879
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 59745600)
+>>> 写出 /root/netrtsp_20240618-071229-67.h264 (42 帧, 触发帧 #25) + /root/netrtsp_20240618-071229-67.json
+>>> 事件 68 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.835 (阈值 0.45, 需连续 3 帧)
+rtsp: clients=1 sent=1339 drop=0 disc=0 fds=31
+>>> 检测触发 streak=3 score=0.835
+>>> 阶段耗时(均值, 4158 帧): RGA 19.61 + RKNN 62.47 + 编码 54.61 = 136.68 ms/帧 -> 7.3 fps
+rtsp-ring: in=4158 drop=0 (深度上限 8)
+rtsp: clients=1 sent=1347 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1355 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1361 drop=0 disc=0 fds=31
+rtsp: clients=1 sent=1368 drop=0 disc=0 fds=31
+rtsp: 客户端断开
+rtsp: clients=0 sent=1374 drop=0 disc=0 fds=30
+>>> 触发 seq=4193 ts=575118.1ms -> pre_i=32 pre_seq=4181 (ring_cnt=45 head=0 pushed=45)
+>>> 阶段耗时(均值, 4195 帧): RGA 19.61 + RKNN 62.48 + 编码 54.60 = 136.69 ms/帧 -> 7.3 fps
+rtsp-ring: in=4195 drop=0 (深度上限 8)
+rtsp: clients=0 sent=1374 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=1374 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=1374 drop=0 disc=0 fds=30
+>>> NPU det_total=15756 det_max=6 score_max=0.879
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 60624000)
+>>> 写出 /root/netrtsp_20240618-071229-68.h264 (29 帧, 触发帧 #12) + /root/netrtsp_20240618-071229-68.json
+>>> 事件 69 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.807 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.821
+rtsp: clients=0 sent=1374 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=1374 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 4231 帧): RGA 19.61 + RKNN 62.48 + 编码 54.60 = 136.69 ms/帧 -> 7.3 fps
+rtsp-ring: in=4231 drop=0 (深度上限 8)
+rtsp: clients=0 sent=1374 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=1374 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=1374 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=1374 drop=0 disc=0 fds=30
+>>> 触发 seq=4254 ts=583431.9ms -> pre_i=8 pre_seq=4218 (ring_cnt=45 head=0 pushed=45)
+rtsp: clients=0 sent=1374 drop=0 disc=0 fds=30
+>>> 阶段耗时(均值, 4268 帧): RGA 19.61 + RKNN 62.47 + 编码 54.61 = 136.69 ms/帧 -> 7.3 fps
+rtsp-ring: in=4268 drop=0 (深度上限 8)
+rtsp: clients=0 sent=1374 drop=0 disc=0 fds=30
+>>> NPU det_total=16052 det_max=6 score_max=0.879
+>>> RGA 缩放均值 Y=147.7 (640x360, 采样 61502400)
+>>> 写出 /root/netrtsp_20240618-071229-69.h264 (53 帧, 触发帧 #36) + /root/netrtsp_20240618-071229-69.json
+>>> 事件 70 完成, 继续等待下一个事件
+>>> 检测连击开始 streak=1 score=0.835 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.828
+rtsp: clients=0 sent=1374 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=1374 drop=0 disc=0 fds=30
+rtsp: clients=0 sent=1374 drop=0 disc=0 fds=30

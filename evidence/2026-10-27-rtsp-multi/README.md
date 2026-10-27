@@ -31,3 +31,22 @@
 
 - `rtsp_multi.log` — 服务端全量日志(749 行,含全部 clients/sent/drop 周期行与阶段耗时)
 - `second-conn-rejected.log` — 第二连接被拒时 ffmpeg 的报错
+
+## 跨网段实测补充(2026-10-27,PC ffmpeg 7.1 ↔ 板 192.168.10.2:8554)
+
+| 项 | 实测 |
+|---|---|
+| SDP 探测(ffprobe) | h264 3840×2160,`r_frame_rate=43/6 ≈ 7.17 fps`——与采集侧 7.3 fps 一致 |
+| 60s 单客户端拉流 | 成功;板端 `sent` 29→482,采集 7.3 fps 稳定 |
+| 120s 长拉(客户端A) | rc=0 正常结束,期间 `clients=1`/`drop=0` |
+| 并发第二连接(客户端B) | **被拒**(exit 183,`Invalid data/Connection reset`),A 全程不受影响 |
+| 已知噪音 | ffmpeg null muxer 报 `non monotonically increasing dts`(等值 DTS,UDP/TCP 抖动下常见,非流损坏;不影响解码) |
+
+**结论**:跨网段单客户端链路(真实网络+真实 PC 解码器)打通;单客户端边界与板内实测一致。
+多客户端并发仍是未实现能力(按设计拒绝),入口统一为后续独立任务。
+
+## 文件(补充)
+
+- `netrtsp.log` — 本轮服务端日志
+- `pc-clientA-120s.log` — 120s 长拉客户端日志(rc=0)
+- `pc-clientB-rejected.log` — 第二连接被拒报错

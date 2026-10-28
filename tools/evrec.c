@@ -469,6 +469,8 @@ static double g_last_detect_ms; /* 最近一次检测命中(ms,同 ring ts 基�
  * 纯观测, 不改变任何判定逻辑(命中仍按单帧 score 门限刷新 last_detect_ms)。 */
 static unsigned g_det_frm_win, g_det_hit_win;	/* 本统计窗内帧数 / 命中帧数 */
 static double g_det_peak_win;			/* 本统计窗内最高分 */
+static double g_det_mean_sum;			/* 本统计窗内 NPU 输入均值之和 */
+static unsigned g_det_mean_n;			/* 本统计窗内均值采样帧数 */
 static double g_det_next_ms = 5000.0;		/* 下次统计打印(相对 t0_ms) */
 static double g_det_end_ms;			/* 上次"连击结束"打印时刻 */
 static int g_npu_w = 640, g_npu_h = 640;
@@ -698,13 +700,25 @@ static void npu_run(const unsigned char *rgb)
 	in.type = RKNN_TENSOR_INT8;
 	in.fmt = RKNN_TENSOR_NHWC;
 	in.pass_through = 1;
-	{	/* 诊断: g_int8 是否真的有数据 */
+	{	/* 诊断 + 观测: g_int8 实际内容均值。
+		 * 前 3 帧打明细(定位"有没有数据"); 均值同时进 5 s 统计窗口 ——
+		 * 这是"检测输入是不是当帧"的唯一可观测判据: 遮住 J10 后均值
+		 * 必须骤降; 若不降, 说明 RGA/NPU 读到的是陈旧缓冲, 属代码缺陷
+		 * (docs/37 §8.2 S0)。旧实现的 mean 只在前 3 帧打印, 拿它比较
+		 * "遮住前后"是无效证据。 */
 		static int dbg;
 		long s = 0;
-		for (i = 0; i < sz; i += 64) s += (unsigned char)g_int8[i];
+		double in_mean;
+
+		for (i = 0; i < sz; i += 64)
+			s += (unsigned char)g_int8[i];
+		in_mean = sz >= 64 ? (double)s / (double)(sz / 64) : 0.0;
+		g_det_mean_sum += in_mean;
+		g_det_mean_n++;
 		if (dbg++ < 3)
-			fprintf(stderr, "[npu] in: sz=%u mean=%ld rgb0=%u/%u/%u int8_0=%d\n",
-				(uint32_t)sz, s / (long)(sz / 64),
+			fprintf(stderr,
+				"[npu] in: sz=%u mean=%.1f rgb0=%u/%u/%u int8_0=%d\n",
+				(uint32_t)sz, in_mean,
 				rgb[0], rgb[1], rgb[2], (int)(signed char)g_int8[0]);
 	}
 
@@ -808,11 +822,13 @@ static void npu_run(const unsigned char *rgb)
 
 			if (t - t0_ms >= g_det_next_ms) {
 				printf(">>> 检测统计 %.0fs: 命中 %u/%u 帧 (%.0f%%), "
-				       "峰值 %.3f, streak=%d, 最近命中 %.1fs 前\n",
+				       "峰值 %.3f, 输入均值 %.1f, streak=%d, "
+				       "最近命中 %.1fs 前\n",
 				       (t - t0_ms) / 1000.0, g_det_hit_win,
 				       g_det_frm_win, g_det_frm_win ?
 				       100.0 * g_det_hit_win / g_det_frm_win : 0.0,
-				       g_det_peak_win, g_streak,
+				       g_det_peak_win, g_det_mean_n ?
+				       g_det_mean_sum / g_det_mean_n : 0.0, g_streak,
 				       g_last_detect_ms > 0 ?
 				       (t - g_last_detect_ms) / 1000.0 : -1.0);
 				fflush(stdout);
@@ -820,6 +836,8 @@ static void npu_run(const unsigned char *rgb)
 				g_det_hit_win = 0;
 				g_det_frm_win = 0;
 				g_det_peak_win = 0;
+				g_det_mean_sum = 0;
+				g_det_mean_n = 0;
 			}
 		}
 	}

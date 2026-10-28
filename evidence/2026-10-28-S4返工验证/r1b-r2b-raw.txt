@@ -1,0 +1,5 @@
+===R2===
+>>> 采集 /dev/video5 1920x1080,pre=2s post=2s ring=24MB gop=30
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+>>> 磁盘低水位(7506MB < 20000MB @/root/ev), 停止开启新事件
+>>> 收到 SIGTERM, 已停止

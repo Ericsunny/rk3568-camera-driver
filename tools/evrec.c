@@ -875,7 +875,7 @@ static int g_max_event_sec;
 /* S4: cooldown + 磁盘水位(docs/37 §3.2/§3.3) */
 static int g_cooldown_sec;		/* --cooldown, 0=关(默认) */
 static double g_cooldown_until_ms;	/* 冷却截止(单调 ms); 只在 target_left 后设置 */
-static int g_disk_min_mb = 500;		/* --disk-min-mb */
+static int g_disk_min_mb = 1000;	/* --disk-min-mb; 300s 段实测 62MB,500 仅容 8 段 */
 static int g_disk_hyst_mb = 1000;	/* 滞回带: 回升须越过 min+hyst 才恢复 */
 static int g_disk_stopped;		/* 1=水位停录中 */
 static double g_disk_next_check;	/* 事件中每 10s 查一次 */

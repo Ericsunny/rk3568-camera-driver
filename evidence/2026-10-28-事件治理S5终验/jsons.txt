@@ -1,0 +1,6 @@
+{"file":"/root/ev/s5-01.h264","trigger_seq":29,"trigger_ts_ms":2916.8,"close_reason":"max_duration","bytes":62333383,"duration_ms":301613.5,"event_id":1,"segment_index":0,"first_ts_ms":3003.6,"last_ts_ms":304617.1,"write_error":false}
+
+{"file":"/root/ev/s5-01-s1.h264","trigger_seq":29,"trigger_ts_ms":2916.8,"close_reason":"max_duration","bytes":61959410,"duration_ms":301172.5,"event_id":1,"segment_index":1,"first_ts_ms":304719.6,"last_ts_ms":605892.1,"write_error":false}
+
+{"file":"/root/ev/s5-01-s2.h264","trigger_seq":29,"trigger_ts_ms":2916.8,"close_reason":"sigterm","bytes":2963675,"duration_ms":14037.5,"event_id":1,"segment_index":2,"first_ts_ms":605983.2,"last_ts_ms":620020.7,"write_error":false}
+

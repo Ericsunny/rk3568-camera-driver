@@ -1,6 +1,7 @@
 # 38 · 多客户端 RTSP 入口统一设计
 
-> 状态:**设计稿,未实现**。目标:把 `cam_rtsp.c`(多客户端,无事件)与 `evrec.c`
+> 状态:**A1/A2/A3 已并入,批准 H1 开工**(单客户端行为等价替换)。B1-B8 评审项
+> 已并入 §7a/§4.2/§4.3/§5/§6, 在 H3/H4 落地前生效即可。目标:把 `cam_rtsp.c`(多客户端,无事件)与 `evrec.c`
 > (单客户端+事件录像)的 RTSP 服务端收敛为一个可复用模块,产品入口保持 `evrec`。
 
 ## 1. 现状:两套实现,各自合理但不可组合
@@ -67,6 +68,18 @@ int  rtsp_hub_clients(const struct rtsp_hub *h); /* 当前 PLAY 数(统计/上�
 - **拒绝策略**:握手完成(SETUP 后)检查 `nclients >= max_clients` → 回
   `453 Too Many Connections` 再 close。
 
+### 3.1a 环内 payload 所有权(A1,阻断项)
+
+"分发环 + 多客户端 + 环满丢最旧"同时成立时,客户端线程在锁外持有环内指针、
+生产者逐出该槽 → UAF。现 evrec `pkb` 靠"锁内摘走槽位置 NULL"实现**单消费者**
+独占,N 消费者不成立。**决定:锁内 memcpy 到客户端私有缓冲**(无引用计数,
+bug 面最小;量级:12fps×4 客户端×平均 40KB≈2MB/s,可忽略;4K IDR 200KB 瞬时搬运)。
+不变量两条,code review 必查:
+
+1. **锁外不得持有环内指针**(消费 = 锁内 memcpy 到私有 buf,出锁后只碰私有 buf);
+2. **drop 分两种语义分开计数**:`drop_evicted`(被生产者逐出,客户端被动)与
+   `skip`(客户端主动跳帧/追帧),统计与日志分开,不许合并成一个 `drop`。
+
 ### 3.2 `evrec` 接入(产品入口)
 
 - 删除 evrec 内置的 ~300 行单客户端服务端,改调 `rtsp_hub`;
@@ -96,14 +109,36 @@ commit 做删除,可回退。
   环,定位即一次扫描);无需独立 GOP 缓存结构——环深 ≥1 个 GOP 即可
   (`--rtsp-ring` 默认提到 30,约 2 个 GOP@12fps);
 - cursor 用绝对 tag(单调递增),跳帧/断连都不会污染其他客户端;
-- 每客户端统计:`sent/drop(跳帧)/deadline_timeout`,汇入每秒聚合行。
+- 每客户端统计字段(B5,统一口径):`sent_pkts`(记**包**,不记帧——
+  现在 evrec 打印的 `sent` 是帧, 证据表无法横比)/`sent_bytes`/
+  `skip_frames`(主动追帧)/`evicted`(被生产者逐出, 被动丢)/
+  `sock_dead`(发送判死)/`lag_ms`(cursor 落后)/`last_send_age_s`;
+  hub 级:`in/drop_evicted/halfopen/reject453`。
+
+### 4.2a 每客户端 RTP 状态(A2,阻断项)
+
+"RTP 打包无状态函数"只对**帧→NAL 切分与 FU-A 分片**成立;以下状态必须
+per-client,随 `rtsp_client` 结构持有:
+
+- `seq`(16 位回绕):两客户端共用会让各自序号跳号,播放器判丢包;
+- `ssrc`:每客户端独立随机生成(SETUP 时),不能共享;
+- `marker`:必须落在**该客户端实际发送的**访问单元最后一个包上——客户端
+  跳帧后跳过的是整帧,帧尾 marker 随最后一包自然补上;若跳到半帧则整帧跳,
+  不出现"marker 丢失";
+- `ts`(90kHz):由包 pts 换算(`pts_ms*90`),**跳帧时 ts 真跳变**——
+  禁止按包计数累加(会把时间轴压平,播放器卡顿/加速)。
+
+打包函数签名即文档化:`rtp_send_frame(fd, ch, frame, pts_ms, &c->seq)`,
+状态全部经 `rtsp_client*` 传入,无任何 `g_` 全局。
 
 ### 4.3 最大客户端数与拒绝策略
 
 - 握手完成后拒绝(453),不是 accept 后 close —— 客户端 ffmpeg/VLC 能拿到
   明确错误码,排查成本最低;
 - 拒绝只看 PLAY 数,DESCRIBE/SETUP(未 PLAY)不占名额但计入
-  `hub_halfopen`(防半开连接堆积,超过同样拒绝)。
+  `hub_halfopen`(防半开连接堆积):**halfopen ≤ max_clients+2,且 SETUP 后
+  10s 内未 PLAY 主动 close**(thread-per-client 无超时 = 无上限线程创建+fd
+  占用的 DoS 面,A3 阻断项)。
 
 ### 4.4 慢客户端隔离硬上限
 
@@ -120,7 +155,7 @@ commit 做删除,可回退。
 |---|---|---|
 | V1 | 2/4 客户端并发 ≥10 min(板上 ffmpeg 自拉或 PC ffprobe) | 全程 `clients=N` 稳定;**采集 fps 不降**;每客户端 `sent` 单调增 |
 | V2 | 新客户端中途加入 | 从 IDR 起可立即解码;既有客户端不受影响 |
-| V3 | 慢客户端(SIG -STOP) | 其余客户端与采集 fps 不受影响;恢复 CONT 后继续 |
+| V3 | 慢客户端(SIGSTOP 3s < deadline 5s,随后 SIGCONT) | STOP 期间其余客户端与采集 fps 不受影响;CONT 后该客户端**恢复推流**(deadline 内未被判死);若 STOP 超 deadline 则该客户端被主动断开、其余不受影响(两种结局都算通过,断开路径要留日志) |
 | V4 | 第 N+1 客户端 | 收到 453,既有客户端不受影响 |
 | V5 | 断开/重连循环 ×10 | 每次重连正常;fd 数回基线;无 D 状态 |
 | V6 | 事件录像并存 | 推流期间事件照常分段落盘;hub 丢帧不影响事件完整性 |
@@ -135,11 +170,31 @@ commit 做删除,可回退。
 | H3 | 多客户端(每客户端线程+私有 cursor+453 拒绝) | 中 |
 | H4 | 非阻塞发送移植 + 硬上限断连 | 小 |
 | H5 | 板测 V1-V7 | 2 板端窗口 |
-| H6 | cam_rtsp 退役(deprecated 标记或删除, 单独 commit) | 小 |
+| H6 | cam_rtsp 退役:**V1-V7 全过后**先标 deprecated 保留一个版本,同一 commit 更新 docs/35 与 README 对 cam_rtsp 的引用 | 小 |
 
-## 7. 边界与非目标
+## 7. 边界与既有决策
 
-- 不做 UDP RTP(TCP interleaved 已满足, UDP 增加大量状态);
-- 不做 RTSP over TLS / 鉴权(局域网演示场景, 如需在入口前加反代);
-- 不做录制回放/点播(RTSP 只做实时流);
+- **RTCP**:现状 = 客户端发来的 interleaved RTCP **读入即丢弃**,服务端
+  **不发 SR**。保留此决策(H1 行为等价);H5 验收必须用两种客户端覆盖
+  (ffmpeg + VLC 或 GStreamer)——"没有 SR"在不同播放器上表现不同,
+  只用 ffprobe 通过不算覆盖(B1);
+- **不做 UDP RTP**(TCP interleaved 已满足, UDP 增加大量状态);
+- **不做 RTSP over TLS / 鉴权**(局域网演示场景, 如需在入口前加反代);
+- **不做录制回放/点播**(RTSP 只做实时流);
 - 单进程内 hub;不引入进程间总线。
+
+## 7a. 补充语义(B1-B4/B7 评审项)
+
+- **453 语义(B2)**:RFC 2326 的 453 是 "Not Enough Bandwidth",
+  "Too Many Connections" 属非标复用(业界普遍)。本服务行为:不排队、
+  不自动重试、响应带 `Retry-After: 5`;**453 计数是容量指标**,运维侧
+  持续增长 = 客户端数超预算;
+- **环深双上限(B3)**:`--rtsp-ring N`(包数,默认 30)与新增
+  `--rtsp-ring-mb`(字节,默认 8)同时生效,**逐出按字节优先**——
+  4K 下 30 包可能是 6MB,包数上限不构成内存上界;
+- **WiFi 口径(B7)**:`--rtsp-clients` 默认 4 是**有线实测上限**
+  (4×~1.1Mbps 实测码率);WiFi 先撞吞吐瓶颈,按吞吐下调;
+  V1 在无线环境下失败**不判 hub 缺陷**;
+- **link_recover epoch(B4)**:链路故障恢复后 `hub_epoch++`,客户端只接受
+  当前 epoch 的 key 包起播(或恢复时清环)——防止新客户端从故障前的
+  旧 IDR 起播看到时间断层。H3 实现时落地。

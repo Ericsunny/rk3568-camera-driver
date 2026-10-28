@@ -1552,9 +1552,11 @@ static void usage(void)
 "OSD(叠加源帧序号与时间戳):\n"
 "  --osd / --no-osd  开/关, 默认关(不开参数时行为与旧版一致)\n"
 "\n"
-"RTSP 推流:\n"
+"RTSP 推流(多客户端):\n"
 "  --rtsp [PORT]     开推流, 省略端口=8554, 0=关闭(默认关闭)\n"
-"  --rtsp-ring N     推流投递环深度(默认 8)\n"
+"  --rtsp-clients N  最大并发播放客户端数(默认 4, 超出的 PLAY 收 453)\n"
+"  --rtsp-ring N     推流分发环深度(包数, 默认 30)\n"
+"  --rtsp-ring-mb M  推流分发环字节上限(MB, 默认 8; 双上限, 字节优先逐出)\n"
 "  --rtp-trace FILE  每个 RTP 包一行(seq/ts/mark/nal/fu/s/e/payload/send),\n"
 "                    仅 --rtsp 时生效; 默认关闭, 不影响正常发送路径\n"
 "\n"
@@ -1562,8 +1564,9 @@ static void usage(void)
 "  --recover N       链路故障后重开设备次数 (默认 2, 0=不恢复)\n"
 "  --fault-sim dqbuf:N  第 N 次 DQBUF 强制失败(仅测试, 可逗号列多个)\n"
 "\n"
-"运行时指标: 每秒一行 `rtsp: clients= sent= drop= disc= fds=`;\n"
-"            sent=发成的帧, drop=网络侧整包丢弃, disc=对端主动断开(不计入 drop)\n");
+"运行时指标: 每秒 `rtsp: conn= play=N/M sent= epoch= rej453= fds=` 加每个\n"
+"            客户端一行 `rtsp cN: sent=包/字节 skip= evict= dead= lag= idle=`;\n"
+"            evict=被环逐出(被动丢), skip=等 IDR 主动跳帧, dead=发送判死\n");
 }
 
 int main(int argc, char **argv)
@@ -1592,7 +1595,8 @@ int main(int argc, char **argv)
 			"-d", "-w", "--pre", "--post", "--ring-mb", "-o",
 			"--trigger", "--kbps", "--model", "--max-events",
 			"--det-score", "--det-frames", "--obj-thresh",
-			"--rga-size", "--rtsp-ring", "--recover", "--fault-sim",
+			"--rga-size", "--rtsp-ring", "--rtsp-ring-mb",
+			"--rtsp-clients", "--recover", "--fault-sim",
 			"--rtp-trace",
 		};
 		size_t j;
@@ -1652,6 +1656,8 @@ int main(int argc, char **argv)
 				g_rtsp_port = 8554;
 		}
 		else if (!strcmp(argv[i], "--rtsp-ring")) rtsp_hub_set_ring_depth(atoi(argv[++i]));
+		else if (!strcmp(argv[i], "--rtsp-ring-mb")) rtsp_hub_set_ring_mb(atoi(argv[++i]));
+		else if (!strcmp(argv[i], "--rtsp-clients")) rtsp_hub_set_max_clients(atoi(argv[++i]));
 		else if (!strcmp(argv[i], "--rtp-trace")) rtsp_hub_set_trace_path(argv[++i]);
 		else if (!strcmp(argv[i], "--recover")) {
 			g_recover = atoi(argv[++i]);

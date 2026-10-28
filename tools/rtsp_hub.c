@@ -1,10 +1,13 @@
-/* rtsp_hub.c —— evrec 内置 RTSP 服务端+投递环(自 71471d7 的 evrec.c 原样提炼)
+/* rtsp_hub.c —— evrec 的 RTSP 服务端+分发环(H1 自 evrec.c 提炼, H3 多客户端化)
  *
- * H1(单客户端行为等价替换): 本文件代码 = 原 evrec.c 行 1400-2520 的逐字拷贝,
- * 仅两处机械替换: g_stop → g_hub_stopping(经 rtsp_hub_set_stop 注入);
- * 其余符号保持 static —— H1 的验收是"行为等价", 多客户端(H3)再重构命名。
- * 设计: docs/38(§3.1a 环所有权 / §4.2a per-client RTP 状态 / §4.3 半开超时)。
+ * H1: 单客户端行为等价替换(已验收, evidence/2026-10-28-H1关闭验证/)。
+ * H3(docs/38): 每连接一线程(信令+发送同线程, cam_rtsp 模型), 共享分发环+
+ *     每客户端私有游标; A1 锁内 memcpy 到私有缓冲 / A2 per-client seq·ssrc·
+ *     marker / A3 SETUP 后 10s 半开超时; PLAY 名额满回 453+Retry-After(B2);
+ *     B4 链路恢复清环+epoch; B3 环双上限(包数+字节); B5 每客户端统计口径。
+ * g_stop → g_hub_stopping 的注入方式保持 H1 不变。
  */
+#define _GNU_SOURCE		/* memmem(glibc 只在 _GNU_SOURCE 下声明) */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,7 +23,10 @@
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <sys/time.h>
+#include <time.h>
 #include <dirent.h>
+
+#include "rtsp_hub.h"		/* 包含自身接口: 原型/定义不匹配在编译期暴露 */
 #ifndef SIOCOUTQ
 #define SIOCOUTQ 0x5411		/* Linux: 发送队列里尚未确认的字节数 */
 #endif
@@ -95,34 +101,154 @@ static pthread_t g_rtsp_accept_tid;
 static int g_rtsp_accept_started;
 static volatile sig_atomic_t g_rtsp_stopping;
 static pthread_mutex_t g_rtsp_lock = PTHREAD_MUTEX_INITIALIZER;
-static int g_rtsp_cfd = -1;
-static int g_rtsp_used;
-static int g_rtsp_play;
-static int g_rtsp_started;
-static int g_rtsp_need_key;
-static volatile int g_rtsp_gap;		/* pkb 丢过包: 重置发送游标, 等 IDR */
-static int g_rtsp_ch;
-static uint16_t g_rtsp_seq;
-static uint32_t g_rtsp_ts;
-static pthread_t g_rtsp_cli_tid;
-static int g_rtsp_cli_started, g_rtsp_cli_joined;
-static unsigned long g_rtsp_sent, g_rtsp_drop;
-static unsigned long g_rtsp_disc;
-static unsigned long g_rtsp_drop_run;
-static int g_rtsp_kick;
 
 static volatile sig_atomic_t g_hub_stopping;
+
+/* ---- 分发环(H3): 生产者写, N 个客户端按各自游标消费 ----
+ * 环内 tag 连续: [oldest, next), 物理槽 = tag % PKB_MAX。条目归环所有,
+ * 被逐出才 free —— 消费端按 A1 在环锁内 memcpy 到私有缓冲。 */
+#define PKB_MAX 64		/* --rtsp-ring 的硬上限 */
+struct pktbuf {
+	unsigned char *data;
+	int len;
+	unsigned seq;
+	unsigned char key;
+	uint32_t ts90;		/* 90kHz RTP 时间戳, 编码线程按源帧时间算好 */
+	uint64_t tag;		/* 绝对序号: 单调递增, 客户端游标即 tag */
+};
+
+static struct pktbuf g_pkb[PKB_MAX];
+static int g_pkb_depth = 30;	/* --rtsp-ring N(包数), 默认 30(docs/38 §7a B3) */
+static int g_pkb_mb = 8;	/* --rtsp-ring-mb(字节上限 MB), 字节优先构成内存上界 */
+static uint64_t g_pkb_oldest_tag, g_pkb_next_tag;	/* 空环: oldest == next */
+static unsigned long g_pkb_bytes;	/* 环内字节总量(B3) */
+static unsigned long g_pkb_in, g_pkb_drop;	/* drop = 被逐出的包(hub 级) */
+static int g_pkb_stop_local;
+static pthread_mutex_t g_pkb_lock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t g_pkb_cond = PTHREAD_COND_INITIALIZER;
+static int g_pkb_started;
+
+/* ---- 客户端表(H3): 每连接一线程, 信令与发送在同一线程(cam_rtsp 模型) ----
+ * A1: 消费 = 环锁内 memcpy 到私有缓冲, 锁外只碰私有缓冲;
+ * A2: seq/ssrc/ch 状态全在客户端结构里, 打包函数经 rtsp_cli* 传入;
+ * A3: SETUP 后 10s 未 PLAY 主动 close(半开超时, 经 read_req 的 deadline)。
+ * 槽生命周期: accept 占槽(used=1) → 线程退出标 th_done → join 后 used=0
+ * (槽复用以 join 完成为前提, 防 pthread 栈泄漏)。
+ * 槽表 10 = max_clients 上限 8 + 2 个半开余量(docs/38 §4.3)。 */
+#define RTSP_CLI_MAX 10
+struct rtsp_cli {
+	int used;		/* 槽被占用(连接存活, join 后清 0) */
+	int playing;		/* PLAY 已接受(占用播放名额) */
+	int th_done;		/* 线程已退出, 待 join */
+	int joined;
+	pthread_t tid;
+	int fd;			/* -1 = 本线程已关 */
+	char session[32];
+	int ch;			/* interleaved RTP 通道 */
+	uint16_t seq;		/* RTP 序号(16 位回绕), per-client(A2) */
+	uint32_t ssrc;		/* SETUP 时生成, per-client(A2) */
+	uint64_t cursor;	/* 下一个待发包的绝对 tag(判定持环锁) */
+	int need_key;		/* 等下一个 IDR(起播/跳帧/被逐出后) */
+	uint8_t *sbuf;		/* 私有帧缓冲(A1), 按需增长 */
+	int scap;
+	/* B5 统计口径: 记包不记帧; 被动丢(evicted)与主动跳(skip)分开 */
+	unsigned long sent_pkts;	/* RTP 包数(不是帧) */
+	unsigned long sent_bytes;	/* RTP 负载字节(Annex-B 帧长合计) */
+	unsigned long skip_frames;	/* 主动跳帧(need_key 同步跳过) */
+	unsigned long evicted;		/* 被生产者逐出(被动丢) */
+	unsigned long sock_dead;	/* 发送判死 */
+	uint64_t last_send_ms;		/* 最后成功发送时刻(CLOCK_MONOTONIC ms) */
+};
+
+static struct rtsp_cli g_cli[RTSP_CLI_MAX];
+static int g_max_clients = 4;		/* --rtsp-clients, clamp [1,8] */
+static unsigned long g_rej453;		/* 453/槽满拒绝次数(容量指标, B2) */
+static unsigned long g_rtsp_disc;	/* 对端主动断开(EPIPE/ECONNRESET) */
+static unsigned long g_hub_epoch;	/* B4: 链路恢复次数(notify_recover ++) */
+
+static uint64_t now_ms_mono(void)
+{
+	struct timespec ts;
+
+	clock_gettime(CLOCK_MONOTONIC, &ts);
+	return (uint64_t)ts.tv_sec * 1000 + (uint64_t)ts.tv_nsec / 1000000;
+}
+
+static const char *tx_why_name(int why)
+{
+	static const char * const names[] = { "ok", "precheck", "eagain",
+					      "error", "short", "stall" };
+
+	return (why >= 0 && why < (int)(sizeof(names) / sizeof(names[0]))) ?
+	       names[why] : "?";
+}
+
+static int count_playing_locked(void)	/* 调用者持 g_rtsp_lock */
+{
+	int i, n = 0;
+
+	for (i = 0; i < RTSP_CLI_MAX; i++)
+		if (g_cli[i].used && g_cli[i].playing)
+			n++;
+	return n;
+}
+
+/* 以下两个只在持有 g_pkb_lock 时调用 */
+static uint64_t pkb_find_key_from(uint64_t from)
+{
+	uint64_t t;
+
+	if (from < g_pkb_oldest_tag)
+		from = g_pkb_oldest_tag;
+	for (t = from; t < g_pkb_next_tag; t++)
+		if (g_pkb[t % PKB_MAX].key)
+			return t;
+	return g_pkb_next_tag;
+}
+
+static uint64_t pkb_latest_key(void)
+{
+	uint64_t t = g_pkb_next_tag;
+
+	while (t > g_pkb_oldest_tag) {
+		t--;
+		if (g_pkb[t % PKB_MAX].key)
+			return t;
+	}
+	return g_pkb_next_tag;
+}
 
 void rtsp_hub_set_stop(void)		/* evrec 的信号路径调用 */
 {
 	g_hub_stopping = 1;
 }
 
+/* B4: 链路恢复后 epoch++ 并清环 —— 客户端不消费故障前的旧包, 各端
+ * need_key=1, 从恢复后的下一个 IDR 重新起步(docs/38 §7a)。 */
 void rtsp_hub_notify_recover(void)
 {
+	unsigned char *victims[PKB_MAX];
+	int i, nv = 0;
+
+	pthread_mutex_lock(&g_pkb_lock);
+	while (g_pkb_oldest_tag < g_pkb_next_tag) {
+		struct pktbuf *p = &g_pkb[g_pkb_oldest_tag % PKB_MAX];
+
+		if (nv < PKB_MAX)
+			victims[nv++] = p->data;
+		p->data = NULL;
+		g_pkb_oldest_tag++;
+	}
+	g_pkb_bytes = 0;
+	pthread_mutex_unlock(&g_pkb_lock);
+	for (i = 0; i < nv; i++)
+		free(victims[i]);
+
 	pthread_mutex_lock(&g_rtsp_lock);
-	g_rtsp_started = 0;
-	g_rtsp_need_key = 1;
+	g_hub_epoch++;
+	for (i = 0; i < RTSP_CLI_MAX; i++)
+		if (g_cli[i].used)
+			g_cli[i].need_key = 1;
 	pthread_mutex_unlock(&g_rtsp_lock);
 }
 
@@ -382,16 +508,16 @@ static int rtsp_send_interleaved(int fd, int ch, const uint8_t *rtp, int len,
 	return RTSP_TX_OK;
 }
 
-static int rtsp_send_nal(int fd, int ch, const uint8_t *nal, int len,
-			 uint32_t ts, uint16_t *seq, int marker,
-			 struct txdiag *dg)
+/* A2: RTP 状态(seq)全部经 rtsp_cli* 传入, 无 g_ 全局(docs/38 §4.2a) */
+static int rtsp_send_nal(struct rtsp_cli *c, const uint8_t *nal, int len,
+			 uint32_t ts, int marker, struct txdiag *dg)
 {
 	const int MAXP = 1400;
 	int rc;
 
 	if (len <= MAXP) {
 		uint8_t pkt[12 + MAXP];
-		uint16_t sq = *seq;
+		uint16_t sq = c->seq;
 
 		memset(pkt, 0, 12);
 		pkt[0] = 0x80;
@@ -403,8 +529,8 @@ static int rtsp_send_nal(int fd, int ch, const uint8_t *nal, int len,
 		pkt[6] = (uint8_t)(ts >> 8);
 		pkt[7] = (uint8_t)ts;
 		memcpy(pkt + 12, nal, (size_t)len);
-		(*seq)++;
-		rc = rtsp_send_interleaved(fd, ch, pkt, 12 + len, dg);
+		c->seq++;
+		rc = rtsp_send_interleaved(c->fd, c->ch, pkt, 12 + len, dg);
 		rtp_trace_line(sq, ts, nal[0] & 0x1f, 0, 0, 0, marker,
 			       len, rc, dg);
 		return rc;
@@ -416,7 +542,7 @@ static int rtsp_send_nal(int fd, int ch, const uint8_t *nal, int len,
 			int n = len - off;
 			int end;
 			uint8_t pkt[12 + MAXP];
-			uint16_t sq = *seq;
+			uint16_t sq = c->seq;
 
 			if (n > MAXP - 2)
 				n = MAXP - 2;
@@ -434,11 +560,11 @@ static int rtsp_send_nal(int fd, int ch, const uint8_t *nal, int len,
 			pkt[13] = (uint8_t)((nal[0] & 0x1f) |
 					    (first ? 0x80 : 0) | (end ? 0x40 : 0));
 			memcpy(pkt + 14, nal + off, (size_t)n);
-			(*seq)++;
+			c->seq++;
 			/* 一片发不出去只能是连接坏了(整包要么全进内核, 要么
 			 * 有界等待后 FATAL): 返回 FATAL 让上层立刻 shutdown,
 			 * 绝不把缺了后半段的 FU-A 留在线上 */
-			rc = rtsp_send_interleaved(fd, ch, pkt, 14 + n, dg);
+			rc = rtsp_send_interleaved(c->fd, c->ch, pkt, 14 + n, dg);
 			rtp_trace_line(sq, ts, nal[0] & 0x1f, 1, first,
 				       end, end && marker, n + 2, rc, dg);
 			if (rc != RTSP_TX_OK)
@@ -454,8 +580,8 @@ static int rtsp_send_nal(int fd, int ch, const uint8_t *nal, int len,
  * P10 起: 帧内任何一个包失败都返回 FATAL(连接作废), 不再"放弃整帧"——
  * 已发出的前缀会构成一个缺 slice 尾部的访问单元, 解码器只能报宏块错误。
  * 只有 RTSP_TX_OK / RTSP_TX_FATAL 两种返回值会从这里出现。 */
-static int rtsp_send_frame(int fd, int ch, const uint8_t *d, int n, int key,
-			   uint32_t ts, uint16_t *seq, struct txdiag *dg)
+static int rtsp_send_frame(struct rtsp_cli *c, const uint8_t *d, int n,
+			   int key, uint32_t ts, struct txdiag *dg)
 {
 	struct { const uint8_t *p; int len; } nal[64];
 	int nn = 0, i = 0, k, rc;
@@ -508,18 +634,18 @@ static int rtsp_send_frame(int fd, int ch, const uint8_t *d, int n, int key,
 		pthread_mutex_unlock(&g_nal_lock);
 
 		if (sl > 0 && !rtsp_has_nal(d, n, 7)) {
-			rc = rtsp_send_nal(fd, ch, sps, sl, ts, seq, 0, dg);
+			rc = rtsp_send_nal(c, sps, sl, ts, 0, dg);
 			if (rc != RTSP_TX_OK)
 				return rc;
 		}
 		if (pl > 0 && !rtsp_has_nal(d, n, 8)) {
-			rc = rtsp_send_nal(fd, ch, pps, pl, ts, seq, 0, dg);
+			rc = rtsp_send_nal(c, pps, pl, ts, 0, dg);
 			if (rc != RTSP_TX_OK)
 				return rc;
 		}
 	}
 	for (k = 0; k < nn; k++) {
-		rc = rtsp_send_nal(fd, ch, nal[k].p, nal[k].len, ts, seq,
+		rc = rtsp_send_nal(c, nal[k].p, nal[k].len, ts,
 				   k == nn - 1, dg);
 		if (rc != RTSP_TX_OK)
 			return rc;
@@ -527,83 +653,8 @@ static int rtsp_send_frame(int fd, int ch, const uint8_t *d, int n, int key,
 	return RTSP_TX_OK;
 }
 
-/* sender_thread 的唯一网络出口: 取一个包, 有 PLAY 中的客户端就发, 否则丢 */
-static void rtsp_send_packet(const unsigned char *d, int n, int key,
-			     uint32_t ts90)
-{
-	struct txdiag dg;
-	int rc;
-
-	pthread_mutex_lock(&g_rtsp_lock);
-	if (!g_rtsp_play || g_rtsp_cfd < 0)
-		goto out;
-	if (g_rtsp_gap) {
-		/* 投递环丢过包: 中间帧已不可解, 从下一个 IDR 重新起步 */
-		g_rtsp_gap = 0;
-		g_rtsp_need_key = 1;
-		g_rtsp_started = 0;
-	}
-	if (!g_rtsp_started) {
-		/* 中途接入先等 IDR, 否则首帧是 P 帧, 播放器解不出来 */
-		if (!key)
-			goto out;
-		g_rtsp_started = 1;
-	}
-	if (g_rtsp_need_key) {
-		if (!key)
-			goto out;
-		g_rtsp_need_key = 0;
-	}
-	if (!g_sps_len || !g_pps_len) {
-		pthread_mutex_lock(&g_nal_lock);
-		if (!g_sps_len || !g_pps_len)
-			rtsp_scan_nals(d, n);
-		pthread_mutex_unlock(&g_nal_lock);
-	}
-	g_rtsp_ts = ts90;
-	rc = rtsp_send_frame(g_rtsp_cfd, g_rtsp_ch, d, n, key, g_rtsp_ts,
-			     &g_rtsp_seq, g_rtp_trace ? &dg : NULL);
-	if (rc == RTSP_TX_OK) {
-		g_rtsp_sent++;
-		g_rtsp_drop_run = 0;
-		goto out;
-	}
-	/* 失败: 连接作废, 立刻 shutdown; 已发出的帧前缀随连接一起丢, 绝不让
-	 * 半个访问单元继续流下去(编码/录像完全不受影响) */
-	if (rc == RTSP_TX_DROP) {
-		/* P10 起帧内不再返回 DROP, 这里只作防御保留 */
-		g_rtsp_drop++;
-		g_rtsp_kick = 1;
-		g_rtsp_play = 0;
-		if (g_rtsp_cfd >= 0)
-			shutdown(g_rtsp_cfd, SHUT_RDWR);
-	} else {
-		/* FATAL: EPIPE/ECONNRESET 是"对端关掉了", 不是我们丢包 —— 计入
-		 * disc。EAGAIN(POLLOUT 等 1s 仍写不进)是客户端不收, 计入 drop。
-		 * errno 在锁内立即取, 打印后失效。 */
-		int e = errno;
-
-		if (e == EPIPE || e == ECONNRESET) {
-			g_rtsp_disc++;
-			printf("rtsp: 客户端已关闭(errno=%d %s), 断开\n",
-			       e, strerror(e));
-		} else if (e == EAGAIN || e == EWOULDBLOCK) {
-			g_rtsp_drop++;
-			printf("rtsp: 客户端不收(等待可写超时, errno=%d), 断开客户端\n",
-			       e);
-		} else {
-			g_rtsp_drop++;
-			printf("rtsp: 发送失败(errno=%d %s), 断开客户端\n",
-			       e, strerror(e));
-		}
-		fflush(stdout);
-		g_rtsp_play = 0;
-		if (g_rtsp_cfd >= 0)
-			shutdown(g_rtsp_cfd, SHUT_RDWR);
-	}
-out:
-	pthread_mutex_unlock(&g_rtsp_lock);
-}
+/* H3: 单客户端的 sender 线程/rtsp_send_packet 已删除 —— 每个客户端线程
+ * 自己从分发环按私有游标取包发送(见 rtsp_client_thread 的发送循环)。 */
 
 /* 进程当前打开的 fd 数(/proc/self/fd): 盯 accept/close 有没有泄漏 */
 static int rtsp_count_fds(void)
@@ -621,21 +672,47 @@ static int rtsp_count_fds(void)
 	return n - 1;	/* 减掉 opendir 自己占的那个 */
 }
 
-/* 每秒一行的聚合日志(不是每包一行): 客户端数 / 已发帧 / 丢帧 / fd 数 */
+/* 每秒一行的聚合日志: hub 行 + 每个 PLAY 中客户端一行(B5 字段) */
 void rtsp_stats_report(void)
 {
-	unsigned long sent, drop, disc;
-	int clients, fds;
+	int i, conn = 0, play = 0, fds;
+	unsigned long sent = 0, rej, ep;
+	uint64_t now = now_ms_mono();
 
 	pthread_mutex_lock(&g_rtsp_lock);
-	clients = (g_rtsp_used && g_rtsp_cfd >= 0) ? 1 : 0;
-	sent = g_rtsp_sent;
-	drop = g_rtsp_drop;
-	disc = g_rtsp_disc;
+	rej = g_rej453;
+	ep = g_hub_epoch;
+	for (i = 0; i < RTSP_CLI_MAX; i++) {
+		struct rtsp_cli *c = &g_cli[i];
+		double lag_ms = 0, idle;
+
+		if (!c->used)
+			continue;
+		conn++;
+		if (!c->playing)
+			continue;
+		play++;
+		sent += c->sent_pkts;
+		/* lag: 游标距环最新的时间差(ms, 按 90kHz ts 差; 持环锁采样) */
+		pthread_mutex_lock(&g_pkb_lock);
+		if (c->cursor >= g_pkb_oldest_tag && c->cursor < g_pkb_next_tag) {
+			uint32_t cur_ts = g_pkb[c->cursor % PKB_MAX].ts90;
+			uint32_t new_ts =
+				g_pkb[(g_pkb_next_tag - 1) % PKB_MAX].ts90;
+
+			lag_ms = (double)(uint32_t)(new_ts - cur_ts) / 90.0;
+		}
+		pthread_mutex_unlock(&g_pkb_lock);
+		idle = c->last_send_ms ?
+		       (double)(now - c->last_send_ms) / 1000.0 : -1.0;
+		printf("rtsp c%d: sent=%lu/%luB skip=%lu evict=%lu dead=%lu lag=%.0fms idle=%.1fs\n",
+		       i, c->sent_pkts, c->sent_bytes, c->skip_frames,
+		       c->evicted, c->sock_dead, lag_ms, idle);
+	}
 	pthread_mutex_unlock(&g_rtsp_lock);
 	fds = rtsp_count_fds();
-	printf("rtsp: clients=%d sent=%lu drop=%lu disc=%lu fds=%d\n",
-	       clients, sent, drop, disc, fds);
+	printf("rtsp: conn=%d play=%d/%d sent=%lu epoch=%lu rej453=%lu fds=%d\n",
+	       conn, play, g_max_clients, sent, ep, rej, fds);
 	fflush(stdout);
 }
 
@@ -694,11 +771,13 @@ static const char *rtsp_b64(const uint8_t *d, int n, char *out)
 }
 
 /*
- * 读一个完整 RTSP 请求. 返回 >0=请求长度, 0=超时(继续等), -1=断开/退出.
+ * 读一个完整 RTSP 请求. 返回 >0=请求长度, 0=超时(继续等), -1=断开/退出,
+ * -2=半开超时(A3: deadline_ms 到期仍无 PLAY).
  * 200ms poll 让线程能看见 g_rtsp_stopping; 客户端发来的 interleaved RTCP
  * 包在缓冲里直接跳过, 只把 RTSP 请求交给上层.
  */
-static int rtsp_read_req(int fd, char *buf, int *plen, int cap)
+static int rtsp_read_req(int fd, char *buf, int *plen, int cap,
+			 uint64_t deadline_ms)
 {
 	/* 不变量(评审): len 必须落在 [0, cap-1], 违反=更早已被破坏, 干净拒绝
 	 * 而不是静默续写(多客户端后这条防御的价值更高)。 */
@@ -712,6 +791,9 @@ static int rtsp_read_req(int fd, char *buf, int *plen, int cap)
 		int len = *plen;
 		char *p;
 
+		/* A3: 半开超时(0=不限时), 200ms poll 粒度 */
+		if (deadline_ms && now_ms_mono() >= deadline_ms)
+			return -2;
 		if (g_rtsp_stopping)
 			return -1;
 		while (len >= 4 && buf[0] == '$') {
@@ -771,20 +853,32 @@ static int rtsp_read_req(int fd, char *buf, int *plen, int cap)
 	}
 }
 
+/* 每连接一线程: 信令阶段(OPTIONS/DESCRIBE/SETUP/PLAY/TEARDOWN), PLAY 接受后
+ * 同一线程进入发送循环(每客户端消费线程, cam_rtsp 模型)。
+ * TEARDOWN 在发送循环期间不再读取(与 cam_rtsp 相同): 客户端断开由发送
+ * FATAL(EPIPE/ECONNRESET)发现, 走同一收尾路径。 */
 static void *rtsp_client_thread(void *arg)
 {
-	int fd = (int)(intptr_t)arg;
+	int slot = (int)(intptr_t)arg;
+	struct rtsp_cli *c = &g_cli[slot];
 	char req[RTSP_REQ_MAX];
-	int reqlen = 0, cseq = 0, kicked;
-	char session[32] = "12345678";
+	int reqlen = 0, cseq = 0;
+	uint64_t dl = 0;	/* A3: >0 = 该时刻前必须 PLAY, 否则按半开关闭 */
 
-	while (!g_rtsp_stopping) {
+	/* ---- 信令阶段 ---- */
+	while (!g_rtsp_stopping && !g_hub_stopping) {
 		char out[RTSP_SDP_MAX + 512];
 		char sdp[RTSP_SDP_MAX];
 		char b64s[512], b64p[512];
 		char *p;
-		int n = rtsp_read_req(fd, req, &reqlen, (int)sizeof(req));
+		int n = rtsp_read_req(c->fd, req, &reqlen, (int)sizeof(req), dl);
 
+		if (n == -2) {
+			printf("rtsp c%d: SETUP 后 10s 未 PLAY, 关闭半开连接\n",
+			       slot);
+			fflush(stdout);
+			break;
+		}
 		if (n < 0)
 			break;
 		if (n == 0)
@@ -798,12 +892,12 @@ static void *rtsp_client_thread(void *arg)
 				 "RTSP/1.0 200 OK\r\nCSeq: %d\r\n"
 				 "Public: OPTIONS, DESCRIBE, SETUP, PLAY, TEARDOWN, GET_PARAMETER\r\n\r\n",
 				 cseq);
-			if (rtsp_xwrite(fd, out, strlen(out)) < 0)
+			if (rtsp_xwrite(c->fd, out, strlen(out)) < 0)
 				break;
 		} else if (!strncmp(req, "DESCRIBE", 8)) {
 			uint8_t sps[sizeof(g_sps)], pps[sizeof(g_pps)];
 			char plid[8];
-			int rc, sl, pl, waited;
+			int sl, pl, waited;
 
 			/* 参数集随首个 IDR 才出现(启动后约 70 ms): 有界等待,
 			 * 让与设备同时启动的客户端也能拿到 SDP, 而不是 503。
@@ -819,7 +913,7 @@ static void *rtsp_client_thread(void *arg)
 				usleep(10 * 1000);
 			}
 
-			/* 参数集可能在首帧 IDR 才出现: 拷贝快照, 不在发送锁里做 IO */
+			/* 参数集可能在首帧 IDR 才出现: 拷贝快照, 不持锁做 IO */
 			pthread_mutex_lock(&g_nal_lock);
 			sl = g_sps_len;
 			pl = g_pps_len;
@@ -830,8 +924,9 @@ static void *rtsp_client_thread(void *arg)
 			pthread_mutex_unlock(&g_nal_lock);
 
 			rtsp_profile_level(sps, sl, plid);
-			pthread_mutex_lock(&g_rtsp_lock);
-			if (sl > 0 && pl > 0 && g_rtsp_cfd == fd) {
+			if (sl > 0 && pl > 0) {
+				/* H3: 不再检查"是不是当前唯一客户端",
+				 * 每个连接都独立拿到 SDP */
 				rtsp_b64(sps, sl, b64s);
 				rtsp_b64(pps, pl, b64p);
 				snprintf(sdp, sizeof(sdp),
@@ -859,9 +954,7 @@ static void *rtsp_client_thread(void *arg)
 					 "RTSP/1.0 503 Service Unavailable\r\nCSeq: %d\r\n\r\n",
 					 cseq);
 			}
-			rc = rtsp_xwrite(fd, out, strlen(out));
-			pthread_mutex_unlock(&g_rtsp_lock);
-			if (rc < 0)
+			if (rtsp_xwrite(c->fd, out, strlen(out)) < 0)
 				break;
 		} else if (!strncmp(req, "SETUP", 5)) {
 			char *tr = strstr(req, "interleaved=");
@@ -869,75 +962,234 @@ static void *rtsp_client_thread(void *arg)
 
 			if (tr)
 				sscanf(tr + 12, "%d-%d", &ch_rtp, &ch_rtcp);
-			pthread_mutex_lock(&g_rtsp_lock);
-			if (g_rtsp_cfd == fd)
-				g_rtsp_ch = ch_rtp;
+			/* A2: 每客户端独立 ssrc/session(原来共用固定值) */
+			snprintf(c->session, sizeof(c->session), "%08x",
+				 (unsigned)(now_ms_mono() ^ (uintptr_t)c));
+			c->ssrc = (uint32_t)(now_ms_mono() * 2654435761u) ^
+				  (uint32_t)(uintptr_t)c;
+			c->ch = ch_rtp;
+			dl = now_ms_mono() + 10 * 1000;	/* A3: 10s 内必须 PLAY */
 			snprintf(out, sizeof(out),
 				 "RTSP/1.0 200 OK\r\nCSeq: %d\r\n"
 				 "Session: %s\r\n"
-				 "Transport: RTP/AVP/TCP;unicast;interleaved=%d-%d;ssrc=12345678\r\n\r\n",
-				 cseq, session, ch_rtp, ch_rtcp);
-			rc = rtsp_xwrite(fd, out, strlen(out));
-			pthread_mutex_unlock(&g_rtsp_lock);
+				 "Transport: RTP/AVP/TCP;unicast;interleaved=%d-%d;ssrc=%u\r\n\r\n",
+				 cseq, c->session, ch_rtp, ch_rtcp,
+				 (unsigned)c->ssrc);
+			rc = rtsp_xwrite(c->fd, out, strlen(out));
 			if (rc < 0)
 				break;
 		} else if (!strncmp(req, "PLAY", 4)) {
-			int rc;
+			int rc, ok = 0;
+			uint64_t start_tag, ts0 = 0;
 
-			/* 200 OK 必须完整先到, 之后才允许 RTP 上路 */
+			/* 名额检查+占位必须原子, 否则并发 PLAY 会超卖
+			 * (docs/38 §4.3: 拒绝只看 PLAY 数, DESCRIBE/SETUP
+			 * 不占名额)。锁序 rtsp→pkb 与发送循环一致。 */
 			pthread_mutex_lock(&g_rtsp_lock);
-			if (g_rtsp_cfd != fd) {
-				pthread_mutex_unlock(&g_rtsp_lock);
-				break;
+			pthread_mutex_lock(&g_pkb_lock);
+			start_tag = pkb_latest_key();	/* §2: 从最新 IDR 起推 */
+			if (start_tag < g_pkb_next_tag)
+				ts0 = g_pkb[start_tag % PKB_MAX].ts90;
+			if (count_playing_locked() >= g_max_clients) {
+				g_rej453++;
+			} else {
+				c->playing = 1;
+				c->cursor = start_tag;
+				c->need_key = (start_tag >= g_pkb_next_tag);
+				c->seq = 0;
+				ok = 1;
 			}
+			pthread_mutex_unlock(&g_pkb_lock);
+			pthread_mutex_unlock(&g_rtsp_lock);
+
+			if (!ok) {
+				/* B2: 453 语义 —— 不排队、不自动重试, 带
+				 * Retry-After; 持续增长 = 客户端数超预算 */
+				snprintf(out, sizeof(out),
+					 "RTSP/1.0 453 Too Many Connections\r\nCSeq: %d\r\n"
+					 "Retry-After: 5\r\n\r\n", cseq);
+				rtsp_xwrite(c->fd, out, strlen(out));
+				break;		/* 拒绝后关闭 */
+			}
+			/* 200 OK 必须完整先到, 之后才允许 RTP 上路 */
 			snprintf(out, sizeof(out),
 				 "RTSP/1.0 200 OK\r\nCSeq: %d\r\nSession: %s\r\n"
 				 "Range: npt=0.000-\r\n"
 				 "RTP-Info: url=rtsp://127.0.0.1:%d/live/trackID=0;seq=%u;rtptime=%u\r\n\r\n",
-				 cseq, session, g_rtsp_port,
-				 (unsigned)g_rtsp_seq, (unsigned)g_rtsp_ts);
-			rc = rtsp_xwrite(fd, out, strlen(out));
-			if (rc == 0) {
-				g_rtsp_play = 1;
-				g_rtsp_started = 0;
-				g_rtsp_need_key = 1;
-				g_rtsp_gap = 0;
-				g_rtsp_drop_run = 0;
-			}
-			pthread_mutex_unlock(&g_rtsp_lock);
-			if (rc < 0)
+				 cseq, c->session, g_rtsp_port,
+				 (unsigned)c->seq, (unsigned)ts0);
+			rc = rtsp_xwrite(c->fd, out, strlen(out));
+			if (rc < 0) {
+				pthread_mutex_lock(&g_rtsp_lock);
+				c->playing = 0;	/* OK 没发出去: 名额随连接释放 */
+				pthread_mutex_unlock(&g_rtsp_lock);
 				break;
-			printf("rtsp: 客户端开始播放\n");
+			}
+			printf("rtsp c%d: 客户端开始播放(从 tag %llu 起)\n",
+			       slot, (unsigned long long)start_tag);
 			fflush(stdout);
+			break;			/* → 发送循环 */
 		} else if (!strncmp(req, "TEARDOWN", 8)) {
 			snprintf(out, sizeof(out),
 				 "RTSP/1.0 200 OK\r\nCSeq: %d\r\n\r\n", cseq);
-			rtsp_xwrite(fd, out, strlen(out));
+			rtsp_xwrite(c->fd, out, strlen(out));
 			break;
 		} else {
 			/* GET_PARAMETER 及其它: 统一回 200, 保持会话不死 */
 			snprintf(out, sizeof(out),
 				 "RTSP/1.0 200 OK\r\nCSeq: %d\r\n\r\n", cseq);
-			if (rtsp_xwrite(fd, out, strlen(out)) < 0)
+			if (rtsp_xwrite(c->fd, out, strlen(out)) < 0)
 				break;
 		}
 	}
 
-	/* 先让发送线程停, 再 shutdown 唤醒可能阻塞在 sendmsg 的发送线程 */
-	pthread_mutex_lock(&g_rtsp_lock);
-	g_rtsp_play = 0;
-	kicked = g_rtsp_kick;
-	g_rtsp_kick = 0;
-	if (g_rtsp_cfd == fd) {
-		g_rtsp_cfd = -1;
-		g_rtsp_used = 0;
+	/* ---- 发送循环(仅 PLAY 已接受时进入; 本线程即该客户端的消费线程) ---- */
+	while (c->playing) {
+		struct txdiag dg = { TX_WHY_ERROR, 0, 0, 0, -1, -1 };
+		uint64_t t, seq0;
+		int flen, fkey, rc;
+		uint32_t fts;
+
+		if (g_rtsp_stopping || g_hub_stopping)
+			break;
+		pthread_mutex_lock(&g_rtsp_lock);
+		pthread_mutex_lock(&g_pkb_lock);
+		/* 防御: 清环/恢复后 cursor 可能越过队尾, 收敛回去 */
+		if (c->cursor > g_pkb_next_tag)
+			c->cursor = g_pkb_next_tag;
+		/* 被动逐出(A1): cursor 落到环外 = 生产者覆盖了未发包 */
+		if (g_pkb_oldest_tag < g_pkb_next_tag &&
+		    c->cursor < g_pkb_oldest_tag) {
+			c->evicted +=
+				(unsigned long)(g_pkb_oldest_tag - c->cursor);
+			c->cursor = g_pkb_oldest_tag;
+			c->need_key = 1;	/* 中间帧不可解, 等 IDR */
+		}
+		if (c->need_key) {
+			uint64_t t2 = pkb_find_key_from(c->cursor);
+
+			if (t2 < g_pkb_next_tag) {
+				c->skip_frames +=
+					(unsigned long)(t2 - c->cursor);
+				c->cursor = t2;
+				c->need_key = 0;
+			} else {
+				c->cursor = g_pkb_next_tag;
+			}
+		}
+		if (c->cursor >= g_pkb_next_tag) {
+			/* 已追平: 先放 rtsp 锁再等环(等待时不占两把锁) */
+			pthread_mutex_unlock(&g_rtsp_lock);
+			pthread_cond_wait(&g_pkb_cond, &g_pkb_lock);
+			pthread_mutex_unlock(&g_pkb_lock);
+			continue;
+		}
+		/* A1 不变量: 锁内 memcpy 到私有缓冲, 出锁后只碰私有缓冲 */
+		t = c->cursor;
+		{
+			struct pktbuf *p = &g_pkb[t % PKB_MAX];
+
+			flen = p->len;
+			fkey = p->key;
+			fts = p->ts90;
+			if (flen > 4 * 1024 * 1024) {
+				/* 防御: 异常大帧按被动丢处理, 等 IDR 重新同步 */
+				c->evicted++;
+				c->need_key = 1;
+				c->cursor = t + 1;
+				pthread_mutex_unlock(&g_pkb_lock);
+				pthread_mutex_unlock(&g_rtsp_lock);
+				continue;
+			}
+			if (flen > c->scap) {
+				uint8_t *nb = realloc(c->sbuf, (size_t)flen);
+
+				if (!nb) {
+					c->evicted++;
+					c->need_key = 1;
+					c->cursor = t + 1;
+					pthread_mutex_unlock(&g_pkb_lock);
+					pthread_mutex_unlock(&g_rtsp_lock);
+					continue;
+				}
+				c->sbuf = nb;
+				c->scap = flen;
+			}
+			memcpy(c->sbuf, p->data, (size_t)flen);
+		}
+		pthread_mutex_unlock(&g_pkb_lock);
+		pthread_mutex_unlock(&g_rtsp_lock);
+
+		/* 发送在全部锁外; 整包语义(P10)不变: 帧内失败=连接作废 */
+		seq0 = c->seq;
+		rc = rtsp_send_frame(c, c->sbuf, flen, fkey, fts, &dg);
+		if (rc != RTSP_TX_OK) {
+			pthread_mutex_lock(&g_rtsp_lock);
+			c->sock_dead++;
+			if (dg.why == TX_WHY_ERROR &&
+			    (dg.err == EPIPE || dg.err == ECONNRESET))
+				g_rtsp_disc++;
+			pthread_mutex_unlock(&g_rtsp_lock);
+			printf("rtsp c%d: 发送判死(why=%s errno=%d), 断开\n",
+			       slot, tx_why_name(dg.why), dg.err);
+			fflush(stdout);
+			break;
+		}
+		pthread_mutex_lock(&g_rtsp_lock);
+		c->cursor = t + 1;
+		/* sent_pkts 用 seq 差精确计数(每个 RTP 包恰好 ++ 一次) */
+		c->sent_pkts +=
+			(unsigned long)(uint16_t)(c->seq - (uint16_t)seq0);
+		c->sent_bytes += (unsigned long)flen;
+		c->last_send_ms = now_ms_mono();
+		pthread_mutex_unlock(&g_rtsp_lock);
 	}
-	shutdown(fd, SHUT_RDWR);
-	pthread_mutex_unlock(&g_rtsp_lock);
-	close(fd);		/* fd 的生命周期只归本线程: 发送线程只 shutdown */
-	printf("rtsp: 客户端断开%s\n", kicked ? " (slow client)" : "");
+
+	/* ---- 收尾: 标记待回收, fd 归本线程关; accept 线程 join 后释放槽 ---- */
+	{
+		int fd = c->fd;
+
+		pthread_mutex_lock(&g_rtsp_lock);
+		c->playing = 0;
+		c->fd = -1;	/* 防 rtsp_stop 对已关闭(可能复用)的 fd shutdown */
+		c->th_done = 1;
+		pthread_mutex_unlock(&g_rtsp_lock);
+		shutdown(fd, SHUT_RDWR);
+		close(fd);
+	}
+	printf("rtsp c%d: 连接关闭\n", slot);
 	fflush(stdout);
 	return NULL;
+}
+
+/* 回收已退出线程的槽: join 后才释放(槽复用以 join 完成为前提, 防栈泄漏) */
+static void rtsp_reap_done(void)
+{
+	int i;
+
+	for (i = 0; i < RTSP_CLI_MAX; i++) {
+		pthread_t tid;
+		int need;
+
+		pthread_mutex_lock(&g_rtsp_lock);
+		need = g_cli[i].used && g_cli[i].th_done && !g_cli[i].joined;
+		if (need) {
+			tid = g_cli[i].tid;
+			g_cli[i].joined = 1;
+		}
+		pthread_mutex_unlock(&g_rtsp_lock);
+		if (!need)
+			continue;
+		pthread_join(tid, NULL);
+		pthread_mutex_lock(&g_rtsp_lock);
+		g_cli[i].used = 0;
+		if (g_cli[i].sbuf) {
+			free(g_cli[i].sbuf);
+			g_cli[i].sbuf = NULL;
+			g_cli[i].scap = 0;
+		}
+		pthread_mutex_unlock(&g_rtsp_lock);
+	}
 }
 
 static void *rtsp_accept_thread(void *arg)
@@ -945,8 +1197,10 @@ static void *rtsp_accept_thread(void *arg)
 	(void)arg;
 	while (!g_rtsp_stopping && !g_hub_stopping) {
 		struct pollfd pf;
-		int pr, fd, one = 1, busy;
+		struct rtsp_cli *c;
+		int pr, fd, one = 1, slot = -1, i;
 
+		rtsp_reap_done();
 		pf.fd = g_rtsp_lfd;
 		pf.events = POLLIN;
 		pf.revents = 0;
@@ -991,48 +1245,36 @@ static void *rtsp_accept_thread(void *arg)
 		}
 
 		pthread_mutex_lock(&g_rtsp_lock);
-		busy = g_rtsp_used;
-		pthread_mutex_unlock(&g_rtsp_lock);
-		if (busy) {
+		for (i = 0; i < RTSP_CLI_MAX; i++)
+			if (!g_cli[i].used) {
+				slot = i;
+				break;
+			}
+		if (slot < 0) {
+			/* 槽满(≥ max_clients+2 个半开): 连握手都做不了, 直接
+			 * close; 计入 rej453(容量指标, docs/38 §4.3) */
+			g_rej453++;
+			pthread_mutex_unlock(&g_rtsp_lock);
 			close(fd);
-			printf("rtsp: reject extra client\n");
+			printf("rtsp: 槽满, close\n");
 			fflush(stdout);
 			continue;
 		}
-		/* 槽位已空: 上一个客户端线程正在收尾, 先 join 回收栈 */
-		if (g_rtsp_cli_started && !g_rtsp_cli_joined) {
-			pthread_join(g_rtsp_cli_tid, NULL);
-			g_rtsp_cli_joined = 1;
-		}
-
-		pthread_mutex_lock(&g_rtsp_lock);
-		g_rtsp_used = 1;
-		g_rtsp_cfd = fd;
-		g_rtsp_play = 0;
-		g_rtsp_started = 0;
-		g_rtsp_need_key = 1;
-		g_rtsp_gap = 0;
-		g_rtsp_ch = 0;
-		g_rtsp_seq = 0;
-		g_rtsp_ts = 0;
-		g_rtsp_kick = 0;
-		g_rtsp_drop_run = 0;
+		c = &g_cli[slot];
+		memset(c, 0, sizeof(*c));
+		c->used = 1;
+		c->fd = fd;
 		pthread_mutex_unlock(&g_rtsp_lock);
 
-		if (pthread_create(&g_rtsp_cli_tid, NULL, rtsp_client_thread,
-				   (void *)(intptr_t)fd) != 0) {
+		if (pthread_create(&c->tid, NULL, rtsp_client_thread,
+				   (void *)(intptr_t)slot) != 0) {
 			pthread_mutex_lock(&g_rtsp_lock);
-			if (g_rtsp_cfd == fd) {
-				g_rtsp_cfd = -1;
-				g_rtsp_used = 0;
-			}
+			c->used = 0;
 			pthread_mutex_unlock(&g_rtsp_lock);
 			close(fd);
 			continue;
 		}
-		g_rtsp_cli_started = 1;
-		g_rtsp_cli_joined = 0;
-		printf("rtsp: 客户端接入\n");
+		printf("rtsp: 客户端接入(槽 %d)\n", slot);
 		fflush(stdout);
 	}
 	return NULL;
@@ -1041,6 +1283,17 @@ static void *rtsp_accept_thread(void *arg)
 int rtsp_start(int port)
 {
 	g_rtsp_port = port;	/* H1 评审阻断一: hub 发送门/SDP/pkb_push 扫描门都读它 */
+	/* H1 遗留修复: 提炼时把 fopen 丢了 —— 830bf53 中 g_rtp_trace 无任何
+	 * 赋值点, --rtp-trace 自 H1 起路径只被存储、从未打开(死功能) */
+	if (g_rtp_trace_path && !g_rtp_trace) {
+		g_rtp_trace = fopen(g_rtp_trace_path, "w");
+		if (g_rtp_trace)
+			setvbuf(g_rtp_trace, g_rtp_trace_buf, _IOFBF,
+				sizeof(g_rtp_trace_buf));
+		else
+			fprintf(stderr, ">>> --rtp-trace 打开失败: %s\n",
+				g_rtp_trace_path);
+	}
 	struct sockaddr_in sa;
 	int one = 1;
 
@@ -1075,14 +1328,16 @@ int rtsp_start(int port)
 		return -1;
 	}
 	g_rtsp_accept_started = 1;
-	printf(">>> RTSP 监听 :%d (单客户端模式)\n", port);
+	printf(">>> RTSP 监听 :%d (多客户端, 上限 %d)\n", port, g_max_clients);
 	fflush(stdout);
 	return 0;
 }
 
-/* 退出: 先让 accept/客户端线程退, 再关监听 fd, 保证没有线程还在用它 */
+/* 退出: 让 accept/客户端线程退并逐槽 join, 再关监听 fd */
 void rtsp_stop(void)
 {
+	int i;
+
 	if (!g_rtsp_accept_started && g_rtsp_lfd < 0)
 		return;
 	g_rtsp_stopping = 1;
@@ -1090,50 +1345,54 @@ void rtsp_stop(void)
 		pthread_join(g_rtsp_accept_tid, NULL);
 		g_rtsp_accept_started = 0;
 	}
+	/* 唤醒等环的客户端线程 + 解除 send/poll 阻塞 */
+	pkb_set_stop();
 	pthread_mutex_lock(&g_rtsp_lock);
-	g_rtsp_play = 0;
-	if (g_rtsp_cfd >= 0)
-		shutdown(g_rtsp_cfd, SHUT_RDWR);
+	for (i = 0; i < RTSP_CLI_MAX; i++)
+		if (g_cli[i].used && g_cli[i].fd >= 0)
+			shutdown(g_cli[i].fd, SHUT_RDWR);
 	pthread_mutex_unlock(&g_rtsp_lock);
-	if (g_rtsp_cli_started && !g_rtsp_cli_joined) {
-		pthread_join(g_rtsp_cli_tid, NULL);
-		g_rtsp_cli_joined = 1;
+	/* 逐槽 join(fd=-1 已由线程自关; 线程在 stopping/关闭的 fd 上会尽快退出) */
+	for (i = 0; i < RTSP_CLI_MAX; i++) {
+		pthread_t tid;
+		int need;
+
+		pthread_mutex_lock(&g_rtsp_lock);
+		need = g_cli[i].used && !g_cli[i].joined;
+		if (need) {
+			tid = g_cli[i].tid;
+			g_cli[i].joined = 1;
+		}
+		pthread_mutex_unlock(&g_rtsp_lock);
+		if (!need)
+			continue;
+		pthread_join(tid, NULL);
+		pthread_mutex_lock(&g_rtsp_lock);
+		g_cli[i].used = 0;
+		if (g_cli[i].sbuf) {
+			free(g_cli[i].sbuf);
+			g_cli[i].sbuf = NULL;
+			g_cli[i].scap = 0;
+		}
+		pthread_mutex_unlock(&g_rtsp_lock);
 	}
 	if (g_rtsp_lfd >= 0) {
 		close(g_rtsp_lfd);
 		g_rtsp_lfd = -1;
 	}
+	rtp_trace_close();	/* trace 收尾落盘(退出路径, 注释声称的兜底) */
 }
 
-/* ---------------- RTSP 投递环(编码线程 -> 发送线程) ----------------
+/* ---------------- RTSP 分发环(编码线程 -> N 个客户端线程) ----------------
  *
- *   - 编码线程对每个编码包 malloc+memcpy 一份投递, 环满丢最旧,
- *     绝不等待消费者; 发送慢只会丢自己的帧, 不会反压采集/编码/录像;
- *   - 发送线程取包后交给 rtsp_send_packet(): 没有客户端/没 PLAY 时
- *     直接返回, 有客户端才按单客户端游标发 RTP; 之后一律 free;
- *   - 停止只认 g_pkb_stop_local(由 pkb_set_stop 在锁内置位), 不直接读
- *     信号 handler 的 g_stop, 避免无锁跨线程可见性问题;
- *   - 录像环/OSD/检测路径不经过这里。默认深度 8; --rtsp 0 时发送线程
- *     只做取包/free, 行为与改动前一致。
+ *   - 编码线程对每个编码包 malloc+memcpy 一份入环, 双上限(包数 depth /
+ *     字节 ring_mb, B3)任一超限丢最旧, 绝不等待消费者; 慢客户端只丢它
+ *     自己的帧(游标被逐出后等 IDR), 不反压采集/编码/事件录像;
+ *   - H3 起没有独立 sender 线程: 每个客户端线程按私有游标消费(A1 锁内
+ *     memcpy), tag 连续 [oldest, next), 物理槽 = tag % PKB_MAX;
+ *   - 停止只认 g_pkb_stop_local(pkb_set_stop 锁内置位+广播);
+ *   - 录像环/OSD/检测路径不经过这里。
  */
-#define PKB_MAX 64		/* --rtsp-ring 的硬上限 */
-struct pktbuf {
-	unsigned char *data;
-	int len;
-	unsigned seq;
-	unsigned char key;
-	uint32_t ts90;		/* 90kHz RTP 时间戳, 编码线程按源帧时间算好 */
-};
-
-static struct pktbuf g_pkb[PKB_MAX];
-static int g_pkb_depth = 8;	/* --rtsp-ring N, 默认 8 */
-static int g_pkb_head, g_pkb_cnt;
-static int g_pkb_stop_local;	/* 受 g_pkb_lock 保护: sender 的唯一停止条件 */
-static unsigned long g_pkb_in, g_pkb_drop, g_pkb_out;
-static pthread_mutex_t g_pkb_lock = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t g_pkb_cond = PTHREAD_COND_INITIALIZER;
-static pthread_t g_pkb_tid;
-static int g_pkb_started;
 
 /* 链路恢复后由 evrec 调用: 重置发送端状态(等 IDR), 状态本体在 hub 内 */
 void rtsp_hub_get_ps(uint8_t *sps, int sps_cap, uint8_t *pps, int pps_cap,
@@ -1157,12 +1416,35 @@ void rtsp_hub_set_ring_depth(int n)
 }
 void rtsp_hub_set_trace_path(const char *path)	{ g_rtp_trace_path = path; }
 
-/* 编码线程: 只做一次拷贝入环, 环满丢最旧。计数与队列同一把锁, 天然原子。 */
+void rtsp_hub_set_max_clients(int n)
+{
+	if (n < 1)
+		n = 1;
+	if (n > 8)
+		n = 8;	/* 槽表 10 = 上限 8 + 2 半开余量 */
+	g_max_clients = n;
+}
+
+void rtsp_hub_set_ring_mb(int mb)
+{
+	if (mb < 1)
+		mb = 1;
+	if (mb > 64)
+		mb = 64;
+	g_pkb_mb = mb;
+}
+
+/* 编码线程: 拷贝一份入环, 双上限(包数/字节)任一超限丢最旧。计数与队列
+ * 同一把锁, 天然原子; free 一律锁外(victims 暂存, 单次最多 depth 个)。 */
 void pkb_push(const unsigned char *src, int len, unsigned seq, int key,
-		     double ts_ms)
+	      double ts_ms)
 {
 	struct pktbuf *p;
-	unsigned char *copy, *victim = NULL;
+	unsigned char *copy;
+	unsigned char *victims[PKB_MAX];
+	unsigned long ev_bytes = 0;
+	uint64_t tag;
+	int i, nv = 0;
 
 	if (!g_pkb_started || len <= 0)
 		return;
@@ -1170,7 +1452,6 @@ void pkb_push(const unsigned char *src, int len, unsigned seq, int key,
 	if (!copy) {
 		pthread_mutex_lock(&g_pkb_lock);
 		g_pkb_drop++;
-		g_rtsp_gap = 1;
 		pthread_mutex_unlock(&g_pkb_lock);
 		return;
 	}
@@ -1184,28 +1465,38 @@ void pkb_push(const unsigned char *src, int len, unsigned seq, int key,
 	}
 
 	pthread_mutex_lock(&g_pkb_lock);
-	if (g_pkb_cnt == g_pkb_depth) {
-		/* 环满: 摘掉最旧的一个, free 放到锁外做, 缩短编码线程持锁时间 */
-		p = &g_pkb[g_pkb_head];
-		victim = p->data;
+	/* B3 双上限逐出: 字节优先构成内存上界; 单帧超上限时清空后仍入环。
+	 * 丢最旧即客户端游标可能落到环外 —— 各端在下一次消费时按 A1 判定
+	 * evicted 并等 IDR, 不再需要 H1 的全局 gap 标志。 */
+	while (g_pkb_oldest_tag < g_pkb_next_tag &&
+	       ((int)(g_pkb_next_tag - g_pkb_oldest_tag) >= g_pkb_depth ||
+		g_pkb_bytes + (unsigned long)len >
+		(unsigned long)g_pkb_mb << 20)) {
+		p = &g_pkb[g_pkb_oldest_tag % PKB_MAX];
+
+		if (nv < PKB_MAX)
+			victims[nv++] = p->data;
 		p->data = NULL;
-		g_pkb_head = (g_pkb_head + 1) % g_pkb_depth;
-		g_pkb_cnt--;
+		ev_bytes += (unsigned long)p->len;
+		g_pkb_oldest_tag++;
 		g_pkb_drop++;
-		g_rtsp_gap = 1;	/* 丢过包: 发送端从下一个 IDR 重新起步 */
 	}
-	p = &g_pkb[(g_pkb_head + g_pkb_cnt) % g_pkb_depth];
+	tag = g_pkb_next_tag;
+	p = &g_pkb[tag % PKB_MAX];
 	p->data = copy;
 	p->len = len;
 	p->seq = seq;
 	p->key = (unsigned char)(key ? 1 : 0);
 	p->ts90 = (uint32_t)(ts_ms * 90.0);
-	g_pkb_cnt++;
+	p->tag = tag;
+	g_pkb_next_tag = tag + 1;
+	g_pkb_bytes += (unsigned long)len - ev_bytes;
 	g_pkb_in++;
-	pthread_cond_signal(&g_pkb_cond);
+	pthread_cond_broadcast(&g_pkb_cond);	/* 多客户端: 全部唤醒 */
 	pthread_mutex_unlock(&g_pkb_lock);
 
-	free(victim);		/* 锁外释放: 不占着环锁调用 allocator */
+	for (i = 0; i < nv; i++)
+		free(victims[i]);	/* 锁外释放: 不占着环锁调用 allocator */
 }
 
 /* 把 rtsp_hub_set_stop() 注入的停止状态在锁内同步成 sender 的停止条件 */
@@ -1217,67 +1508,40 @@ void pkb_set_stop(void)
 	pthread_mutex_unlock(&g_pkb_lock);
 }
 
-/* 发送线程: 取包 -> 有客户端就推 RTP -> free。阻塞只发生在 rtsp_send_packet。 */
-static void *sender_thread(void *arg)
-{
-	(void)arg;
-	for (;;) {
-		struct pktbuf p;
-
-		pthread_mutex_lock(&g_pkb_lock);
-		while (g_pkb_cnt == 0 && !g_pkb_stop_local)
-			pthread_cond_wait(&g_pkb_cond, &g_pkb_lock);
-		if (g_pkb_cnt == 0) {	/* 只可能是 stop_local 且环已空 */
-			pthread_mutex_unlock(&g_pkb_lock);
-			break;
-		}
-		p = g_pkb[g_pkb_head];
-		g_pkb[g_pkb_head].data = NULL;
-		g_pkb_head = (g_pkb_head + 1) % g_pkb_depth;
-		g_pkb_cnt--;
-		g_pkb_out++;
-		pthread_mutex_unlock(&g_pkb_lock);
-
-		if (g_rtsp_port > 0)
-			rtsp_send_packet(p.data, p.len, p.key, p.ts90);
-		free(p.data);
-	}
-	return NULL;
-}
-
 void rtsp_ring_report(void)
 {
-	unsigned long in, drop;
+	unsigned long in, drop, bytes;
+	uint64_t oldest, next;
 
 	pthread_mutex_lock(&g_pkb_lock);
 	in = g_pkb_in;
 	drop = g_pkb_drop;
+	bytes = g_pkb_bytes;
+	oldest = g_pkb_oldest_tag;
+	next = g_pkb_next_tag;
 	pthread_mutex_unlock(&g_pkb_lock);
-	printf("rtsp-ring: in=%lu drop=%lu (深度上限 %d)\n",
-	       in, drop, g_pkb_depth);
+	printf("rtsp-ring: in=%lu evict=%lu depth=%d bytes=%.2f/%dMB tags=[%llu,%llu)\n",
+	       in, drop, g_pkb_depth, bytes / 1048576.0, g_pkb_mb,
+	       (unsigned long long)oldest, (unsigned long long)next);
 	fflush(stdout);		/* 后台重定向到日志时也要实时可见 */
 }
 
 int pkb_start(int depth)
 {
-	/* H1 评审阻断二: depth>0 覆盖 --rtsp-ring 默认; 0=沿用现值。
-	 * clamp 必须对 g_pkb_depth 自身做 —— 旧代码 depth=0 路径会把"保留"冲掉,
-	 * 且最终无条件 g_pkb_depth=depth 使 set_ring_depth 的值被 8 覆盖。 */
+	/* depth>0 覆盖 --rtsp-ring 默认; 0=沿用现值(默认 30 或 set_ring_depth)。
+	 * clamp 必须对 g_pkb_depth 自身做, 0 路径不得冲掉已设置的值。 */
 	if (depth > 0)
 		g_pkb_depth = depth;
 	if (g_pkb_depth < 1)
 		g_pkb_depth = 1;
 	if (g_pkb_depth > PKB_MAX)
 		g_pkb_depth = PKB_MAX;
-	if (pthread_create(&g_pkb_tid, NULL, sender_thread, NULL) != 0) {
-		fprintf(stderr, ">>> rtsp 发送线程创建失败\n");
-		return -1;
-	}
+	/* H3: 不再有独立 sender 线程 —— 每个客户端线程自己消费环 */
 	g_pkb_started = 1;
 	return 0;
 }
 
-/* 退出: 先在锁内同步停止条件, 再唤醒并 join, 最后兜底释放残留 */
+/* 退出: 释放环内残留(线程回收由 rtsp_stop 负责) */
 void pkb_stop(void)
 {
 	int i;
@@ -1285,17 +1549,13 @@ void pkb_stop(void)
 	if (!g_pkb_started)
 		return;
 	pkb_set_stop();
-	pthread_join(g_pkb_tid, NULL);
-	g_pkb_started = 0;
-
 	pthread_mutex_lock(&g_pkb_lock);
-	for (i = 0; i < g_pkb_cnt; i++) {
-		int idx = (g_pkb_head + i) % g_pkb_depth;
-
-		free(g_pkb[idx].data);
-		g_pkb[idx].data = NULL;
+	for (i = 0; i < PKB_MAX; i++) {
+		free(g_pkb[i].data);
+		g_pkb[i].data = NULL;
 	}
-	g_pkb_cnt = 0;
-	g_pkb_head = 0;
+	g_pkb_bytes = 0;
+	g_pkb_oldest_tag = g_pkb_next_tag;
 	pthread_mutex_unlock(&g_pkb_lock);
+	g_pkb_started = 0;
 }

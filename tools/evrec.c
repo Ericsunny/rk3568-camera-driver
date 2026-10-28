@@ -816,22 +816,18 @@ static int is_key(const unsigned char *p, int len)
  * 延迟到主循环的事件状态机里做(避免 IO 在 push 路径上拖采集)。 */
 static FILE *g_ev_fp;			/* 当前事件 .part 文件 */
 static char g_ev_path[512];		/* 最终名(不含 .part) */
-static unsigned g_ev_start_seq;		/* 事件首包 seq(seq 去重用) */
-static int g_ev_have_first;		/* 已写过首个包 */
 static unsigned long g_ev_bytes;	/* 当前事件已写字节 */
-static double g_ev_open_ms;		/* 事件开启时刻 */
 static unsigned long g_ev_last_pkts;	/* 已写入的包游标(=g_pushed 快照) */
-static unsigned long g_ev_open_pkts;	/* 事件开启时刻的游标快照 */
 /* S3: 分段语义 —— event_id 跨段不变; segment_index 每切一段 +1;
  * max-duration 切段不进 cooldown(docs/37 §3.2)。 */
-static unsigned g_ev_event_id;
-static unsigned g_ev_segment;
+static unsigned g_ev_event_seq;		/* 进程内事件序号: 命名与 event_id 同源 */
+static unsigned g_ev_event_id;		/* 当前事件的 event_id(跨段不变) */
+static unsigned g_ev_segment;		/* 当前事件内段号(0 基) */
 static int g_max_event_sec;
 static double g_ev_first_ts, g_ev_last_ts;	/* 媒体跨度: 首包/末包 ts_ms */
 static const unsigned EV_BUF_CAP = 4u << 20;
 static int g_ev_werr;			/* 写失败标志(主循环收尾时清) */
-static char g_out_base[512];		/* 输出前缀(main 里 -o 的值) */
-static unsigned g_ev_last_seq;		/* 已写入 ring 内容的最大 seq */
+static char g_out_base[512];		/* 事件输出前缀(带运行时间戳, main 里赋值) */
 
 static unsigned char ev_buf[4 << 20];	/* 用户态写缓冲(批量, 不逐包 fsync) */
 static unsigned ev_bn;
@@ -875,29 +871,60 @@ static void evw_write(const unsigned char *d, int len, unsigned seq, unsigned pk
 }
 
 /* S2: 事件开启 —— 开 .part, 从 ring 写 pre-roll(自 IDR 到 ring 尾),
- * 并把 g_ev_last_seq 置为 ring 尾 seq; 之后 ring_push 的新包按 seq>last 过滤。 */
+ * 之后 ring_push 的新包按包级游标(g_ev_last_pkts)过滤。 */
 
 static struct rec *ring_at(int i);	/* 前向声明 */
-static int evw_open(int pre_i)
+
+/* S3: ring 内最新的 IDR 下标。续段(pre_i<0)必须从这里起写:
+ * 旧实现把 pre_i<0 当成"从 ring 头写", 每段都把整个环(最多
+ * --ring-mb)的历史再写一遍 —— 板上实测段体积 2.1/4.0/6.1/8.1MB
+ * 逐段递增就是这个原因, 且新段开头是任意历史帧而非 IDR。 */
+static int ring_last_idr(void)
+{
+	int i;
+
+	for (i = ring_cnt - 1; i >= 0; i--)
+		if (ring_at(i)->key)
+			return i;
+	/* 环内无 IDR(切段条件保证不会走到): 宁可只写尾包, 也不把整个环
+	 * 倒进新段 —— 后者正是旧实现"每段体积递增"的来源。 */
+	return ring_cnt > 0 ? ring_cnt - 1 : 0;
+}
+
+/* S3(docs/37 §3.2): "事件是否仍在场" —— 切段续录与收尾共用同一判据:
+ * 最近一次命中/触发落在 post 窗口内才允许续段, 否则事件到此结束。
+ * 没有这条门, 切段链会在无目标时自我续命(旧 S3 板上实测: 镜头无人
+ * 仍连录 5 段、只有 SIGTERM 能停 —— 无限录 = 磁盘写满)。
+ * 手动触发模式没有检测命中刷新 g_last_detect_ms, 触发时刻已写入该值
+ * (见主循环), 因此 max-event-sec 到点即收尾, 行为可预期。 */
+static int event_alive(int post_sec)
+{
+	return g_last_detect_ms > 0 &&
+	       now_ms(CLOCK_MONOTONIC) - g_last_detect_ms <= post_sec * 1000.0;
+}
+
+/* 公共: 按 (事件序号, 段号) 开 .part + 写 pre-roll + 置包游标。
+ * event_id / segment 由调用方决定, 本函数不改写它们 —— 旧实现每次
+ * open 都把 g_ev_segment 归零、重新生成 event_id, 续段因此变成"新事件"。
+ * 命名: 段 0 = PREFIX-NN, 续段 = PREFIX-NN-sN; NN 只随事件递增。 */
+static int evw_open_at(int pre_i, unsigned serial, unsigned segment,
+		       unsigned event_id)
 {
 	char path[560];
-	int i;
-	unsigned last = 0;
+	int i, from = pre_i >= 0 ? pre_i : ring_last_idr();
 
 	/* 评审防御: 事件已在写时禁止重开 —— 重开等于 fopen("wb") 截断
-	 * 当前事件 + 泄漏旧 fd(板上实测 168 次/25s 的根因)。
-	 * 持续目标下本函数只允许在事件真正关闭后被再次调用。 */
+	 * 当前事件 + 泄漏旧 fd(板上实测 168 次/25s 的根因)。 */
 	if (g_ev_fp != NULL) {
 		fprintf(stderr, "[evw] open refused: event already active\n");
 		return -1;
 	}
 
-	if (g_ev_segment == 0)
-		snprintf(g_ev_path, sizeof(g_ev_path), "%s-%02u", g_out_base,
-			 (unsigned)(g_events + 1));
+	if (segment == 0)
+		snprintf(g_ev_path, sizeof(g_ev_path), "%s-%02u", g_out_base, serial);
 	else
-		snprintf(g_ev_path, sizeof(g_ev_path), "%s-%02u-%u", g_out_base,
-			 (unsigned)(g_events + 1), g_ev_segment);
+		snprintf(g_ev_path, sizeof(g_ev_path), "%s-%02u-s%u", g_out_base,
+			 serial, segment);
 	snprintf(path, sizeof(path), "%s.part", g_ev_path);
 	g_ev_fp = fopen(path, "wb");
 	if (!g_ev_fp) {
@@ -905,36 +932,65 @@ static int evw_open(int pre_i)
 			path, strerror(errno));
 		return -1;
 	}
-	g_ev_have_first = 0;
 	g_ev_bytes = 0;
 	g_ev_werr = 0;
 	g_ev_first_ts = g_ev_last_ts = 0;
-	g_ev_segment = 0;
-	g_ev_event_id = (unsigned)(now_ms(CLOCK_MONOTONIC) / 1000.0) & 0xffffffffu;
-	g_ev_open_ms = now_ms(CLOCK_MONOTONIC);
-	/* pre-roll: pre_i(IDR) 到 ring 尾; 这些 seq 之后由 evw_write 过滤 */
-	for (i = (pre_i >= 0 ? pre_i : 0); g_ev_fp && i < ring_cnt; i++) {
+	g_ev_event_id = event_id;
+	g_ev_segment = segment;
+	/* pre-roll: from(最近 IDR) 到 ring 尾; 这些包之后由 evw_write 过滤。
+	 * 续段时 from 就是切段那个 IDR, 与上一段末尾的同一包重叠 1 个,
+	 * 这是刻意的: 两段都从 IDR 起, 各自独立可解码。 */
+	for (i = from; g_ev_fp && i < ring_cnt; i++) {
 		struct rec *r = ring_at(i);
 		if (fwrite(r->data, 1, (size_t)r->len, g_ev_fp) != (size_t)r->len) {
 			g_ev_werr = 1;
 			break;
 		}
 		g_ev_bytes += (unsigned)r->len;
-		last = r->seq;
 	}
-	g_ev_last_seq = last;
 	/* 包级游标: pre-roll 写完后全局已推包数为界, 之后的新包才 append */
 	g_ev_last_pkts = g_pushed;
-	g_ev_open_pkts = g_pushed;
 	return 0;
 }
 
-/* S2: 事件收尾 —— flush+close+rename+JSON。close_reason 由调用方给。 */
+/* 新事件: 序号 +1, event_id = 序号, 段号从 0 起。
+ * 序号只在 open 成功后才提交, 失败不吞号(便于对账文件名连续)。 */
+static int evw_open_new(int pre_i)
+{
+	unsigned serial = g_ev_event_seq + 1;
+	int rc = evw_open_at(pre_i, serial, 0, serial);
+
+	if (rc == 0)
+		g_ev_event_seq = serial;
+	return rc;
+}
+
+/* 续段: 事件序号与 event_id 不变, 段号 +1(docs/37 §3.2)。 */
+static int evw_open_next(int pre_i)
+{
+	return evw_open_at(pre_i, g_ev_event_seq, g_ev_segment + 1,
+			   g_ev_event_id);
+}
+
+/* 事件完成: 计数 + 复位事件级状态(段号归零, 下一事件从 0 起)。
+ * 只做计数与清理; --max-events 的 break 留给主循环。
+ * 注意: 段文件落盘不调用本函数 —— 分段落盘 ≠ 事件完成。 */
+static void evw_event_finish(void)
+{
+	g_events++;
+	g_ev_segment = 0;
+	g_ev_event_id = 0;
+	g_pre_seq = 0;
+	g_trigger = 0;
+}
+
+/* S2: 事件收尾 —— flush+close+rename+JSON。close_reason 由调用方给。
+ * S3: 本函数只负责"落一段", 不再自增 g_events —— 分段落盘不等于
+ * 事件完成, 事件计数由调用方在事件真正结束时 +1(--max-events 语义)。 */
 static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 {
 	char path[560], jpath[560];
 	FILE *j;
-	double now = now_ms(CLOCK_MONOTONIC);
 
 	ev_flush();
 	if (g_ev_fp && fclose(g_ev_fp) != 0)
@@ -967,7 +1023,6 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 			g_ev_werr ? "true" : "false");
 		fclose(j);
 	}
-	g_events++;
 	return 0;
 }
 
@@ -2522,7 +2577,9 @@ static void usage(void)
 "\n"
 "触发:\n"
 "  --trigger FILE    监听文件 mtime 变化触发; 不给则等 SIGUSR1\n"
-"  --max-event-sec N 事件最长秒数, 达到即 IDR 切段(event_id 不变)\n"
+"  --max-event-sec N 单段最长秒数: 到点且 ring 尾为 IDR 时切段,\n"
+"                    event_id 跨段不变, segment_index+1; 目标已离场则\n"
+"                    直接收尾不再续段(实际段长最多超 1 个 GOP)\n"
 "  --max-events N    最多录 N 个事件(0=不限, 默认 0)\n"
 "\n"
 "检测(内置 YOLOv8n):\n"
@@ -2555,7 +2612,7 @@ int main(int argc, char **argv)
 	const char *dev = "/dev/video5", *out = "/root/ev/ev";
 	int w = 1920, h = 1080, pre_sec = 3, post_sec = 2, kbps = 8000, gop;
 	int max_event_sec = 0;
-	int i, k, trigger_i = -1, pre_i = -1, end_i = -1;
+	int i, k, pre_i = -1, end_i = -1;
 	int rc = 0;		/* 进程退出码: 0=正常, 1=真错误, 2=链路恢复失败 */
 	int reached_max = 0;	/* 因 --max-events 正常结束 */
 	int got_term;		/* 主循环退出时是否已收到 SIGTERM */
@@ -2924,129 +2981,131 @@ int main(int argc, char **argv)
 				g_rtsp_next_ms += 1000.0;
 			}
 
-		/* S3: 分段 —— 事件进行中达到 max-event-sec, 在 IDR 边界切段:
-		 * close(=max_duration) 后立即以 segment_index+1 重开, event_id
-		 * 不变、不进 cooldown(docs/37 §3.2)。无 --max-event-sec 则不分段。 */
+		/* ---------------- 事件状态机(docs/37 §3.1/§3.2) ----------------
+		 * 每帧顺序: ①分段 ②触发开新事件 ③目标离场收尾。
+		 * 三块共享 g_ev_fp/trig_seq/trig_ts 一组状态, 且都以"事件是否
+		 * 在写"为门, 互斥, 不会同帧打架。事件进行中的后续命中只刷
+		 * g_last_detect_ms(检测回调内), 不再重进触发块 —— 旧实现每帧
+		 * 无条件 evw_open, 无触发时也会开幽灵事件(板上"镜头无人连录
+		 * 5 段"就是它), 且会覆盖 trig_seq/trig_ts。 */
+
+		/* ① 分段: 事件在写 + 配额 > 0 + 媒体跨度到点 + ring 尾是 IDR。
+		 * 段边界必须落在 IDR 上, 段文件才能独立解码; 因此实际段时长会
+		 * 略超 --max-event-sec(最多一个 GOP)。 */
 		if (g_ev_fp != NULL && g_max_event_sec > 0 &&
-		    g_ev_last_ts - g_ev_first_ts >= (double)g_max_event_sec * 1000.0 &&
+		    g_ev_last_ts - g_ev_first_ts >=
+				(double)g_max_event_sec * 1000.0 &&
 		    ring_cnt > 0 && ring_at(ring_cnt - 1)->key) {
-			if (evw_close("max_duration", trig_seq, trig_ts) == 0 &&
-			    !g_ev_werr) {
-				g_ev_segment++;
+			int alive = event_alive(post_sec);
+			/* 目标仍在场 -> max_duration 切段续录; 已离场 -> 本次就是
+			 * 事件结束, 真实原因是 target_left(上限只是同时撞上)。 */
+			const char *reason = alive ? "max_duration" : "target_left";
+
+			if (evw_close(reason, trig_seq, trig_ts) != 0 || g_ev_werr) {
+				fprintf(stderr, ">>> 分段收尾失败\n");
+				rc = 1;
+				break;
+			}
+			if (alive && evw_open_next(-1) == 0) {
 				printf(">>> 分段 %u (event_id=%u, IDR 边界)\n",
 				       g_ev_segment, g_ev_event_id);
-				if (evw_open(-1) != 0) {
-					fprintf(stderr,
-						">>> 分段重开失败, 停止录像\n");
-					g_trigger = 0;
-				}
 			} else {
-				fprintf(stderr, ">>> 分段收尾失败, 停止录像\n");
-				g_trigger = 0;
+				if (alive)
+					fprintf(stderr,
+						">>> 续段失败, 事件提前结束\n");
+				printf(">>> 事件 %u 完成(%u 段, %s)\n",
+				       g_ev_event_id, g_ev_segment + 1, reason);
+				evw_event_finish();
+				if (g_max_events && g_events >= g_max_events) {
+					reached_max = 1;
+					break;
+				}
+				continue;	/* 事件已结束, 本帧不走 ②③ */
 			}
 		}
-		/* 触发: 信号 或 触发文件 mtime 变化 */
+
+		/* ② 触发: 信号 或 触发文件 mtime 变化 */
 		if (!g_trigger && g_trig_path && stat(g_trig_path, &st) == 0 &&
 		    st.st_mtime != trig_mtime) {
 			trig_mtime = st.st_mtime;
 			g_trigger = 1;
 		}
-		if (g_trigger && trigger_i < 0 && ring_cnt < (int)(pre_sec * 15)) {
-			/* 预热未满: 环里的帧数还不够 pre 秒前置内容, 忽略本次触发,
-			 * 但不清 g_streak, 攒够后会立刻重新触发 */
-			g_trigger = 0;
-		}
-		if (g_trigger && trigger_i < 0) {
-			/* S3(评审小账): 事件已在写时在这里短路 —— 不覆盖
-			 * trig_seq/trig_ts(它们是事件 1 的原始触发元数据),
-			 * 后续命中只刷 last_detect_ms(在检测回调里已完成)。 */
-			if (g_ev_fp != NULL) {
+		if (g_trigger && g_ev_fp == NULL) {
+			if (ring_cnt < (int)(pre_sec * 15)) {
+				/* 预热未满: 环里的帧数还不够 pre 秒前置内容, 忽略本次
+				 * 触发, 但不清 g_streak(攒够后会立刻重新触发) */
 				g_trigger = 0;
-				continue;
+			} else {
+				/* P6: 触发帧 = 本次循环 DQBUF 到的那一帧(检测/触发
+				 * 文件/信号都在这一帧的循环里被看到); trig_ts 取该帧
+				 * 的环形时间戳(与 json 的 ts_ms 同源), 前后窗口不错位。 */
+				trig_seq = frame_seq;
+				trig_ts = ring_cnt > 0 ?
+					  ring_at(ring_cnt - 1)->ts_ms : ts - t_start;
+				/* pre: 从触发点往前按时间回退 pre_sec */
+				for (i = ring_cnt - 1; i >= 0; i--)
+					if (ring_at(i)->ts_ms <
+					    trig_ts - pre_sec * 1000.0)
+						break;
+				/* 从回退点往前找最近的 IDR(往前才能把 pre 窗口
+				 * 填满; 往后找会跳到下一个 GOP 的 IDR, 白丢一段) */
+				pre_i = -1;
+				for (i = ring_cnt - 1; i >= 0; i--)
+					if (ring_at(i)->ts_ms <
+					    trig_ts - pre_sec * 1000.0)
+						break;
+				for (; i >= 0; i--)
+					if (ring_at(i)->key) { pre_i = i; break; }
+				if (pre_i < 0)
+					pre_i = ring_first_idr_from(0);
+				g_pre_seq = ring_at(pre_i)->seq;
+				/* 触发即"目标在场"锚点: 手动触发模式没有检测命中
+				 * 刷新 g_last_detect_ms, 事件靠它 + post 窗口收尾 */
+				g_last_detect_ms = now_ms(CLOCK_MONOTONIC);
+				printf(">>> 触发 seq=%u ts=%.1fms -> pre_i=%d "
+				       "pre_seq=%u (ring_cnt=%d head=%d pushed=%lu)\n",
+				       trig_seq, trig_ts, pre_i, g_pre_seq,
+				       ring_cnt, ring_head, g_pushed);
+				if (evw_open_new(pre_i) == 0) {
+					fprintf(stderr,
+						"[evw] open event_id=%u last_pkts=%lu "
+						"pushed=%lu\n",
+						g_ev_event_id, g_ev_last_pkts,
+						g_pushed);
+				} else {
+					fprintf(stderr,
+						">>> 事件写入器打开失败, 事件放弃\n");
+				}
+				/* 触发已消费(成功或失败): 事件延长由
+				 * last_detect_ms 判定, 与触发状态无关 */
+				g_trigger = 0;
+				pre_i = end_i = -1;
+				g_pre_seq = 0;
 			}
-			trigger_i = ring_cnt;
-			/* P6: 触发帧 = 本次循环 DQBUF 到的那一帧(检测/触发文件/信号
-			 * 都在这一帧的循环里被看到); 旧代码 dump 时传的是末帧
-			 * frame_seq, 导致 json 的 trigger_seq 指向文件最后一帧。
-			 * trig_ts 也取该帧的环形时间戳(而不是 DQBUF 时刻的 ts):
-			 * 环形 ts 是"编码送帧"时刻, 与 json list 的 ts_ms 同源,
-			 * 这样 trigger_ts_ms 恒等于 list 中 trigger_seq 那条的
-			 * ts_ms, 前后窗口计算也不会错位。 */
-			trig_seq = frame_seq;
-			trig_ts = ring_cnt > 0 ? ring_at(ring_cnt - 1)->ts_ms
-					       : ts - t_start;
-			/* pre: 从触发点往前按时间回退 pre_sec */
-			for (i = ring_cnt - 1; i >= 0; i--)
-				if (ring_at(i)->ts_ms < trig_ts - pre_sec * 1000.0)
-					break;
-			/* 从回退点往前找最近的 IDR(往前才能把 pre 窗口填满;
-			 * 往后找会跳到下一个 GOP 的 IDR, 白白丢掉中间一段) */
-			pre_i = -1;
-			for (i = ring_cnt - 1; i >= 0; i--)
-				if (ring_at(i)->ts_ms < trig_ts - pre_sec * 1000.0)
-					break;
-			for (; i >= 0; i--)
-				if (ring_at(i)->key) { pre_i = i; break; }
-			if (pre_i < 0)
-				pre_i = ring_first_idr_from(0);
-			g_pre_seq = ring_at(pre_i)->seq;
-			printf(">>> 触发 seq=%u ts=%.1fms -> pre_i=%d pre_seq=%u "
-			       "(ring_cnt=%d head=%d pushed=%lu)\n",
-			       trig_seq, trig_ts, pre_i, g_pre_seq,
-			       ring_cnt, ring_head, g_pushed);
 		}
-		/* S2(评审修正): 流式写入器只能在这里开启一次 —— 若挂在本块外,
-		 * 目标持续时每帧命中的 g_trigger 会反复触发, fopen("wb") 每帧
-		 * 截断事件文件(duration_ms=99ms 假象的根因)。
-		 * evw_open 内部另有 g_ev_fp!=NULL 防御。开启失败才放弃事件;
-		 * 成功后触发已消费,事件延长由 last_detect_ms 判定。 */
-		if (evw_open(pre_i) != 0) {
-			fprintf(stderr, ">>> 事件写入器打开失败, 事件放弃\n");
-			g_trigger = 0;
-			trigger_i = pre_i = end_i = -1;
-			g_pre_seq = 0;
-		} else {
-			/* 触发已消费: trigger_i 必须在此复位,否则检测每帧命中
-			 * 会反复进入本块重开文件(评审实测:126 次 open/fopen 截断,
-			 * duration_ms=0 假象的真正根因)。事件延长由
-			 * last_detect_ms 判定,与 trigger_i 无关。 */
-			trigger_i = pre_i = end_i = -1;
-			g_pre_seq = 0;
-			fprintf(stderr, "[evw] open-done last_pkts=%lu pushed=%lu\n",
-				g_ev_last_pkts, g_pushed);
-		}
-		g_trigger = 0;	/* 触发已消费(成功或失败);事件由 last_detect_ms 延长 */
-		/* S1(docs/37 §3.1): 事件结束 = 目标离开(最近命中 + post 窗口),
-		 * 不再锚定首次触发时刻;检测漏帧不会把持续目标拆成碎事件。
-		 * close_reason 四值(target_left/max_duration/disk_low/sigterm)
-		 * 在 S3/S4 引入,本步先用 target_left 语义。 */
-		if (trigger_i >= 0 &&
-		    g_last_detect_ms > 0 &&
-		    now_ms(CLOCK_MONOTONIC) - g_last_detect_ms > post_sec * 1000.0) {
-			int ok;
 
-			end_i = ring_cnt - 1;
-			/* S2: 事件已在流式写入, 这里只收尾(flush+close+rename+JSON) */
-			ok = evw_close("target_left", trig_seq, trig_ts) == 0 && !g_ev_werr;
-			if (!ok) {
+		/* ③ 目标离场: 事件在写, 且最近命中/触发超出 post 窗口 -> 收尾。
+		 * S1(docs/37 §3.1): 判据是"事件活跃 + 目标离场", 不是时间锚点;
+		 * 检测漏帧不会把持续目标拆成碎事件。 */
+		if (g_ev_fp != NULL && g_last_detect_ms > 0 &&
+		    now_ms(CLOCK_MONOTONIC) - g_last_detect_ms > post_sec * 1000.0) {
+			if (evw_close("target_left", trig_seq, trig_ts) != 0 ||
+			    g_ev_werr) {
 				fprintf(stderr, ">>> 事件落盘失败\n");
 				rc = 1;
 				break;
 			}
-			printf(">>> 事件 %d 完成, 继续等待下一个事件\n", g_events);
-			/* S1(docs/37 §3.4): 不再 ring_clear —— ring 照滚,
-			 * 下一个事件的 pre-roll 从这里取; 复位集合只收窄到
-			 * 触发/事件状态。g_streak/g_det_announced 不动:
-			 * 目标仍在场时 streak 已在增长, 清零会让下一个触发
-			 * 重新等门限, 反而漏事件。 */
-			g_trigger = 0;
-			g_pre_seq = 0;
-			trigger_i = pre_i = end_i = -1;
-			g_ev_segment = 0;	/* S3: 下一次触发 = 新 event_id, 段号归零 */
+			printf(">>> 事件 %u 完成(%u 段, target_left), 继续等待下一个事件\n",
+			       g_ev_event_id, g_ev_segment + 1);
+			/* S1(docs/37 §3.4): 不 ring_clear —— ring 照滚, 下一个
+			 * 事件的 pre-roll 从这里取; g_streak 不清(目标仍在场时
+			 * streak 已在增长, 清零会漏事件) */
+			evw_event_finish();
 			if (g_max_events && g_events >= g_max_events) {
 				reached_max = 1;
 				break;
 			}
+			continue;
 		}
 		continue;
 
@@ -3087,7 +3146,7 @@ link_fault:
 	/* SIGTERM 且流式事件进行中: 先收尾当前事件(flush+close+rename+JSON,
 	 * close_reason=sigterm), 再停 RTSP/线程/采集。S2 后这是唯一的
 	 * 在途事件通道 —— 旧 dump 路径已死代码化(S1 移除 ring_clear 后
-	 * trigger_i 只剩触发门限语义, 不再代表"事件在录")。 */
+	 * 只有 g_ev_fp 代表"事件在录")。 */
 	if (got_term && g_ev_fp != NULL && !rc) {
 		if (evw_close("sigterm", trig_seq, trig_ts) == 0 && !g_ev_werr) {
 			printf(">>> SIGTERM: 进行中的事件已落盘 %s\n", g_ev_path);

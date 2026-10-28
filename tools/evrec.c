@@ -820,6 +820,9 @@ static unsigned g_ev_start_seq;		/* 事件首包 seq(seq 去重用) */
 static int g_ev_have_first;		/* 已写过首个包 */
 static unsigned long g_ev_bytes;	/* 当前事件已写字节 */
 static double g_ev_open_ms;		/* 事件开启时刻 */
+static unsigned long g_ev_last_pkts;	/* 已写入的包游标(=g_pushed 快照) */
+static unsigned long g_ev_open_pkts;	/* 事件开启时刻的游标快照 */
+static double g_ev_first_ts, g_ev_last_ts;	/* 媒体跨度: 首包/末包 ts_ms */
 static const unsigned EV_BUF_CAP = 4u << 20;
 static int g_ev_werr;			/* 写失败标志(主循环收尾时清) */
 static char g_out_base[512];		/* 输出前缀(main 里 -o 的值) */
@@ -838,13 +841,20 @@ static void ev_flush(void)
 	ev_bn = 0;
 }
 
-static void evw_write(const unsigned char *d, int len, unsigned seq)
+static void evw_write(const unsigned char *d, int len, unsigned seq, unsigned pkt, double ts_ms)
 {
 
-	/* seq 过滤: 开启时已从 ring 写到 g_ev_last_seq, 之前的包跳过 */
-	if (seq <= g_ev_last_seq)
+	/* 包级游标: g_pushed 是全局单调包计数; 事件开启时快照过 pre-roll 尾,
+	 * 这里只放行之后的新包(同帧多包计数不同, 不会被误滤) */
+	if (g_pushed <= g_ev_last_pkts) {
+		fprintf(stderr, "[evw] skip: pushed=%lu last=%lu\n",
+			g_pushed, g_ev_last_pkts);
 		return;
-	g_ev_have_first = 1;
+	}
+	g_ev_last_pkts = g_pushed;
+	if (g_ev_first_ts == 0)
+		g_ev_first_ts = ts_ms;
+	g_ev_last_ts = ts_ms;
 
 	if (ev_bn + (unsigned)len > EV_BUF_CAP)
 		ev_flush();
@@ -869,6 +879,14 @@ static int evw_open(int pre_i)
 	int i;
 	unsigned last = 0;
 
+	/* 评审防御: 事件已在写时禁止重开 —— 重开等于 fopen("wb") 截断
+	 * 当前事件 + 泄漏旧 fd(板上实测 168 次/25s 的根因)。
+	 * 持续目标下本函数只允许在事件真正关闭后被再次调用。 */
+	if (g_ev_fp != NULL) {
+		fprintf(stderr, "[evw] open refused: event already active\n");
+		return -1;
+	}
+
 	snprintf(g_ev_path, sizeof(g_ev_path), "%s-%02u", g_out_base,
 		 (unsigned)(g_events + 1));
 	snprintf(path, sizeof(path), "%s.part", g_ev_path);
@@ -881,6 +899,7 @@ static int evw_open(int pre_i)
 	g_ev_have_first = 0;
 	g_ev_bytes = 0;
 	g_ev_werr = 0;
+	g_ev_first_ts = g_ev_last_ts = 0;
 	g_ev_open_ms = now_ms(CLOCK_MONOTONIC);
 	/* pre-roll: pre_i(IDR) 到 ring 尾; 这些 seq 之后由 evw_write 过滤 */
 	for (i = (pre_i >= 0 ? pre_i : 0); g_ev_fp && i < ring_cnt; i++) {
@@ -893,6 +912,9 @@ static int evw_open(int pre_i)
 		last = r->seq;
 	}
 	g_ev_last_seq = last;
+	/* 包级游标: pre-roll 写完后全局已推包数为界, 之后的新包才 append */
+	g_ev_last_pkts = g_pushed;
+	g_ev_open_pkts = g_pushed;
 	return 0;
 }
 
@@ -909,10 +931,14 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 	g_ev_fp = NULL;
 	snprintf(path, sizeof(path), "%s.part", g_ev_path);
 	snprintf(jpath, sizeof(jpath), "%s.json", g_ev_path);
-	if (rename(path, g_ev_path) != 0) {
-		fprintf(stderr, ">>> rename %s 失败: %s\n",
-			path, strerror(errno));
-		return -1;
+	{
+		char final[560];
+		snprintf(final, sizeof(final), "%s.h264", g_ev_path);
+		if (rename(path, final) != 0) {
+			fprintf(stderr, ">>> rename %s 失败: %s\n",
+				path, strerror(errno));
+			return -1;
+		}
 	}
 	j = fopen(jpath, "w");
 	if (j) {
@@ -920,9 +946,11 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 			"{\"file\":\"%s.h264\",\"trigger_seq\":%u,"
 			"\"trigger_ts_ms\":%.1f,\"close_reason\":\"%s\","
 			"\"bytes\":%lu,\"duration_ms\":%.1f,"
+			"\"first_ts_ms\":%.1f,\"last_ts_ms\":%.1f,"
 			"\"write_error\":%s}\n",
 			g_ev_path, trig_seq, trig_ts, reason,
-			g_ev_bytes, now - g_ev_open_ms,
+			g_ev_bytes, g_ev_last_ts - g_ev_first_ts,
+			g_ev_first_ts, g_ev_last_ts,
 			g_ev_werr ? "true" : "false");
 		fclose(j);
 	}
@@ -955,9 +983,12 @@ static void ring_push(unsigned char *d, int len, unsigned seq, unsigned pkt,
 	g_pushed++;
 	ring_bytes += (size_t)len;
 	/* S2: 事件进行中, 新包实时 append 到当前事件(单点挂在 ring_push,
-	 * 天然带 seq/key; 写失败只置 g_ev_werr, 由主循环收尾) */
-	if (g_ev_fp && g_ev_have_first)
-		evw_write(d, len, seq);
+	 * 包级游标过滤; 写失败只置 g_ev_werr, 由主循环收尾) */
+	if (g_ev_fp) {
+		fprintf(stderr, "[evw] ringpush-call fp=%p pushed=%lu\n",
+			(void*)g_ev_fp, g_pushed);
+		evw_write(d, len, seq, pkt, r->ts_ms);
+	}
 }
 
 static struct rec *ring_at(int i)
@@ -2920,18 +2951,27 @@ int main(int argc, char **argv)
 			       trig_seq, trig_ts, pre_i, g_pre_seq,
 			       ring_cnt, ring_head, g_pushed);
 		}
-		/* S2: 事件开流式写入(pre-roll 从 pre_i 到 ring 尾;
-		 * 之后新包由 ring_push → evw_write 按 seq 过滤追加) */
+		/* S2(评审修正): 流式写入器只能在这里开启一次 —— 若挂在本块外,
+		 * 目标持续时每帧命中的 g_trigger 会反复触发, fopen("wb") 每帧
+		 * 截断事件文件(duration_ms=99ms 假象的根因)。
+		 * evw_open 内部另有 g_ev_fp!=NULL 防御。开启失败才放弃事件;
+		 * 成功后触发已消费,事件延长由 last_detect_ms 判定。 */
 		if (evw_open(pre_i) != 0) {
 			fprintf(stderr, ">>> 事件写入器打开失败, 事件放弃\n");
 			g_trigger = 0;
 			trigger_i = pre_i = end_i = -1;
 			g_pre_seq = 0;
+		} else {
+			/* 触发已消费: trigger_i 必须在此复位,否则检测每帧命中
+			 * 会反复进入本块重开文件(评审实测:126 次 open/fopen 截断,
+			 * duration_ms=0 假象的真正根因)。事件延长由
+			 * last_detect_ms 判定,与 trigger_i 无关。 */
+			trigger_i = pre_i = end_i = -1;
+			g_pre_seq = 0;
+			fprintf(stderr, "[evw] open-done last_pkts=%lu pushed=%lu\n",
+				g_ev_last_pkts, g_pushed);
 		}
-		else {
-			g_trigger = 0;   /* S2: 触发已消费; 事件延长由 last_detect_ms 判定,
-			                 * 后续命中不再重开文件 */
-		}
+		g_trigger = 0;	/* 触发已消费(成功或失败);事件由 last_detect_ms 延长 */
 		/* S1(docs/37 §3.1): 事件结束 = 目标离开(最近命中 + post 窗口),
 		 * 不再锚定首次触发时刻;检测漏帧不会把持续目标拆成碎事件。
 		 * close_reason 四值(target_left/max_duration/disk_low/sigterm)
@@ -2999,30 +3039,16 @@ link_fault:
 	stage_report();
 	/* 先记下退出原因: 停线程会唤醒发送线程, 不能事后区分 */
 	got_term = g_stop;
-	/* SIGTERM 且正在录制: 先把当前事件落盘(环还完整), 再停 RTSP/线程/采集。
-	 * 主循环已退出, 环不再变化, dump 只读环与全局状态, 无并发风险。 */
-	if (got_term && trigger_i >= 0 && !rc && ring_cnt > 0) {
-		int pi = pre_i;
-
-		if (g_pre_seq)
-			for (i = 0; i < ring_cnt; i++)
-				if (ring_at(i)->seq == g_pre_seq) {
-					pi = i;
-					break;
-				}
-		if (pi < 0)
-			pi = ring_first_idr_from(0);
-		if (pi >= 0) {
-			char outn[512];
-
-			/* 事件没走完就被 TERM: dump 内部按环内实际时间跨度算 fps */
-			snprintf(outn, sizeof(outn), "%s-%02d", out, g_events);
-			if (dump(outn, trig_seq, trig_ts, pi, ring_cnt - 1, w, h) == 0) {
-				printf(">>> SIGTERM: 进行中的事件已落盘 %s\n", outn);
-				fflush(stdout);
-			} else {
-				fprintf(stderr, ">>> SIGTERM: 事件落盘失败\n");
-			}
+	/* SIGTERM 且流式事件进行中: 先收尾当前事件(flush+close+rename+JSON,
+	 * close_reason=sigterm), 再停 RTSP/线程/采集。S2 后这是唯一的
+	 * 在途事件通道 —— 旧 dump 路径已死代码化(S1 移除 ring_clear 后
+	 * trigger_i 只剩触发门限语义, 不再代表"事件在录")。 */
+	if (got_term && g_ev_fp != NULL && !rc) {
+		if (evw_close("sigterm", trig_seq, trig_ts) == 0 && !g_ev_werr) {
+			printf(">>> SIGTERM: 进行中的事件已落盘 %s\n", g_ev_path);
+			fflush(stdout);
+		} else {
+			fprintf(stderr, ">>> SIGTERM: 事件落盘失败\n");
 		}
 	}
 	/* 信号 handler 只置 g_stop: 这里在锁内把它同步成 sender 的停止条件,

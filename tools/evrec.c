@@ -36,6 +36,7 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
+#include <sys/statvfs.h>
 #include <sys/uio.h>
 #include <dirent.h>
 #include <netinet/in.h>
@@ -458,6 +459,28 @@ static float g_det_score = 0.45f;   /* 触发所需分数 */
 static int g_det_frames = 3;        /* 连续命中帧数 */
 static int g_streak;
 static int g_det_announced;	    /* 本轮连击是否已打过"检测触发" */
+/* S1(事件治理,docs/37): 事件延长判定用 last_detect_ms,不用 streak ——
+ * 检测偶尔漏一帧会清 streak,但"目标是否持续在场"应以最近一次命中时间
+ * 加 post 窗口来判;streak 只保留触发门限语义。 */
+static double g_last_detect_ms; /* 最近一次检测命中(ms,同 ring ts 基准) */
+/* docs/37 §5 要求 JSON 自描述: 事件期间被合并的触发数、事件开始前冷却期
+ * 被跳过的触发数。计数必须放在检测侧"每次连击 episode"上 —— 放在主循环
+ * 触发门会每帧都命中, 按帧放大(命中帧率 12 fps 就是 12 倍)。 */
+static unsigned g_ev_coalesced;		/* 本事件期间被合并的触发数 */
+static unsigned g_ev_cdskip_pend;	/* 冷却期内累计(等下一个事件认领) */
+static unsigned g_ev_cdskip;		/* 本事件开始前冷却期跳过数 */
+static int ev_active(void);
+static int ev_cooldown_active(void);
+/* 观测(docs/37 §8.1): "连击开始/检测触发"只在状态变化时打印, 连续命中
+ * 35 秒也只有 2 行 —— 据此无法区分"没有命中"与"一直命中但不打印", T3 的
+ * 判读卡在这里。补两类客观计数: 5 秒一行的命中率统计 + 连击结束一行。
+ * 纯观测, 不改变任何判定逻辑(命中仍按单帧 score 门限刷新 last_detect_ms)。 */
+static unsigned g_det_frm_win, g_det_hit_win;	/* 本统计窗内帧数 / 命中帧数 */
+static double g_det_peak_win;			/* 本统计窗内最高分 */
+static double g_det_mean_sum;			/* 本统计窗内 NPU 输入均值之和 */
+static unsigned g_det_mean_n;			/* 本统计窗内均值采样帧数 */
+static double g_det_next_ms = 5000.0;		/* 下次统计打印(相对 t0_ms) */
+static double g_det_end_ms;			/* 上次"连击结束"打印时刻 */
 static int g_npu_w = 640, g_npu_h = 640;
 struct dbox {
 	float x1, y1, x2, y2, score;
@@ -685,13 +708,25 @@ static void npu_run(const unsigned char *rgb)
 	in.type = RKNN_TENSOR_INT8;
 	in.fmt = RKNN_TENSOR_NHWC;
 	in.pass_through = 1;
-	{	/* 诊断: g_int8 是否真的有数据 */
+	{	/* 诊断 + 观测: g_int8 实际内容均值。
+		 * 前 3 帧打明细(定位"有没有数据"); 均值同时进 5 s 统计窗口 ——
+		 * 这是"检测输入是不是当帧"的唯一可观测判据: 遮住 J10 后均值
+		 * 必须骤降; 若不降, 说明 RGA/NPU 读到的是陈旧缓冲, 属代码缺陷
+		 * (docs/37 §8.2 S0)。旧实现的 mean 只在前 3 帧打印, 拿它比较
+		 * "遮住前后"是无效证据。 */
 		static int dbg;
 		long s = 0;
-		for (i = 0; i < sz; i += 64) s += (unsigned char)g_int8[i];
+		double in_mean;
+
+		for (i = 0; i < sz; i += 64)
+			s += (unsigned char)g_int8[i];
+		in_mean = sz >= 64 ? (double)s / (double)(sz / 64) : 0.0;
+		g_det_mean_sum += in_mean;
+		g_det_mean_n++;
 		if (dbg++ < 3)
-			fprintf(stderr, "[npu] in: sz=%u mean=%ld rgb0=%u/%u/%u int8_0=%d\n",
-				(uint32_t)sz, s / (long)(sz / 64),
+			fprintf(stderr,
+				"[npu] in: sz=%u mean=%.1f rgb0=%u/%u/%u int8_0=%d\n",
+				(uint32_t)sz, in_mean,
 				rgb[0], rgb[1], rgb[2], (int)(signed char)g_int8[0]);
 	}
 
@@ -750,6 +785,9 @@ static void npu_run(const unsigned char *rgb)
 			}
 		if (hit) {
 			s = ++g_streak;
+			/* S1: 命中即刷新"目标在场"时刻(事件延长判定唯一依据);
+			 * 与主循环 ts 同用 CLOCK_MONOTONIC, 基准一致 */
+			g_last_detect_ms = now_ms(CLOCK_MONOTONIC);
 			if (s == 1 && g_det_frames > 1)
 				printf(">>> 检测连击开始 streak=1 score=%.3f "
 				       "(阈值 %.2f, 需连续 %d 帧)\n",
@@ -760,12 +798,61 @@ static void npu_run(const unsigned char *rgb)
 					g_det_announced = 1;
 					printf(">>> 检测触发 streak=%d score=%.3f\n",
 					       s, (double)boxes[k].score);
+					/* 本 episode 落在哪: 冷却期 -> 记跳过;
+					 * 事件进行中 -> 记合并(docs/37 §5) */
+					if (ev_cooldown_active())
+						g_ev_cdskip_pend++;
+					else if (ev_active())
+						g_ev_coalesced++;
 				}
 				g_trigger = 1;
 			}
 		} else {
+			/* 观测: 连击结束必须可见 —— T3 的正确判读是"整段
+			 * 没有出现任何一行连击结束"(说明 streak 一次没断),
+			 * 而不是"没有命中日志"。噪声场景可能逐帧翻转, 节流 1 行/秒。 */
+			if (g_streak > 0 &&
+			    now_ms(CLOCK_MONOTONIC) - g_det_end_ms > 1000.0) {
+				double tnow = now_ms(CLOCK_MONOTONIC);
+
+				g_det_end_ms = tnow;
+				printf(">>> 检测连击结束 streak=%d (最近命中 %.1fs 前)\n",
+				       g_streak, g_last_detect_ms > 0 ?
+				       (tnow - g_last_detect_ms) / 1000.0 : -1.0);
+				fflush(stdout);
+			}
 			g_streak = 0;
 			g_det_announced = 0;
+		}
+		/* 观测: 5 秒一行命中率 —— 唯一能证明/否证"无目标仍在命中"
+		 * 的数据(命中 = 有 class0 框且 score >= g_det_score)。 */
+		g_det_frm_win++;
+		if (hit)
+			g_det_hit_win++;
+		if (maxscore > g_det_peak_win)
+			g_det_peak_win = maxscore;
+		{
+			double t = now_ms(CLOCK_MONOTONIC);
+
+			if (t - t0_ms >= g_det_next_ms) {
+				printf(">>> 检测统计 %.0fs: 命中 %u/%u 帧 (%.0f%%), "
+				       "峰值 %.3f, 输入均值 %.1f, streak=%d, "
+				       "最近命中 %.1fs 前\n",
+				       (t - t0_ms) / 1000.0, g_det_hit_win,
+				       g_det_frm_win, g_det_frm_win ?
+				       100.0 * g_det_hit_win / g_det_frm_win : 0.0,
+				       g_det_peak_win, g_det_mean_n ?
+				       g_det_mean_sum / g_det_mean_n : 0.0, g_streak,
+				       g_last_detect_ms > 0 ?
+				       (t - g_last_detect_ms) / 1000.0 : -1.0);
+				fflush(stdout);
+				g_det_next_ms += 5000.0;
+				g_det_hit_win = 0;
+				g_det_frm_win = 0;
+				g_det_peak_win = 0;
+				g_det_mean_sum = 0;
+				g_det_mean_n = 0;
+			}
 		}
 	}
 
@@ -800,6 +887,305 @@ static int is_key(const unsigned char *p, int len)
 	return 0;
 }
 
+/* ---------------- S2: 流式事件写入(docs/37 §3.3) ----------------
+ * 事件 = 临时文件(.part)打开后逐包 append;结束才 close+rename+JSON。
+ * pre-roll 在事件开启时从 ring 取(自最近 IDR);之后 ring_push 单点 append。
+ * 背压: 用户态 4MB 缓冲批量写, 不逐包 fsync; flush 失败/超时立即收尾当前
+ * 文件并停录(write_error), 绝不阻塞采集(docs/37 §3.5)。
+ * 注意: ring_push 在主循环线程内调用, writer 写失败只置标志, 文件收尾
+ * 延迟到主循环的事件状态机里做(避免 IO 在 push 路径上拖采集)。 */
+static FILE *g_ev_fp;			/* 当前事件 .part 文件 */
+static char g_ev_path[512];		/* 最终名(不含 .part) */
+static unsigned long g_ev_bytes;	/* 当前事件已写字节 */
+static unsigned long g_ev_last_pkts;	/* 已写入的包游标(=g_pushed 快照) */
+/* S3: 分段语义 —— event_id 跨段不变; segment_index 每切一段 +1;
+ * max-duration 切段不进 cooldown(docs/37 §3.2)。 */
+static unsigned g_ev_event_seq;		/* 进程内事件序号: 命名与 event_id 同源 */
+static unsigned g_ev_event_id;		/* 当前事件的 event_id(跨段不变) */
+static unsigned g_ev_segment;		/* 当前事件内段号(0 基) */
+static int g_max_event_sec;
+/* S4: cooldown + 磁盘水位(docs/37 §3.2/§3.3) */
+static int g_cooldown_sec;		/* --cooldown, 0=关(默认) */
+static double g_cooldown_until_ms;	/* 冷却截止(单调 ms); 只在 target_left 后设置 */
+static int g_disk_min_mb = 1000;	/* --disk-min-mb; 300s 段实测 62MB,500 仅容 8 段 */
+static int g_disk_hyst_mb = 1000;	/* 滞回带: 回升须越过 min+hyst 才恢复 */
+static int g_disk_stopped;		/* 1=水位停录中 */
+static double g_disk_next_check;	/* 事件中每 10s 查一次 */
+static char g_disk_dir[512] = "/root";	/* 水位量测目录: -o 前缀所在目录 */
+
+static int ev_active(void)
+{
+	return g_ev_fp != NULL;
+}
+
+static int ev_cooldown_active(void)
+{
+	return g_cooldown_until_ms > 0 &&
+	       now_ms(CLOCK_MONOTONIC) < g_cooldown_until_ms;
+}
+static double g_ev_first_ts, g_ev_last_ts;	/* 媒体跨度: 首包/末包 ts_ms */
+static const unsigned EV_BUF_CAP = 4u << 20;
+static int g_ev_werr;			/* 写失败标志(主循环收尾时清) */
+static char g_out_base[512];		/* 事件输出前缀(带运行时间戳, main 里赋值) */
+
+static unsigned char ev_buf[4 << 20];	/* 用户态写缓冲(批量, 不逐包 fsync) */
+static unsigned ev_bn;
+
+static void ev_flush(void)
+{
+	if (ev_bn == 0)
+		return;
+	if (g_ev_fp && fwrite(ev_buf, 1, ev_bn, g_ev_fp) != ev_bn)
+		g_ev_werr = 1;
+	g_ev_bytes += ev_bn;
+	ev_bn = 0;
+}
+
+static void evw_write(const unsigned char *d, int len, unsigned seq, unsigned pkt, double ts_ms)
+{
+
+	/* 包级游标: g_pushed 是全局单调包计数; 事件开启时快照过 pre-roll 尾,
+	 * 这里只放行之后的新包(同帧多包计数不同, 不会被误滤) */
+	if (g_pushed <= g_ev_last_pkts) {
+		fprintf(stderr, "[evw] skip: pushed=%lu last=%lu\n",
+			g_pushed, g_ev_last_pkts);
+		return;
+	}
+	g_ev_last_pkts = g_pushed;
+	if (g_ev_first_ts == 0)
+		g_ev_first_ts = ts_ms;
+	g_ev_last_ts = ts_ms;
+
+	if (ev_bn + (unsigned)len > EV_BUF_CAP)
+		ev_flush();
+	if (ev_bn + (unsigned)len <= EV_BUF_CAP) {
+		memcpy(ev_buf + ev_bn, d, (size_t)len);
+		ev_bn += (unsigned)len;
+	} else {
+		/* 单包超缓冲(理论不会): 直写 */
+		if (g_ev_fp && fwrite(d, 1, (size_t)len, g_ev_fp) != (size_t)len)
+			g_ev_werr = 1;
+		g_ev_bytes += (unsigned)len;
+	}
+}
+
+/* S2: 事件开启 —— 开 .part, 从 ring 写 pre-roll(自 IDR 到 ring 尾),
+ * 之后 ring_push 的新包按包级游标(g_ev_last_pkts)过滤。 */
+
+static struct rec *ring_at(int i);	/* 前向声明 */
+
+/* S3: ring 内最新的 IDR 下标。续段(pre_i<0)必须从这里起写:
+ * 旧实现把 pre_i<0 当成"从 ring 头写", 每段都把整个环(最多
+ * --ring-mb)的历史再写一遍 —— 板上实测段体积 2.1/4.0/6.1/8.1MB
+ * 逐段递增就是这个原因, 且新段开头是任意历史帧而非 IDR。 */
+static int ring_last_idr(void)
+{
+	int i;
+
+	for (i = ring_cnt - 1; i >= 0; i--)
+		if (ring_at(i)->key)
+			return i;
+	/* 环内无 IDR(切段条件保证不会走到): 宁可只写尾包, 也不把整个环
+	 * 倒进新段 —— 后者正是旧实现"每段体积递增"的来源。 */
+	return ring_cnt > 0 ? ring_cnt - 1 : 0;
+}
+
+/* S3(docs/37 §3.2): "事件是否仍在场" —— 切段续录与收尾共用同一判据:
+ * 最近一次命中/触发落在 post 窗口内才允许续段, 否则事件到此结束。
+ * 没有这条门, 切段链会在无目标时自我续命(旧 S3 板上实测: 镜头无人
+ * 仍连录 5 段、只有 SIGTERM 能停 —— 无限录 = 磁盘写满)。
+ * 手动触发模式没有检测命中刷新 g_last_detect_ms, 触发时刻已写入该值
+ * (见主循环), 因此 max-event-sec 到点即收尾, 行为可预期。 */
+static int event_alive(int post_sec)
+{
+	return g_last_detect_ms > 0 &&
+	       now_ms(CLOCK_MONOTONIC) - g_last_detect_ms <= post_sec * 1000.0;
+}
+
+/* S4: 磁盘可用 MB —— 量"实际写入的那个文件系统"(-o 前缀所在目录)。
+ * 写死 /root 会在 -o 指向其它挂载点时量错盘, 水位形同虚设。 */
+static long disk_free_mb(void)
+{
+	struct statvfs v;
+
+	if (statvfs(g_disk_dir, &v) != 0 &&
+	    statvfs("/", &v) != 0)
+		return -1;	/* 查不到就不拦录像 */
+	return (long)((double)v.f_bavail * v.f_frsize / (1024 * 1024));
+}
+
+/* S4: 水位决策 —— 返回 1=允许开新事件/继续录, 0=停录(双阈值+滞回)。
+ * 每次调用最多 10s 查一次 statvfs, 其余用缓存值。 */
+static int disk_allow(void)
+{
+	static long cached = -1;
+	double now = now_ms(CLOCK_MONOTONIC);
+
+	if (now >= g_disk_next_check) {
+		cached = disk_free_mb();
+		g_disk_next_check = now + 10000.0;
+	}
+	if (cached < 0)
+		return 1;		/* 查询失败不拦录像 */
+	if (g_disk_stopped) {
+		if (cached >= g_disk_min_mb + g_disk_hyst_mb) {
+			g_disk_stopped = 0;
+			printf(">>> 磁盘回升(%ldMB >= %dMB @%s), 恢复录像\n",
+			       cached, g_disk_min_mb + g_disk_hyst_mb, g_disk_dir);
+		}
+	} else if (cached < g_disk_min_mb) {
+		g_disk_stopped = 1;
+		printf(">>> 磁盘低水位(%ldMB < %dMB @%s), 停止开启新事件\n",
+		       cached, g_disk_min_mb, g_disk_dir);
+	}
+	return !g_disk_stopped;
+}
+
+/* 公共: 按 (事件序号, 段号) 开 .part + 写 pre-roll + 置包游标。
+ * event_id / segment 由调用方决定, 本函数不改写它们 —— 旧实现每次
+ * open 都把 g_ev_segment 归零、重新生成 event_id, 续段因此变成"新事件"。
+ * 命名: 段 0 = PREFIX-NN, 续段 = PREFIX-NN-sN; NN 只随事件递增。 */
+static int evw_open_at(int pre_i, unsigned serial, unsigned segment,
+		       unsigned event_id)
+{
+	char path[560];
+	int i, from = pre_i >= 0 ? pre_i : ring_last_idr();
+
+	/* 评审防御: 事件已在写时禁止重开 —— 重开等于 fopen("wb") 截断
+	 * 当前事件 + 泄漏旧 fd(板上实测 168 次/25s 的根因)。 */
+	if (g_ev_fp != NULL) {
+		fprintf(stderr, "[evw] open refused: event already active\n");
+		return -1;
+	}
+
+	if (segment == 0)
+		snprintf(g_ev_path, sizeof(g_ev_path), "%s-%02u", g_out_base, serial);
+	else
+		snprintf(g_ev_path, sizeof(g_ev_path), "%s-%02u-s%u", g_out_base,
+			 serial, segment);
+	snprintf(path, sizeof(path), "%s.part", g_ev_path);
+	g_ev_fp = fopen(path, "wb");
+	if (!g_ev_fp) {
+		fprintf(stderr, ">>> evw_open %s 失败: %s\n",
+			path, strerror(errno));
+		return -1;
+	}
+	g_ev_bytes = 0;
+	g_ev_werr = 0;
+	g_ev_first_ts = g_ev_last_ts = 0;
+	g_ev_event_id = event_id;
+	g_ev_segment = segment;
+	/* pre-roll: from(最近 IDR) 到 ring 尾; 这些包之后由 evw_write 过滤。
+	 * 续段时 from 就是切段那个 IDR, 与上一段末尾的同一包重叠 1 个,
+	 * 这是刻意的: 两段都从 IDR 起, 各自独立可解码。 */
+	for (i = from; g_ev_fp && i < ring_cnt; i++) {
+		struct rec *r = ring_at(i);
+		if (fwrite(r->data, 1, (size_t)r->len, g_ev_fp) != (size_t)r->len) {
+			g_ev_werr = 1;
+			break;
+		}
+		g_ev_bytes += (unsigned)r->len;
+	}
+	/* 包级游标: pre-roll 写完后全局已推包数为界, 之后的新包才 append */
+	g_ev_last_pkts = g_pushed;
+	return 0;
+}
+
+/* 新事件: 序号 +1, event_id = 序号, 段号从 0 起。
+ * 序号只在 open 成功后才提交, 失败不吞号(便于对账文件名连续)。 */
+static int evw_open_new(int pre_i)
+{
+	unsigned serial = g_ev_event_seq + 1;
+	int rc = evw_open_at(pre_i, serial, 0, serial);
+
+	if (rc == 0) {
+		g_ev_event_seq = serial;
+		g_ev_coalesced = 0;		/* 事件级: 新事件从头算 */
+		g_ev_cdskip = g_ev_cdskip_pend;	/* 冷却期跳过的归到本事件 */
+		g_ev_cdskip_pend = 0;
+	}
+	return rc;
+}
+
+/* 续段: 事件序号与 event_id 不变, 段号 +1(docs/37 §3.2)。 */
+static int evw_open_next(int pre_i)
+{
+	return evw_open_at(pre_i, g_ev_event_seq, g_ev_segment + 1,
+			   g_ev_event_id);
+}
+
+/* 事件完成: 计数 + 复位事件级状态(段号归零, 下一事件从 0 起)。
+ * 只做计数与清理; --max-events 的 break 留给主循环。
+ * 注意: 段文件落盘不调用本函数 —— 分段落盘 ≠ 事件完成。 */
+static void evw_event_finish(void)
+{
+	g_events++;
+	g_ev_segment = 0;
+	g_ev_event_id = 0;
+	g_pre_seq = 0;
+	g_trigger = 0;
+}
+
+/* S4 评审修正: 事件结束的唯一收口 —— 打印 + 计数 + cooldown 置位。
+ * 所有结束路径(目标离场 / 水位停录 / 续段失败)都只调它一次。
+ * 旧实现里 disk_low 分支先 finish 又掉进 else 再 finish: g_events 双计、
+ * 日志打两遍(第二次 event_id 已被清零)、还误报"续段失败"。
+ * cooldown 只认 target_left: 切段(水位/时长)不该压制下一个真实目标。 */
+static void evw_event_end(const char *reason)
+{
+	printf(">>> 事件 %u 完成(%u 段, %s)\n", g_ev_event_id,
+	       g_ev_segment + 1, reason ? reason : "?");
+	evw_event_finish();
+	if (g_cooldown_sec > 0 && reason && !strcmp(reason, "target_left"))
+		g_cooldown_until_ms = now_ms(CLOCK_MONOTONIC) +
+				      (double)g_cooldown_sec * 1000.0;
+}
+
+/* S2: 事件收尾 —— flush+close+rename+JSON。close_reason 由调用方给。
+ * S3: 本函数只负责"落一段", 不再自增 g_events —— 分段落盘不等于
+ * 事件完成, 事件计数由调用方在事件真正结束时 +1(--max-events 语义)。 */
+static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
+{
+	char path[560], jpath[560];
+	FILE *j;
+
+	ev_flush();
+	if (g_ev_fp && fclose(g_ev_fp) != 0)
+		g_ev_werr = 1;
+	g_ev_fp = NULL;
+	snprintf(path, sizeof(path), "%s.part", g_ev_path);
+	snprintf(jpath, sizeof(jpath), "%s.json", g_ev_path);
+	{
+		char final[560];
+		snprintf(final, sizeof(final), "%s.h264", g_ev_path);
+		if (rename(path, final) != 0) {
+			fprintf(stderr, ">>> rename %s 失败: %s\n",
+				path, strerror(errno));
+			return -1;
+		}
+	}
+	j = fopen(jpath, "w");
+	if (j) {
+		fprintf(j,
+			"{\"file\":\"%s.h264\",\"trigger_seq\":%u,"
+			"\"trigger_ts_ms\":%.1f,\"close_reason\":\"%s\","
+			"\"bytes\":%lu,\"duration_ms\":%.1f,"
+			"\"event_id\":%u,\"segment_index\":%u,"
+			"\"coalesced\":%u,\"cooldown_skipped\":%u,"
+			"\"disk_free_mb\":%ld,"
+			"\"first_ts_ms\":%.1f,\"last_ts_ms\":%.1f,"
+			"\"write_error\":%s}\n",
+			g_ev_path, trig_seq, trig_ts, reason,
+			g_ev_bytes, g_ev_last_ts - g_ev_first_ts,
+			g_ev_event_id, g_ev_segment,
+			g_ev_coalesced, g_ev_cdskip, disk_free_mb(),
+			g_ev_first_ts, g_ev_last_ts,
+			g_ev_werr ? "true" : "false");
+		fclose(j);
+	}
+	return 0;
+}
+
 static void ring_push(unsigned char *d, int len, unsigned seq, unsigned pkt,
 		      int key, double cap_ms)
 {
@@ -824,6 +1210,13 @@ static void ring_push(unsigned char *d, int len, unsigned seq, unsigned pkt,
 	ring_cnt++;
 	g_pushed++;
 	ring_bytes += (size_t)len;
+	/* S2: 事件进行中, 新包实时 append 到当前事件(单点挂在 ring_push,
+	 * 包级游标过滤; 写失败只置 g_ev_werr, 由主循环收尾) */
+	if (g_ev_fp) {
+		fprintf(stderr, "[evw] ringpush-call fp=%p pushed=%lu\n",
+			(void*)g_ev_fp, g_pushed);
+		evw_write(d, len, seq, pkt, r->ts_ms);
+	}
 }
 
 static struct rec *ring_at(int i)
@@ -2344,7 +2737,13 @@ static void usage(void)
 "\n"
 "触发:\n"
 "  --trigger FILE    监听文件 mtime 变化触发; 不给则等 SIGUSR1\n"
+"  --max-event-sec N 单段最长秒数: 到点且 ring 尾为 IDR 时切段,\n"
+"                    event_id 跨段不变, segment_index+1; 目标已离场则\n"
+"                    直接收尾不再续段(实际段长最多超 1 个 GOP)\n"
 "  --max-events N    最多录 N 个事件(0=不限, 默认 0)\n"
+"  --cooldown S      事件结束后的冷却秒数(target_left 后, 0=关)\n"
+"  --disk-min-mb M   磁盘低于 M MB 停录, 回升 M+1000 才恢复(默认 1000;\n"
+"                    量的是 -o 前缀所在文件系统)\n"
 "\n"
 "检测(内置 YOLOv8n):\n"
 "  --detect          启用检测, 命中即自动触发\n"
@@ -2375,7 +2774,8 @@ int main(int argc, char **argv)
 {
 	const char *dev = "/dev/video5", *out = "/root/ev/ev";
 	int w = 1920, h = 1080, pre_sec = 3, post_sec = 2, kbps = 8000, gop;
-	int i, k, trigger_i = -1, pre_i = -1, end_i = -1;
+	int max_event_sec = 0;
+	int i, k, pre_i = -1, end_i = -1;
 	int rc = 0;		/* 进程退出码: 0=正常, 1=真错误, 2=链路恢复失败 */
 	int reached_max = 0;	/* 因 --max-events 正常结束 */
 	int got_term;		/* 主循环退出时是否已收到 SIGTERM */
@@ -2432,12 +2832,16 @@ int main(int argc, char **argv)
 		else if (!strcmp(argv[i], "--pre")) pre_sec = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--post")) post_sec = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--ring-mb")) ring_limit = (size_t)atoi(argv[++i]) << 20;
-		else if (!strcmp(argv[i], "-o")) out = argv[++i];
+		else if (!strcmp(argv[i], "-o"))
+			out = argv[++i];
 		else if (!strcmp(argv[i], "--trigger")) g_trig_path = argv[++i];
 		else if (!strcmp(argv[i], "--kbps")) kbps = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--detect")) g_detect = 1;
 		else if (!strcmp(argv[i], "--model")) g_model = argv[++i];
 		else if (!strcmp(argv[i], "--max-events")) g_max_events = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "--max-event-sec")) g_max_event_sec = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "--cooldown")) g_cooldown_sec = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "--disk-min-mb")) g_disk_min_mb = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--det-score")) g_det_score = (float)atof(argv[++i]);
 		else if (!strcmp(argv[i], "--det-frames")) g_det_frames = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--obj-thresh")) g_obj_thresh = (float)atof(argv[++i]);
@@ -2538,6 +2942,23 @@ int main(int argc, char **argv)
 		strftime(tstr, sizeof(tstr), "%Y%m%d-%H%M%S", &tmv);
 		snprintf(g_outbuf, sizeof(g_outbuf), "%s_%s", out, tstr);
 		out = g_outbuf;
+		/* 事件前缀必须带运行时间戳: 否则两次运行都写 PREFIX-01.h264,
+		 * 第二次 fopen("wb") 直接覆盖第一次的事件(285923c 说明里声称
+		 * 做了, 实际漏了 —— 板上 /root/ev/s5-01.part 即证据)。 */
+		snprintf(g_out_base, sizeof(g_out_base), "%s", out);
+		/* S4: 水位量测目录 = 输出前缀的目录部分(无目录则用 /) */
+		{
+			const char *slash = strrchr(g_out_base, '/');
+			size_t n = slash ? (size_t)(slash - g_out_base) : 0;
+
+			if (n > 0 && n + 1 < sizeof(g_disk_dir)) {
+				memcpy(g_disk_dir, g_out_base, n);
+				g_disk_dir[n] = '\0';
+			} else {
+				snprintf(g_disk_dir, sizeof(g_disk_dir), "%s",
+					 slash ? "/" : ".");
+			}
+		}
 	}
 	printf(">>> 采集 %s %dx%d,pre=%ds post=%ds ring=%zuMB gop=%d\n",
 	       dev, w, h, pre_sec, post_sec, ring_limit >> 20, gop);
@@ -2740,81 +3161,166 @@ int main(int argc, char **argv)
 				g_rtsp_next_ms += 1000.0;
 			}
 
-		/* 触发: 信号 或 触发文件 mtime 变化 */
+		/* ---------------- 事件状态机(docs/37 §3.1/§3.2) ----------------
+		 * 每帧顺序: ①分段 ②触发开新事件 ③目标离场收尾。
+		 * 三块共享 g_ev_fp/trig_seq/trig_ts 一组状态, 且都以"事件是否
+		 * 在写"为门, 互斥, 不会同帧打架。事件进行中的后续命中只刷
+		 * g_last_detect_ms(检测回调内), 不再重进触发块 —— 旧实现每帧
+		 * 无条件 evw_open, 无触发时也会开幽灵事件(板上"镜头无人连录
+		 * 5 段"就是它), 且会覆盖 trig_seq/trig_ts。 */
+
+		/* ① 分段: 事件在写 + 配额 > 0 + 媒体跨度到点 + ring 尾是 IDR。
+		 * 段边界必须落在 IDR 上, 段文件才能独立解码; 因此实际段时长会
+		 * 略超 --max-event-sec(最多一个 GOP)。 */
+		if (g_ev_fp != NULL && g_max_event_sec > 0 &&
+		    g_ev_last_ts - g_ev_first_ts >=
+				(double)g_max_event_sec * 1000.0 &&
+		    ring_cnt > 0 && ring_at(ring_cnt - 1)->key) {
+			int alive = event_alive(post_sec);
+			/* 目标仍在场 + 水位允许 -> 切段续录; 否则本次就是事件结束:
+			 * 已离场用 target_left, 水位不足用 disk_low
+			 * (max_duration 只是同时撞上的上限, 不是结束原因)。 */
+			int disk_block = alive && !disk_allow();
+			const char *reason = !alive ? "target_left"
+			                   : disk_block ? "disk_low"
+			                   : "max_duration";
+			int keep = alive && !disk_block;
+
+			if (evw_close(reason, trig_seq, trig_ts) != 0 || g_ev_werr) {
+				fprintf(stderr, ">>> 分段收尾失败\n");
+				rc = 1;
+				break;
+			}
+			if (keep && evw_open_next(-1) != 0) {
+				fprintf(stderr, ">>> 续段失败, 事件提前结束\n");
+				keep = 0;
+			}
+			if (!keep) {
+				evw_event_end(reason);	/* 唯一出口, 只收口一次 */
+				if (g_max_events && g_events >= g_max_events) {
+					reached_max = 1;
+					break;
+				}
+				continue;	/* 事件已结束, 本帧不走 ②③ */
+			}
+			printf(">>> 分段 %u (event_id=%u, IDR 边界)\n",
+			       g_ev_segment, g_ev_event_id);
+		}
+
+		/* ①b 事件内水位检查: 与是否分段无关 —— 默认 --max-event-sec 0
+		 * (不分段)时, 进行中的长事件也必须能被低水位收尾, 否则磁盘照样
+		 * 写满, 而防写满正是 S4 的全部意义。disk_allow() 自带 10 s 缓存,
+		 * 每帧只是一次比较。 */
+		if (g_ev_fp != NULL && !disk_allow()) {
+			if (evw_close("disk_low", trig_seq, trig_ts) != 0 ||
+			    g_ev_werr) {
+				fprintf(stderr, ">>> 事件落盘失败\n");
+				rc = 1;
+				break;
+			}
+			evw_event_end("disk_low");
+			if (g_max_events && g_events >= g_max_events) {
+				reached_max = 1;
+				break;
+			}
+			continue;
+		}
+
+		/* ② 触发: 信号 或 触发文件 mtime 变化 */
 		if (!g_trigger && g_trig_path && stat(g_trig_path, &st) == 0 &&
 		    st.st_mtime != trig_mtime) {
 			trig_mtime = st.st_mtime;
 			g_trigger = 1;
 		}
-		if (g_trigger && trigger_i < 0 && ring_cnt < (int)(pre_sec * 15)) {
-			/* 预热未满: 环里的帧数还不够 pre 秒前置内容, 忽略本次触发,
-			 * 但不清 g_streak, 攒够后会立刻重新触发 */
-			g_trigger = 0;
-		}
-		if (g_trigger && trigger_i < 0) {
-			trigger_i = ring_cnt;
-			/* P6: 触发帧 = 本次循环 DQBUF 到的那一帧(检测/触发文件/信号
-			 * 都在这一帧的循环里被看到); 旧代码 dump 时传的是末帧
-			 * frame_seq, 导致 json 的 trigger_seq 指向文件最后一帧。
-			 * trig_ts 也取该帧的环形时间戳(而不是 DQBUF 时刻的 ts):
-			 * 环形 ts 是"编码送帧"时刻, 与 json list 的 ts_ms 同源,
-			 * 这样 trigger_ts_ms 恒等于 list 中 trigger_seq 那条的
-			 * ts_ms, 前后窗口计算也不会错位。 */
-			trig_seq = frame_seq;
-			trig_ts = ring_cnt > 0 ? ring_at(ring_cnt - 1)->ts_ms
-					       : ts - t_start;
-			/* pre: 从触发点往前按时间回退 pre_sec */
-			for (i = ring_cnt - 1; i >= 0; i--)
-				if (ring_at(i)->ts_ms < trig_ts - pre_sec * 1000.0)
-					break;
-			/* 从回退点往前找最近的 IDR(往前才能把 pre 窗口填满;
-			 * 往后找会跳到下一个 GOP 的 IDR, 白白丢掉中间一段) */
-			pre_i = -1;
-			for (i = ring_cnt - 1; i >= 0; i--)
-				if (ring_at(i)->ts_ms < trig_ts - pre_sec * 1000.0)
-					break;
-			for (; i >= 0; i--)
-				if (ring_at(i)->key) { pre_i = i; break; }
-			if (pre_i < 0)
-				pre_i = ring_first_idr_from(0);
-			g_pre_seq = ring_at(pre_i)->seq;
-			printf(">>> 触发 seq=%u ts=%.1fms -> pre_i=%d pre_seq=%u "
-			       "(ring_cnt=%d head=%d pushed=%lu)\n",
-			       trig_seq, trig_ts, pre_i, g_pre_seq,
-			       ring_cnt, ring_head, g_pushed);
-		}
-		if (trigger_i >= 0 && ts - t_start > trig_ts + post_sec * 1000.0) {
-			char outn[512];
-			int pi = pre_i, ok = 0;
-
-			end_i = ring_cnt - 1;
-			/* 触发到此刻环形可能已前移 -> 按 seq 重新定位 */
-			if (g_pre_seq)
-				for (k = 0; k < ring_cnt; k++)
-					if (ring_at(k)->seq == g_pre_seq) { pi = k; break; }
-			if (pi >= 0) {
-				snprintf(outn, sizeof(outn), "%s-%02d", out, g_events);
-				ok = dump(outn, trig_seq, trig_ts, pi, end_i, w, h) == 0;
+		if (g_trigger && g_ev_fp == NULL) {
+			/* S4: cooldown 期内不开新事件(目标在场判定照走, 只抑制
+			 * 文件); 低水位同理 —— 两处都必须 continue 跳出触发块,
+			 * 只清 g_trigger 不跳出会让块内后续照常开启事件。 */
+			if (g_cooldown_until_ms > 0 &&
+			    now_ms(CLOCK_MONOTONIC) < g_cooldown_until_ms) {
+				g_trigger = 0;
+				continue;
+			} else if (g_cooldown_until_ms > 0) {
+				g_cooldown_until_ms = 0;	/* 冷却结束 */
 			}
-			if (!ok) {
-				/* 落盘失败 = 真错误: 不计数, 也不再等下一个事件 */
+			if (!disk_allow()) {
+				g_trigger = 0;
+				continue;	/* 低水位: 不开新事件, 检测统计照走 */
+			}
+			if (ring_cnt < (int)(pre_sec * 15)) {
+				/* 预热未满: 环里的帧数还不够 pre 秒前置内容, 忽略本次
+				 * 触发, 但不清 g_streak(攒够后会立刻重新触发) */
+				g_trigger = 0;
+			} else {
+				/* P6: 触发帧 = 本次循环 DQBUF 到的那一帧(检测/触发
+				 * 文件/信号都在这一帧的循环里被看到); trig_ts 取该帧
+				 * 的环形时间戳(与 json 的 ts_ms 同源), 前后窗口不错位。 */
+				trig_seq = frame_seq;
+				trig_ts = ring_cnt > 0 ?
+					  ring_at(ring_cnt - 1)->ts_ms : ts - t_start;
+				/* pre: 从触发点往前按时间回退 pre_sec */
+				for (i = ring_cnt - 1; i >= 0; i--)
+					if (ring_at(i)->ts_ms <
+					    trig_ts - pre_sec * 1000.0)
+						break;
+				/* 从回退点往前找最近的 IDR(往前才能把 pre 窗口
+				 * 填满; 往后找会跳到下一个 GOP 的 IDR, 白丢一段) */
+				pre_i = -1;
+				for (i = ring_cnt - 1; i >= 0; i--)
+					if (ring_at(i)->ts_ms <
+					    trig_ts - pre_sec * 1000.0)
+						break;
+				for (; i >= 0; i--)
+					if (ring_at(i)->key) { pre_i = i; break; }
+				if (pre_i < 0)
+					pre_i = ring_first_idr_from(0);
+				g_pre_seq = ring_at(pre_i)->seq;
+				/* 触发即"目标在场"锚点: 手动触发模式没有检测命中
+				 * 刷新 g_last_detect_ms, 事件靠它 + post 窗口收尾 */
+				g_last_detect_ms = now_ms(CLOCK_MONOTONIC);
+				printf(">>> 触发 seq=%u ts=%.1fms -> pre_i=%d "
+				       "pre_seq=%u (ring_cnt=%d head=%d pushed=%lu)\n",
+				       trig_seq, trig_ts, pre_i, g_pre_seq,
+				       ring_cnt, ring_head, g_pushed);
+				if (evw_open_new(pre_i) == 0) {
+					fprintf(stderr,
+						"[evw] open event_id=%u last_pkts=%lu "
+						"pushed=%lu\n",
+						g_ev_event_id, g_ev_last_pkts,
+						g_pushed);
+				} else {
+					fprintf(stderr,
+						">>> 事件写入器打开失败, 事件放弃\n");
+				}
+				/* 触发已消费(成功或失败): 事件延长由
+				 * last_detect_ms 判定, 与触发状态无关 */
+				g_trigger = 0;
+				pre_i = end_i = -1;
+				g_pre_seq = 0;
+			}
+		}
+
+		/* ③ 目标离场: 事件在写, 且最近命中/触发超出 post 窗口 -> 收尾。
+		 * S1(docs/37 §3.1): 判据是"事件活跃 + 目标离场", 不是时间锚点;
+		 * 检测漏帧不会把持续目标拆成碎事件。 */
+		if (g_ev_fp != NULL && g_last_detect_ms > 0 &&
+		    now_ms(CLOCK_MONOTONIC) - g_last_detect_ms > post_sec * 1000.0) {
+			if (evw_close("target_left", trig_seq, trig_ts) != 0 ||
+			    g_ev_werr) {
 				fprintf(stderr, ">>> 事件落盘失败\n");
 				rc = 1;
 				break;
 			}
-			g_events++;
-			printf(">>> 事件 %d 完成, 继续等待下一个事件\n", g_events);
-			/* 复位状态, 复用同一块环 */
-			ring_clear();
-			g_trigger = 0;
-			g_streak = 0;
-			g_det_announced = 0;
-			g_pre_seq = 0;
-			trigger_i = pre_i = end_i = -1;
+			/* S1(docs/37 §3.4): 不 ring_clear —— ring 照滚, 下一个
+			 * 事件的 pre-roll 从这里取; g_streak 不清(目标仍在场时
+			 * streak 已在增长, 清零会漏事件)。
+			 * S4: 这里是 cooldown 唯一的置位点(target_left 收尾)。 */
+			evw_event_end("target_left");
 			if (g_max_events && g_events >= g_max_events) {
 				reached_max = 1;
 				break;
 			}
+			continue;
 		}
 		continue;
 
@@ -2852,30 +3358,16 @@ link_fault:
 	stage_report();
 	/* 先记下退出原因: 停线程会唤醒发送线程, 不能事后区分 */
 	got_term = g_stop;
-	/* SIGTERM 且正在录制: 先把当前事件落盘(环还完整), 再停 RTSP/线程/采集。
-	 * 主循环已退出, 环不再变化, dump 只读环与全局状态, 无并发风险。 */
-	if (got_term && trigger_i >= 0 && !rc && ring_cnt > 0) {
-		int pi = pre_i;
-
-		if (g_pre_seq)
-			for (i = 0; i < ring_cnt; i++)
-				if (ring_at(i)->seq == g_pre_seq) {
-					pi = i;
-					break;
-				}
-		if (pi < 0)
-			pi = ring_first_idr_from(0);
-		if (pi >= 0) {
-			char outn[512];
-
-			/* 事件没走完就被 TERM: dump 内部按环内实际时间跨度算 fps */
-			snprintf(outn, sizeof(outn), "%s-%02d", out, g_events);
-			if (dump(outn, trig_seq, trig_ts, pi, ring_cnt - 1, w, h) == 0) {
-				printf(">>> SIGTERM: 进行中的事件已落盘 %s\n", outn);
-				fflush(stdout);
-			} else {
-				fprintf(stderr, ">>> SIGTERM: 事件落盘失败\n");
-			}
+	/* SIGTERM 且流式事件进行中: 先收尾当前事件(flush+close+rename+JSON,
+	 * close_reason=sigterm), 再停 RTSP/线程/采集。S2 后这是唯一的
+	 * 在途事件通道 —— 旧 dump 路径已死代码化(S1 移除 ring_clear 后
+	 * 只有 g_ev_fp 代表"事件在录")。 */
+	if (got_term && g_ev_fp != NULL && !rc) {
+		if (evw_close("sigterm", trig_seq, trig_ts) == 0 && !g_ev_werr) {
+			printf(">>> SIGTERM: 进行中的事件已落盘 %s\n", g_ev_path);
+			fflush(stdout);
+		} else {
+			fprintf(stderr, ">>> SIGTERM: 事件落盘失败\n");
 		}
 	}
 	/* 信号 handler 只置 g_stop: 这里在锁内把它同步成 sender 的停止条件,

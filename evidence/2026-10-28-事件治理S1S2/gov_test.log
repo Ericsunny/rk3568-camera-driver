@@ -1,0 +1,71 @@
+>>> NPU 就绪 640x640 nout=9
+>>> 采集 /dev/video5 3840x2160,pre=2s post=2s ring=64MB gop=30
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+[npu] in: sz=1228800 mean=113 rgb0=180/204/199 int8_0=52
+[npu] out0 size=409600 b0..b7=2 -30 -40 -45 -49 -51 -45 -54
+[npu] in: sz=1228800 mean=114 rgb0=177/205/213 int8_0=49
+[npu] out0 size=409600 b0..b7=1 -29 -40 -44 -51 -56 -47 -56
+[npu] in: sz=1228800 mean=114 rgb0=177/205/212 int8_0=49
+librga fail to get driver version! Compatibility mode will be enabled.
+
+730 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver l.
+rga_api version 1.9.2_[1]
+>>> 检测连击开始 streak=1 score=0.622 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.622
+>>> 触发 seq=29 ts=5037.1ms -> pre_i=0 pre_seq=0 (ring_cnt=30 head=0 pushed=30)
+>>> 阶段耗时(均值, 31 帧): RGA 19.06 + RKNN 61.64 + 编码 57.46 = 138.15 ms/帧 -> 7.2 fps
+>>> 检测连击开始 streak=1 score=0.618 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.635
+>>> 检测连击开始 streak=1 score=0.558 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.558
+>>> 检测连击开始 streak=1 score=0.618 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.608
+>>> 阶段耗时(均值, 65 帧): RGA 18.96 + RKNN 61.17 + 编码 56.05 = 136.18 ms/帧 -> 7.3 fps
+>>> 检测连击开始 streak=1 score=0.598 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.628
+>>> 阶段耗时(均值, 97 帧): RGA 18.90 + RKNN 61.16 + 编码 55.64 = 135.71 ms/帧 -> 7.4 fps
+>>> 阶段耗时(均值, 127 帧): RGA 18.83 + RKNN 61.04 + 编码 55.46 = 135.32 ms/帧 -> 7.4 fps
+>>> 阶段耗时(均值, 157 帧): RGA 18.69 + RKNN 61.26 + 编码 55.33 = 135.28 ms/帧 -> 7.4 fps
+>>> 阶段耗时(均值, 185 帧): RGA 18.59 + RKNN 61.25 + 编码 55.29 = 135.13 ms/帧 -> 7.4 fps
+>>> 阶段耗时(均值, 213 帧): RGA 18.50 + RKNN 61.28 + 编码 55.26 = 135.04 ms/帧 -> 7.4 fps
+>>> 阶段耗时(均值, 240 帧): RGA 18.43 + RKNN 61.23 + 编码 55.13 = 134.79 ms/帧 -> 7.4 fps
+>>> 阶段耗时(均值, 266 帧): RGA 18.36 + RKNN 60.89 + 编码 55.01 = 134.26 ms/帧 -> 7.4 fps
+>>> 阶段耗时(均值, 292 帧): RGA 18.30 + RKNN 60.57 + 编码 54.84 = 133.72 ms/帧 -> 7.5 fps
+>>> 阶段耗时(均值, 317 帧): RGA 18.27 + RKNN 60.35 + 编码 54.76 = 133.38 ms/帧 -> 7.5 fps
+>>> 阶段耗时(均值, 342 帧): RGA 18.23 + RKNN 60.09 + 编码 54.70 = 133.02 ms/帧 -> 7.5 fps
+>>> 阶段耗时(均值, 367 帧): RGA 18.19 + RKNN 59.87 + 编码 54.63 = 132.68 ms/帧 -> 7.5 fps
+>>> 阶段耗时(均值, 391 帧): RGA 18.15 + RKNN 59.66 + 编码 54.58 = 132.40 ms/帧 -> 7.6 fps
+>>> 检测连击开始 streak=1 score=0.718 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.615
+>>> 阶段耗时(均值, 414 帧): RGA 18.13 + RKNN 59.66 + 编码 54.53 = 132.32 ms/帧 -> 7.6 fps
+>>> 阶段耗时(均值, 437 帧): RGA 18.10 + RKNN 59.60 + 编码 54.49 = 132.20 ms/帧 -> 7.6 fps
+>>> 阶段耗时(均值, 460 帧): RGA 18.08 + RKNN 59.49 + 编码 54.46 = 132.03 ms/帧 -> 7.6 fps
+>>> 阶段耗时(均值, 482 帧): RGA 18.06 + RKNN 59.40 + 编码 54.42 = 131.89 ms/帧 -> 7.6 fps
+>>> 阶段耗时(均值, 504 帧): RGA 18.04 + RKNN 59.33 + 编码 54.40 = 131.76 ms/帧 -> 7.6 fps
+>>> 阶段耗时(均值, 526 帧): RGA 18.02 + RKNN 59.24 + 编码 54.36 = 131.63 ms/帧 -> 7.6 fps
+>>> 阶段耗时(均值, 547 帧): RGA 18.00 + RKNN 59.17 + 编码 54.34 = 131.51 ms/帧 -> 7.6 fps
+>>> 阶段耗时(均值, 568 帧): RGA 17.99 + RKNN 59.09 + 编码 54.29 = 131.37 ms/帧 -> 7.6 fps
+>>> 检测连击开始 streak=1 score=0.471 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.498 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.509 (阈值 0.45, 需连续 3 帧)
+>>> 事件 1 完成, 继续等待下一个事件
+>>> 阶段耗时(均值, 589 帧): RGA 17.97 + RKNN 59.00 + 编码 54.30 = 131.27 ms/帧 -> 7.6 fps
+>>> 检测连击开始 streak=1 score=0.537 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.474 (阈值 0.45, 需连续 3 帧)
+>>> 阶段耗时(均值, 610 帧): RGA 17.96 + RKNN 58.94 + 编码 54.27 = 131.16 ms/帧 -> 7.6 fps
+>>> 阶段耗时(均值, 630 帧): RGA 17.95 + RKNN 58.87 + 编码 54.25 = 131.07 ms/帧 -> 7.6 fps
+>>> 阶段耗时(均值, 650 帧): RGA 17.94 + RKNN 58.80 + 编码 54.23 = 130.97 ms/帧 -> 7.6 fps
+>>> 阶段耗时(均值, 670 帧): RGA 17.93 + RKNN 58.77 + 编码 54.22 = 130.92 ms/帧 -> 7.6 fps
+>>> 阶段耗时(均值, 689 帧): RGA 17.92 + RKNN 58.69 + 编码 54.20 = 130.81 ms/帧 -> 7.6 fps
+>>> 阶段耗时(均值, 708 帧): RGA 17.91 + RKNN 58.63 + 编码 54.18 = 130.72 ms/帧 -> 7.7 fps
+>>> 检测连击开始 streak=1 score=0.533 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.595 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.461 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.615
+>>> 触发 seq=725 ts=150056.1ms -> pre_i=690 pre_seq=690 (ring_cnt=726 head=0 pushed=726)
+>>> 阶段耗时(均值, 726 帧): RGA 17.90 + RKNN 58.60 + 编码 54.18 = 130.68 ms/帧 -> 7.7 fps
+>>> NPU det_total=625 det_max=1 score_max=0.718
+>>> RGA 缩放均值 Y=107.8 (640x360, 采样 10454400)
+>>> 写出 /root/gov_test_20240618-083502-01.h264 (36 帧, 触发帧 #35) + /root/gov_test_20240618-083502-01.json
+>>> SIGTERM: 进行中的事件已落盘 /root/gov_test_20240618-083502-01
+>>> 收到 SIGTERM, 已停止

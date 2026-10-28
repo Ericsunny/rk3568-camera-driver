@@ -1,0 +1,1484 @@
+>>> NPU 就绪 640x640 nout=9
+>>> 采集 /dev/video5 1920x1080,pre=2s post=2s ring=24MB gop=30
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+[npu] in: sz=1228800 mean=117 rgb0=181/196/204 int8_0=53
+[npu] out0 size=409600 b0..b7=-1 -33 -40 -35 -40 -43 -51 -61
+[npu] in: sz=1228800 mean=117 rgb0=183/196/201 int8_0=55
+[npu] out0 size=409600 b0..b7=1 -33 -40 -32 -39 -42 -50 -58
+[npu] in: sz=1228800 mean=117 rgb0=182/196/200 int8_0=54
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+librga fail to get driver version! Compatibility mode will be enabled.
+
+446 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver l.
+rga_api version 1.9.2_[1]
+>>> 检测连击开始 streak=1 score=0.492 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.503
+>>> 触发 seq=29 ts=2898.3ms -> pre_i=0 pre_seq=0 (ring_cnt=30 head=0 pushed=30)
+>>> 触发 seq=30 ts=2977.9ms -> pre_i=0 pre_seq=0 (ring_cnt=31 head=0 pushed=31)
+>>> 触发 seq=31 ts=3055.7ms -> pre_i=0 pre_seq=0 (ring_cnt=32 head=0 pushed=32)
+>>> 触发 seq=32 ts=3134.9ms -> pre_i=0 pre_seq=0 (ring_cnt=33 head=0 pushed=33)
+>>> 触发 seq=33 ts=3219.5ms -> pre_i=0 pre_seq=0 (ring_cnt=34 head=0 pushed=34)
+>>> 触发 seq=34 ts=3307.1ms -> pre_i=0 pre_seq=0 (ring_cnt=35 head=0 pushed=35)
+>>> 触发 seq=35 ts=3394.5ms -> pre_i=0 pre_seq=0 (ring_cnt=36 head=0 pushed=36)
+>>> 触发 seq=36 ts=3473.8ms -> pre_i=0 pre_seq=0 (ring_cnt=37 head=0 pushed=37)
+>>> 触发 seq=37 ts=3553.7ms -> pre_i=0 pre_seq=0 (ring_cnt=38 head=0 pushed=38)
+>>> 触发 seq=38 ts=3629.8ms -> pre_i=0 pre_seq=0 (ring_cnt=39 head=0 pushed=39)
+>>> 触发 seq=39 ts=3718.9ms -> pre_i=0 pre_seq=0 (ring_cnt=40 head=0 pushed=40)
+>>> 触发 seq=40 ts=3805.4ms -> pre_i=0 pre_seq=0 (ring_cnt=41 head=0 pushed=41)
+>>> 触发 seq=41 ts=3882.9ms -> pre_i=0 pre_seq=0 (ring_cnt=42 head=0 pushed=42)
+>>> 触发 seq=42 ts=3960.2ms -> pre_i=0 pre_seq=0 (ring_cnt=43 head=0 pushed=43)
+>>> 触发 seq=43 ts=4037.2ms -> pre_i=0 pre_seq=0 (ring_cnt=44 head=0 pushed=44)
+>>> 触发 seq=44 ts=4122.6ms -> pre_i=0 pre_seq=0 (ring_cnt=45 head=0 pushed=45)
+>>> 触发 seq=45 ts=4211.6ms -> pre_i=0 pre_seq=0 (ring_cnt=46 head=0 pushed=46)
+>>> 触发 seq=46 ts=4293.9ms -> pre_i=0 pre_seq=0 (ring_cnt=47 head=0 pushed=47)
+>>> 触发 seq=47 ts=4371.2ms -> pre_i=0 pre_seq=0 (ring_cnt=48 head=0 pushed=48)
+>>> 触发 seq=48 ts=4448.7ms -> pre_i=0 pre_seq=0 (ring_cnt=49 head=0 pushed=49)
+>>> 触发 seq=49 ts=4532.7ms -> pre_i=0 pre_seq=0 (ring_cnt=50 head=0 pushed=50)
+>>> 触发 seq=50 ts=4610.8ms -> pre_i=0 pre_seq=0 (ring_cnt=51 head=0 pushed=51)
+>>> 触发 seq=51 ts=4689.5ms -> pre_i=0 pre_seq=0 (ring_cnt=52 head=0 pushed=52)
+>>> 触发 seq=52 ts=4770.7ms -> pre_i=0 pre_seq=0 (ring_cnt=53 head=0 pushed=53)
+>>> 触发 seq=53 ts=4849.0ms -> pre_i=0 pre_seq=0 (ring_cnt=54 head=0 pushed=54)
+>>> 触发 seq=54 ts=4931.1ms -> pre_i=0 pre_seq=0 (ring_cnt=55 head=0 pushed=55)
+>>> 触发 seq=55 ts=5009.2ms -> pre_i=30 pre_seq=30 (ring_cnt=56 head=0 pushed=56)
+>>> 检测统计 5s: 命中 57/57 帧 (100%), 峰值 0.662, streak=57, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 57 帧): RGA 5.29 + RKNN 61.31 + 编码 14.79 = 81.38 ms/帧 -> 12.3 fps
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> 触发 seq=56 ts=5091.8ms -> pre_i=30 pre_seq=30 (ring_cnt=57 head=0 pushed=57)
+>>> 触发 seq=57 ts=5169.3ms -> pre_i=30 pre_seq=30 (ring_cnt=58 head=0 pushed=58)
+>>> 触发 seq=58 ts=5253.3ms -> pre_i=30 pre_seq=30 (ring_cnt=59 head=0 pushed=59)
+>>> 检测连击结束 streak=59 (最近命中 0.1s 前)
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> 检测连击开始 streak=1 score=0.498 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.460
+>>> 触发 seq=62 ts=5583.4ms -> pre_i=30 pre_seq=30 (ring_cnt=63 head=0 pushed=63)
+>>> 触发 seq=63 ts=5666.0ms -> pre_i=30 pre_seq=30 (ring_cnt=64 head=0 pushed=64)
+>>> 触发 seq=64 ts=5744.5ms -> pre_i=30 pre_seq=30 (ring_cnt=65 head=0 pushed=65)
+>>> 触发 seq=65 ts=5822.3ms -> pre_i=30 pre_seq=30 (ring_cnt=66 head=0 pushed=66)
+>>> 触发 seq=66 ts=5900.1ms -> pre_i=30 pre_seq=30 (ring_cnt=67 head=0 pushed=67)
+>>> 触发 seq=67 ts=5978.6ms -> pre_i=30 pre_seq=30 (ring_cnt=68 head=0 pushed=68)
+>>> 触发 seq=68 ts=6066.9ms -> pre_i=30 pre_seq=30 (ring_cnt=69 head=0 pushed=69)
+>>> 触发 seq=69 ts=6145.2ms -> pre_i=30 pre_seq=30 (ring_cnt=70 head=0 pushed=70)
+>>> 触发 seq=70 ts=6223.5ms -> pre_i=30 pre_seq=30 (ring_cnt=71 head=0 pushed=71)
+>>> 检测连击开始 streak=1 score=0.584 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.481
+>>> 触发 seq=74 ts=6546.7ms -> pre_i=30 pre_seq=30 (ring_cnt=75 head=0 pushed=75)
+>>> 触发 seq=75 ts=6626.5ms -> pre_i=30 pre_seq=30 (ring_cnt=76 head=0 pushed=76)
+>>> 触发 seq=76 ts=6703.9ms -> pre_i=30 pre_seq=30 (ring_cnt=77 head=0 pushed=77)
+>>> 触发 seq=77 ts=6787.5ms -> pre_i=30 pre_seq=30 (ring_cnt=78 head=0 pushed=78)
+>>> 触发 seq=78 ts=6865.9ms -> pre_i=30 pre_seq=30 (ring_cnt=79 head=0 pushed=79)
+>>> 触发 seq=79 ts=6944.3ms -> pre_i=30 pre_seq=30 (ring_cnt=80 head=0 pushed=80)
+>>> 触发 seq=80 ts=7029.2ms -> pre_i=30 pre_seq=30 (ring_cnt=81 head=0 pushed=81)
+>>> 触发 seq=81 ts=7106.3ms -> pre_i=30 pre_seq=30 (ring_cnt=82 head=0 pushed=82)
+>>> 触发 seq=82 ts=7184.0ms -> pre_i=30 pre_seq=30 (ring_cnt=83 head=0 pushed=83)
+>>> 检测连击结束 streak=11 (最近命中 0.1s 前)
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> 检测连击开始 streak=1 score=0.471 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.465 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.455
+>>> 触发 seq=96 ts=8303.8ms -> pre_i=60 pre_seq=60 (ring_cnt=97 head=0 pushed=97)
+>>> 触发 seq=97 ts=8389.7ms -> pre_i=60 pre_seq=60 (ring_cnt=98 head=0 pushed=98)
+>>> 触发 seq=98 ts=8468.7ms -> pre_i=60 pre_seq=60 (ring_cnt=99 head=0 pushed=99)
+>>> 检测连击结束 streak=5 (最近命中 0.1s 前)
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> 检测连击开始 streak=1 score=0.505 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.454 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.459
+>>> 触发 seq=111 ts=9529.1ms -> pre_i=60 pre_seq=60 (ring_cnt=112 head=0 pushed=112)
+>>> 触发 seq=112 ts=9618.0ms -> pre_i=60 pre_seq=60 (ring_cnt=113 head=0 pushed=113)
+>>> 触发 seq=113 ts=9695.0ms -> pre_i=60 pre_seq=60 (ring_cnt=114 head=0 pushed=114)
+>>> 触发 seq=114 ts=9783.7ms -> pre_i=60 pre_seq=60 (ring_cnt=115 head=0 pushed=115)
+>>> 触发 seq=115 ts=9869.9ms -> pre_i=90 pre_seq=90 (ring_cnt=116 head=0 pushed=116)
+>>> 触发 seq=116 ts=9947.9ms -> pre_i=90 pre_seq=90 (ring_cnt=117 head=0 pushed=117)
+>>> 检测统计 10s: 命中 40/61 帧 (66%), 峰值 0.678, streak=9, 最近命中 0.0s 前
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> 触发 seq=117 ts=10037.1ms -> pre_i=90 pre_seq=90 (ring_cnt=118 head=0 pushed=118)
+>>> 阶段耗时(均值, 119 帧): RGA 5.27 + RKNN 61.19 + 编码 14.74 = 81.20 ms/帧 -> 12.3 fps
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> 触发 seq=118 ts=10123.8ms -> pre_i=90 pre_seq=90 (ring_cnt=119 head=0 pushed=119)
+>>> 触发 seq=119 ts=10218.8ms -> pre_i=90 pre_seq=90 (ring_cnt=120 head=0 pushed=120)
+>>> 触发 seq=120 ts=10305.2ms -> pre_i=90 pre_seq=90 (ring_cnt=121 head=0 pushed=121)
+>>> 触发 seq=121 ts=10383.8ms -> pre_i=90 pre_seq=90 (ring_cnt=122 head=0 pushed=122)
+>>> 触发 seq=122 ts=10473.7ms -> pre_i=90 pre_seq=90 (ring_cnt=123 head=0 pushed=123)
+>>> 触发 seq=123 ts=10563.4ms -> pre_i=90 pre_seq=90 (ring_cnt=124 head=0 pushed=124)
+>>> 触发 seq=124 ts=10658.5ms -> pre_i=90 pre_seq=90 (ring_cnt=125 head=0 pushed=125)
+>>> 触发 seq=125 ts=10738.3ms -> pre_i=90 pre_seq=90 (ring_cnt=126 head=0 pushed=126)
+>>> 触发 seq=126 ts=10817.9ms -> pre_i=90 pre_seq=90 (ring_cnt=127 head=0 pushed=127)
+>>> 触发 seq=127 ts=10895.4ms -> pre_i=90 pre_seq=90 (ring_cnt=128 head=0 pushed=128)
+>>> 触发 seq=128 ts=10983.1ms -> pre_i=90 pre_seq=90 (ring_cnt=129 head=0 pushed=129)
+>>> 触发 seq=129 ts=11060.7ms -> pre_i=90 pre_seq=90 (ring_cnt=130 head=0 pushed=130)
+>>> 触发 seq=130 ts=11139.2ms -> pre_i=90 pre_seq=90 (ring_cnt=131 head=0 pushed=131)
+>>> 触发 seq=131 ts=11218.7ms -> pre_i=90 pre_seq=90 (ring_cnt=132 head=0 pushed=132)
+>>> 触发 seq=132 ts=11296.4ms -> pre_i=90 pre_seq=90 (ring_cnt=133 head=0 pushed=133)
+>>> 触发 seq=133 ts=11373.5ms -> pre_i=90 pre_seq=90 (ring_cnt=134 head=0 pushed=134)
+>>> 触发 seq=134 ts=11452.0ms -> pre_i=90 pre_seq=90 (ring_cnt=135 head=0 pushed=135)
+>>> 触发 seq=135 ts=11529.9ms -> pre_i=90 pre_seq=90 (ring_cnt=136 head=0 pushed=136)
+>>> 触发 seq=136 ts=11608.3ms -> pre_i=90 pre_seq=90 (ring_cnt=137 head=0 pushed=137)
+>>> 触发 seq=137 ts=11694.2ms -> pre_i=90 pre_seq=90 (ring_cnt=138 head=0 pushed=138)
+>>> 触发 seq=138 ts=11781.3ms -> pre_i=90 pre_seq=90 (ring_cnt=139 head=0 pushed=139)
+>>> 触发 seq=139 ts=11865.9ms -> pre_i=90 pre_seq=90 (ring_cnt=140 head=0 pushed=140)
+>>> 触发 seq=140 ts=11954.4ms -> pre_i=90 pre_seq=90 (ring_cnt=141 head=0 pushed=141)
+>>> 触发 seq=141 ts=12031.3ms -> pre_i=90 pre_seq=90 (ring_cnt=142 head=0 pushed=142)
+>>> 触发 seq=142 ts=12116.5ms -> pre_i=90 pre_seq=90 (ring_cnt=143 head=0 pushed=143)
+>>> 触发 seq=143 ts=12211.9ms -> pre_i=90 pre_seq=90 (ring_cnt=144 head=0 pushed=144)
+>>> 触发 seq=144 ts=12293.7ms -> pre_i=90 pre_seq=90 (ring_cnt=145 head=0 pushed=145)
+>>> 触发 seq=145 ts=12374.1ms -> pre_i=120 pre_seq=120 (ring_cnt=146 head=0 pushed=146)
+>>> 触发 seq=146 ts=12463.9ms -> pre_i=120 pre_seq=120 (ring_cnt=147 head=0 pushed=147)
+>>> 触发 seq=147 ts=12542.2ms -> pre_i=120 pre_seq=120 (ring_cnt=148 head=0 pushed=148)
+>>> 触发 seq=148 ts=12631.1ms -> pre_i=120 pre_seq=120 (ring_cnt=149 head=0 pushed=149)
+>>> 触发 seq=149 ts=12720.3ms -> pre_i=120 pre_seq=120 (ring_cnt=150 head=0 pushed=150)
+>>> 触发 seq=150 ts=12811.0ms -> pre_i=120 pre_seq=120 (ring_cnt=151 head=0 pushed=151)
+>>> 触发 seq=151 ts=12901.4ms -> pre_i=120 pre_seq=120 (ring_cnt=152 head=0 pushed=152)
+>>> 触发 seq=152 ts=12984.4ms -> pre_i=120 pre_seq=120 (ring_cnt=153 head=0 pushed=153)
+>>> 触发 seq=153 ts=13062.6ms -> pre_i=120 pre_seq=120 (ring_cnt=154 head=0 pushed=154)
+>>> 触发 seq=154 ts=13148.2ms -> pre_i=120 pre_seq=120 (ring_cnt=155 head=0 pushed=155)
+>>> 触发 seq=155 ts=13236.6ms -> pre_i=120 pre_seq=120 (ring_cnt=156 head=0 pushed=156)
+>>> 触发 seq=156 ts=13318.3ms -> pre_i=120 pre_seq=120 (ring_cnt=157 head=0 pushed=157)
+>>> 触发 seq=157 ts=13396.8ms -> pre_i=120 pre_seq=120 (ring_cnt=158 head=0 pushed=158)
+>>> 触发 seq=158 ts=13484.6ms -> pre_i=120 pre_seq=120 (ring_cnt=159 head=0 pushed=159)
+>>> 触发 seq=159 ts=13561.4ms -> pre_i=120 pre_seq=120 (ring_cnt=160 head=0 pushed=160)
+>>> 触发 seq=160 ts=13639.7ms -> pre_i=120 pre_seq=120 (ring_cnt=161 head=0 pushed=161)
+>>> 触发 seq=161 ts=13720.7ms -> pre_i=120 pre_seq=120 (ring_cnt=162 head=0 pushed=162)
+>>> 触发 seq=162 ts=13799.3ms -> pre_i=120 pre_seq=120 (ring_cnt=163 head=0 pushed=163)
+>>> 触发 seq=163 ts=13881.7ms -> pre_i=120 pre_seq=120 (ring_cnt=164 head=0 pushed=164)
+>>> 触发>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+ seq=164 ts=13959.0ms -> pre_i=120 pre_seq=120 (ring_cnt=165 head=0 pushed=165)
+>>> 触发 seq=165 ts=14041.6ms -> pre_i=120 pre_seq=120 (ring_cnt=166 head=0 pushed=166)
+>>> 触发 seq=166 ts=14123.7ms -> pre_i=120 pre_seq=120 (ring_cnt=167 head=0 pushed=167)
+>>> 触发 seq=167 ts=14203.8ms -> pre_i=120 pre_seq=120 (ring_cnt=168 head=0 pushed=168)
+>>> 触发 seq=168 ts=14282.3ms -> pre_i=120 pre_seq=120 (ring_cnt=169 head=0 pushed=169)
+>>> 触发 seq=169 ts=14361.8ms -> pre_i=120 pre_seq=120 (ring_cnt=170 head=0 pushed=170)
+>>> 触发 seq=170 ts=14450.1ms -> pre_i=120 pre_seq=120 (ring_cnt=171 head=0 pushed=171)
+>>> 触发 seq=171 ts=14527.5ms -> pre_i=120 pre_seq=120 (ring_cnt=172 head=0 pushed=172)
+>>> 触发 seq=172 ts=14606.0ms -> pre_i=120 pre_seq=120 (ring_cnt=173 head=0 pushed=173)
+>>> 触发 seq=173 ts=14684.6ms -> pre_i=120 pre_seq=120 (ring_cnt=174 head=0 pushed=174)
+>>> 触发 seq=174 ts=14762.3ms -> pre_i=120 pre_seq=120 (ring_cnt=175 head=0 pushed=175)
+>>> 触发 seq=175 ts=14849.2ms -> pre_i=150 pre_seq=150 (ring_cnt=176 head=0 pushed=176)
+>>> 触发 seq=176 ts=14927.0ms -> pre_i=150 pre_seq=150 (ring_cnt=177 head=0 pushed=177)
+>>> 触发 seq=177 ts=15005.4ms -> pre_i=150 pre_seq=150 (ring_cnt=178 head=0 pushed=178)
+>>> 检测统计 15s: 命中 61/61 帧 (100%), 峰值 0.691, streak=70, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 179 帧): RGA 5.26 + RKNN 61.62 + 编码 14.76 = 81.64 ms/帧 -> 12.2 fps
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> 触发 seq=178 ts=15089.7ms -> pre_i=150 pre_seq=150 (ring_cnt=179 head=0 pushed=179)
+>>> 触发 seq=179 ts=15167.3ms -> pre_i=150 pre_seq=150 (ring_cnt=180 head=0 pushed=180)
+>>> 触发 seq=180 ts=15249.3ms -> pre_i=150 pre_seq=150 (ring_cnt=181 head=0 pushed=181)
+>>> 触发 seq=181 ts=15327.2ms -> pre_i=150 pre_seq=150 (ring_cnt=182 head=0 pushed=182)
+>>> 触发 seq=182 ts=15410.5ms -> pre_i=150 pre_seq=150 (ring_cnt=183 head=0 pushed=183)
+>>> 触发 seq=183 ts=15497.5ms -> pre_i=150 pre_seq=150 (ring_cnt=184 head=0 pushed=184)
+>>> 触发 seq=184 ts=15575.3ms -> pre_i=150 pre_seq=150 (ring_cnt=185 head=0 pushed=185)
+>>> 触发 seq=185 ts=15653.3ms -> pre_i=150 pre_seq=150 (ring_cnt=186 head=0 pushed=186)
+>>> 触发 seq=186 ts=15731.4ms -> pre_i=150 pre_seq=150 (ring_cnt=187 head=0 pushed=187)
+>>> 触发 seq=187 ts=15815.0ms -> pre_i=150 pre_seq=150 (ring_cnt=188 head=0 pushed=188)
+>>> 触发 seq=188 ts=15892.1ms -> pre_i=150 pre_seq=150 (ring_cnt=189 head=0 pushed=189)
+>>> 触发 seq=189 ts=15971.3ms -> pre_i=150 pre_seq=150 (ring_cnt=190 head=0 pushed=190)
+>>> 触发 seq=190 ts=16049.4ms -> pre_i=150 pre_seq=150 (ring_cnt=191 head=0 pushed=191)
+>>> 触发 seq=191 ts=16138.4ms -> pre_i=150 pre_seq=150 (ring_cnt=192 head=0 pushed=192)
+>>> 触发 seq=192 ts=16220.6ms -> pre_i=150 pre_seq=150 (ring_cnt=193 head=0 pushed=193)
+>>> 触发 seq=193 ts=16300.2ms -> pre_i=150 pre_seq=150 (ring_cnt=194 head=0 pushed=194)
+>>> 触发 seq=194 ts=16379.3ms -> pre_i=150 pre_seq=150 (ring_cnt=195 head=0 pushed=195)
+>>> 触发 seq=195 ts=16457.2ms -> pre_i=150 pre_seq=150 (ring_cnt=196 head=0 pushed=196)
+>>> 触发 seq=196 ts=16536.1ms -> pre_i=150 pre_seq=150 (ring_cnt=197 head=0 pushed=197)
+>>> 触发 seq=197 ts=16616.3ms -> pre_i=150 pre_seq=150 (ring_cnt=198 head=0 pushed=198)
+>>> 触发 seq=198 ts=16703.8ms -> pre_i=150 pre_seq=150 (ring_cnt=199 head=0 pushed=199)
+>>> 触发 seq=199 ts=16788.9ms -> pre_i=150 pre_seq=150 (ring_cnt=200 head=0 pushed=200)
+>>> 触发 seq=200 ts=16873.4ms -> pre_i=150 pre_seq=150 (ring_cnt=201 head=0 pushed=201)
+>>> 触发 seq=201 ts=16951.5ms -> pre_i=150 pre_seq=150 (ring_cnt=202 head=0 pushed=202)
+>>> 触发 seq=202 ts=17037.9ms -> pre_i=150 pre_seq=150 (ring_cnt=203 head=0 pushed=203)
+>>> 触发 seq=203 ts=17116.8ms -> pre_i=150 pre_seq=150 (ring_cnt=204 head=0 pushed=204)
+>>> 触发 seq=204 ts=17194.3ms -> pre_i=150 pre_seq=150 (ring_cnt=205 head=0 pushed=205)
+>>> 触发 seq=205 ts=17272.7ms -> pre_i=180 pre_seq=180 (ring_cnt=206 head=0 pushed=206)
+>>> 触发 seq=206 ts=17361.6ms -> pre_i=180 pre_seq=180 (ring_cnt=207 head=0 pushed=207)
+>>> 触发 seq=207 ts=17440.7ms -> pre_i=180 pre_seq=180 (ring_cnt=208 head=0 pushed=208)
+>>> 触发 seq=208 ts=17521.9ms -> pre_i=180 pre_seq=180 (ring_cnt=209 head=0 pushed=209)
+>>> 触发 seq=209 ts=17610.7ms -> pre_i=180 pre_seq=180 (ring_cnt=210 head=0 pushed=210)
+>>> 触发 seq=210 ts=17689.6ms -> pre_i=180 pre_seq=180 (ring_cnt=211 head=0 pushed=211)
+>>> 触发 seq=211 ts=17770.9ms -> pre_i=180 pre_seq=180 (ring_cnt=212 head=0 pushed=212)
+>>> 触发 seq=212 ts=17849.2ms -> pre_i=180 pre_seq=180 (ring_cnt=213 head=0 pushed=213)
+>>> 触发 seq=213 ts=17929.1ms -> pre_i=180 pre_seq=180 (ring_cnt=214 head=0 pushed=214)
+>>> 触发 seq=214 ts=18007.4ms -> pre_i=180 pre_seq=180 (ring_cnt=215 head=0 pushed=215)
+>>> 触发 seq=215 ts=18085.6ms -> pre_i=180 pre_seq=180 (ring_cnt=216 head=0 pushed=216)
+>>> 触发 seq=216 ts=18163.1ms -> pre_i=180 pre_seq=180 (ring_cnt=217 head=0 pushed=217)
+>>> 触发 seq=217 ts=18244.2ms -> pre_i=180 pre_seq=180 (ring_cnt=218 head=0 pushed=218)
+>>> 触发 seq=218 ts=18323.6ms -> pre_i=180 pre_seq=180 (ring_cnt=219 head=0 pushed=219)
+>>> 触发 seq=219 ts=18401.9ms -> pre_i=180 pre_seq=180 (ring_cnt=220 head=0 pushed=220)
+>>> 触发 seq=220 ts=18481.6ms -> pre_i=180 pre_seq=180 (ring_cnt=221 head=0 pushed=221)
+>>> 触发 seq=221 ts=18568.4ms -> pre_i=180 pre_seq=180 (ring_cnt=222 head=0 pushed=222)
+>>> 触发 seq=222 ts=18651.6ms -> pre_i=180 pre_seq=180 (ring_cnt=223 head=0 pushed=223)
+>>> 触发 seq=223 ts=18729.9ms -> pre_i=180 p>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+re_seq=180 (ring_cnt=224 head=0 pushed=224)
+>>> 触发 seq=224 ts=18808.5ms -> pre_i=180 pre_seq=180 (ring_cnt=225 head=0 pushed=225)
+>>> 触发 seq=225 ts=18886.5ms -> pre_i=180 pre_seq=180 (ring_cnt=226 head=0 pushed=226)
+>>> 触发 seq=226 ts=18963.4ms -> pre_i=180 pre_seq=180 (ring_cnt=227 head=0 pushed=227)
+>>> 触发 seq=227 ts=19041.2ms -> pre_i=180 pre_seq=180 (ring_cnt=228 head=0 pushed=228)
+>>> 触发 seq=228 ts=19125.5ms -> pre_i=180 pre_seq=180 (ring_cnt=229 head=0 pushed=229)
+>>> 触发 seq=229 ts=19204.2ms -> pre_i=180 pre_seq=180 (ring_cnt=230 head=0 pushed=230)
+>>> 触发 seq=230 ts=19282.5ms -> pre_i=180 pre_seq=180 (ring_cnt=231 head=0 pushed=231)
+>>> 触发 seq=231 ts=19369.8ms -> pre_i=180 pre_seq=180 (ring_cnt=232 head=0 pushed=232)
+>>> 触发 seq=232 ts=19454.8ms -> pre_i=180 pre_seq=180 (ring_cnt=233 head=0 pushed=233)
+>>> 触发 seq=233 ts=19535.0ms -> pre_i=180 pre_seq=180 (ring_cnt=234 head=0 pushed=234)
+>>> 触发 seq=234 ts=19613.1ms -> pre_i=180 pre_seq=180 (ring_cnt=235 head=0 pushed=235)
+>>> 触发 seq=235 ts=19691.1ms -> pre_i=210 pre_seq=210 (ring_cnt=236 head=0 pushed=236)
+>>> 触发 seq=236 ts=19768.6ms -> pre_i=210 pre_seq=210 (ring_cnt=237 head=0 pushed=237)
+>>> 触发 seq=237 ts=19846.0ms -> pre_i=210 pre_seq=210 (ring_cnt=238 head=0 pushed=238)
+>>> 触发 seq=238 ts=19928.7ms -> pre_i=210 pre_seq=210 (ring_cnt=239 head=0 pushed=239)
+>>> 触发 seq=239 ts=20007.1ms -> pre_i=210 pre_seq=210 (ring_cnt=240 head=0 pushed=240)
+>>> 检测统计 20s: 命中 62/62 帧 (100%), 峰值 0.728, streak=132, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 241 帧): RGA 5.26 + RKNN 61.39 + 编码 14.71 = 81.36 ms/帧 -> 12.3 fps
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> 触发 seq=240 ts=20098.3ms -> pre_i=210 pre_seq=210 (ring_cnt=241 head=0 pushed=241)
+>>> 触发 seq=241 ts=20186.0ms -> pre_i=210 pre_seq=210 (ring_cnt=242 head=0 pushed=242)
+>>> 触发 seq=242 ts=20264.1ms -> pre_i=210 pre_seq=210 (ring_cnt=243 head=0 pushed=243)
+>>> 触发 seq=243 ts=20342.8ms -> pre_i=210 pre_seq=210 (ring_cnt=244 head=0 pushed=244)
+>>> 触发 seq=244 ts=20422.2ms -> pre_i=210 pre_seq=210 (ring_cnt=245 head=0 pushed=245)
+>>> 触发 seq=245 ts=20501.2ms -> pre_i=210 pre_seq=210 (ring_cnt=246 head=0 pushed=246)
+>>> 触发 seq=246 ts=20579.5ms -> pre_i=210 pre_seq=210 (ring_cnt=247 head=0 pushed=247)
+>>> 触发 seq=247 ts=20658.5ms -> pre_i=210 pre_seq=210 (ring_cnt=248 head=0 pushed=248)
+>>> 触发 seq=248 ts=20744.7ms -> pre_i=210 pre_seq=210 (ring_cnt=249 head=0 pushed=249)
+>>> 触发 seq=249 ts=20822.8ms -> pre_i=210 pre_seq=210 (ring_cnt=250 head=0 pushed=250)
+>>> 触发 seq=250 ts=20900.2ms -> pre_i=210 pre_seq=210 (ring_cnt=251 head=0 pushed=251)
+>>> 触发 seq=251 ts=20987.8ms -> pre_i=210 pre_seq=210 (ring_cnt=252 head=0 pushed=252)
+>>> 触发 seq=252 ts=21075.7ms -> pre_i=210 pre_seq=210 (ring_cnt=253 head=0 pushed=253)
+>>> 触发 seq=253 ts=21161.5ms -> pre_i=210 pre_seq=210 (ring_cnt=254 head=0 pushed=254)
+>>> 触发 seq=254 ts=21241.0ms -> pre_i=210 pre_seq=210 (ring_cnt=255 head=0 pushed=255)
+>>> 触发 seq=255 ts=21320.5ms -> pre_i=210 pre_seq=210 (ring_cnt=256 head=0 pushed=256)
+>>> 触发 seq=256 ts=21402.3ms -> pre_i=210 pre_seq=210 (ring_cnt=257 head=0 pushed=257)
+>>> 触发 seq=257 ts=21482.2ms -> pre_i=210 pre_seq=210 (ring_cnt=258 head=0 pushed=258)
+>>> 触发 seq=258 ts=21559.2ms -> pre_i=210 pre_seq=210 (ring_cnt=259 head=0 pushed=259)
+>>> 触发 seq=259 ts=21643.2ms -> pre_i=210 pre_seq=210 (ring_cnt=260 head=0 pushed=260)
+>>> 触发 seq=260 ts=21720.9ms -> pre_i=210 pre_seq=210 (ring_cnt=261 head=0 pushed=261)
+>>> 触发 seq=261 ts=21803.6ms -> pre_i=210 pre_seq=210 (ring_cnt=262 head=0 pushed=262)
+>>> 触发 seq=262 ts=21891.8ms -> pre_i=210 pre_seq=210 (ring_cnt=263 head=0 pushed=263)
+>>> 触发 seq=263 ts=21972.4ms -> pre_i=210 pre_seq=210 (ring_cnt=264 head=0 pushed=264)
+>>> 触发 seq=264 ts=22052.4ms -> pre_i=210 pre_seq=210 (ring_cnt=265 head=0 pushed=265)
+>>> 触发 seq=265 ts=22130.7ms -> pre_i=240 pre_seq=240 (ring_cnt=266 head=0 pushed=266)
+>>> 触发 seq=266 ts=22209.0ms -> pre_i=240 pre_seq=240 (ring_cnt=267 head=0 pushed=267)
+>>> 触发 seq=267 ts=22301.1ms -> pre_i=240 pre_seq=240 (ring_cnt=268 head=0 pushed=268)
+>>> 触发 seq=268 ts=22385.8ms -> pre_i=240 pre_seq=240 (ring_cnt=269 head=0 pushed=269)
+>>> 触发 seq=269 ts=22465.9ms -> pre_i=240 pre_seq=240 (ring_cnt=270 head=0 pushed=270)
+>>> 触发 seq=270 ts=22545.2ms -> pre_i=240 pre_seq=240 (ring_cnt=271 head=0 pushed=271)
+>>> 触发 seq=271 ts=22626.7ms -> pre_i=240 pre_seq=240 (ring_cnt=272 head=0 pushed=272)
+>>> 触发 seq=272 ts=22710.3ms -> pre_i=240 pre_seq=240 (ring_cnt=273 head=0 pushed=273)
+>>> 触发 seq=273 ts=22806.2ms -> pre_i=240 pre_seq=240 (ring_cnt=274 head=0 pushed=274)
+>>> 触发 seq=274 ts=22884.3ms -> pre_i=240 pre_seq=240 (ring_cnt=275 head=0 pushed=275)
+>>> 触发 seq=275 ts=22970.1ms -> pre_i=240 pre_seq=240 (ring_cnt=276 head=0 pushed=276)
+>>> 触发 seq=276 ts=23047.5ms -> pre_i=240 pre_seq=240 (ring_cnt=277 head=0 pushed=277)
+>>> 触发 seq=277 ts=23135.3ms -> pre_i=240 pre_seq=240 (ring_cnt=278 head=0 pushed=278)
+>>> 触发 seq=278 ts=23213.2ms -> pre_i=240 pre_seq=240 (ring_cnt=279 head=0 pushed=279)
+>>> 触发 seq=279 ts=23291.5ms -> pre_i=240 pre_seq=240 (ring_cnt=280 head=0 pushed=280)
+>>> 触发 seq=280 ts=23377.0ms -> pre_i=240 pre_seq=240 (ring_cnt=281 head=0 pushed=281)
+>>> 触发 seq=281 ts=23461.4ms -> pre_i=240 pre_seq=240 (ring_cnt=282 head=0 pushed=282)
+>>> 触发 seq=282 ts=23539.6ms -> pre_i=240 pre_seq=240 (ring_cnt=283 head=0 pushed=283)
+>>> 触发 seq=283 ts=23619.6ms -> pre_i=240 pre_seq=240 (ring_cnt=284 head=0 pushed=284)
+>>> 触发 seq=284 ts=23701.4ms -> pre_i=240 pre_seq=240 (ring_cnt=285 head=0 pushed=285)
+>>> 触发 seq=285 ts=23784.0ms -> pre_i=240 p>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+re_seq=240 (ring_cnt=286 head=0 pushed=286)
+>>> 触发 seq=286 ts=23861.7ms -> pre_i=240 pre_seq=240 (ring_cnt=287 head=0 pushed=287)
+>>> 触发 seq=287 ts=23938.5ms -> pre_i=240 pre_seq=240 (ring_cnt=288 head=0 pushed=288)
+>>> 触发 seq=288 ts=24016.2ms -> pre_i=240 pre_seq=240 (ring_cnt=289 head=0 pushed=289)
+>>> 触发 seq=289 ts=24094.6ms -> pre_i=240 pre_seq=240 (ring_cnt=290 head=0 pushed=290)
+>>> 触发 seq=290 ts=24172.7ms -> pre_i=240 pre_seq=240 (ring_cnt=291 head=0 pushed=291)
+>>> 触发 seq=291 ts=24251.6ms -> pre_i=240 pre_seq=240 (ring_cnt=292 head=0 pushed=292)
+>>> 触发 seq=292 ts=24334.3ms -> pre_i=240 pre_seq=240 (ring_cnt=293 head=0 pushed=293)
+>>> 触发 seq=293 ts=24412.8ms -> pre_i=240 pre_seq=240 (ring_cnt=294 head=0 pushed=294)
+>>> 触发 seq=294 ts=24490.3ms -> pre_i=240 pre_seq=240 (ring_cnt=295 head=0 pushed=295)
+>>> 触发 seq=295 ts=24578.4ms -> pre_i=270 pre_seq=270 (ring_cnt=296 head=0 pushed=296)
+>>> 触发 seq=296 ts=24665.7ms -> pre_i=270 pre_seq=270 (ring_cnt=297 head=0 pushed=297)
+>>> 触发 seq=297 ts=24744.3ms -> pre_i=270 pre_seq=270 (ring_cnt=298 head=0 pushed=298)
+>>> 触发 seq=298 ts=24826.1ms -> pre_i=270 pre_seq=270 (ring_cnt=299 head=0 pushed=299)
+>>> 触发 seq=299 ts=24903.3ms -> pre_i=270 pre_seq=270 (ring_cnt=300 head=0 pushed=300)
+>>> 触发 seq=300 ts=24987.1ms -> pre_i=270 pre_seq=270 (ring_cnt=301 head=0 pushed=301)
+>>> 检测统计 25s: 命中 61/61 帧 (100%), 峰值 0.798, streak=193, 最近命中 0.0s 前
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> 触发 seq=301 ts=25065.6ms -> pre_i=270 pre_seq=270 (ring_cnt=302 head=0 pushed=302)
+>>> 阶段耗时(均值, 303 帧): RGA 5.26 + RKNN 61.35 + 编码 14.70 = 81.32 ms/帧 -> 12.3 fps
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> 触发 seq=302 ts=25143.9ms -> pre_i=270 pre_seq=270 (ring_cnt=303 head=0 pushed=303)
+>>> 触发 seq=303 ts=25225.3ms -> pre_i=270 pre_seq=270 (ring_cnt=304 head=0 pushed=304)
+>>> 触发 seq=304 ts=25328.7ms -> pre_i=270 pre_seq=270 (ring_cnt=305 head=0 pushed=305)
+>>> 触发 seq=305 ts=25406.6ms -> pre_i=270 pre_seq=270 (ring_cnt=306 head=0 pushed=306)
+>>> 触发 seq=306 ts=25484.9ms -> pre_i=270 pre_seq=270 (ring_cnt=307 head=0 pushed=307)
+>>> 触发 seq=307 ts=25580.8ms -> pre_i=270 pre_seq=270 (ring_cnt=308 head=0 pushed=308)
+>>> 触发 seq=308 ts=25664.4ms -> pre_i=270 pre_seq=270 (ring_cnt=309 head=0 pushed=309)
+>>> 触发 seq=309 ts=25745.0ms -> pre_i=270 pre_seq=270 (ring_cnt=310 head=0 pushed=310)
+>>> 触发 seq=310 ts=25823.0ms -> pre_i=270 pre_seq=270 (ring_cnt=311 head=0 pushed=311)
+>>> 触发 seq=311 ts=25897.8ms -> pre_i=270 pre_seq=270 (ring_cnt=312 head=0 pushed=312)
+>>> 触发 seq=312 ts=25977.7ms -> pre_i=270 pre_seq=270 (ring_cnt=313 head=0 pushed=313)
+>>> 触发 seq=313 ts=26056.1ms -> pre_i=270 pre_seq=270 (ring_cnt=314 head=0 pushed=314)
+>>> 触发 seq=314 ts=26145.2ms -> pre_i=270 pre_seq=270 (ring_cnt=315 head=0 pushed=315)
+>>> 触发 seq=315 ts=26226.8ms -> pre_i=270 pre_seq=270 (ring_cnt=316 head=0 pushed=316)
+>>> 触发 seq=316 ts=26306.1ms -> pre_i=270 pre_seq=270 (ring_cnt=317 head=0 pushed=317)
+>>> 触发 seq=317 ts=26384.2ms -> pre_i=270 pre_seq=270 (ring_cnt=318 head=0 pushed=318)
+>>> 触发 seq=318 ts=26471.6ms -> pre_i=270 pre_seq=270 (ring_cnt=319 head=0 pushed=319)
+>>> 触发 seq=319 ts=26554.6ms -> pre_i=270 pre_seq=270 (ring_cnt=320 head=0 pushed=320)
+>>> 触发 seq=320 ts=26641.3ms -> pre_i=270 pre_seq=270 (ring_cnt=321 head=0 pushed=321)
+>>> 触发 seq=321 ts=26720.1ms -> pre_i=270 pre_seq=270 (ring_cnt=322 head=0 pushed=322)
+>>> 触发 seq=322 ts=26805.9ms -> pre_i=270 pre_seq=270 (ring_cnt=323 head=0 pushed=323)
+>>> 触发 seq=323 ts=26887.6ms -> pre_i=270 pre_seq=270 (ring_cnt=324 head=0 pushed=324)
+>>> 触发 seq=324 ts=26965.7ms -> pre_i=270 pre_seq=270 (ring_cnt=325 head=0 pushed=325)
+>>> 触发 seq=325 ts=27047.1ms -> pre_i=300 pre_seq=300 (ring_cnt=326 head=0 pushed=326)
+>>> 触发 seq=326 ts=27124.3ms -> pre_i=300 pre_seq=300 (ring_cnt=327 head=0 pushed=327)
+>>> 触发 seq=327 ts=27202.6ms -> pre_i=300 pre_seq=300 (ring_cnt=328 head=0 pushed=328)
+>>> 触发 seq=328 ts=27280.3ms -> pre_i=300 pre_seq=300 (ring_cnt=329 head=0 pushed=329)
+>>> 检测连击结束 streak=220 (最近命中 0.1s 前)
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> 检测连击开始 streak=1 score=0.492 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.476
+>>> 触发 seq=332 ts=27600.8ms -> pre_i=300 pre_seq=300 (ring_cnt=333 head=0 pushed=333)
+>>> 触发 seq=333 ts=27679.1ms -> pre_i=300 pre_seq=300 (ring_cnt=334 head=0 pushed=334)
+>>> 触发 seq=334 ts=27758.9ms -> pre_i=300 pre_seq=300 (ring_cnt=335 head=0 pushed=335)
+>>> 检测连击开始 streak=1 score=0.498 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.498
+>>> 触发 seq=339 ts=28162.3ms -> pre_i=300 pre_seq=300 (ring_cnt=340 head=0 pushed=340)
+>>> 触发 seq=340 ts=28241.8ms -> pre_i=300 pre_seq=300 (ring_cnt=341 head=0 pushed=341)
+>>> 触发 seq=341 ts=28328.8ms -> pre_i=300 pre_seq=300 (ring_cnt=342 head=0 pushed=342)
+>>> 触发 seq=342 ts=28406.7ms -> pre_i=300 pre_seq=300 (ring_cnt=343 head=0 pushed=343)
+>>> 触发 seq=343 ts=28484.8ms -> pre_i=300 pre_seq=300 (ring_cnt=344 head=0 pushed=344)
+>>> 触发 seq=344 ts=28562.6ms -> pre_i=300 pre_seq=300 (ring_cnt=345 head=0 pushed=345)
+>>> 触发 seq=345 ts=28640.6ms -> pre_i=300 pre_seq=300 (ring_cnt=346 head=0 pushed=346)
+>>> 触发 seq=346 ts=28722.2ms -> pre_i=300 pre_seq=300 (ring_cnt=347 head=0 pushed=347)
+>>> 触发 seq=347 ts=28808.8ms -> pre_i=300 pre_seq=300 (ring_cnt=348 head=0 pushed=348)
+>>> 触发 seq=348 ts=28886.9ms -> pre_i=300 pre_seq=300 (ring_cnt=349 head=0 pushed=349)
+>>> 触发 seq=349 ts=28965.7ms -> pre_i=300 pre_seq=300 (ring_cnt=350 head=0 pushed=350)
+>>> 触发 seq=350 ts=29053.5ms -> pre_i=300 pre_seq=300 (ring_cnt=351 head=0 pushed=351)
+>>> 触发 seq=351 ts=29131.9ms -> pre_i=300 pre_seq=300 (ring_cnt=352 head=0 pushed=352)
+>>> 触发 seq=352 ts=29210.3ms -> pre_i=300 pre_seq=300 (ring_cnt=353 head=0 pushed=353)
+>>> 触发 seq=353 ts=29300.4ms -> pre_i=300 pre_seq=300 (ring_cnt=354 head=0 pushed=354)
+>>> 触发 seq=354 ts=29398.6ms -> pre_i=300 pre_seq=300 (ring_cnt=355 head=0 pushed=355)
+>>> 触发 seq=355 ts=29482.0ms -> pre_i=330 pre_seq=330 (ring_cnt=356 head=0 pushed=356)
+>>> 触发 seq=356 ts=29560.1ms -> pre_i=330 pre_seq=330 (ring_cnt=357 head=0 pushed=357)
+>>> 触发 seq=357 ts=29642.3ms -> pre_i=330 pre_seq=330 (ring_cnt=358 head=0 pushed=358)
+>>> 触发 seq=358 ts=29721.0ms -> pre_i=330 pre_seq=330 (ring_cnt=359 head=0 pushed=359)
+>>> 触发 seq=359 ts=29804.5ms -> pre_i=330 pre_seq=330 (ring_cnt=360 head=0 pushed=360)
+>>> 触发 seq=360 ts=29884.0ms -> pre_i=330 pre_seq=330 (ring_cnt=361 head=0 pushed=361)
+>>> 触发 seq=361 ts=29962.6ms -> pre_i=330 pre_seq=330 (ring_cnt=362 head=0 pushed=362)
+>>> 检测统计 30s: 命中 58/61 帧 (95%), 峰值 0.711, streak=26, 最近命中 0.0s 前
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> 触发 seq=362 ts=30046.5ms -> pre_i=330 pre_seq=330 (ring_cnt=363 head=0 pushed=363)
+>>> 阶段耗时(均值, 364 帧): RGA 5.26 + RKNN 61.40 + 编码 14.69 = 81.35 ms/帧 -> 12.3 fps
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> 触发 seq=363 ts=30129.2ms -> pre_i=330 pre_seq=330 (ring_cnt=364 head=0 pushed=364)
+>>> 触发 seq=364 ts=30217.4ms -> pre_i=330 pre_seq=330 (ring_cnt=365 head=0 pushed=365)
+>>> 触发 seq=365 ts=30303.9ms -> pre_i=330 pre_seq=330 (ring_cnt=366 head=0 pushed=366)
+>>> 触发 seq=366 ts=30391.3ms -> pre_i=330 pre_seq=330 (ring_cnt=367 head=0 pushed=367)
+>>> 触发 seq=367 ts=30479.9ms -> pre_i=330 pre_seq=330 (ring_cnt=368 head=0 pushed=368)
+>>> 触发 seq=368 ts=30569.3ms -> pre_i=330 pre_seq=330 (ring_cnt=369 head=0 pushed=369)
+>>> 触发 seq=369 ts=30647.5ms -> pre_i=330 pre_seq=330 (ring_cnt=370 head=0 pushed=370)
+>>> 触发 seq=370 ts=30729.8ms -> pre_i=330 pre_seq=330 (ring_cnt=371 head=0 pushed=371)
+>>> 触发 seq=371 ts=30819.4ms -> pre_i=330 pre_seq=330 (ring_cnt=372 head=0 pushed=372)
+>>> 触发 seq=372 ts=30897.1ms -> pre_i=330 pre_seq=330 (ring_cnt=373 head=0 pushed=373)
+>>> 触发 seq=373 ts=30976.1ms -> pre_i=330 pre_seq=330 (ring_cnt=374 head=0 pushed=374)
+>>> 触发 seq=374 ts=31054.0ms -> pre_i=330 pre_seq=330 (ring_cnt=375 head=0 pushed=375)
+>>> 触发 seq=375 ts=31135.9ms -> pre_i=330 pre_seq=330 (ring_cnt=376 head=0 pushed=376)
+>>> 触发 seq=376 ts=31226.9ms -> pre_i=330 pre_seq=330 (ring_cnt=377 head=0 pushed=377)
+>>> 触发 seq=377 ts=31304.6ms -> pre_i=330 pre_seq=330 (ring_cnt=378 head=0 pushed=378)
+>>> 触发 seq=378 ts=31382.4ms -> pre_i=330 pre_seq=330 (ring_cnt=379 head=0 pushed=379)
+>>> 触发 seq=379 ts=31459.6ms -> pre_i=330 pre_seq=330 (ring_cnt=380 head=0 pushed=380)
+>>> 触发 seq=380 ts=31537.9ms -> pre_i=330 pre_seq=330 (ring_cnt=381 head=0 pushed=381)
+>>> 触发 seq=381 ts=31615.5ms -> pre_i=330 pre_seq=330 (ring_cnt=382 head=0 pushed=382)
+>>> 触发 seq=382 ts=31706.1ms -> pre_i=330 pre_seq=330 (ring_cnt=383 head=0 pushed=383)
+>>> 触发 seq=383 ts=31792.2ms -> pre_i=330 pre_seq=330 (ring_cnt=384 head=0 pushed=384)
+>>> 触发 seq=384 ts=31877.5ms -> pre_i=330 pre_seq=330 (ring_cnt=385 head=0 pushed=385)
+>>> 触发 seq=385 ts=31957.0ms -> pre_i=360 pre_seq=360 (ring_cnt=386 head=0 pushed=386)
+>>> 触发 seq=386 ts=32033.2ms -> pre_i=360 pre_seq=360 (ring_cnt=387 head=0 pushed=387)
+>>> 触发 seq=387 ts=32113.2ms -> pre_i=360 pre_seq=360 (ring_cnt=388 head=0 pushed=388)
+>>> 触发 seq=388 ts=32200.4ms -> pre_i=360 pre_seq=360 (ring_cnt=389 head=0 pushed=389)
+>>> 触发 seq=389 ts=32278.4ms -> pre_i=360 pre_seq=360 (ring_cnt=390 head=0 pushed=390)
+>>> 触发 seq=390 ts=32358.4ms -> pre_i=360 pre_seq=360 (ring_cnt=391 head=0 pushed=391)
+>>> 触发 seq=391 ts=32437.2ms -> pre_i=360 pre_seq=360 (ring_cnt=392 head=0 pushed=392)
+>>> 触发 seq=392 ts=32517.2ms -> pre_i=360 pre_seq=360 (ring_cnt=393 head=0 pushed=393)
+>>> 触发 seq=393 ts=32603.0ms -> pre_i=360 pre_seq=360 (ring_cnt=394 head=0 pushed=394)
+>>> 触发 seq=394 ts=32681.4ms -> pre_i=360 pre_seq=360 (ring_cnt=395 head=0 pushed=395)
+>>> 触发 seq=395 ts=32760.3ms -> pre_i=360 pre_seq=360 (ring_cnt=396 head=0 pushed=396)
+>>> 触发 seq=396 ts=32836.5ms -> pre_i=360 pre_seq=360 (ring_cnt=397 head=0 pushed=397)
+>>> 触发 seq=397 ts=32919.6ms -> pre_i=360 pre_seq=360 (ring_cnt=398 head=0 pushed=398)
+>>> 触发 seq=398 ts=33013.6ms -> pre_i=360 pre_seq=360 (ring_cnt=399 head=0 pushed=399)
+>>> 触发 seq=399 ts=33090.7ms -> pre_i=360 pre_seq=360 (ring_cnt=400 head=0 pushed=400)
+>>> 触发 seq=400 ts=33169.7ms -> pre_i=360 pre_seq=360 (ring_cnt=401 head=0 pushed=401)
+>>> 触发 seq=401 ts=33249.2ms -> pre_i=360 pre_seq=360 (ring_cnt=402 head=0 pushed=402)
+>>> 触发 seq=402 ts=33327.6ms -> pre_i=360 pre_seq=360 (ring_cnt=403 head=0 pushed=403)
+>>> 触发 seq=403 ts=33405.9ms -> pre_i=360 pre_seq=360 (ring_cnt=404 head=0 pushed=404)
+>>> 触发 seq=404 ts=33485.4ms -> pre_i=360 pre_seq=360 (ring_cnt=405 head=0 pushed=405)
+>>> 触发 seq=405 ts=33562.8ms -> pre_i=360 pre_seq=360 (ring_cnt=406 head=0 pushed=406)
+>>> 触发 seq=406 ts=33649.6ms -> pre_i=360 pre_seq=360 (ring_cnt=407 head=0 pushed=407)
+>>> 触发 seq=407 ts=33728.0ms -> pre_i=360 pre_seq=360 (ring_cnt=408 head=0 pushed=408)
+>>> 触发 seq=408 ts=33817.6ms -> pre_i=360 p>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+re_seq=360 (ring_cnt=409 head=0 pushed=409)
+>>> 触发 seq=409 ts=33894.7ms -> pre_i=360 pre_seq=360 (ring_cnt=410 head=0 pushed=410)
+>>> 触发 seq=410 ts=33975.0ms -> pre_i=360 pre_seq=360 (ring_cnt=411 head=0 pushed=411)
+>>> 触发 seq=411 ts=34053.0ms -> pre_i=360 pre_seq=360 (ring_cnt=412 head=0 pushed=412)
+>>> 触发 seq=412 ts=34139.4ms -> pre_i=360 pre_seq=360 (ring_cnt=413 head=0 pushed=413)
+>>> 触发 seq=413 ts=34219.1ms -> pre_i=360 pre_seq=360 (ring_cnt=414 head=0 pushed=414)
+>>> 触发 seq=414 ts=34309.1ms -> pre_i=360 pre_seq=360 (ring_cnt=415 head=0 pushed=415)
+>>> 触发 seq=415 ts=34393.3ms -> pre_i=390 pre_seq=390 (ring_cnt=416 head=0 pushed=416)
+>>> 触发 seq=416 ts=34483.0ms -> pre_i=390 pre_seq=390 (ring_cnt=417 head=0 pushed=417)
+>>> 触发 seq=417 ts=34560.1ms -> pre_i=390 pre_seq=390 (ring_cnt=418 head=0 pushed=418)
+>>> 触发 seq=418 ts=34644.6ms -> pre_i=390 pre_seq=390 (ring_cnt=419 head=0 pushed=419)
+>>> 触发 seq=419 ts=34722.2ms -> pre_i=390 pre_seq=390 (ring_cnt=420 head=0 pushed=420)
+>>> 触发 seq=420 ts=34802.6ms -> pre_i=390 pre_seq=390 (ring_cnt=421 head=0 pushed=421)
+>>> 触发 seq=421 ts=34882.9ms -> pre_i=390 pre_seq=390 (ring_cnt=422 head=0 pushed=422)
+>>> 触发 seq=422 ts=34972.0ms -> pre_i=390 pre_seq=390 (ring_cnt=423 head=0 pushed=423)
+>>> 检测统计 35s: 命中 61/61 帧 (100%), 峰值 0.688, streak=87, 最近命中 0.0s 前
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> 触发 seq=423 ts=35050.6ms -> pre_i=390 pre_seq=390 (ring_cnt=424 head=0 pushed=424)
+>>> 阶段耗时(均值, 425 帧): RGA 5.27 + RKNN 61.47 + 编码 14.68 = 81.42 ms/帧 -> 12.3 fps
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> 触发 seq=424 ts=35136.4ms -> pre_i=390 pre_seq=390 (ring_cnt=425 head=0 pushed=425)
+>>> 触发 seq=425 ts=35217.4ms -> pre_i=390 pre_seq=390 (ring_cnt=426 head=0 pushed=426)
+>>> 触发 seq=426 ts=35295.0ms -> pre_i=390 pre_seq=390 (ring_cnt=427 head=0 pushed=427)
+>>> 触发 seq=427 ts=35373.7ms -> pre_i=390 pre_seq=390 (ring_cnt=428 head=0 pushed=428)
+>>> 触发 seq=428 ts=35452.3ms -> pre_i=390 pre_seq=390 (ring_cnt=429 head=0 pushed=429)
+>>> 触发 seq=429 ts=35534.2ms -> pre_i=390 pre_seq=390 (ring_cnt=430 head=0 pushed=430)
+>>> 触发 seq=430 ts=35615.3ms -> pre_i=390 pre_seq=390 (ring_cnt=431 head=0 pushed=431)
+>>> 触发 seq=431 ts=35694.5ms -> pre_i=390 pre_seq=390 (ring_cnt=432 head=0 pushed=432)
+>>> 触发 seq=432 ts=35773.7ms -> pre_i=390 pre_seq=390 (ring_cnt=433 head=0 pushed=433)
+>>> 触发 seq=433 ts=35852.6ms -> pre_i=390 pre_seq=390 (ring_cnt=434 head=0 pushed=434)
+>>> 触发 seq=434 ts=35929.4ms -> pre_i=390 pre_seq=390 (ring_cnt=435 head=0 pushed=435)
+>>> 触发 seq=435 ts=36012.3ms -> pre_i=390 pre_seq=390 (ring_cnt=436 head=0 pushed=436)
+>>> 触发 seq=436 ts=36099.0ms -> pre_i=390 pre_seq=390 (ring_cnt=437 head=0 pushed=437)
+>>> 触发 seq=437 ts=36177.4ms -> pre_i=390 pre_seq=390 (ring_cnt=438 head=0 pushed=438)
+>>> 触发 seq=438 ts=36257.3ms -> pre_i=390 pre_seq=390 (ring_cnt=439 head=0 pushed=439)
+>>> 触发 seq=439 ts=36345.3ms -> pre_i=390 pre_seq=390 (ring_cnt=440 head=0 pushed=440)
+>>> 触发 seq=440 ts=36422.3ms -> pre_i=390 pre_seq=390 (ring_cnt=441 head=0 pushed=441)
+>>> 触发 seq=441 ts=36510.7ms -> pre_i=390 pre_seq=390 (ring_cnt=442 head=0 pushed=442)
+>>> 触发 seq=442 ts=36607.9ms -> pre_i=390 pre_seq=390 (ring_cnt=443 head=0 pushed=443)
+>>> 触发 seq=443 ts=36703.7ms -> pre_i=390 pre_seq=390 (ring_cnt=444 head=0 pushed=444)
+>>> 触发 seq=444 ts=36781.2ms -> pre_i=390 pre_seq=390 (ring_cnt=445 head=0 pushed=445)
+>>> 触发 seq=445 ts=36859.1ms -> pre_i=420 pre_seq=420 (ring_cnt=446 head=0 pushed=446)
+>>> 触发 seq=446 ts=36939.1ms -> pre_i=420 pre_seq=420 (ring_cnt=447 head=0 pushed=447)
+>>> 触发 seq=447 ts=37025.8ms -> pre_i=420 pre_seq=420 (ring_cnt=448 head=0 pushed=448)
+>>> 触发 seq=448 ts=37112.5ms -> pre_i=420 pre_seq=420 (ring_cnt=449 head=0 pushed=449)
+>>> 触发 seq=449 ts=37202.7ms -> pre_i=420 pre_seq=420 (ring_cnt=450 head=0 pushed=450)
+>>> 触发 seq=450 ts=37289.8ms -> pre_i=420 pre_seq=420 (ring_cnt=451 head=0 pushed=451)
+>>> 触发 seq=451 ts=37373.7ms -> pre_i=420 pre_seq=420 (ring_cnt=452 head=0 pushed=452)
+>>> 触发 seq=452 ts=37451.6ms -> pre_i=420 pre_seq=420 (ring_cnt=453 head=0 pushed=453)
+>>> 触发 seq=453 ts=37529.9ms -> pre_i=420 pre_seq=420 (ring_cnt=454 head=0 pushed=454)
+>>> 触发 seq=454 ts=37612.3ms -> pre_i=420 pre_seq=420 (ring_cnt=455 head=0 pushed=455)
+>>> 触发 seq=455 ts=37708.6ms -> pre_i=420 pre_seq=420 (ring_cnt=456 head=0 pushed=456)
+>>> 触发 seq=456 ts=37789.8ms -> pre_i=420 pre_seq=420 (ring_cnt=457 head=0 pushed=457)
+>>> 触发 seq=457 ts=37871.9ms -> pre_i=420 pre_seq=420 (ring_cnt=458 head=0 pushed=458)
+>>> 触发 seq=458 ts=37950.6ms -> pre_i=420 pre_seq=420 (ring_cnt=459 head=0 pushed=459)
+>>> 触发 seq=459 ts=38027.9ms -> pre_i=420 pre_seq=420 (ring_cnt=460 head=0 pushed=460)
+>>> 触发 seq=460 ts=38105.0ms -> pre_i=420 pre_seq=420 (ring_cnt=461 head=0 pushed=461)
+>>> 触发 seq=461 ts=38186.0ms -> pre_i=420 pre_seq=420 (ring_cnt=462 head=0 pushed=462)
+>>> 触发 seq=462 ts=38274.9ms -> pre_i=420 pre_seq=420 (ring_cnt=463 head=0 pushed=463)
+>>> 触发 seq=463 ts=38352.8ms -> pre_i=420 pre_seq=420 (ring_cnt=464 head=0 pushed=464)
+>>> 触发 seq=464 ts=38435.7ms -> pre_i=420 pre_seq=420 (ring_cnt=465 head=0 pushed=465)
+>>> 触发 seq=465 ts=38524.3ms -> pre_i=420 pre_seq=420 (ring_cnt=466 head=0 pushed=466)
+>>> 触发 seq=466 ts=38603.2ms -> pre_i=420 pre_seq=420 (ring_cnt=467 head=0 pushed=467)
+>>> 触发 seq=467 ts=38683.8ms -> pre_i=420 pre_seq=420 (ring_cnt=468 head=0 pushed=468)
+>>> 触发 seq=468 ts=38760.7ms -> pre_i=420 pre_seq=420 (ring_cnt=469 head=0 pushed=469)
+>>> 触发 seq=469 ts=38844.6ms -> pre_i=420 p>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+re_seq=420 (ring_cnt=470 head=0 pushed=470)
+>>> 触发 seq=470 ts=38927.8ms -> pre_i=420 pre_seq=420 (ring_cnt=471 head=0 pushed=471)
+>>> 触发 seq=471 ts=39017.3ms -> pre_i=420 pre_seq=420 (ring_cnt=472 head=0 pushed=472)
+>>> 触发 seq=472 ts=39094.7ms -> pre_i=420 pre_seq=420 (ring_cnt=473 head=0 pushed=473)
+>>> 触发 seq=473 ts=39183.0ms -> pre_i=420 pre_seq=420 (ring_cnt=474 head=0 pushed=474)
+>>> 触发 seq=474 ts=39270.6ms -> pre_i=420 pre_seq=420 (ring_cnt=475 head=0 pushed=475)
+>>> 触发 seq=475 ts=39355.5ms -> pre_i=450 pre_seq=450 (ring_cnt=476 head=0 pushed=476)
+>>> 触发 seq=476 ts=39438.6ms -> pre_i=450 pre_seq=450 (ring_cnt=477 head=0 pushed=477)
+>>> 触发 seq=477 ts=39523.9ms -> pre_i=450 pre_seq=450 (ring_cnt=478 head=0 pushed=478)
+>>> 触发 seq=478 ts=39609.4ms -> pre_i=450 pre_seq=450 (ring_cnt=479 head=0 pushed=479)
+>>> 触发 seq=479 ts=39687.4ms -> pre_i=450 pre_seq=450 (ring_cnt=480 head=0 pushed=480)
+>>> 触发 seq=480 ts=39771.2ms -> pre_i=450 pre_seq=450 (ring_cnt=481 head=0 pushed=481)
+>>> 触发 seq=481 ts=39857.5ms -> pre_i=450 pre_seq=450 (ring_cnt=482 head=0 pushed=482)
+>>> 触发 seq=482 ts=39944.3ms -> pre_i=450 pre_seq=450 (ring_cnt=483 head=0 pushed=483)
+>>> 检测统计 40s: 命中 60/60 帧 (100%), 峰值 0.695, streak=147, 最近命中 0.0s 前
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> 触发 seq=483 ts=40022.5ms -> pre_i=450 pre_seq=450 (ring_cnt=484 head=0 pushed=484)
+>>> 阶段耗时(均值, 485 帧): RGA 5.26 + RKNN 61.60 + 编码 14.72 = 81.58 ms/帧 -> 12.3 fps
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> 触发 seq=484 ts=40111.5ms -> pre_i=450 pre_seq=450 (ring_cnt=485 head=0 pushed=485)
+>>> 触发 seq=485 ts=40199.3ms -> pre_i=450 pre_seq=450 (ring_cnt=486 head=0 pushed=486)
+>>> 触发 seq=486 ts=40284.0ms -> pre_i=450 pre_seq=450 (ring_cnt=487 head=0 pushed=487)
+>>> 触发 seq=487 ts=40361.9ms -> pre_i=450 pre_seq=450 (ring_cnt=488 head=0 pushed=488)
+>>> 触发 seq=488 ts=40448.5ms -> pre_i=450 pre_seq=450 (ring_cnt=489 head=0 pushed=489)
+>>> 触发 seq=489 ts=40526.1ms -> pre_i=450 pre_seq=450 (ring_cnt=490 head=0 pushed=490)
+>>> 触发 seq=490 ts=40608.8ms -> pre_i=450 pre_seq=450 (ring_cnt=491 head=0 pushed=491)
+>>> 触发 seq=491 ts=40686.5ms -> pre_i=450 pre_seq=450 (ring_cnt=492 head=0 pushed=492)
+>>> 触发 seq=492 ts=40766.2ms -> pre_i=450 pre_seq=450 (ring_cnt=493 head=0 pushed=493)
+>>> 触发 seq=493 ts=40848.6ms -> pre_i=450 pre_seq=450 (ring_cnt=494 head=0 pushed=494)
+>>> 触发 seq=494 ts=40935.9ms -> pre_i=450 pre_seq=450 (ring_cnt=495 head=0 pushed=495)
+>>> 触发 seq=495 ts=41019.5ms -> pre_i=450 pre_seq=450 (ring_cnt=496 head=0 pushed=496)
+>>> 触发 seq=496 ts=41106.8ms -> pre_i=450 pre_seq=450 (ring_cnt=497 head=0 pushed=497)
+>>> 触发 seq=497 ts=41189.7ms -> pre_i=450 pre_seq=450 (ring_cnt=498 head=0 pushed=498)
+>>> 触发 seq=498 ts=41275.1ms -> pre_i=450 pre_seq=450 (ring_cnt=499 head=0 pushed=499)
+>>> 触发 seq=499 ts=41353.0ms -> pre_i=450 pre_seq=450 (ring_cnt=500 head=0 pushed=500)
+>>> 触发 seq=500 ts=41435.4ms -> pre_i=450 pre_seq=450 (ring_cnt=501 head=0 pushed=501)
+>>> 触发 seq=501 ts=41513.5ms -> pre_i=450 pre_seq=450 (ring_cnt=502 head=0 pushed=502)
+>>> 触发 seq=502 ts=41592.7ms -> pre_i=450 pre_seq=450 (ring_cnt=503 head=0 pushed=503)
+>>> 触发 seq=503 ts=41672.6ms -> pre_i=450 pre_seq=450 (ring_cnt=504 head=0 pushed=504)
+>>> 触发 seq=504 ts=41753.9ms -> pre_i=450 pre_seq=450 (ring_cnt=505 head=0 pushed=505)
+>>> 触发 seq=505 ts=41834.8ms -> pre_i=480 pre_seq=480 (ring_cnt=506 head=0 pushed=506)
+>>> 触发 seq=506 ts=41912.3ms -> pre_i=480 pre_seq=480 (ring_cnt=507 head=0 pushed=507)
+>>> 触发 seq=507 ts=41993.7ms -> pre_i=480 pre_seq=480 (ring_cnt=508 head=0 pushed=508)
+>>> 触发 seq=508 ts=42071.9ms -> pre_i=480 pre_seq=480 (ring_cnt=509 head=0 pushed=509)
+>>> 触发 seq=509 ts=42150.4ms -> pre_i=480 pre_seq=480 (ring_cnt=510 head=0 pushed=510)
+>>> 触发 seq=510 ts=42230.0ms -> pre_i=480 pre_seq=480 (ring_cnt=511 head=0 pushed=511)
+>>> 触发 seq=511 ts=42308.0ms -> pre_i=480 pre_seq=480 (ring_cnt=512 head=0 pushed=512)
+>>> 触发 seq=512 ts=42385.8ms -> pre_i=480 pre_seq=480 (ring_cnt=513 head=0 pushed=513)
+>>> 触发 seq=513 ts=42463.8ms -> pre_i=480 pre_seq=480 (ring_cnt=514 head=0 pushed=514)
+>>> 触发 seq=514 ts=42542.1ms -> pre_i=480 pre_seq=480 (ring_cnt=515 head=0 pushed=515)
+>>> 触发 seq=515 ts=42619.9ms -> pre_i=480 pre_seq=480 (ring_cnt=516 head=0 pushed=516)
+>>> 触发 seq=516 ts=42706.9ms -> pre_i=480 pre_seq=480 (ring_cnt=517 head=0 pushed=517)
+>>> 触发 seq=517 ts=42786.1ms -> pre_i=480 pre_seq=480 (ring_cnt=518 head=0 pushed=518)
+>>> 触发 seq=518 ts=42866.4ms -> pre_i=480 pre_seq=480 (ring_cnt=519 head=0 pushed=519)
+>>> 触发 seq=519 ts=42945.2ms -> pre_i=480 pre_seq=480 (ring_cnt=520 head=0 pushed=520)
+>>> 触发 seq=520 ts=43023.9ms -> pre_i=480 pre_seq=480 (ring_cnt=521 head=0 pushed=521)
+>>> 触发 seq=521 ts=43111.6ms -> pre_i=480 pre_seq=480 (ring_cnt=522 head=0 pushed=522)
+>>> 触发 seq=522 ts=43186.8ms -> pre_i=480 pre_seq=480 (ring_cnt=523 head=0 pushed=523)
+>>> 触发 seq=523 ts=43275.7ms -> pre_i=480 pre_seq=480 (ring_cnt=524 head=0 pushed=524)
+>>> 触发 seq=524 ts=43361.9ms -> pre_i=480 pre_seq=480 (ring_cnt=525 head=0 pushed=525)
+>>> 触发 seq=525 ts=43439.0ms -> pre_i=480 pre_seq=480 (ring_cnt=526 head=0 pushed=526)
+>>> 触发 seq=526 ts=43517.3ms -> pre_i=480 pre_seq=480 (ring_cnt=527 head=0 pushed=527)
+>>> 触发 seq=527 ts=43597.4ms -> pre_i=480 pre_seq=480 (ring_cnt=528 head=0 pushed=528)
+>>> 触发 seq=528 ts=43677.5ms -> pre_i=480 pre_seq=480 (ring_cnt=529 head=0 pushed=529)
+>>> 触发 seq=529 ts=43755.9ms -> pre_i=480 p>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+>>> evw_open /root/ev/t3b-01.part 失败: No such file or directory
+>>> 事件写入器打开失败, 事件放弃
+re_seq=480 (ring_cnt=530 head=0 pushed=530)
+>>> 触发 seq=530 ts=43833.4ms -> pre_i=480 pre_seq=480 (ring_cnt=531 head=0 pushed=531)
+>>> 触发 seq=531 ts=43917.0ms -> pre_i=480 pre_seq=480 (ring_cnt=532 head=0 pushed=532)
+>>> 触发 seq=532 ts=43996.2ms -> pre_i=480 pre_seq=480 (ring_cnt=533 head=0 pushed=533)
+>>> 触发 seq=533 ts=44074.3ms -> pre_i=480 pre_seq=480 (ring_cnt=534 head=0 pushed=534)
+>>> 触发 seq=534 ts=44152.4ms -> pre_i=480 pre_seq=480 (ring_cnt=535 head=0 pushed=535)
+>>> 触发 seq=535 ts=44241.2ms -> pre_i=510 pre_seq=510 (ring_cnt=536 head=0 pushed=536)
+>>> 触发 seq=536 ts=44328.6ms -> pre_i=510 pre_seq=510 (ring_cnt=537 head=0 pushed=537)
+>>> 触发 seq=537 ts=44406.5ms -> pre_i=510 pre_seq=510 (ring_cnt=538 head=0 pushed=538)
+>>> 触发 seq=538 ts=44489.7ms -> pre_i=510 pre_seq=510 (ring_cnt=539 head=0 pushed=539)
+>>> 触发 seq=539 ts=44576.8ms -> pre_i=510 pre_seq=510 (ring_cnt=540 head=0 pushed=540)
+>>> 触发 seq=540 ts=44657.2ms -> pre_i=510 pre_seq=510 (ring_cnt=541 head=0 pushed=541)
+>>> 触发 seq=541 ts=44740.2ms -> pre_i=510 pre_seq=510 (ring_cnt=542 head=0 pushed=542)
+>>> 触发 seq=542 ts=44832.7ms -> pre_i=510 pre_seq=510 (ring_cnt=543 head=0 pushed=543)
+>>> 触发 seq=543 ts=44915.2ms -> pre_i=510 pre_seq=510 (ring_cnt=544 head=0 pushed=544)
+>>> 触发 seq=544 ts=44997.2ms -> pre_i=510 pre_seq=510 (ring_cnt=545 head=0 pushed=545)
+>>> 阶段耗时(均值, 545 帧): RGA 5.26 + RKNN 61.56 + 编码 14.71 = 81.53 ms/帧 -> 12.3 fps
+>>> 收到 SIGTERM, 已停止

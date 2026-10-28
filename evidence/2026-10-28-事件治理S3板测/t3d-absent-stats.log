@@ -1,0 +1,37 @@
+>>> NPU 就绪 640x640 nout=9
+>>> 采集 /dev/video5 1920x1080,pre=2s post=2s ring=24MB gop=30
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+[npu] in: sz=1228800 mean=112 rgb0=180/190/202 int8_0=52
+[npu] out0 size=409600 b0..b7=2 -19 -35 -49 -58 -63 -69 -68
+[npu] in: sz=1228800 mean=113 rgb0=178/190/197 int8_0=50
+[npu] out0 size=409600 b0..b7=3 -21 -36 -50 -59 -61 -65 -64
+[npu] in: sz=1228800 mean=113 rgb0=178/192/196 int8_0=50
+librga fail to get driver version! Compatibility mode will be enabled.
+
+442 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver l.
+rga_api version 1.9.2_[1]
+>>> 检测统计 5s: 命中 0/57 帧 (0%), 峰值 0.449, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 58 帧): RGA 5.29 + RKNN 60.93 + 编码 14.52 = 80.73 ms/帧 -> 12.4 fps
+>>> 检测统计 10s: 命中 0/61 帧 (0%), 峰值 0.445, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 119 帧): RGA 5.24 + RKNN 61.33 + 编码 14.59 = 81.17 ms/帧 -> 12.3 fps
+>>> 检测统计 15s: 命中 0/62 帧 (0%), 峰值 0.460, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 181 帧): RGA 5.24 + RKNN 61.41 + 编码 14.60 = 81.26 ms/帧 -> 12.3 fps
+>>> 检测统计 20s: 命中 0/61 帧 (0%), 峰值 0.443, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 242 帧): RGA 5.25 + RKNN 61.37 + 编码 14.58 = 81.20 ms/帧 -> 12.3 fps
+>>> 检测统计 25s: 命中 0/63 帧 (0%), 峰值 0.478, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 305 帧): RGA 5.23 + RKNN 61.11 + 编码 14.55 = 80.89 ms/帧 -> 12.4 fps
+>>> 检测统计 30s: 命中 0/62 帧 (0%), 峰值 0.508, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 367 帧): RGA 5.23 + RKNN 61.08 + 编码 14.53 = 80.84 ms/帧 -> 12.4 fps
+>>> 检测统计 35s: 命中 0/62 帧 (0%), 峰值 0.461, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 429 帧): RGA 5.23 + RKNN 61.08 + 编码 14.54 = 80.85 ms/帧 -> 12.4 fps
+>>> 检测统计 40s: 命中 0/62 帧 (0%), 峰值 0.474, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 491 帧): RGA 5.24 + RKNN 61.04 + 编码 14.55 = 80.84 ms/帧 -> 12.4 fps
+>>> 检测统计 45s: 命中 0/61 帧 (0%), 峰值 0.432, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 552 帧): RGA 5.24 + RKNN 61.07 + 编码 14.55 = 80.86 ms/帧 -> 12.4 fps
+>>> 检测统计 50s: 命中 0/62 帧 (0%), 峰值 0.395, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 614 帧): RGA 5.25 + RKNN 61.05 + 编码 14.55 = 80.85 ms/帧 -> 12.4 fps
+>>> 检测统计 55s: 命中 0/63 帧 (0%), 峰值 0.373, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 676 帧): RGA 5.24 + RKNN 61.03 + 编码 14.54 = 80.81 ms/帧 -> 12.4 fps
+>>> 检测统计 60s: 命中 0/61 帧 (0%), 峰值 0.425, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 737 帧): RGA 5.24 + RKNN 61.09 + 编码 14.53 = 80.86 ms/帧 -> 12.4 fps
+>>> 收到 SIGTERM, 已停止

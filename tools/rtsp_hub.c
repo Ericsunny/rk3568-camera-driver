@@ -721,7 +721,10 @@ static int rtsp_read_req(int fd, char *buf, int *plen, int cap)
 		buf[len] = 0;
 		p = memmem(buf, (size_t)len, "\r\n\r\n", 4);
 		if (p) {
-			p[4] = 0;
+			/* p+4 可能恰好是 buf+cap(请求头贴边): 越界写 0 会砸栈,
+			 * 板上 gdb 实证 SIGSEGV@rtsp_hub.c:724。只清缓冲范围内的。 */
+			if (p + 4 < buf + cap)
+				p[4] = 0;
 			*plen = 0;
 			return (int)(p - buf) + 4;
 		}
@@ -1031,6 +1034,7 @@ static void *rtsp_accept_thread(void *arg)
 
 int rtsp_start(int port)
 {
+	g_rtsp_port = port;	/* H1 评审阻断一: hub 发送门/SDP/pkb_push 扫描门都读它 */
 	struct sockaddr_in sa;
 	int one = 1;
 
@@ -1243,14 +1247,15 @@ void rtsp_ring_report(void)
 
 int pkb_start(int depth)
 {
+	/* H1 评审阻断二: depth>0 覆盖 --rtsp-ring 默认; 0=沿用现值。
+	 * clamp 必须对 g_pkb_depth 自身做 —— 旧代码 depth=0 路径会把"保留"冲掉,
+	 * 且最终无条件 g_pkb_depth=depth 使 set_ring_depth 的值被 8 覆盖。 */
 	if (depth > 0)
 		g_pkb_depth = depth;
-
-	if (depth < 1)
-		depth = 1;
-	if (depth > PKB_MAX)
-		depth = PKB_MAX;
-	g_pkb_depth = depth;
+	if (g_pkb_depth < 1)
+		g_pkb_depth = 1;
+	if (g_pkb_depth > PKB_MAX)
+		g_pkb_depth = PKB_MAX;
 	if (pthread_create(&g_pkb_tid, NULL, sender_thread, NULL) != 0) {
 		fprintf(stderr, ">>> rtsp 发送线程创建失败\n");
 		return -1;

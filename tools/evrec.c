@@ -822,6 +822,11 @@ static unsigned long g_ev_bytes;	/* 当前事件已写字节 */
 static double g_ev_open_ms;		/* 事件开启时刻 */
 static unsigned long g_ev_last_pkts;	/* 已写入的包游标(=g_pushed 快照) */
 static unsigned long g_ev_open_pkts;	/* 事件开启时刻的游标快照 */
+/* S3: 分段语义 —— event_id 跨段不变; segment_index 每切一段 +1;
+ * max-duration 切段不进 cooldown(docs/37 §3.2)。 */
+static unsigned g_ev_event_id;
+static unsigned g_ev_segment;
+static int g_max_event_sec;
 static double g_ev_first_ts, g_ev_last_ts;	/* 媒体跨度: 首包/末包 ts_ms */
 static const unsigned EV_BUF_CAP = 4u << 20;
 static int g_ev_werr;			/* 写失败标志(主循环收尾时清) */
@@ -887,8 +892,12 @@ static int evw_open(int pre_i)
 		return -1;
 	}
 
-	snprintf(g_ev_path, sizeof(g_ev_path), "%s-%02u", g_out_base,
-		 (unsigned)(g_events + 1));
+	if (g_ev_segment == 0)
+		snprintf(g_ev_path, sizeof(g_ev_path), "%s-%02u", g_out_base,
+			 (unsigned)(g_events + 1));
+	else
+		snprintf(g_ev_path, sizeof(g_ev_path), "%s-%02u-%u", g_out_base,
+			 (unsigned)(g_events + 1), g_ev_segment);
 	snprintf(path, sizeof(path), "%s.part", g_ev_path);
 	g_ev_fp = fopen(path, "wb");
 	if (!g_ev_fp) {
@@ -900,6 +909,8 @@ static int evw_open(int pre_i)
 	g_ev_bytes = 0;
 	g_ev_werr = 0;
 	g_ev_first_ts = g_ev_last_ts = 0;
+	g_ev_segment = 0;
+	g_ev_event_id = (unsigned)(now_ms(CLOCK_MONOTONIC) / 1000.0) & 0xffffffffu;
 	g_ev_open_ms = now_ms(CLOCK_MONOTONIC);
 	/* pre-roll: pre_i(IDR) 到 ring 尾; 这些 seq 之后由 evw_write 过滤 */
 	for (i = (pre_i >= 0 ? pre_i : 0); g_ev_fp && i < ring_cnt; i++) {
@@ -946,10 +957,12 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 			"{\"file\":\"%s.h264\",\"trigger_seq\":%u,"
 			"\"trigger_ts_ms\":%.1f,\"close_reason\":\"%s\","
 			"\"bytes\":%lu,\"duration_ms\":%.1f,"
+			"\"event_id\":%u,\"segment_index\":%u,"
 			"\"first_ts_ms\":%.1f,\"last_ts_ms\":%.1f,"
 			"\"write_error\":%s}\n",
 			g_ev_path, trig_seq, trig_ts, reason,
 			g_ev_bytes, g_ev_last_ts - g_ev_first_ts,
+			g_ev_event_id, g_ev_segment,
 			g_ev_first_ts, g_ev_last_ts,
 			g_ev_werr ? "true" : "false");
 		fclose(j);
@@ -2509,6 +2522,7 @@ static void usage(void)
 "\n"
 "触发:\n"
 "  --trigger FILE    监听文件 mtime 变化触发; 不给则等 SIGUSR1\n"
+"  --max-event-sec N 事件最长秒数, 达到即 IDR 切段(event_id 不变)\n"
 "  --max-events N    最多录 N 个事件(0=不限, 默认 0)\n"
 "\n"
 "检测(内置 YOLOv8n):\n"
@@ -2540,6 +2554,7 @@ int main(int argc, char **argv)
 {
 	const char *dev = "/dev/video5", *out = "/root/ev/ev";
 	int w = 1920, h = 1080, pre_sec = 3, post_sec = 2, kbps = 8000, gop;
+	int max_event_sec = 0;
 	int i, k, trigger_i = -1, pre_i = -1, end_i = -1;
 	int rc = 0;		/* 进程退出码: 0=正常, 1=真错误, 2=链路恢复失败 */
 	int reached_max = 0;	/* 因 --max-events 正常结束 */
@@ -2606,6 +2621,7 @@ int main(int argc, char **argv)
 		else if (!strcmp(argv[i], "--detect")) g_detect = 1;
 		else if (!strcmp(argv[i], "--model")) g_model = argv[++i];
 		else if (!strcmp(argv[i], "--max-events")) g_max_events = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "--max-event-sec")) g_max_event_sec = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--det-score")) g_det_score = (float)atof(argv[++i]);
 		else if (!strcmp(argv[i], "--det-frames")) g_det_frames = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--obj-thresh")) g_obj_thresh = (float)atof(argv[++i]);
@@ -2908,6 +2924,27 @@ int main(int argc, char **argv)
 				g_rtsp_next_ms += 1000.0;
 			}
 
+		/* S3: 分段 —— 事件进行中达到 max-event-sec, 在 IDR 边界切段:
+		 * close(=max_duration) 后立即以 segment_index+1 重开, event_id
+		 * 不变、不进 cooldown(docs/37 §3.2)。无 --max-event-sec 则不分段。 */
+		if (g_ev_fp != NULL && g_max_event_sec > 0 &&
+		    g_ev_last_ts - g_ev_first_ts >= (double)g_max_event_sec * 1000.0 &&
+		    ring_cnt > 0 && ring_at(ring_cnt - 1)->key) {
+			if (evw_close("max_duration", trig_seq, trig_ts) == 0 &&
+			    !g_ev_werr) {
+				g_ev_segment++;
+				printf(">>> 分段 %u (event_id=%u, IDR 边界)\n",
+				       g_ev_segment, g_ev_event_id);
+				if (evw_open(-1) != 0) {
+					fprintf(stderr,
+						">>> 分段重开失败, 停止录像\n");
+					g_trigger = 0;
+				}
+			} else {
+				fprintf(stderr, ">>> 分段收尾失败, 停止录像\n");
+				g_trigger = 0;
+			}
+		}
 		/* 触发: 信号 或 触发文件 mtime 变化 */
 		if (!g_trigger && g_trig_path && stat(g_trig_path, &st) == 0 &&
 		    st.st_mtime != trig_mtime) {
@@ -2920,6 +2957,13 @@ int main(int argc, char **argv)
 			g_trigger = 0;
 		}
 		if (g_trigger && trigger_i < 0) {
+			/* S3(评审小账): 事件已在写时在这里短路 —— 不覆盖
+			 * trig_seq/trig_ts(它们是事件 1 的原始触发元数据),
+			 * 后续命中只刷 last_detect_ms(在检测回调里已完成)。 */
+			if (g_ev_fp != NULL) {
+				g_trigger = 0;
+				continue;
+			}
 			trigger_i = ring_cnt;
 			/* P6: 触发帧 = 本次循环 DQBUF 到的那一帧(检测/触发文件/信号
 			 * 都在这一帧的循环里被看到); 旧代码 dump 时传的是末帧
@@ -2998,6 +3042,7 @@ int main(int argc, char **argv)
 			g_trigger = 0;
 			g_pre_seq = 0;
 			trigger_i = pre_i = end_i = -1;
+			g_ev_segment = 0;	/* S3: 下一次触发 = 新 event_id, 段号归零 */
 			if (g_max_events && g_events >= g_max_events) {
 				reached_max = 1;
 				break;

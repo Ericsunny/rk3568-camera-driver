@@ -1,0 +1,11 @@
+{"file":"/root/s3u-01.h264","trigger_seq":0,"trigger_ts_ms":0.0,"close_reason":"max_duration","bytes":2070581,"duration_ms":8087.1,"event_id":2987,"segment_index":0,"first_ts_ms":825.7,"last_ts_ms":8912.8,"write_error":false}
+
+{"file":"/root/s3u-02-1.h264","trigger_seq":0,"trigger_ts_ms":0.0,"close_reason":"max_duration","bytes":4011133,"duration_ms":8149.5,"event_id":2995,"segment_index":0,"first_ts_ms":9071.6,"last_ts_ms":17221.0,"write_error":false}
+
+{"file":"/root/s3u-03-1.h264","trigger_seq":0,"trigger_ts_ms":0.0,"close_reason":"max_duration","bytes":6088229,"duration_ms":8085.6,"event_id":3003,"segment_index":0,"first_ts_ms":17395.1,"last_ts_ms":25480.7,"write_error":false}
+
+{"file":"/root/s3u-04-1.h264","trigger_seq":0,"trigger_ts_ms":0.0,"close_reason":"max_duration","bytes":8051246,"duration_ms":8156.5,"event_id":3011,"segment_index":0,"first_ts_ms":25685.1,"last_ts_ms":33841.6,"write_error":false}
+
+{"file":"/root/s3u-05-1.h264","trigger_seq":0,"trigger_ts_ms":0.0,"close_reason":"sigterm","bytes":9465152,"duration_ms":6085.1,"event_id":3020,"segment_index":0,"first_ts_ms":34036.4,"last_ts_ms":40121.5,"write_error":false}
+
+cleaned

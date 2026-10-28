@@ -1,0 +1,370 @@
+>>> NPU 就绪 640x640 nout=9
+>>> 采集 /dev/video5 3840x2160,pre=2s post=2s ring=64MB gop=30
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+[npu] in: sz=1228800 mean=98 rgb0=184/201/207 int8_0=56
+[npu] out0 size=409600 b0..b7=-5 -31 -40 -42 -43 -46 -50 -54
+[evw] open-done last_pkts=1 pushed=1
+[npu] in: sz=1228800 mean=98 rgb0=184/202/207 int8_0=56
+[npu] out0 size=409600 b0..b7=-4 -30 -39 -41 -43 -46 -50 -54
+[evw] ringpush-call fp=0x55c04a3940 pushed=2
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[npu] in: sz=1228800 mean=98 rgb0=185/202/207 int8_0=57
+[evw] ringpush-call fp=0x55c04a3940 pushed=3
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=4
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=5
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=6
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=7
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=8
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=9
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=10
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=11
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=12
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=13
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=14
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=15
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=16
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=17
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=18
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=19
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=20
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=21
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=22
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=23
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=24
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=25
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=26
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=27
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=28
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=29
+[evw] open refused: event already active
+>>> 事件写入器打开失败, 事件放弃
+[evw] ringpush-call fp=0x55c04a3940 pushed=30
+[evw] ringpush-call fp=0x55c04a3940 pushed=31
+[evw] ringpush-call fp=0x55c04a3940 pushed=32
+[evw] ringpush-call fp=0x55c04a3940 pushed=33
+[evw] ringpush-call fp=0x55c04a3940 pushed=34
+librga fail to get driver version! Compatibility mode will be enabled.
+
+455 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver l.
+rga_api version 1.9.2_[1]
+>>> 检测连击开始 streak=1 score=0.699 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.732
+>>> 阶段耗时(均值, 34 帧): RGA 19.43 + RKNN 63.24 + 编码 57.43 = 140.11 ms/帧 -> 7.1 fps
+[evw] ringpush-call fp=0x55c04a3940 pushed=35
+[evw] ringpush-call fp=0x55c04a3940 pushed=36
+[evw] ringpush-call fp=0x55c04a3940 pushed=37
+[evw] ringpush-call fp=0x55c04a3940 pushed=38
+[evw] ringpush-call fp=0x55c04a3940 pushed=39
+[evw] ringpush-call fp=0x55c04a3940 pushed=40
+[evw] ringpush-call fp=0x55c04a3940 pushed=41
+[evw] ringpush-call fp=0x55c04a3940 pushed=42
+[evw] ringpush-call fp=0x55c04a3940 pushed=43
+[evw] ringpush-call fp=0x55c04a3940 pushed=44
+[evw] ringpush-call fp=0x55c04a3940 pushed=45
+[evw] ringpush-call fp=0x55c04a3940 pushed=46
+[evw] ringpush-call fp=0x55c04a3940 pushed=47
+[evw] ringpush-call fp=0x55c04a3940 pushed=48
+[evw] ringpush-call fp=0x55c04a3940 pushed=49
+[evw] ringpush-call fp=0x55c04a3940 pushed=50
+[evw] ringpush-call fp=0x55c04a3940 pushed=51
+[evw] ringpush-call fp=0x55c04a3940 pushed=52
+[evw] ringpush-call fp=0x55c04a3940 pushed=53
+[evw] ringpush-call fp=0x55c04a3940 pushed=54
+[evw] ringpush-call fp=0x55c04a3940 pushed=55
+[evw] ringpush-call fp=0x55c04a3940 pushed=56
+[evw] ringpush-call fp=0x55c04a3940 pushed=57
+[evw] ringpush-call fp=0x55c04a3940 pushed=58
+[evw] ringpush-call fp=0x55c04a3940 pushed=59
+[evw] ringpush-call fp=0x55c04a3940 pushed=60
+[evw] ringpush-call fp=0x55c04a3940 pushed=61
+[evw] ringpush-call fp=0x55c04a3940 pushed=62
+[evw] ringpush-call fp=0x55c04a3940 pushed=63
+[evw] ringpush-call fp=0x55c04a3940 pushed=64
+[evw] ringpush-call fp=0x55c04a3940 pushed=65
+[evw] ringpush-call fp=0x55c04a3940 pushed=66
+[evw] ringpush-call fp=0x55c04a3940 pushed=67
+[evw] ringpush-call fp=0x55c04a3940 pushed=68
+[evw] ringpush-call fp=0x55c04a3940 pushed=69
+[evw] ringpush-call fp=0x55c04a3940 pushed=70
+>>> 分段 1 (event_id=2987, IDR 边界)
+>>> 阶段耗时(均值, 70 帧): RGA 19.69 + RKNN 63.04 + 编码 56.12 = 138.85 ms/帧 -> 7.2 fps
+[evw] ringpush-call fp=0x55c04a3940 pushed=71
+[evw] ringpush-call fp=0x55c04a3940 pushed=72
+[evw] ringpush-call fp=0x55c04a3940 pushed=73
+[evw] ringpush-call fp=0x55c04a3940 pushed=74
+[evw] ringpush-call fp=0x55c04a3940 pushed=75
+[evw] ringpush-call fp=0x55c04a3940 pushed=76
+[evw] ringpush-call fp=0x55c04a3940 pushed=77
+[evw] ringpush-call fp=0x55c04a3940 pushed=78
+[evw] ringpush-call fp=0x55c04a3940 pushed=79
+[evw] ringpush-call fp=0x55c04a3940 pushed=80
+[evw] ringpush-call fp=0x55c04a3940 pushed=81
+[evw] ringpush-call fp=0x55c04a3940 pushed=82
+[evw] ringpush-call fp=0x55c04a3940 pushed=83
+[evw] ringpush-call fp=0x55c04a3940 pushed=84
+[evw] ringpush-call fp=0x55c04a3940 pushed=85
+[evw] ringpush-call fp=0x55c04a3940 pushed=86
+[evw] ringpush-call fp=0x55c04a3940 pushed=87
+[evw] ringpush-call fp=0x55c04a3940 pushed=88
+[evw] ringpush-call fp=0x55c04a3940 pushed=89
+[evw] ringpush-call fp=0x55c04a3940 pushed=90
+[evw] ringpush-call fp=0x55c04a3940 pushed=91
+[evw] ringpush-call fp=0x55c04a3940 pushed=92
+[evw] ringpush-call fp=0x55c04a3940 pushed=93
+[evw] ringpush-call fp=0x55c04a3940 pushed=94
+[evw] ringpush-call fp=0x55c04a3940 pushed=95
+[evw] ringpush-call fp=0x55c04a3940 pushed=96
+[evw] ringpush-call fp=0x55c04a3940 pushed=97
+[evw] ringpush-call fp=0x55c04a3940 pushed=98
+[evw] ringpush-call fp=0x55c04a3940 pushed=99
+[evw] ringpush-call fp=0x55c04a3940 pushed=100
+[evw] ringpush-call fp=0x55c04a3940 pushed=101
+[evw] ringpush-call fp=0x55c04a3940 pushed=102
+[evw] ringpush-call fp=0x55c04a3940 pushed=103
+[evw] ringpush-call fp=0x55c04a3940 pushed=104
+[evw] ringpush-call fp=0x55c04a3940 pushed=105
+[evw] ringpush-call fp=0x55c04a3940 pushed=106
+>>> 阶段耗时(均值, 106 帧): RGA 19.65 + RKNN 62.92 + 编码 55.93 = 138.50 ms/帧 -> 7.2 fps
+[evw] ringpush-call fp=0x55c04a3940 pushed=107
+[evw] ringpush-call fp=0x55c04a3940 pushed=108
+[evw] ringpush-call fp=0x55c04a3940 pushed=109
+[evw] ringpush-call fp=0x55c04a3940 pushed=110
+[evw] ringpush-call fp=0x55c04a3940 pushed=111
+[evw] ringpush-call fp=0x55c04a3940 pushed=112
+[evw] ringpush-call fp=0x55c04a3940 pushed=113
+[evw] ringpush-call fp=0x55c04a3940 pushed=114
+[evw] ringpush-call fp=0x55c04a3940 pushed=115
+[evw] ringpush-call fp=0x55c04a3940 pushed=116
+[evw] ringpush-call fp=0x55c04a3940 pushed=117
+[evw] ringpush-call fp=0x55c04a3940 pushed=118
+[evw] ringpush-call fp=0x55c04a3940 pushed=119
+[evw] ringpush-call fp=0x55c04a3940 pushed=120
+[evw] ringpush-call fp=0x55c04a3940 pushed=121
+[evw] ringpush-call fp=0x55c04a3940 pushed=122
+[evw] ringpush-call fp=0x55c04a3940 pushed=123
+[evw] ringpush-call fp=0x55c04a3940 pushed=124
+[evw] ringpush-call fp=0x55c04a3940 pushed=125
+[evw] ringpush-call fp=0x55c04a3940 pushed=126
+[evw] ringpush-call fp=0x55c04a3940 pushed=127
+[evw] ringpush-call fp=0x55c04a3940 pushed=128
+[evw] ringpush-call fp=0x55c04a3940 pushed=129
+[evw] ringpush-call fp=0x55c04a3940 pushed=130
+[evw] ringpush-call fp=0x55c04a3940 pushed=131
+[evw] ringpush-call fp=0x55c04a3940 pushed=132
+[evw] ringpush-call fp=0x55c04a3940 pushed=133
+[evw] ringpush-call fp=0x55c04a3940 pushed=134
+[evw] ringpush-call fp=0x55c04a3940 pushed=135
+[evw] ringpush-call fp=0x55c04a3940 pushed=136
+[evw] ringpush-call fp=0x55c04a3940 pushed=137
+[evw] ringpush-call fp=0x55c04a3940 pushed=138
+[evw] ringpush-call fp=0x55c04a3940 pushed=139
+[evw] ringpush-call fp=0x55c04a3940 pushed=140
+[evw] ringpush-call fp=0x55c04a3940 pushed=141
+[evw] ringpush-call fp=0x55c04a3940 pushed=142
+[evw] ringpush-call fp=0x55c04a3940 pushed=143
+>>> 分段 1 (event_id=2995, IDR 边界)
+>>> 阶段耗时(均值, 143 帧): RGA 19.63 + RKNN 62.81 + 编码 55.59 = 138.03 ms/帧 -> 7.2 fps
+[evw] ringpush-call fp=0x55c04a3940 pushed=144
+[evw] ringpush-call fp=0x55c04a3940 pushed=145
+[evw] ringpush-call fp=0x55c04a3940 pushed=146
+[evw] ringpush-call fp=0x55c04a3940 pushed=147
+[evw] ringpush-call fp=0x55c04a3940 pushed=148
+[evw] ringpush-call fp=0x55c04a3940 pushed=149
+[evw] ringpush-call fp=0x55c04a3940 pushed=150
+[evw] ringpush-call fp=0x55c04a3940 pushed=151
+[evw] ringpush-call fp=0x55c04a3940 pushed=152
+[evw] ringpush-call fp=0x55c04a3940 pushed=153
+[evw] ringpush-call fp=0x55c04a3940 pushed=154
+[evw] ringpush-call fp=0x55c04a3940 pushed=155
+[evw] ringpush-call fp=0x55c04a3940 pushed=156
+[evw] ringpush-call fp=0x55c04a3940 pushed=157
+[evw] ringpush-call fp=0x55c04a3940 pushed=158
+[evw] ringpush-call fp=0x55c04a3940 pushed=159
+[evw] ringpush-call fp=0x55c04a3940 pushed=160
+[evw] ringpush-call fp=0x55c04a3940 pushed=161
+[evw] ringpush-call fp=0x55c04a3940 pushed=162
+[evw] ringpush-call fp=0x55c04a3940 pushed=163
+[evw] ringpush-call fp=0x55c04a3940 pushed=164
+[evw] ringpush-call fp=0x55c04a3940 pushed=165
+[evw] ringpush-call fp=0x55c04a3940 pushed=166
+[evw] ringpush-call fp=0x55c04a3940 pushed=167
+[evw] ringpush-call fp=0x55c04a3940 pushed=168
+[evw] ringpush-call fp=0x55c04a3940 pushed=169
+[evw] ringpush-call fp=0x55c04a3940 pushed=170
+[evw] ringpush-call fp=0x55c04a3940 pushed=171
+[evw] ringpush-call fp=0x55c04a3940 pushed=172
+[evw] ringpush-call fp=0x55c04a3940 pushed=173
+[evw] ringpush-call fp=0x55c04a3940 pushed=174
+[evw] ringpush-call fp=0x55c04a3940 pushed=175
+[evw] ringpush-call fp=0x55c04a3940 pushed=176
+[evw] ringpush-call fp=0x55c04a3940 pushed=177
+[evw] ringpush-call fp=0x55c04a3940 pushed=178
+[evw] ringpush-call fp=0x55c04a3940 pushed=179
+>>> 阶段耗时(均值, 179 帧): RGA 19.71 + RKNN 62.61 + 编码 55.44 = 137.76 ms/帧 -> 7.3 fps
+[evw] ringpush-call fp=0x55c04a3940 pushed=180
+[evw] ringpush-call fp=0x55c04a3940 pushed=181
+[evw] ringpush-call fp=0x55c04a3940 pushed=182
+[evw] ringpush-call fp=0x55c04a3940 pushed=183
+[evw] ringpush-call fp=0x55c04a3940 pushed=184
+[evw] ringpush-call fp=0x55c04a3940 pushed=185
+[evw] ringpush-call fp=0x55c04a3940 pushed=186
+[evw] ringpush-call fp=0x55c04a3940 pushed=187
+[evw] ringpush-call fp=0x55c04a3940 pushed=188
+[evw] ringpush-call fp=0x55c04a3940 pushed=189
+[evw] ringpush-call fp=0x55c04a3940 pushed=190
+[evw] ringpush-call fp=0x55c04a3940 pushed=191
+[evw] ringpush-call fp=0x55c04a3940 pushed=192
+[evw] ringpush-call fp=0x55c04a3940 pushed=193
+[evw] ringpush-call fp=0x55c04a3940 pushed=194
+[evw] ringpush-call fp=0x55c04a3940 pushed=195
+[evw] ringpush-call fp=0x55c04a3940 pushed=196
+[evw] ringpush-call fp=0x55c04a3940 pushed=197
+[evw] ringpush-call fp=0x55c04a3940 pushed=198
+[evw] ringpush-call fp=0x55c04a3940 pushed=199
+[evw] ringpush-call fp=0x55c04a3940 pushed=200
+[evw] ringpush-call fp=0x55c04a3940 pushed=201
+[evw] ringpush-call fp=0x55c04a3940 pushed=202
+[evw] ringpush-call fp=0x55c04a3940 pushed=203
+[evw] ringpush-call fp=0x55c04a3940 pushed=204
+[evw] ringpush-call fp=0x55c04a3940 pushed=205
+[evw] ringpush-call fp=0x55c04a3940 pushed=206
+[evw] ringpush-call fp=0x55c04a3940 pushed=207
+[evw] ringpush-call fp=0x55c04a3940 pushed=208
+[evw] ringpush-call fp=0x55c04a3940 pushed=209
+[evw] ringpush-call fp=0x55c04a3940 pushed=210
+[evw] ringpush-call fp=0x55c04a3940 pushed=211
+[evw] ringpush-call fp=0x55c04a3940 pushed=212
+[evw] ringpush-call fp=0x55c04a3940 pushed=213
+[evw] ringpush-call fp=0x55c04a3940 pushed=214
+[evw] ringpush-call fp=0x55c04a3940 pushed=215
+>>> 分段 1 (event_id=3003, IDR 边界)
+>>> 阶段耗时(均值, 215 帧): RGA 19.77 + RKNN 62.69 + 编码 55.52 = 137.99 ms/帧 -> 7.2 fps
+[evw] ringpush-call fp=0x55c04a3940 pushed=216
+[evw] ringpush-call fp=0x55c04a3940 pushed=217
+[evw] ringpush-call fp=0x55c04a3940 pushed=218
+[evw] ringpush-call fp=0x55c04a3940 pushed=219
+[evw] ringpush-call fp=0x55c04a3940 pushed=220
+[evw] ringpush-call fp=0x55c04a3940 pushed=221
+[evw] ringpush-call fp=0x55c04a3940 pushed=222
+[evw] ringpush-call fp=0x55c04a3940 pushed=223
+[evw] ringpush-call fp=0x55c04a3940 pushed=224
+[evw] ringpush-call fp=0x55c04a3940 pushed=225
+[evw] ringpush-call fp=0x55c04a3940 pushed=226
+[evw] ringpush-call fp=0x55c04a3940 pushed=227
+[evw] ringpush-call fp=0x55c04a3940 pushed=228
+[evw] ringpush-call fp=0x55c04a3940 pushed=229
+[evw] ringpush-call fp=0x55c04a3940 pushed=230
+[evw] ringpush-call fp=0x55c04a3940 pushed=231
+[evw] ringpush-call fp=0x55c04a3940 pushed=232
+[evw] ringpush-call fp=0x55c04a3940 pushed=233
+[evw] ringpush-call fp=0x55c04a3940 pushed=234
+[evw] ringpush-call fp=0x55c04a3940 pushed=235
+[evw] ringpush-call fp=0x55c04a3940 pushed=236
+[evw] ringpush-call fp=0x55c04a3940 pushed=237
+[evw] ringpush-call fp=0x55c04a3940 pushed=238
+[evw] ringpush-call fp=0x55c04a3940 pushed=239
+[evw] ringpush-call fp=0x55c04a3940 pushed=240
+[evw] ringpush-call fp=0x55c04a3940 pushed=241
+[evw] ringpush-call fp=0x55c04a3940 pushed=242
+[evw] ringpush-call fp=0x55c04a3940 pushed=243
+[evw] ringpush-call fp=0x55c04a3940 pushed=244
+[evw] ringpush-call fp=0x55c04a3940 pushed=245
+[evw] ringpush-call fp=0x55c04a3940 pushed=246
+[evw] ringpush-call fp=0x55c04a3940 pushed=247
+[evw] ringpush-call fp=0x55c04a3940 pushed=248
+[evw] ringpush-call fp=0x55c04a3940 pushed=249
+[evw] ringpush-call fp=0x55c04a3940 pushed=250
+[evw] ringpush-call fp=0x55c04a3940 pushed=251
+>>> 分段 1 (event_id=3011, IDR 边界)
+>>> 阶段耗时(均值, 251 帧): RGA 19.71 + RKNN 62.77 + 编码 55.39 = 137.87 ms/帧 -> 7.3 fps
+[evw] ringpush-call fp=0x55c04a3940 pushed=252
+[evw] ringpush-call fp=0x55c04a3940 pushed=253
+[evw] ringpush-call fp=0x55c04a3940 pushed=254
+[evw] ringpush-call fp=0x55c04a3940 pushed=255
+[evw] ringpush-call fp=0x55c04a3940 pushed=256
+[evw] ringpush-call fp=0x55c04a3940 pushed=257
+[evw] ringpush-call fp=0x55c04a3940 pushed=258
+[evw] ringpush-call fp=0x55c04a3940 pushed=259
+[evw] ringpush-call fp=0x55c04a3940 pushed=260
+[evw] ringpush-call fp=0x55c04a3940 pushed=261
+[evw] ringpush-call fp=0x55c04a3940 pushed=262
+[evw] ringpush-call fp=0x55c04a3940 pushed=263
+[evw] ringpush-call fp=0x55c04a3940 pushed=264
+[evw] ringpush-call fp=0x55c04a3940 pushed=265
+[evw] ringpush-call fp=0x55c04a3940 pushed=266
+[evw] ringpush-call fp=0x55c04a3940 pushed=267
+[evw] ringpush-call fp=0x55c04a3940 pushed=268
+[evw] ringpush-call fp=0x55c04a3940 pushed=269
+[evw] ringpush-call fp=0x55c04a3940 pushed=270
+[evw] ringpush-call fp=0x55c04a3940 pushed=271
+[evw] ringpush-call fp=0x55c04a3940 pushed=272
+[evw] ringpush-call fp=0x55c04a3940 pushed=273
+[evw] ringpush-call fp=0x55c04a3940 pushed=274
+[evw] ringpush-call fp=0x55c04a3940 pushed=275
+[evw] ringpush-call fp=0x55c04a3940 pushed=276
+[evw] ringpush-call fp=0x55c04a3940 pushed=277
+[evw] ringpush-call fp=0x55c04a3940 pushed=278
+[evw] ringpush-call fp=0x55c04a3940 pushed=279
+[evw] ringpush-call fp=0x55c04a3940 pushed=280
+[evw] ringpush-call fp=0x55c04a3940 pushed=281
+[evw] ringpush-call fp=0x55c04a3940 pushed=282
+[evw] ringpush-call fp=0x55c04a3940 pushed=283
+[evw] ringpush-call fp=0x55c04a3940 pushed=284
+[evw] ringpush-call fp=0x55c04a3940 pushed=285
+[evw] ringpush-call fp=0x55c04a3940 pushed=286
+>>> 阶段耗时(均值, 286 帧): RGA 19.74 + RKNN 62.87 + 编码 55.36 = 137.97 ms/帧 -> 7.2 fps
+>>> SIGTERM: 进行中的事件已落盘 /root/s3u-05-1
+>>> 收到 SIGTERM, 已停止

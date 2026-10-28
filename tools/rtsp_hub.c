@@ -89,8 +89,6 @@ static void rtp_trace_close(void)
 }
 
 
-#define RTSP_REQ_MAX 4096
-#define RTSP_SDP_MAX 2048
 static int g_rtsp_port;			/* 监听端口(0=关); evrec --rtsp 解析后经 rtsp_start 传入 */
 static int g_rtsp_lfd = -1;
 static pthread_t g_rtsp_accept_tid;
@@ -702,6 +700,14 @@ static const char *rtsp_b64(const uint8_t *d, int n, char *out)
  */
 static int rtsp_read_req(int fd, char *buf, int *plen, int cap)
 {
+	/* 不变量(评审): len 必须落在 [0, cap-1], 违反=更早已被破坏, 干净拒绝
+	 * 而不是静默续写(多客户端后这条防御的价值更高)。 */
+	if (cap < 8 || *plen < 0 || *plen > cap - 1) {
+		fprintf(stderr, "[rtsp] req invariant broken plen=%d cap=%d
+",
+			*plen, cap);
+		return -1;
+	}
 	for (;;) {
 		int len = *plen;
 		char *p;
@@ -1141,7 +1147,14 @@ void rtsp_hub_get_ps(uint8_t *sps, int sps_cap, uint8_t *pps, int pps_cap,
 	pthread_mutex_unlock(&g_nal_lock);
 }
 
-void rtsp_hub_set_ring_depth(int n)	{ g_pkb_depth = n; }
+void rtsp_hub_set_ring_depth(int n)
+{
+	if (n < 1)
+		n = 1;
+	if (n > PKB_MAX)
+		n = PKB_MAX;	/* PKB_MAX=64: 运行期调环深必须 clamp, 否则 --rtsp-ring 100 越界写 */
+	g_pkb_depth = n;
+}
 void rtsp_hub_set_trace_path(const char *path)	{ g_rtp_trace_path = path; }
 
 /* 编码线程: 只做一次拷贝入环, 环满丢最旧。计数与队列同一把锁, 天然原子。 */

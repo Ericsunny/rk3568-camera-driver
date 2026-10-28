@@ -1740,7 +1740,6 @@ int main(int argc, char **argv)
 		       cap.stride);
 
 	/* 采集/编码初始化都成功后再起线程: 失败路径直接 return, 不需要 join */
-	fprintf(stderr, "[dbg] reached pkb_start\n");
 	if (pkb_start(0) != 0)
 		return 1;
 	/* RTSP 在编码头(SPS/PPS)就绪后启动; 启动失败只关推流, 录像照旧 */
@@ -1752,7 +1751,6 @@ int main(int argc, char **argv)
 			g_rtsp_port = 0;
 		}
 	}
-	fprintf(stderr, "[dbg] passed rtsp_start\n");
 
 	for (;;) {
 		struct v4l2_buffer b;

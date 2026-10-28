@@ -48,3 +48,22 @@
   gdb2.log 干净复现: 客户端接入→播放 sent=29→断开, 无崩溃;
 - **不变量防御后 DoD 重跑**: ffprobe 拿 h264 1920x1080 ✓、5s 拉流累计 sent=149
   drop=0 ✓、服务端存活 ✓ —— 与修复前行为一致, guard 与不变量均为纯防御。
+
+## 修复后二进制的 DoD 完整重跑(706 行字符串修复 + md5 双端一致后)
+
+二进制: 板上 `/tmp/evrec_g2`(源码 = ea2e94d+706 行修复, -O2 -g), md5 双端一致后编译。
+
+| DoD | 结果 |
+|---|---|
+| 1. ffprobe 跨网段 | `codec_name=h264, width=1920, height=1080` ✓ |
+| 2. PC ffmpeg 5s 拉流 | 76 帧; 服务端 sent 149→331(drop=0) ✓ |
+| 3. SDP | `RTSP/1.0 200 OK` + `sprop-parameter-sets=Z0QQM6wb...,aM4xsBs=` ✓ |
+
+**此前"ffprobe Invalid data"轮的定性修正**: 那些轮次的服务端是被 `setsid nohup`
+拉起后**刚启动几秒**的状态——DESCRIBE 的 1s 参数集等待窗口与编码头就绪时序竞争,
+偶发 503;ffprobe 收 503 报 Invalid data。服务端稳定运行后 DoD 稳定通过。
+另: h1w 轮"核心转储"经用户指认 = `timeout` 监视的 ffprobe 子进程, 非服务端;
+服务端退出实为端口冲突后的混乱时序(新旧实例), 非新 bug。
+
+## 文件(追加)
+- `h1-fixed-server-gdb.log` — 修复后二进制 gdb 会话全量日志(sent 0→331, drop=0)

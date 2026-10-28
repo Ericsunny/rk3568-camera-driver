@@ -1,0 +1,226 @@
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/aarch64-linux-gnu/libthread_db.so.1".
+[New Thread 0x7ff65b3c00 (LWP 2436483)]
+[New Thread 0x7ff5db2c00 (LWP 2436486)]
+>>> 采集 /dev/video5 1920x1080,pre=2s post=2s ring=24MB gop=30
+>>> RTSP 监听 :8554 (单客户端模式)
+[New Thread 0x7ff55b1c00 (LWP 2436487)]
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入
+[New Thread 0x7ff4897c00 (LWP 2436761)]
+rtsp: 客户端开始播放
+rtsp-ring: in=70 drop=0 (深度上限 8)
+rtsp: clients=1 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=9 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=24 drop=0 disc=0 fds=15
+rtsp: 客户端断开
+[Thread 0x7ff4897c00 (LWP 2436761) exited]
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp-ring: in=145 drop=0 (深度上限 8)
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp-ring: in=220 drop=0 (深度上限 8)
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp-ring: in=295 drop=0 (深度上限 8)
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp-ring: in=370 drop=0 (深度上限 8)
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp-ring: in=445 drop=0 (深度上限 8)
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp-ring: in=520 drop=0 (深度上限 8)
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp-ring: in=595 drop=0 (深度上限 8)
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp-ring: in=670 drop=0 (深度上限 8)
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp-ring: in=745 drop=0 (深度上限 8)
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp-ring: in=820 drop=0 (深度上限 8)
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp-ring: in=895 drop=0 (深度上限 8)
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp-ring: in=970 drop=0 (深度上限 8)
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp-ring: in=1045 drop=0 (深度上限 8)
+rtsp: clients=0 sent=29 drop=0 disc=0 fds=14
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+[New Thread 0x7ff4897c00 (LWP 2441195)]
+rtsp: 客户端接入
+rtsp: 客户端开始播放
+rtsp: clients=1 sent=29 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=29 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=38 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=53 drop=0 disc=0 fds=15
+rtsp: 客户端断开
+[Thread 0x7ff4897c00 (LWP 2441195) exited]
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+[New Thread 0x7ff4897c00 (LWP 2441412)]
+rtsp: 客户端接入
+rtsp: 客户端开始播放
+rtsp-ring: in=1120 drop=0 (深度上限 8)
+rtsp: clients=1 sent=58 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=58 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=67 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=82 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=97 drop=0 disc=0 fds=15
+rtsp-ring: in=1195 drop=0 (深度上限 8)
+rtsp: clients=1 sent=113 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=127 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=142 drop=0 disc=0 fds=15
+rtsp: 客户端断开
+[Thread 0x7ff4897c00 (LWP 2441412) exited]
+rtsp: clients=0 sent=149 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=149 drop=0 disc=0 fds=14
+rtsp-ring: in=1270 drop=0 (深度上限 8)
+rtsp: clients=0 sent=149 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=149 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=149 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=149 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=149 drop=0 disc=0 fds=14
+rtsp-ring: in=1345 drop=0 (深度上限 8)
+rtsp: clients=0 sent=149 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=149 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=149 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=149 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=149 drop=0 disc=0 fds=14
+rtsp-ring: in=1420 drop=0 (深度上限 8)
+rtsp: clients=0 sent=149 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=149 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=149 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=149 drop=0 disc=0 fds=14
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入
+[New Thread 0x7ff4897c00 (LWP 2442997)]
+rtsp: 客户端开始播放
+rtsp: clients=1 sent=158 drop=0 disc=0 fds=15
+rtsp-ring: in=1495 drop=0 (深度上限 8)
+rtsp: clients=1 sent=174 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=188 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=203 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=218 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=233 drop=0 disc=0 fds=15
+rtsp: 客户端断开
+[Thread 0x7ff4897c00 (LWP 2442997) exited]
+rtsp-ring: in=1570 drop=0 (深度上限 8)
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp-ring: in=1645 drop=0 (深度上限 8)
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp-ring: in=1720 drop=0 (深度上限 8)
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp-ring: in=1795 drop=0 (深度上限 8)
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=240 drop=0 disc=0 fds=14
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入
+[New Thread 0x7ff4897c00 (LWP 2444702)]
+rtsp: 客户端开始播放
+rtsp-ring: in=1870 drop=0 (深度上限 8)
+rtsp: clients=1 sent=250 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=264 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=280 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=294 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=309 drop=0 disc=0 fds=15
+rtsp-ring: in=1945 drop=0 (深度上限 8)
+rtsp: clients=1 sent=325 drop=0 disc=0 fds=15
+rtsp: 客户端断开
+[Thread 0x7ff4897c00 (LWP 2444702) exited]
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp-ring: in=2020 drop=0 (深度上限 8)
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp-ring: in=2095 drop=0 (深度上限 8)
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp-ring: in=2170 drop=0 (深度上限 8)
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp-ring: in=2245 drop=0 (深度上限 8)
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入
+[New Thread 0x7ff4897c00 (LWP 2446526)]
+rtsp: 客户端断开
+[Thread 0x7ff4897c00 (LWP 2446526) exited]
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=331 drop=0 disc=0 fds=14

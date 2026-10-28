@@ -463,6 +463,14 @@ static int g_det_announced;	    /* 本轮连击是否已打过"检测触发" */
  * 检测偶尔漏一帧会清 streak,但"目标是否持续在场"应以最近一次命中时间
  * 加 post 窗口来判;streak 只保留触发门限语义。 */
 static double g_last_detect_ms; /* 最近一次检测命中(ms,同 ring ts 基准) */
+/* docs/37 §5 要求 JSON 自描述: 事件期间被合并的触发数、事件开始前冷却期
+ * 被跳过的触发数。计数必须放在检测侧"每次连击 episode"上 —— 放在主循环
+ * 触发门会每帧都命中, 按帧放大(命中帧率 12 fps 就是 12 倍)。 */
+static unsigned g_ev_coalesced;		/* 本事件期间被合并的触发数 */
+static unsigned g_ev_cdskip_pend;	/* 冷却期内累计(等下一个事件认领) */
+static unsigned g_ev_cdskip;		/* 本事件开始前冷却期跳过数 */
+static int ev_active(void);
+static int ev_cooldown_active(void);
 /* 观测(docs/37 §8.1): "连击开始/检测触发"只在状态变化时打印, 连续命中
  * 35 秒也只有 2 行 —— 据此无法区分"没有命中"与"一直命中但不打印", T3 的
  * 判读卡在这里。补两类客观计数: 5 秒一行的命中率统计 + 连击结束一行。
@@ -790,6 +798,12 @@ static void npu_run(const unsigned char *rgb)
 					g_det_announced = 1;
 					printf(">>> 检测触发 streak=%d score=%.3f\n",
 					       s, (double)boxes[k].score);
+					/* 本 episode 落在哪: 冷却期 -> 记跳过;
+					 * 事件进行中 -> 记合并(docs/37 §5) */
+					if (ev_cooldown_active())
+						g_ev_cdskip_pend++;
+					else if (ev_active())
+						g_ev_coalesced++;
 				}
 				g_trigger = 1;
 			}
@@ -897,6 +911,18 @@ static int g_disk_min_mb = 1000;	/* --disk-min-mb; 300s 段实测 62MB,500 仅�
 static int g_disk_hyst_mb = 1000;	/* 滞回带: 回升须越过 min+hyst 才恢复 */
 static int g_disk_stopped;		/* 1=水位停录中 */
 static double g_disk_next_check;	/* 事件中每 10s 查一次 */
+static char g_disk_dir[512] = "/root";	/* 水位量测目录: -o 前缀所在目录 */
+
+static int ev_active(void)
+{
+	return g_ev_fp != NULL;
+}
+
+static int ev_cooldown_active(void)
+{
+	return g_cooldown_until_ms > 0 &&
+	       now_ms(CLOCK_MONOTONIC) < g_cooldown_until_ms;
+}
 static double g_ev_first_ts, g_ev_last_ts;	/* 媒体跨度: 首包/末包 ts_ms */
 static const unsigned EV_BUF_CAP = 4u << 20;
 static int g_ev_werr;			/* 写失败标志(主循环收尾时清) */
@@ -976,12 +1002,15 @@ static int event_alive(int post_sec)
 	       now_ms(CLOCK_MONOTONIC) - g_last_detect_ms <= post_sec * 1000.0;
 }
 
-/* S4: 磁盘可用 MB(statvfs /root 所在分区) */
+/* S4: 磁盘可用 MB —— 量"实际写入的那个文件系统"(-o 前缀所在目录)。
+ * 写死 /root 会在 -o 指向其它挂载点时量错盘, 水位形同虚设。 */
 static long disk_free_mb(void)
 {
 	struct statvfs v;
-	if (statvfs("/root", &v) != 0)
-		return -1;
+
+	if (statvfs(g_disk_dir, &v) != 0 &&
+	    statvfs("/", &v) != 0)
+		return -1;	/* 查不到就不拦录像 */
 	return (long)((double)v.f_bavail * v.f_frsize / (1024 * 1024));
 }
 
@@ -1001,13 +1030,13 @@ static int disk_allow(void)
 	if (g_disk_stopped) {
 		if (cached >= g_disk_min_mb + g_disk_hyst_mb) {
 			g_disk_stopped = 0;
-			printf(">>> 磁盘回升(%ldMB >= %dMB), 恢复录像\n",
-			       cached, g_disk_min_mb + g_disk_hyst_mb);
+			printf(">>> 磁盘回升(%ldMB >= %dMB @%s), 恢复录像\n",
+			       cached, g_disk_min_mb + g_disk_hyst_mb, g_disk_dir);
 		}
 	} else if (cached < g_disk_min_mb) {
 		g_disk_stopped = 1;
-		printf(">>> 磁盘低水位(%ldMB < %dMB), 停止开启新事件\n",
-		       cached, g_disk_min_mb);
+		printf(">>> 磁盘低水位(%ldMB < %dMB @%s), 停止开启新事件\n",
+		       cached, g_disk_min_mb, g_disk_dir);
 	}
 	return !g_disk_stopped;
 }
@@ -1069,8 +1098,12 @@ static int evw_open_new(int pre_i)
 	unsigned serial = g_ev_event_seq + 1;
 	int rc = evw_open_at(pre_i, serial, 0, serial);
 
-	if (rc == 0)
+	if (rc == 0) {
 		g_ev_event_seq = serial;
+		g_ev_coalesced = 0;		/* 事件级: 新事件从头算 */
+		g_ev_cdskip = g_ev_cdskip_pend;	/* 冷却期跳过的归到本事件 */
+		g_ev_cdskip_pend = 0;
+	}
 	return rc;
 }
 
@@ -1091,6 +1124,21 @@ static void evw_event_finish(void)
 	g_ev_event_id = 0;
 	g_pre_seq = 0;
 	g_trigger = 0;
+}
+
+/* S4 评审修正: 事件结束的唯一收口 —— 打印 + 计数 + cooldown 置位。
+ * 所有结束路径(目标离场 / 水位停录 / 续段失败)都只调它一次。
+ * 旧实现里 disk_low 分支先 finish 又掉进 else 再 finish: g_events 双计、
+ * 日志打两遍(第二次 event_id 已被清零)、还误报"续段失败"。
+ * cooldown 只认 target_left: 切段(水位/时长)不该压制下一个真实目标。 */
+static void evw_event_end(const char *reason)
+{
+	printf(">>> 事件 %u 完成(%u 段, %s)\n", g_ev_event_id,
+	       g_ev_segment + 1, reason ? reason : "?");
+	evw_event_finish();
+	if (g_cooldown_sec > 0 && reason && !strcmp(reason, "target_left"))
+		g_cooldown_until_ms = now_ms(CLOCK_MONOTONIC) +
+				      (double)g_cooldown_sec * 1000.0;
 }
 
 /* S2: 事件收尾 —— flush+close+rename+JSON。close_reason 由调用方给。
@@ -1123,11 +1171,14 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 			"\"trigger_ts_ms\":%.1f,\"close_reason\":\"%s\","
 			"\"bytes\":%lu,\"duration_ms\":%.1f,"
 			"\"event_id\":%u,\"segment_index\":%u,"
+			"\"coalesced\":%u,\"cooldown_skipped\":%u,"
+			"\"disk_free_mb\":%ld,"
 			"\"first_ts_ms\":%.1f,\"last_ts_ms\":%.1f,"
 			"\"write_error\":%s}\n",
 			g_ev_path, trig_seq, trig_ts, reason,
 			g_ev_bytes, g_ev_last_ts - g_ev_first_ts,
 			g_ev_event_id, g_ev_segment,
+			g_ev_coalesced, g_ev_cdskip, disk_free_mb(),
 			g_ev_first_ts, g_ev_last_ts,
 			g_ev_werr ? "true" : "false");
 		fclose(j);
@@ -2691,7 +2742,8 @@ static void usage(void)
 "                    直接收尾不再续段(实际段长最多超 1 个 GOP)\n"
 "  --max-events N    最多录 N 个事件(0=不限, 默认 0)\n"
 "  --cooldown S      事件结束后的冷却秒数(target_left 后, 0=关)\n"
-"  --disk-min-mb M   磁盘低于 M MB 停录, 回升 M+1000 才恢复(默认 500)\n"
+"  --disk-min-mb M   磁盘低于 M MB 停录, 回升 M+1000 才恢复(默认 1000;\n"
+"                    量的是 -o 前缀所在文件系统)\n"
 "\n"
 "检测(内置 YOLOv8n):\n"
 "  --detect          启用检测, 命中即自动触发\n"
@@ -2780,10 +2832,8 @@ int main(int argc, char **argv)
 		else if (!strcmp(argv[i], "--pre")) pre_sec = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--post")) post_sec = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--ring-mb")) ring_limit = (size_t)atoi(argv[++i]) << 20;
-		else if (!strcmp(argv[i], "-o")) {
+		else if (!strcmp(argv[i], "-o"))
 			out = argv[++i];
-			snprintf(g_out_base, sizeof(g_out_base), "%s", out);
-		}
 		else if (!strcmp(argv[i], "--trigger")) g_trig_path = argv[++i];
 		else if (!strcmp(argv[i], "--kbps")) kbps = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--detect")) g_detect = 1;
@@ -2892,6 +2942,23 @@ int main(int argc, char **argv)
 		strftime(tstr, sizeof(tstr), "%Y%m%d-%H%M%S", &tmv);
 		snprintf(g_outbuf, sizeof(g_outbuf), "%s_%s", out, tstr);
 		out = g_outbuf;
+		/* 事件前缀必须带运行时间戳: 否则两次运行都写 PREFIX-01.h264,
+		 * 第二次 fopen("wb") 直接覆盖第一次的事件(285923c 说明里声称
+		 * 做了, 实际漏了 —— 板上 /root/ev/s5-01.part 即证据)。 */
+		snprintf(g_out_base, sizeof(g_out_base), "%s", out);
+		/* S4: 水位量测目录 = 输出前缀的目录部分(无目录则用 /) */
+		{
+			const char *slash = strrchr(g_out_base, '/');
+			size_t n = slash ? (size_t)(slash - g_out_base) : 0;
+
+			if (n > 0 && n + 1 < sizeof(g_disk_dir)) {
+				memcpy(g_disk_dir, g_out_base, n);
+				g_disk_dir[n] = '\0';
+			} else {
+				snprintf(g_disk_dir, sizeof(g_disk_dir), "%s",
+					 slash ? "/" : ".");
+			}
+		}
 	}
 	printf(">>> 采集 %s %dx%d,pre=%ds post=%ds ring=%zuMB gop=%d\n",
 	       dev, w, h, pre_sec, post_sec, ring_limit >> 20, gop);
@@ -3110,39 +3177,53 @@ int main(int argc, char **argv)
 				(double)g_max_event_sec * 1000.0 &&
 		    ring_cnt > 0 && ring_at(ring_cnt - 1)->key) {
 			int alive = event_alive(post_sec);
-			/* 目标仍在场 -> max_duration 切段续录; 已离场 -> 本次就是
-			 * 事件结束, 真实原因是 target_left(上限只是同时撞上)。 */
+			/* 目标仍在场 + 水位允许 -> 切段续录; 否则本次就是事件结束:
+			 * 已离场用 target_left, 水位不足用 disk_low
+			 * (max_duration 只是同时撞上的上限, 不是结束原因)。 */
 			int disk_block = alive && !disk_allow();
-			const char *reason = disk_block ? "disk_low"
-			                   : alive ? "max_duration" : "target_left";
+			const char *reason = !alive ? "target_left"
+			                   : disk_block ? "disk_low"
+			                   : "max_duration";
+			int keep = alive && !disk_block;
 
 			if (evw_close(reason, trig_seq, trig_ts) != 0 || g_ev_werr) {
 				fprintf(stderr, ">>> 分段收尾失败\n");
 				rc = 1;
 				break;
 			}
-			if (disk_block) {
-				printf(">>> 事件 %u 完成(%u 段, disk_low)\n",
-					g_ev_event_id, g_ev_segment + 1);
-				evw_event_finish();
-				g_ev_segment = 0;
+			if (keep && evw_open_next(-1) != 0) {
+				fprintf(stderr, ">>> 续段失败, 事件提前结束\n");
+				keep = 0;
 			}
-			if (alive && !disk_block && evw_open_next(-1) == 0) {
-				printf(">>> 分段 %u (event_id=%u, IDR 边界)\n",
-				       g_ev_segment, g_ev_event_id);
-			} else {
-				if (alive)
-					fprintf(stderr,
-						">>> 续段失败, 事件提前结束\n");
-				printf(">>> 事件 %u 完成(%u 段, %s)\n",
-				       g_ev_event_id, g_ev_segment + 1, reason);
-				evw_event_finish();
+			if (!keep) {
+				evw_event_end(reason);	/* 唯一出口, 只收口一次 */
 				if (g_max_events && g_events >= g_max_events) {
 					reached_max = 1;
 					break;
 				}
 				continue;	/* 事件已结束, 本帧不走 ②③ */
 			}
+			printf(">>> 分段 %u (event_id=%u, IDR 边界)\n",
+			       g_ev_segment, g_ev_event_id);
+		}
+
+		/* ①b 事件内水位检查: 与是否分段无关 —— 默认 --max-event-sec 0
+		 * (不分段)时, 进行中的长事件也必须能被低水位收尾, 否则磁盘照样
+		 * 写满, 而防写满正是 S4 的全部意义。disk_allow() 自带 10 s 缓存,
+		 * 每帧只是一次比较。 */
+		if (g_ev_fp != NULL && !disk_allow()) {
+			if (evw_close("disk_low", trig_seq, trig_ts) != 0 ||
+			    g_ev_werr) {
+				fprintf(stderr, ">>> 事件落盘失败\n");
+				rc = 1;
+				break;
+			}
+			evw_event_end("disk_low");
+			if (g_max_events && g_events >= g_max_events) {
+				reached_max = 1;
+				break;
+			}
+			continue;
 		}
 
 		/* ② 触发: 信号 或 触发文件 mtime 变化 */
@@ -3230,12 +3311,11 @@ int main(int argc, char **argv)
 				rc = 1;
 				break;
 			}
-			printf(">>> 事件 %u 完成(%u 段, target_left), 继续等待下一个事件\n",
-			       g_ev_event_id, g_ev_segment + 1);
 			/* S1(docs/37 §3.4): 不 ring_clear —— ring 照滚, 下一个
 			 * 事件的 pre-roll 从这里取; g_streak 不清(目标仍在场时
-			 * streak 已在增长, 清零会漏事件) */
-			evw_event_finish();
+			 * streak 已在增长, 清零会漏事件)。
+			 * S4: 这里是 cooldown 唯一的置位点(target_left 收尾)。 */
+			evw_event_end("target_left");
 			if (g_max_events && g_events >= g_max_events) {
 				reached_max = 1;
 				break;

@@ -703,8 +703,8 @@ static int rtsp_read_req(int fd, char *buf, int *plen, int cap)
 	/* 不变量(评审): len 必须落在 [0, cap-1], 违反=更早已被破坏, 干净拒绝
 	 * 而不是静默续写(多客户端后这条防御的价值更高)。 */
 	if (cap < 8 || *plen < 0 || *plen > cap - 1) {
-		fprintf(stderr, "[rtsp] req invariant broken plen=%d cap=%d
-",
+		fprintf(stderr,
+			"[rtsp] req invariant broken plen=%d cap=%d\n",
 			*plen, cap);
 		return -1;
 	}

@@ -462,6 +462,14 @@ static int g_det_announced;	    /* 本轮连击是否已打过"检测触发" */
  * 检测偶尔漏一帧会清 streak,但"目标是否持续在场"应以最近一次命中时间
  * 加 post 窗口来判;streak 只保留触发门限语义。 */
 static double g_last_detect_ms; /* 最近一次检测命中(ms,同 ring ts 基准) */
+/* 观测(docs/37 §8.1): "连击开始/检测触发"只在状态变化时打印, 连续命中
+ * 35 秒也只有 2 行 —— 据此无法区分"没有命中"与"一直命中但不打印", T3 的
+ * 判读卡在这里。补两类客观计数: 5 秒一行的命中率统计 + 连击结束一行。
+ * 纯观测, 不改变任何判定逻辑(命中仍按单帧 score 门限刷新 last_detect_ms)。 */
+static unsigned g_det_frm_win, g_det_hit_win;	/* 本统计窗内帧数 / 命中帧数 */
+static double g_det_peak_win;			/* 本统计窗内最高分 */
+static double g_det_next_ms = 5000.0;		/* 下次统计打印(相对 t0_ms) */
+static double g_det_end_ms;			/* 上次"连击结束"打印时刻 */
 static int g_npu_w = 640, g_npu_h = 640;
 struct dbox {
 	float x1, y1, x2, y2, score;
@@ -771,8 +779,47 @@ static void npu_run(const unsigned char *rgb)
 				g_trigger = 1;
 			}
 		} else {
+			/* 观测: 连击结束必须可见 —— T3 的正确判读是"整段
+			 * 没有出现任何一行连击结束"(说明 streak 一次没断),
+			 * 而不是"没有命中日志"。噪声场景可能逐帧翻转, 节流 1 行/秒。 */
+			if (g_streak > 0 &&
+			    now_ms(CLOCK_MONOTONIC) - g_det_end_ms > 1000.0) {
+				double tnow = now_ms(CLOCK_MONOTONIC);
+
+				g_det_end_ms = tnow;
+				printf(">>> 检测连击结束 streak=%d (最近命中 %.1fs 前)\n",
+				       g_streak, g_last_detect_ms > 0 ?
+				       (tnow - g_last_detect_ms) / 1000.0 : -1.0);
+				fflush(stdout);
+			}
 			g_streak = 0;
 			g_det_announced = 0;
+		}
+		/* 观测: 5 秒一行命中率 —— 唯一能证明/否证"无目标仍在命中"
+		 * 的数据(命中 = 有 class0 框且 score >= g_det_score)。 */
+		g_det_frm_win++;
+		if (hit)
+			g_det_hit_win++;
+		if (maxscore > g_det_peak_win)
+			g_det_peak_win = maxscore;
+		{
+			double t = now_ms(CLOCK_MONOTONIC);
+
+			if (t - t0_ms >= g_det_next_ms) {
+				printf(">>> 检测统计 %.0fs: 命中 %u/%u 帧 (%.0f%%), "
+				       "峰值 %.3f, streak=%d, 最近命中 %.1fs 前\n",
+				       (t - t0_ms) / 1000.0, g_det_hit_win,
+				       g_det_frm_win, g_det_frm_win ?
+				       100.0 * g_det_hit_win / g_det_frm_win : 0.0,
+				       g_det_peak_win, g_streak,
+				       g_last_detect_ms > 0 ?
+				       (t - g_last_detect_ms) / 1000.0 : -1.0);
+				fflush(stdout);
+				g_det_next_ms += 5000.0;
+				g_det_hit_win = 0;
+				g_det_frm_win = 0;
+				g_det_peak_win = 0;
+			}
 		}
 	}
 

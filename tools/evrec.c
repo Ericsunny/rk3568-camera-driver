@@ -36,6 +36,7 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
+#include <sys/statvfs.h>
 #include <sys/uio.h>
 #include <dirent.h>
 #include <netinet/in.h>
@@ -871,6 +872,13 @@ static unsigned g_ev_event_seq;		/* 进程内事件序号: 命名与 event_id �
 static unsigned g_ev_event_id;		/* 当前事件的 event_id(跨段不变) */
 static unsigned g_ev_segment;		/* 当前事件内段号(0 基) */
 static int g_max_event_sec;
+/* S4: cooldown + 磁盘水位(docs/37 §3.2/§3.3) */
+static int g_cooldown_sec;		/* --cooldown, 0=关(默认) */
+static double g_cooldown_until_ms;	/* 冷却截止(单调 ms); 只在 target_left 后设置 */
+static int g_disk_min_mb = 500;		/* --disk-min-mb */
+static int g_disk_hyst_mb = 1000;	/* 滞回带: 回升须越过 min+hyst 才恢复 */
+static int g_disk_stopped;		/* 1=水位停录中 */
+static double g_disk_next_check;	/* 事件中每 10s 查一次 */
 static double g_ev_first_ts, g_ev_last_ts;	/* 媒体跨度: 首包/末包 ts_ms */
 static const unsigned EV_BUF_CAP = 4u << 20;
 static int g_ev_werr;			/* 写失败标志(主循环收尾时清) */
@@ -948,6 +956,42 @@ static int event_alive(int post_sec)
 {
 	return g_last_detect_ms > 0 &&
 	       now_ms(CLOCK_MONOTONIC) - g_last_detect_ms <= post_sec * 1000.0;
+}
+
+/* S4: 磁盘可用 MB(statvfs /root 所在分区) */
+static long disk_free_mb(void)
+{
+	struct statvfs v;
+	if (statvfs("/root", &v) != 0)
+		return -1;
+	return (long)((double)v.f_bavail * v.f_frsize / (1024 * 1024));
+}
+
+/* S4: 水位决策 —— 返回 1=允许开新事件/继续录, 0=停录(双阈值+滞回)。
+ * 每次调用最多 10s 查一次 statvfs, 其余用缓存值。 */
+static int disk_allow(void)
+{
+	static long cached = -1;
+	double now = now_ms(CLOCK_MONOTONIC);
+
+	if (now >= g_disk_next_check) {
+		cached = disk_free_mb();
+		g_disk_next_check = now + 10000.0;
+	}
+	if (cached < 0)
+		return 1;		/* 查询失败不拦录像 */
+	if (g_disk_stopped) {
+		if (cached >= g_disk_min_mb + g_disk_hyst_mb) {
+			g_disk_stopped = 0;
+			printf(">>> 磁盘回升(%ldMB >= %dMB), 恢复录像\n",
+			       cached, g_disk_min_mb + g_disk_hyst_mb);
+		}
+	} else if (cached < g_disk_min_mb) {
+		g_disk_stopped = 1;
+		printf(">>> 磁盘低水位(%ldMB < %dMB), 停止开启新事件\n",
+		       cached, g_disk_min_mb);
+	}
+	return !g_disk_stopped;
 }
 
 /* 公共: 按 (事件序号, 段号) 开 .part + 写 pre-roll + 置包游标。
@@ -2628,6 +2672,8 @@ static void usage(void)
 "                    event_id 跨段不变, segment_index+1; 目标已离场则\n"
 "                    直接收尾不再续段(实际段长最多超 1 个 GOP)\n"
 "  --max-events N    最多录 N 个事件(0=不限, 默认 0)\n"
+"  --cooldown S      事件结束后的冷却秒数(target_left 后, 0=关)\n"
+"  --disk-min-mb M   磁盘低于 M MB 停录, 回升 M+1000 才恢复(默认 500)\n"
 "\n"
 "检测(内置 YOLOv8n):\n"
 "  --detect          启用检测, 命中即自动触发\n"
@@ -2726,6 +2772,8 @@ int main(int argc, char **argv)
 		else if (!strcmp(argv[i], "--model")) g_model = argv[++i];
 		else if (!strcmp(argv[i], "--max-events")) g_max_events = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--max-event-sec")) g_max_event_sec = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "--cooldown")) g_cooldown_sec = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "--disk-min-mb")) g_disk_min_mb = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--det-score")) g_det_score = (float)atof(argv[++i]);
 		else if (!strcmp(argv[i], "--det-frames")) g_det_frames = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--obj-thresh")) g_obj_thresh = (float)atof(argv[++i]);
@@ -3046,14 +3094,22 @@ int main(int argc, char **argv)
 			int alive = event_alive(post_sec);
 			/* 目标仍在场 -> max_duration 切段续录; 已离场 -> 本次就是
 			 * 事件结束, 真实原因是 target_left(上限只是同时撞上)。 */
-			const char *reason = alive ? "max_duration" : "target_left";
+			int disk_block = alive && !disk_allow();
+			const char *reason = disk_block ? "disk_low"
+			                   : alive ? "max_duration" : "target_left";
 
 			if (evw_close(reason, trig_seq, trig_ts) != 0 || g_ev_werr) {
 				fprintf(stderr, ">>> 分段收尾失败\n");
 				rc = 1;
 				break;
 			}
-			if (alive && evw_open_next(-1) == 0) {
+			if (disk_block) {
+				printf(">>> 事件 %u 完成(%u 段, disk_low)\n",
+					g_ev_event_id, g_ev_segment + 1);
+				evw_event_finish();
+				g_ev_segment = 0;
+			}
+			if (alive && !disk_block && evw_open_next(-1) == 0) {
 				printf(">>> 分段 %u (event_id=%u, IDR 边界)\n",
 				       g_ev_segment, g_ev_event_id);
 			} else {
@@ -3078,6 +3134,20 @@ int main(int argc, char **argv)
 			g_trigger = 1;
 		}
 		if (g_trigger && g_ev_fp == NULL) {
+			/* S4: cooldown 期内不开新事件(目标在场判定照走, 只抑制
+			 * 文件); 低水位同理 —— 两处都必须 continue 跳出触发块,
+			 * 只清 g_trigger 不跳出会让块内后续照常开启事件。 */
+			if (g_cooldown_until_ms > 0 &&
+			    now_ms(CLOCK_MONOTONIC) < g_cooldown_until_ms) {
+				g_trigger = 0;
+				continue;
+			} else if (g_cooldown_until_ms > 0) {
+				g_cooldown_until_ms = 0;	/* 冷却结束 */
+			}
+			if (!disk_allow()) {
+				g_trigger = 0;
+				continue;	/* 低水位: 不开新事件, 检测统计照走 */
+			}
 			if (ring_cnt < (int)(pre_sec * 15)) {
 				/* 预热未满: 环里的帧数还不够 pre 秒前置内容, 忽略本次
 				 * 触发, 但不清 g_streak(攒够后会立刻重新触发) */

@@ -65,8 +65,8 @@ fi_probe fi_test streamoff_test tryfmt_test focus_score st_burn: %: tools/%.c
 hdr_demo: tools/hdr_demo.c
 	$(CC) $(CFLAGS) -std=gnu99 -o $@ $< -lm
 
-evrec: tools/evrec.c
-	$(CC) $(CFLAGS) $(PTH) $(DEFS) $(INCS) -o $@ $< $(APP_LIBS)
+evrec: tools/evrec.c tools/rtsp_hub.c
+	$(CC) $(CFLAGS) $(PTH) $(DEFS) $(INCS) -o $@ tools/evrec.c tools/rtsp_hub.c $(APP_LIBS)
 
 camd: tools/camd.c
 	$(CC) $(CFLAGS) $(PTH) $(DEFS) $(INCS) -o $@ $< $(APP_LIBS)

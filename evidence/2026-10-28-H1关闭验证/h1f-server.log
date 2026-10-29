@@ -1,0 +1,289 @@
+>>> 采集 /dev/video5 1920x1080,pre=2s post=2s ring=24MB gop=30
+>>> RTSP 监听 :8554 (单客户端模式)
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=70 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=145 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=220 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=295 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=370 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=445 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=520 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=595 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=670 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=745 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=820 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=895 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=970 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=1045 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=1120 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=1195 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=1270 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=1345 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=1420 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=1495 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=1570 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=1645 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=1720 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=1795 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=1870 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=1945 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=2020 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=2095 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=2170 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=2245 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp-ring: in=2320 drop=0 (深度上限 8)
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=0 drop=0 disc=0 fds=14
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入
+rtsp: 客户端开始播放
+rtsp-ring: in=2395 drop=0 (深度上限 8)
+rtsp: clients=1 sent=0 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=9 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=24 drop=0 disc=0 fds=15
+rtsp: 客户端断开
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入
+rtsp: 客户端开始播放
+rtsp: clients=1 sent=29 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=29 drop=0 disc=0 fds=15
+rtsp-ring: in=2470 drop=0 (深度上限 8)
+rtsp: clients=1 sent=39 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=53 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=68 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=83 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=98 drop=0 disc=0 fds=15
+rtsp-ring: in=2545 drop=0 (深度上限 8)
+rtsp: clients=1 sent=114 drop=0 disc=0 fds=15
+rtsp: 客户端断开
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入
+rtsp: 客户端断开
+rtsp: clients=0 sent=120 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=120 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=120 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=120 drop=0 disc=0 fds=14
+rtsp-ring: in=2620 drop=0 (深度上限 8)
+rtsp: clients=0 sent=120 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=120 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=120 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=120 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=120 drop=0 disc=0 fds=14
+rtsp-ring: in=2695 drop=0 (深度上限 8)
+rtsp: clients=0 sent=120 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=120 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=120 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=120 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=120 drop=0 disc=0 fds=14
+rtsp-ring: in=2770 drop=0 (深度上限 8)
+rtsp: clients=0 sent=120 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=120 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=120 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=120 drop=0 disc=0 fds=14
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入
+rtsp: 客户端开始播放
+rtsp: clients=1 sent=129 drop=0 disc=0 fds=15
+rtsp-ring: in=2845 drop=0 (深度上限 8)
+rtsp: clients=1 sent=145 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=159 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=174 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=189 drop=0 disc=0 fds=15
+rtsp: clients=1 sent=204 drop=0 disc=0 fds=15
+rtsp: 客户端断开
+rtsp-ring: in=2920 drop=0 (深度上限 8)
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp-ring: in=2995 drop=0 (深度上限 8)
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp-ring: in=3070 drop=0 (深度上限 8)
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp-ring: in=3145 drop=0 (深度上限 8)
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp-ring: in=3220 drop=0 (深度上限 8)
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp-ring: in=3295 drop=0 (深度上限 8)
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp-ring: in=3370 drop=0 (深度上限 8)
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14
+rtsp: clients=0 sent=211 drop=0 disc=0 fds=14

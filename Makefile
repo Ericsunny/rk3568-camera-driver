@@ -7,7 +7,8 @@
 # 常用:
 #   make              # 全部板端目标(自动探测 RGA/RKNN,缺了会降级并提示)
 #   make tools        # 只编纯 glibc 工具(任何 aarch64 板都能过)
-#   make apps         # evrec / camd / cam_rtsp(需 librockchip_mpp + RGA/RKNN)
+#   make apps         # evrec / camd(需 librockchip_mpp + RGA/RKNN;
+#                     #   cam_rtsp 已删除(docs/38 H6), 产品入口=evrec --rtsp)
 #   make spy          # ioctlspy(LD_PRELOAD 注入库,-shared)
 #   make clean
 #
@@ -43,7 +44,7 @@ endif
 TOOLS := reg_switch fi_probe fi_test streamoff_test tryfmt_test \
          focus_score st_burn
 
-APP_BIN := evrec camd cam_rtsp
+APP_BIN := evrec camd
 
 .PHONY: all tools apps spy clean
 
@@ -65,13 +66,10 @@ fi_probe fi_test streamoff_test tryfmt_test focus_score st_burn: %: tools/%.c
 hdr_demo: tools/hdr_demo.c
 	$(CC) $(CFLAGS) -std=gnu99 -o $@ $< -lm
 
-evrec: tools/evrec.c
-	$(CC) $(CFLAGS) $(PTH) $(DEFS) $(INCS) -o $@ $< $(APP_LIBS)
+evrec: tools/evrec.c tools/rtsp_hub.c
+	$(CC) $(CFLAGS) $(PTH) $(DEFS) $(INCS) -o $@ tools/evrec.c tools/rtsp_hub.c $(APP_LIBS)
 
 camd: tools/camd.c
-	$(CC) $(CFLAGS) $(PTH) $(DEFS) $(INCS) -o $@ $< $(APP_LIBS)
-
-cam_rtsp: tools/cam_rtsp.c
 	$(CC) $(CFLAGS) $(PTH) $(DEFS) $(INCS) -o $@ $< $(APP_LIBS)
 
 # LD_PRELOAD 注入库(无 main)

@@ -1,0 +1,215 @@
+>>> 采集 /dev/video5 3840x2160,pre=2s post=2s ring=48MB gop=30
+>>> RTSP 监听 :8554 (多客户端, 上限 4)
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=70 evict=61 depth=64 bytes=0.24/2MB tags=[61,70)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=145 evict=123 depth=64 bytes=0.52/2MB tags=[123,145)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=220 evict=187 depth=64 bytes=1.03/2MB tags=[187,220)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=295 evict=251 depth=64 bytes=1.32/2MB tags=[251,295)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=370 evict=314 depth=64 bytes=1.81/2MB tags=[314,370)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=445 evict=381 depth=64 bytes=1.93/2MB tags=[381,445)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=520 evict=510 depth=64 bytes=0.48/2MB tags=[510,520)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=594 evict=570 depth=64 bytes=0.82/2MB tags=[570,594)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=670 evict=630 depth=64 bytes=1.41/2MB tags=[630,670)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=745 evict=690 depth=64 bytes=1.81/2MB tags=[690,745)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=820 evict=810 depth=64 bytes=0.47/2MB tags=[810,820)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=895 evict=870 depth=64 bytes=0.82/2MB tags=[870,895)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=970 evict=930 depth=64 bytes=1.42/2MB tags=[930,970)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1045 evict=990 depth=64 bytes=1.83/2MB tags=[990,1045)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1120 evict=1110 depth=64 bytes=0.42/2MB tags=[1110,1120)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1195 evict=1170 depth=64 bytes=0.84/2MB tags=[1170,1195)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1270 evict=1230 depth=64 bytes=1.39/2MB tags=[1230,1270)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1345 evict=1290 depth=64 bytes=1.86/2MB tags=[1290,1345)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1420 evict=1410 depth=64 bytes=0.40/2MB tags=[1410,1420)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1495 evict=1470 depth=64 bytes=0.86/2MB tags=[1470,1495)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1570 evict=1530 depth=64 bytes=1.44/2MB tags=[1530,1570)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1645 evict=1590 depth=64 bytes=1.82/2MB tags=[1590,1645)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1720 evict=1710 depth=64 bytes=0.49/2MB tags=[1710,1720)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1795 evict=1770 depth=64 bytes=0.82/2MB tags=[1770,1795)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1870 evict=1830 depth=64 bytes=1.42/2MB tags=[1830,1870)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1945 evict=1890 depth=64 bytes=1.79/2MB tags=[1890,1945)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2020 evict=2010 depth=64 bytes=0.42/2MB tags=[2010,2020)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2095 evict=2070 depth=64 bytes=0.88/2MB tags=[2070,2095)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2170 evict=2130 depth=64 bytes=1.44/2MB tags=[2130,2170)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2245 evict=2190 depth=64 bytes=1.82/2MB tags=[2190,2245)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2320 evict=2310 depth=64 bytes=0.46/2MB tags=[2310,2320)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2395 evict=2370 depth=64 bytes=0.81/2MB tags=[2370,2395)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2470 evict=2430 depth=64 bytes=1.46/2MB tags=[2430,2470)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2545 evict=2490 depth=64 bytes=1.81/2MB tags=[2490,2545)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2620 evict=2610 depth=64 bytes=0.47/2MB tags=[2610,2620)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+>>> 收到 SIGTERM, 已停止

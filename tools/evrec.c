@@ -1214,11 +1214,8 @@ static void ring_push(unsigned char *d, int len, unsigned seq, unsigned pkt,
 	ring_bytes += (size_t)len;
 	/* S2: 事件进行中, 新包实时 append 到当前事件(单点挂在 ring_push,
 	 * 包级游标过滤; 写失败只置 g_ev_werr, 由主循环收尾) */
-	if (g_ev_fp) {
-		fprintf(stderr, "[evw] ringpush-call fp=%p pushed=%lu\n",
-			(void*)g_ev_fp, g_pushed);
+	if (g_ev_fp)
 		evw_write(d, len, seq, pkt, r->ts_ms);
-	}
 }
 
 static struct rec *ring_at(int i)

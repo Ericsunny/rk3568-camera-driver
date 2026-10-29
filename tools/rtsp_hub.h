@@ -12,6 +12,7 @@ void rtsp_hub_get_ps(uint8_t *sps, int sps_cap, uint8_t *pps, int pps_cap,
 void rtsp_hub_set_ring_depth(int n);	/* 包数上限, clamp [1,64] */
 void rtsp_hub_set_ring_mb(int mb);	/* B3: 字节上限(MB), clamp [1,64] */
 void rtsp_hub_set_max_clients(int n);	/* --rtsp-clients, clamp [1,8] */
+void rtsp_hub_set_deadline(int s);	/* --rtsp-deadline-s 硬上限(§4.4), clamp [1,120] */
 void rtsp_hub_set_trace_path(const char *path);
 
 void rtsp_scan_nals(const uint8_t *d, int n);		/* 缓存 SPS/PPS */

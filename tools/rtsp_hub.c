@@ -64,11 +64,10 @@ enum {
 	TX_WHY_EAGAIN,		/* EAGAIN 且不再等待(保留) */
 	TX_WHY_ERROR,		/* 其它错误 / 对端关闭 */
 	TX_WHY_SHORT,		/* 短写且无法继续(保留) */
-	TX_WHY_STALL,		/* POLLOUT 有界等待超时: 客户端不收 */
+	TX_WHY_STALL,		/* deadline 秒零进展(H4 §4.4): 客户端不收 */
 };
 #define RTSP_SNDBUF_REQ (512 * 1024)	/* 内核按 wmem_max 封顶, 实际 >= 2*wmem_max */
-#define RTSP_TX_POLL_MS 100		/* 单次等可写的最长时间 */
-#define RTSP_TX_WAIT_MAX 10		/* 单包累计最多等 1s, 超时即判定客户端已死 */
+#define RTSP_TX_POLL_MS 100		/* 单次等可写的间隔(H4 起不再有 10 次上限) */
 struct txdiag {
 	int why;
 	int w;			/* sendmsg 实际收下的字节数 */
@@ -162,6 +161,7 @@ struct rtsp_cli {
 
 static struct rtsp_cli g_cli[RTSP_CLI_MAX];
 static int g_max_clients = 4;		/* --rtsp-clients, clamp [1,8] */
+static int g_deadline_s = 5;		/* --rtsp-deadline-s(§4.4 硬上限), clamp [1,120] */
 static unsigned long g_rej453;		/* 453/槽满拒绝次数(容量指标, B2) */
 static unsigned long g_rtsp_disc;	/* 对端主动断开(EPIPE/ECONNRESET) */
 static unsigned long g_hub_epoch;	/* B4: 链路恢复次数(notify_recover ++) */
@@ -392,9 +392,11 @@ static void rtp_trace_line(uint16_t seq, uint32_t ts, int nal, int fu,
  * 现在的规则:
  *   - 不做包级丢弃: 一个 RTP 包要么整包进内核, 要么把连接判死(FATAL),
  *     绝不会留下"发了前缀"的半个包;
- *   - EAGAIN 用 poll(POLLOUT) 有界等待: 单包累计最多 RTSP_TX_WAIT_MAX×
- *     RTSP_TX_POLL_MS = 1s, 有进展就继续写, 超时才 FATAL;
- *   - EPIPE/ECONNRESET/对端关闭/等待超时 → FATAL, 上层 shutdown 该连接;
+ *   - EAGAIN 用 poll(POLLOUT) 有界等待; H4(§4.4)起判死条件不再是"单包
+ *     等 1s"而是"连续 --rtsp-deadline-s(默认 5)秒零进展": 自首次零进展
+ *     起计时, 期间任何字节推进都清零重来 —— 3s 停读的客户端活得到恢复
+ *     (V3 判据), 超过 deadline 才主动 close;
+ *   - EPIPE/ECONNRESET/对端关闭 → FATAL, 上层 shutdown 该连接;
  *     "半个访问单元留在线上" 比断开严重得多, 所以帧内失败只能断连。
  * 所有写都发生在 g_rtsp_lock 里(单写者), 帧内不可能有并发写。
  */
@@ -403,7 +405,8 @@ static int rtsp_send_interleaved(int fd, int ch, const uint8_t *rtp, int len,
 {
 	/* 4 + RTP: RTP 头 12 + 负载 <= 1400, 连续缓冲区让短写可以简单续写 */
 	uint8_t buf[4 + 12 + 1400];
-	int total, off = 0, waited = 0, outq = 0, sndbuf = 0;
+	int total, off = 0, outq = 0, sndbuf = 0;
+	uint64_t stall_anchor = 0;	/* H4: 首次零进展时刻(0=无进展阻塞) */
 
 	if (dg) {
 		dg->why = TX_WHY_OK;
@@ -443,6 +446,7 @@ static int rtsp_send_interleaved(int fd, int ch, const uint8_t *rtp, int len,
 			 MSG_NOSIGNAL | MSG_DONTWAIT);
 		if (w > 0) {
 			off += (int)w;	/* 短写: 继续把剩下的字节发完 */
+			stall_anchor = 0;	/* 有进展: H4 零进展时钟清零 */
 			continue;
 		}
 		if (w == 0) {		/* 对端关闭 */
@@ -464,14 +468,18 @@ static int rtsp_send_interleaved(int fd, int ch, const uint8_t *rtp, int len,
 			}
 			return RTSP_TX_FATAL;	/* EPIPE/ECONNRESET/其它 */
 		}
-		/* 队列满: 有界等待可写, 绝不把 EAGAIN 当成已发送 */
-		if (++waited > RTSP_TX_WAIT_MAX) {
+		/* 队列满: §4.4 硬上限 —— 自首次零进展最多等 g_deadline_s 秒,
+		 * 到点判死; 期间任何推进已在上面把锚点清零(V3: 3s 停读存活) */
+		if (stall_anchor == 0) {
+			stall_anchor = now_ms_mono();
+		} else if (now_ms_mono() - stall_anchor >=
+			   (uint64_t)g_deadline_s * 1000) {
 			if (dg) {
 				dg->why = TX_WHY_STALL;
 				dg->w = off;
-				dg->err = errno;
+				dg->err = EAGAIN;
 			}
-			return RTSP_TX_FATAL;	/* 1s 写不进一个包: 客户端已死 */
+			return RTSP_TX_FATAL;	/* deadline 秒零进展: 判死 */
 		}
 		{
 			struct pollfd pf;
@@ -1423,6 +1431,15 @@ void rtsp_hub_set_max_clients(int n)
 	if (n > 8)
 		n = 8;	/* 槽表 10 = 上限 8 + 2 半开余量 */
 	g_max_clients = n;
+}
+
+void rtsp_hub_set_deadline(int s)
+{
+	if (s < 1)
+		s = 1;
+	if (s > 120)
+		s = 120;	/* 硬上限是防堆积兜底, 不收 10 分钟级停读 */
+	g_deadline_s = s;
 }
 
 void rtsp_hub_set_ring_mb(int mb)

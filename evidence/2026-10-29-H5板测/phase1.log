@@ -1,0 +1,3141 @@
+>>> 采集 /dev/video5 1920x1080,pre=2s post=2s ring=24MB gop=30
+>>> RTSP 监听 :8554 (多客户端, 上限 4)
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=70 evict=40 depth=30 bytes=0.36/8MB tags=[40,70)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=145 evict=115 depth=30 bytes=0.50/8MB tags=[115,145)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=220 evict=190 depth=30 bytes=0.43/8MB tags=[190,220)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=295 evict=265 depth=30 bytes=0.46/8MB tags=[265,295)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=370 evict=340 depth=30 bytes=0.51/8MB tags=[340,370)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=445 evict=415 depth=30 bytes=0.46/8MB tags=[415,445)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=520 evict=490 depth=30 bytes=0.49/8MB tags=[490,520)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=595 evict=565 depth=30 bytes=0.49/8MB tags=[565,595)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=670 evict=640 depth=30 bytes=0.43/8MB tags=[640,670)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 0)
+rtsp: conn=1 play=0/4 sent=0 epoch=0 rej453=0 fds=15
+rtsp-ring: in=745 evict=715 depth=30 bytes=0.47/8MB tags=[715,745)
+rtsp: conn=1 play=0/4 sent=0 epoch=0 rej453=0 fds=15
+rtsp: conn=1 play=0/4 sent=0 epoch=0 rej453=0 fds=15
+rtsp: conn=1 play=0/4 sent=0 epoch=0 rej453=0 fds=15
+rtsp: conn=1 play=0/4 sent=0 epoch=0 rej453=0 fds=15
+rtsp: conn=1 play=0/4 sent=0 epoch=0 rej453=0 fds=15
+rtsp-ring: in=820 evict=790 depth=30 bytes=0.50/8MB tags=[790,820)
+rtsp: conn=1 play=0/4 sent=0 epoch=0 rej453=0 fds=15
+rtsp: conn=1 play=0/4 sent=0 epoch=0 rej453=0 fds=15
+rtsp: conn=1 play=0/4 sent=0 epoch=0 rej453=0 fds=15
+rtsp: conn=1 play=0/4 sent=0 epoch=0 rej453=0 fds=15
+rtsp c0: SETUP 后 10s 未 PLAY, 关闭半开连接
+rtsp c0: 连接关闭
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=895 evict=865 depth=30 bytes=0.49/8MB tags=[865,895)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 0)
+rtsp c0: 客户端开始播放(从 tag 930 起)
+rtsp c0: sent=323/428042B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=323 epoch=0 rej453=0 fds=15
+rtsp c0: 发送判死(why=error errno=104), 断开
+rtsp c0: 连接关闭
+rtsp-ring: in=970 evict=940 depth=30 bytes=0.49/8MB tags=[940,970)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1045 evict=1015 depth=30 bytes=0.47/8MB tags=[1015,1045)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1120 evict=1090 depth=30 bytes=0.50/8MB tags=[1090,1120)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1195 evict=1165 depth=30 bytes=0.45/8MB tags=[1165,1195)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1270 evict=1240 depth=30 bytes=0.48/8MB tags=[1240,1270)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1345 evict=1315 depth=30 bytes=0.47/8MB tags=[1315,1345)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1420 evict=1390 depth=30 bytes=0.51/8MB tags=[1390,1420)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 0)
+rtsp c0: 客户端开始播放(从 tag 1470 起)
+rtsp-ring: in=1495 evict=1465 depth=30 bytes=0.51/8MB tags=[1465,1495)
+rtsp c0: sent=333/447544B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=333 epoch=0 rej453=0 fds=15
+rtsp c0: 发送判死(why=error errno=104), 断开
+rtsp c0: 连接关闭
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 0)
+rtsp c0: 客户端开始播放(从 tag 1500 起)
+rtsp c0: sent=171/225735B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=171 epoch=0 rej453=0 fds=15
+rtsp c0: sent=300/395414B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=300 epoch=0 rej453=0 fds=15
+rtsp c0: 发送判死(why=error errno=104), 断开
+rtsp c0: 连接关闭
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 1)
+rtsp c1: 客户端开始播放(从 tag 1500 起)
+rtsp c1: 发送判死(why=error errno=104), 断开
+rtsp c1: 连接关闭
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 0)
+rtsp c0: 客户端开始播放(从 tag 1530 起)
+rtsp c0: sent=189/253320B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=189 epoch=0 rej453=0 fds=15
+rtsp c0: sent=337/447173B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=337 epoch=0 rej453=0 fds=15
+rtsp c0: 发送判死(why=error errno=104), 断开
+rtsp c0: 连接关闭
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 0)
+rtsp c0: 客户端开始播放(从 tag 1560 起)
+rtsp-ring: in=1570 evict=1540 depth=30 bytes=0.48/8MB tags=[1540,1570)
+rtsp c0: sent=179/239756B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=179 epoch=0 rej453=0 fds=15
+rtsp c0: sent=306/408199B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=306 epoch=0 rej453=0 fds=15
+rtsp c0: 发送判死(why=error errno=104), 断开
+rtsp c0: 连接关闭
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 1)
+rtsp c1: 客户端开始播放(从 tag 1560 起)
+rtsp c1: 发送判死(why=error errno=104), 断开
+rtsp c1: 连接关闭
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 0)
+rtsp c0: 客户端开始播放(从 tag 1590 起)
+rtsp c0: sent=187/250963B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=187 epoch=0 rej453=0 fds=15
+rtsp c0: sent=321/428951B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=321 epoch=0 rej453=0 fds=15
+rtsp c0: 发送判死(why=error errno=104), 断开
+rtsp c0: 连接关闭
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 1)
+rtsp c1: 客户端开始播放(从 tag 1590 起)
+rtsp c1: 发送判死(why=error errno=104), 断开
+rtsp c1: 连接关闭
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 0)
+rtsp c0: 客户端开始播放(从 tag 1620 起)
+rtsp c0: sent=210/281928B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=210 epoch=0 rej453=0 fds=15
+rtsp-ring: in=1645 evict=1615 depth=30 bytes=0.50/8MB tags=[1615,1645)
+rtsp c0: sent=337/449715B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=337 epoch=0 rej453=0 fds=15
+rtsp c0: 发送判死(why=error errno=104), 断开
+rtsp c0: 连接关闭
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 1)
+rtsp c1: 客户端开始播放(从 tag 1620 起)
+rtsp c1: 发送判死(why=error errno=104), 断开
+rtsp c1: 连接关闭
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1720 evict=1690 depth=30 bytes=0.47/8MB tags=[1690,1720)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1795 evict=1765 depth=30 bytes=0.49/8MB tags=[1765,1795)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1870 evict=1840 depth=30 bytes=0.47/8MB tags=[1840,1870)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1945 evict=1915 depth=30 bytes=0.47/8MB tags=[1915,1945)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2020 evict=1990 depth=30 bytes=0.49/8MB tags=[1990,2020)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2095 evict=2065 depth=30 bytes=0.46/8MB tags=[2065,2095)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 0)
+rtsp c0: 客户端开始播放(从 tag 2130 起)
+rtsp c0: sent=325/438069B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=325 epoch=0 rej453=0 fds=15
+rtsp-ring: in=2170 evict=2140 depth=30 bytes=0.48/8MB tags=[2140,2170)
+rtsp c0: sent=570/763097B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=570 epoch=0 rej453=0 fds=15
+rtsp c0: sent=700/933122B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=700 epoch=0 rej453=0 fds=15
+rtsp c0: sent=955/1275846B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=955 epoch=0 rej453=0 fds=15
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 1)
+rtsp c1: 客户端开始播放(从 tag 2190 起)
+rtsp c0: sent=1086/1450333B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=328/440432B skip=0 evict=0 dead=0 lag=0ms idle=0.0s
+rtsp: conn=2 play=2/4 sent=1414 epoch=0 rej453=0 fds=16
+rtsp c1: 发送判死(why=error errno=104), 断开
+rtsp c1: 连接关闭
+rtsp c0: sent=1350/1802819B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=1350 epoch=0 rej453=0 fds=15
+rtsp-ring: in=2245 evict=2215 depth=30 bytes=0.49/8MB tags=[2215,2245)
+rtsp c0: sent=1475/1964816B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=1475 epoch=0 rej453=0 fds=15
+rtsp c0: sent=1735/2312605B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=1735 epoch=0 rej453=0 fds=15
+rtsp c0: sent=1855/2469121B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=1855 epoch=0 rej453=0 fds=15
+rtsp c0: sent=2103/2798013B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=2103 epoch=0 rej453=0 fds=15
+rtsp c0: sent=2227/2959505B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=2227 epoch=0 rej453=0 fds=15
+rtsp-ring: in=2320 evict=2290 depth=30 bytes=0.49/8MB tags=[2290,2320)
+rtsp c0: sent=2492/3311155B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=2492 epoch=0 rej453=0 fds=15
+rtsp c0: sent=2614/3472018B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=2614 epoch=0 rej453=0 fds=15
+rtsp c0: sent=2873/3819069B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=2873 epoch=0 rej453=0 fds=15
+rtsp c0: sent=2989/3972129B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=2989 epoch=0 rej453=0 fds=15
+rtsp c0: 发送判死(why=error errno=104), 断开
+rtsp c0: 连接关闭
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2395 evict=2365 depth=30 bytes=0.51/8MB tags=[2365,2395)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2470 evict=2440 depth=30 bytes=0.47/8MB tags=[2440,2470)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2545 evict=2515 depth=30 bytes=0.47/8MB tags=[2515,2545)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2620 evict=2590 depth=30 bytes=0.51/8MB tags=[2590,2620)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2695 evict=2665 depth=30 bytes=0.49/8MB tags=[2665,2695)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2770 evict=2740 depth=30 bytes=0.48/8MB tags=[2740,2770)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2845 evict=2815 depth=30 bytes=0.44/8MB tags=[2815,2845)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2920 evict=2890 depth=30 bytes=0.49/8MB tags=[2890,2920)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2995 evict=2965 depth=30 bytes=0.46/8MB tags=[2965,2995)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=3070 evict=3040 depth=30 bytes=0.48/8MB tags=[3040,3070)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 0)
+rtsp c0: 客户端开始播放(从 tag 3090 起)
+rtsp c0: sent=332/440033B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=332 epoch=0 rej453=0 fds=15
+rtsp c0: sent=581/774479B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=581 epoch=0 rej453=0 fds=15
+rtsp-ring: in=3145 evict=3115 depth=30 bytes=0.49/8MB tags=[3115,3145)
+rtsp c0: sent=711/948130B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=711 epoch=0 rej453=0 fds=15
+rtsp c0: sent=955/1275031B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=955 epoch=0 rej453=0 fds=15
+rtsp c0: sent=1085/1446383B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=1085 epoch=0 rej453=0 fds=15
+rtsp c0: sent=1334/1778436B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=1334 epoch=0 rej453=0 fds=15
+rtsp c0: sent=1465/1952095B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=1465 epoch=0 rej453=0 fds=15
+rtsp-ring: in=3220 evict=3190 depth=30 bytes=0.48/8MB tags=[3190,3220)
+rtsp c0: sent=1715/2285542B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=1715 epoch=0 rej453=0 fds=15
+rtsp c0: sent=1844/2457294B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=1844 epoch=0 rej453=0 fds=15
+rtsp c0: sent=2093/2792126B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=2093 epoch=0 rej453=0 fds=15
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 1)
+rtsp c1: 客户端开始播放(从 tag 3240 起)
+rtsp c0: 发送判死(why=error errno=32), 断开
+rtsp c0: 连接关闭
+rtsp c1: sent=326/435628B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=1/4 sent=326 epoch=0 rej453=0 fds=15
+rtsp c1: sent=573/766666B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=573 epoch=0 rej453=0 fds=15
+rtsp-ring: in=3295 evict=3265 depth=30 bytes=0.48/8MB tags=[3265,3295)
+rtsp c1: sent=705/940832B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=705 epoch=0 rej453=0 fds=15
+rtsp c1: sent=951/1270580B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=951 epoch=0 rej453=0 fds=15
+rtsp c1: sent=1083/1445935B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=1083 epoch=0 rej453=0 fds=15
+rtsp c1: sent=1335/1780514B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=1335 epoch=0 rej453=0 fds=15
+rtsp c1: sent=1423/1894647B skip=0 evict=0 dead=0 lag=333ms idle=0.4s
+rtsp: conn=1 play=1/4 sent=1423 epoch=0 rej453=0 fds=15
+rtsp c1: 发送判死(why=stall errno=11), 断开
+rtsp c1: 连接关闭
+rtsp-ring: in=3370 evict=3340 depth=30 bytes=0.48/8MB tags=[3340,3370)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=3445 evict=3415 depth=30 bytes=0.49/8MB tags=[3415,3445)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=3520 evict=3490 depth=30 bytes=0.43/8MB tags=[3490,3520)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=3595 evict=3565 depth=30 bytes=0.48/8MB tags=[3565,3595)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=3670 evict=3640 depth=30 bytes=0.47/8MB tags=[3640,3670)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=3745 evict=3715 depth=30 bytes=0.45/8MB tags=[3715,3745)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=3820 evict=3790 depth=30 bytes=0.51/8MB tags=[3790,3820)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=3895 evict=3865 depth=30 bytes=0.51/8MB tags=[3865,3895)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=3970 evict=3940 depth=30 bytes=0.47/8MB tags=[3940,3970)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=4045 evict=4015 depth=30 bytes=0.47/8MB tags=[4015,4045)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=4120 evict=4090 depth=30 bytes=0.50/8MB tags=[4090,4120)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=4195 evict=4165 depth=30 bytes=0.48/8MB tags=[4165,4195)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 0)
+rtsp c0: 客户端开始播放(从 tag 4200 起)
+rtsp c0: sent=478/632513B skip=0 evict=0 dead=0 lag=533ms idle=0.6s
+rtsp: conn=1 play=1/4 sent=478 epoch=0 rej453=0 fds=15
+rtsp c0: 发送判死(why=stall errno=11), 断开
+rtsp c0: 连接关闭
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=4270 evict=4240 depth=30 bytes=0.45/8MB tags=[4240,4270)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 0)
+rtsp c0: 客户端开始播放(从 tag 4290 起)
+rtsp c0: sent=529/699019B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=529 epoch=0 rej453=0 fds=15
+rtsp-ring: in=4345 evict=4315 depth=30 bytes=0.45/8MB tags=[4315,4345)
+rtsp c0: sent=679/898923B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=679 epoch=0 rej453=0 fds=15
+rtsp c0: sent=894/1181734B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=894 epoch=0 rej453=0 fds=15
+rtsp c0: sent=1052/1391283B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=1052 epoch=0 rej453=0 fds=15
+rtsp c0: sent=1269/1678729B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=1269 epoch=0 rej453=0 fds=15
+rtsp c0: sent=1417/1874363B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=1417 epoch=0 rej453=0 fds=15
+rtsp-ring: in=4420 evict=4390 depth=30 bytes=0.48/8MB tags=[4390,4420)
+rtsp c0: sent=1645/2175950B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=1645 epoch=0 rej453=0 fds=15
+rtsp c0: sent=1809/2391651B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=1809 epoch=0 rej453=0 fds=15
+rtsp c0: sent=2056/2719998B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=2056 epoch=0 rej453=0 fds=15
+rtsp c0: sent=2192/2900318B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=2192 epoch=0 rej453=0 fds=15
+rtsp c0: sent=2429/3216820B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=2429 epoch=0 rej453=0 fds=15
+rtsp c0: 发送判死(why=error errno=104), 断开
+rtsp c0: 连接关闭
+rtsp-ring: in=4495 evict=4465 depth=30 bytes=0.47/8MB tags=[4465,4495)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=4570 evict=4540 depth=30 bytes=0.50/8MB tags=[4540,4570)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=4645 evict=4615 depth=30 bytes=0.49/8MB tags=[4615,4645)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=4720 evict=4690 depth=30 bytes=0.51/8MB tags=[4690,4720)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=4795 evict=4765 depth=30 bytes=0.46/8MB tags=[4765,4795)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=4870 evict=4840 depth=30 bytes=0.48/8MB tags=[4840,4870)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=4945 evict=4915 depth=30 bytes=0.49/8MB tags=[4915,4945)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=5020 evict=4990 depth=30 bytes=0.51/8MB tags=[4990,5020)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=5095 evict=5065 depth=30 bytes=0.48/8MB tags=[5065,5095)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=5170 evict=5140 depth=30 bytes=0.48/8MB tags=[5140,5170)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=5245 evict=5215 depth=30 bytes=0.49/8MB tags=[5215,5245)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=5320 evict=5290 depth=30 bytes=0.47/8MB tags=[5290,5320)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=5395 evict=5365 depth=30 bytes=0.50/8MB tags=[5365,5395)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=5470 evict=5440 depth=30 bytes=0.48/8MB tags=[5440,5470)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=5545 evict=5515 depth=30 bytes=0.47/8MB tags=[5515,5545)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=5620 evict=5590 depth=30 bytes=0.47/8MB tags=[5590,5620)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=5695 evict=5665 depth=30 bytes=0.52/8MB tags=[5665,5695)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=5770 evict=5740 depth=30 bytes=0.52/8MB tags=[5740,5770)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=5845 evict=5815 depth=30 bytes=0.42/8MB tags=[5815,5845)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=5920 evict=5890 depth=30 bytes=0.50/8MB tags=[5890,5920)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=5995 evict=5965 depth=30 bytes=0.48/8MB tags=[5965,5995)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=6070 evict=6040 depth=30 bytes=0.47/8MB tags=[6040,6070)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=6145 evict=6115 depth=30 bytes=0.49/8MB tags=[6115,6145)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=6220 evict=6190 depth=30 bytes=0.50/8MB tags=[6190,6220)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=6295 evict=6265 depth=30 bytes=0.45/8MB tags=[6265,6295)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=6370 evict=6340 depth=30 bytes=0.50/8MB tags=[6340,6370)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=6445 evict=6415 depth=30 bytes=0.48/8MB tags=[6415,6445)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=6520 evict=6490 depth=30 bytes=0.46/8MB tags=[6490,6520)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=6595 evict=6565 depth=30 bytes=0.47/8MB tags=[6565,6595)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=6670 evict=6640 depth=30 bytes=0.48/8MB tags=[6640,6670)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=6745 evict=6715 depth=30 bytes=0.48/8MB tags=[6715,6745)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=6820 evict=6790 depth=30 bytes=0.48/8MB tags=[6790,6820)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=6895 evict=6865 depth=30 bytes=0.47/8MB tags=[6865,6895)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=6970 evict=6940 depth=30 bytes=0.47/8MB tags=[6940,6970)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=7045 evict=7015 depth=30 bytes=0.45/8MB tags=[7015,7045)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=7120 evict=7090 depth=30 bytes=0.48/8MB tags=[7090,7120)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=7195 evict=7165 depth=30 bytes=0.47/8MB tags=[7165,7195)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=7270 evict=7240 depth=30 bytes=0.51/8MB tags=[7240,7270)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=7345 evict=7315 depth=30 bytes=0.48/8MB tags=[7315,7345)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=7420 evict=7390 depth=30 bytes=0.47/8MB tags=[7390,7420)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=7495 evict=7465 depth=30 bytes=0.48/8MB tags=[7465,7495)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 0)
+rtsp c0: 客户端开始播放(从 tag 7560 起)
+rtsp-ring: in=7570 evict=7540 depth=30 bytes=0.45/8MB tags=[7540,7570)
+rtsp c0: sent=153/203228B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/4 sent=153 epoch=0 rej453=0 fds=15
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 1)
+rtsp c1: 客户端开始播放(从 tag 7560 起)
+rtsp c0: sent=313/415084B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=313/415084B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=626 epoch=0 rej453=0 fds=16
+rtsp c0: sent=575/766688B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=575/766688B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=1150 epoch=0 rej453=0 fds=16
+rtsp c0: sent=717/955113B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=717/955113B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=1434 epoch=0 rej453=0 fds=16
+rtsp c0: sent=950/1265471B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=950/1265471B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=1900 epoch=0 rej453=0 fds=16
+rtsp-ring: in=7645 evict=7615 depth=30 bytes=0.48/8MB tags=[7615,7645)
+rtsp c0: sent=1093/1456768B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=1093/1456768B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=2186 epoch=0 rej453=0 fds=16
+rtsp c0: sent=1335/1781292B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=1335/1781292B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=2670 epoch=0 rej453=0 fds=16
+rtsp c0: sent=1487/1982569B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=1487/1982569B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=2974 epoch=0 rej453=0 fds=16
+rtsp c0: sent=1727/2302801B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=1727/2302801B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=3454 epoch=0 rej453=0 fds=16
+rtsp c0: sent=1865/2485505B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=1865/2485505B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=3730 epoch=0 rej453=0 fds=16
+rtsp-ring: in=7720 evict=7690 depth=30 bytes=0.47/8MB tags=[7690,7720)
+rtsp c0: sent=2093/2790220B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=2093/2790220B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=4186 epoch=0 rej453=0 fds=16
+rtsp c0: sent=2242/2988941B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=2242/2988941B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=4484 epoch=0 rej453=0 fds=16
+rtsp c0: sent=2466/3284213B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=2466/3284213B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=4932 epoch=0 rej453=0 fds=16
+rtsp c0: sent=2638/3509792B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=2638/3509792B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=5276 epoch=0 rej453=0 fds=16
+rtsp c0: sent=2860/3805276B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=2860/3805276B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=5720 epoch=0 rej453=0 fds=16
+rtsp-ring: in=7795 evict=7765 depth=30 bytes=0.45/8MB tags=[7765,7795)
+rtsp c0: sent=2997/3987823B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=2997/3987823B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=5994 epoch=0 rej453=0 fds=16
+rtsp c0: sent=3214/4275108B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=3214/4275108B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=6428 epoch=0 rej453=0 fds=16
+rtsp c0: sent=3373/4485254B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=3373/4485254B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=6746 epoch=0 rej453=0 fds=16
+rtsp c0: sent=3600/4783264B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=3600/4783264B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=7200 epoch=0 rej453=0 fds=16
+rtsp c0: sent=3737/4963639B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=3737/4963639B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=7474 epoch=0 rej453=0 fds=16
+rtsp-ring: in=7870 evict=7840 depth=30 bytes=0.48/8MB tags=[7840,7870)
+rtsp c0: sent=3980/5284823B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=3980/5284823B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=7960 epoch=0 rej453=0 fds=16
+rtsp c0: sent=4129/5478953B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=4129/5478953B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=8258 epoch=0 rej453=0 fds=16
+rtsp c0: sent=4382/5814887B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=4382/5814887B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=8764 epoch=0 rej453=0 fds=16
+rtsp c0: sent=4529/6007231B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=4529/6007231B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=9058 epoch=0 rej453=0 fds=16
+rtsp c0: sent=4759/6309731B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=4759/6309731B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=9518 epoch=0 rej453=0 fds=16
+rtsp-ring: in=7945 evict=7915 depth=30 bytes=0.48/8MB tags=[7915,7945)
+rtsp c0: sent=4906/6502674B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=4906/6502674B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=9812 epoch=0 rej453=0 fds=16
+rtsp c0: sent=5140/6813992B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=5140/6813992B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=10280 epoch=0 rej453=0 fds=16
+rtsp c0: sent=5296/7020279B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=5296/7020279B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=10592 epoch=0 rej453=0 fds=16
+rtsp c0: sent=5528/7330173B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=5528/7330173B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=11056 epoch=0 rej453=0 fds=16
+rtsp c0: sent=5672/7521105B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=5672/7521105B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=11344 epoch=0 rej453=0 fds=16
+rtsp-ring: in=8020 evict=7990 depth=30 bytes=0.48/8MB tags=[7990,8020)
+rtsp c0: sent=5907/7833640B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=5907/7833640B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=11814 epoch=0 rej453=0 fds=16
+rtsp c0: sent=6051/8025791B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=6051/8025791B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=12102 epoch=0 rej453=0 fds=16
+rtsp c0: sent=6286/8338255B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=6286/8338255B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=12572 epoch=0 rej453=0 fds=16
+rtsp c0: sent=6431/8528231B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=6431/8528231B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=12862 epoch=0 rej453=0 fds=16
+rtsp c0: sent=6658/8831370B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=6658/8831370B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=13316 epoch=0 rej453=0 fds=16
+rtsp-ring: in=8095 evict=8065 depth=30 bytes=0.47/8MB tags=[8065,8095)
+rtsp c0: sent=6804/9025915B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=6804/9025915B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=13608 epoch=0 rej453=0 fds=16
+rtsp c0: sent=7038/9335051B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=7038/9335051B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=14076 epoch=0 rej453=0 fds=16
+rtsp c0: sent=7177/9518533B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=7177/9518533B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=14354 epoch=0 rej453=0 fds=16
+rtsp c0: sent=7411/9831203B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=7411/9831203B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=14822 epoch=0 rej453=0 fds=16
+rtsp c0: sent=7558/10023038B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=7558/10023038B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=15116 epoch=0 rej453=0 fds=16
+rtsp-ring: in=8170 evict=8140 depth=30 bytes=0.52/8MB tags=[8140,8170)
+rtsp c0: sent=7820/10373360B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=7820/10373360B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=15640 epoch=0 rej453=0 fds=16
+rtsp c0: sent=7951/10544025B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=7951/10544025B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=15902 epoch=0 rej453=0 fds=16
+rtsp c0: sent=8197/10868663B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=8197/10868663B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=16394 epoch=0 rej453=0 fds=16
+rtsp c0: sent=8333/11048351B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=8333/11048351B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=16666 epoch=0 rej453=0 fds=16
+rtsp c0: sent=8573/11369622B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=8573/11369622B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=17146 epoch=0 rej453=0 fds=16
+rtsp-ring: in=8245 evict=8215 depth=30 bytes=0.48/8MB tags=[8215,8245)
+rtsp c0: sent=8706/11547386B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=8706/11547386B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=17412 epoch=0 rej453=0 fds=16
+rtsp c0: sent=8962/11886619B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=8962/11886619B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=17924 epoch=0 rej453=0 fds=16
+rtsp c0: sent=9106/12078210B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=9106/12078210B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=18212 epoch=0 rej453=0 fds=16
+rtsp c0: sent=9350/12403151B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=9350/12403151B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=18700 epoch=0 rej453=0 fds=16
+rtsp c0: sent=9484/12581556B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=9484/12581556B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=18968 epoch=0 rej453=0 fds=16
+rtsp-ring: in=8320 evict=8290 depth=30 bytes=0.47/8MB tags=[8290,8320)
+rtsp c0: sent=9720/12896777B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=9720/12896777B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=19440 epoch=0 rej453=0 fds=16
+rtsp c0: sent=9858/13077622B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=9858/13077622B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=19716 epoch=0 rej453=0 fds=16
+rtsp c0: sent=10101/13398764B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=10101/13398764B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=20202 epoch=0 rej453=0 fds=16
+rtsp c0: sent=10254/13603613B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=10254/13603613B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=20508 epoch=0 rej453=0 fds=16
+rtsp c0: sent=10497/13928823B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=10497/13928823B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=20994 epoch=0 rej453=0 fds=16
+rtsp-ring: in=8395 evict=8365 depth=30 bytes=0.48/8MB tags=[8365,8395)
+rtsp c0: sent=10634/14108894B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=10634/14108894B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=21268 epoch=0 rej453=0 fds=16
+rtsp c0: sent=10856/14401749B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=10856/14401749B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=21712 epoch=0 rej453=0 fds=16
+rtsp c0: sent=10998/14588717B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=10998/14588717B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=21996 epoch=0 rej453=0 fds=16
+rtsp c0: sent=11235/14903711B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=11235/14903711B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=22470 epoch=0 rej453=0 fds=16
+rtsp c0: sent=11380/15096236B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=11380/15096236B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=22760 epoch=0 rej453=0 fds=16
+rtsp-ring: in=8470 evict=8440 depth=30 bytes=0.50/8MB tags=[8440,8470)
+rtsp c0: sent=11630/15428770B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=11630/15428770B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=23260 epoch=0 rej453=0 fds=16
+rtsp c0: sent=11782/15631801B skip=0 evict=0 dead=0 lag=0ms idle=0.0s
+rtsp c1: sent=11782/15631801B skip=0 evict=0 dead=0 lag=0ms idle=0.0s
+rtsp: conn=2 play=2/4 sent=23564 epoch=0 rej453=0 fds=16
+rtsp c0: sent=12015/15941040B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=12015/15941040B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=24030 epoch=0 rej453=0 fds=16
+rtsp c0: sent=12146/16115793B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=12146/16115793B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=24292 epoch=0 rej453=0 fds=16
+rtsp c0: sent=12395/16448787B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=12395/16448787B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=24790 epoch=0 rej453=0 fds=16
+rtsp-ring: in=8545 evict=8515 depth=30 bytes=0.49/8MB tags=[8515,8545)
+rtsp c0: sent=12529/16625988B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=12529/16625988B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=25058 epoch=0 rej453=0 fds=16
+rtsp c0: sent=12763/16935299B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=12763/16935299B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=25526 epoch=0 rej453=0 fds=16
+rtsp c0: sent=12907/17124097B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=12907/17124097B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=25814 epoch=0 rej453=0 fds=16
+rtsp c0: sent=13146/17440143B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=13146/17440143B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=26292 epoch=0 rej453=0 fds=16
+rtsp c0: sent=13302/17645762B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=13302/17645762B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=26604 epoch=0 rej453=0 fds=16
+rtsp-ring: in=8620 evict=8590 depth=30 bytes=0.51/8MB tags=[8590,8620)
+rtsp c0: sent=13549/17976850B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=13549/17976850B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=27098 epoch=0 rej453=0 fds=16
+rtsp c0: sent=13695/18167062B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=13695/18167062B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=27390 epoch=0 rej453=0 fds=16
+rtsp c0: sent=13908/18446788B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=13908/18446788B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=27816 epoch=0 rej453=0 fds=16
+rtsp c0: sent=14048/18631627B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=14048/18631627B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=28096 epoch=0 rej453=0 fds=16
+rtsp c0: sent=14280/18943538B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=14280/18943538B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=28560 epoch=0 rej453=0 fds=16
+rtsp-ring: in=8695 evict=8665 depth=30 bytes=0.48/8MB tags=[8665,8695)
+rtsp c0: sent=14427/19137722B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=14427/19137722B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=28854 epoch=0 rej453=0 fds=16
+rtsp c0: sent=14675/19467627B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=14675/19467627B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=29350 epoch=0 rej453=0 fds=16
+rtsp c0: sent=14816/19656002B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=14816/19656002B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=29632 epoch=0 rej453=0 fds=16
+rtsp c0: sent=15050/19968496B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=15050/19968496B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=30100 epoch=0 rej453=0 fds=16
+rtsp c0: sent=15192/20154668B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=15192/20154668B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=30384 epoch=0 rej453=0 fds=16
+rtsp-ring: in=8770 evict=8740 depth=30 bytes=0.49/8MB tags=[8740,8770)
+rtsp c0: sent=15441/20485244B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=15441/20485244B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=30882 epoch=0 rej453=0 fds=16
+rtsp c0: sent=15573/20660897B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=15573/20660897B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=31146 epoch=0 rej453=0 fds=16
+rtsp c0: sent=15805/20969248B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=15805/20969248B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=31610 epoch=0 rej453=0 fds=16
+rtsp c0: sent=15942/21148967B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=15942/21148967B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=31884 epoch=0 rej453=0 fds=16
+rtsp c0: sent=16160/21437871B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=16160/21437871B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=32320 epoch=0 rej453=0 fds=16
+rtsp-ring: in=8845 evict=8815 depth=30 bytes=0.47/8MB tags=[8815,8845)
+rtsp c0: sent=16312/21639533B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=16312/21639533B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=32624 epoch=0 rej453=0 fds=16
+rtsp c0: sent=16555/21964391B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=16555/21964391B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=33110 epoch=0 rej453=0 fds=16
+rtsp c0: sent=16699/22154130B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=16699/22154130B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=33398 epoch=0 rej453=0 fds=16
+rtsp c0: sent=16951/22489841B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=16951/22489841B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=33902 epoch=0 rej453=0 fds=16
+rtsp c0: sent=17091/22674514B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=17091/22674514B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=34182 epoch=0 rej453=0 fds=16
+rtsp-ring: in=8920 evict=8890 depth=30 bytes=0.50/8MB tags=[8890,8920)
+rtsp c0: sent=17344/23015199B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=17344/23015199B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=34688 epoch=0 rej453=0 fds=16
+rtsp c0: sent=17477/23192933B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=17477/23192933B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=34954 epoch=0 rej453=0 fds=16
+rtsp c0: sent=17696/23484851B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=17696/23484851B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=35392 epoch=0 rej453=0 fds=16
+rtsp c0: sent=17857/23700355B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=17857/23700355B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=35714 epoch=0 rej453=0 fds=16
+rtsp c0: sent=18081/23999028B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=18081/23999028B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=36162 epoch=0 rej453=0 fds=16
+rtsp-ring: in=8995 evict=8965 depth=30 bytes=0.45/8MB tags=[8965,8995)
+rtsp c0: sent=18215/24175051B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=18215/24175051B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=36430 epoch=0 rej453=0 fds=16
+rtsp c0: sent=18429/24458655B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=18429/24458655B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=36858 epoch=0 rej453=0 fds=16
+rtsp c0: sent=18582/24658990B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=18582/24658990B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=37164 epoch=0 rej453=0 fds=16
+rtsp c0: sent=18810/24960882B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=18810/24960882B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=37620 epoch=0 rej453=0 fds=16
+rtsp c0: sent=18965/25168183B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=18965/25168183B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=37930 epoch=0 rej453=0 fds=16
+rtsp-ring: in=9070 evict=9040 depth=30 bytes=0.50/8MB tags=[9040,9070)
+rtsp c0: sent=19200/25480878B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=19200/25480878B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=38400 epoch=0 rej453=0 fds=16
+rtsp c0: sent=19340/25666781B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=19340/25666781B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=38680 epoch=0 rej453=0 fds=16
+rtsp c0: sent=19584/25988872B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=19584/25988872B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=39168 epoch=0 rej453=0 fds=16
+rtsp c0: sent=19726/26177538B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=19726/26177538B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=39452 epoch=0 rej453=0 fds=16
+rtsp c0: sent=19960/26490696B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=19960/26490696B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=39920 epoch=0 rej453=0 fds=16
+rtsp-ring: in=9145 evict=9115 depth=30 bytes=0.48/8MB tags=[9115,9145)
+rtsp c0: sent=20107/26684471B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=20107/26684471B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=40214 epoch=0 rej453=0 fds=16
+rtsp c0: sent=20344/27000900B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=20344/27000900B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=40688 epoch=0 rej453=0 fds=16
+rtsp c0: sent=20487/27190553B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=20487/27190553B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=40974 epoch=0 rej453=0 fds=16
+rtsp c0: sent=20724/27509045B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=20724/27509045B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=41448 epoch=0 rej453=0 fds=16
+rtsp c0: sent=20868/27700644B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=20868/27700644B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=41736 epoch=0 rej453=0 fds=16
+rtsp-ring: in=9220 evict=9190 depth=30 bytes=0.48/8MB tags=[9190,9220)
+rtsp c0: sent=21102/28012352B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=21102/28012352B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=42204 epoch=0 rej453=0 fds=16
+rtsp c0: sent=21252/28210330B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=21252/28210330B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=42504 epoch=0 rej453=0 fds=16
+rtsp c0: sent=21503/28546080B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=21503/28546080B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=43006 epoch=0 rej453=0 fds=16
+rtsp c0: sent=21649/28739805B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=21649/28739805B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=43298 epoch=0 rej453=0 fds=16
+rtsp c0: sent=21872/29038385B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=21872/29038385B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=43744 epoch=0 rej453=0 fds=16
+rtsp-ring: in=9295 evict=9265 depth=30 bytes=0.46/8MB tags=[9265,9295)
+rtsp c0: sent=22010/29221962B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=22010/29221962B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=44020 epoch=0 rej453=0 fds=16
+rtsp c0: sent=22238/29525207B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=22238/29525207B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=44476 epoch=0 rej453=0 fds=16
+rtsp c0: sent=22376/29709053B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=22376/29709053B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=44752 epoch=0 rej453=0 fds=16
+rtsp c0: sent=22623/30039055B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=22623/30039055B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=45246 epoch=0 rej453=0 fds=16
+rtsp c0: sent=22772/30237986B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=22772/30237986B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=45544 epoch=0 rej453=0 fds=16
+rtsp-ring: in=9370 evict=9340 depth=30 bytes=0.48/8MB tags=[9340,9370)
+rtsp c0: sent=22998/30539061B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=22998/30539061B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=45996 epoch=0 rej453=0 fds=16
+rtsp c0: sent=23144/30736240B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=23144/30736240B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=46288 epoch=0 rej453=0 fds=16
+rtsp c0: sent=23366/31032423B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=23366/31032423B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=46732 epoch=0 rej453=0 fds=16
+rtsp c0: sent=23516/31232677B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=23516/31232677B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=47032 epoch=0 rej453=0 fds=16
+rtsp c0: sent=23732/31518985B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=23732/31518985B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=47464 epoch=0 rej453=0 fds=16
+rtsp-ring: in=9445 evict=9415 depth=30 bytes=0.45/8MB tags=[9415,9445)
+rtsp c0: sent=23874/31706947B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=23874/31706947B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=47748 epoch=0 rej453=0 fds=16
+rtsp c0: sent=24101/32012011B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=24101/32012011B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=48202 epoch=0 rej453=0 fds=16
+rtsp c0: sent=24252/32214589B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=24252/32214589B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=48504 epoch=0 rej453=0 fds=16
+rtsp c0: sent=24495/32537385B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=24495/32537385B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=48990 epoch=0 rej453=0 fds=16
+rtsp c0: sent=24636/32723965B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=24636/32723965B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=49272 epoch=0 rej453=0 fds=16
+rtsp-ring: in=9520 evict=9490 depth=30 bytes=0.47/8MB tags=[9490,9520)
+rtsp c0: sent=24868/33034524B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=24868/33034524B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=49736 epoch=0 rej453=0 fds=16
+rtsp c0: sent=25012/33226341B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=25012/33226341B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=50024 epoch=0 rej453=0 fds=16
+rtsp c0: sent=25245/33537180B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=25245/33537180B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=50490 epoch=0 rej453=0 fds=16
+rtsp c0: sent=25388/33722753B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=25388/33722753B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=50776 epoch=0 rej453=0 fds=16
+rtsp c0: sent=25604/34010098B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=25604/34010098B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=51208 epoch=0 rej453=0 fds=16
+rtsp-ring: in=9595 evict=9565 depth=30 bytes=0.46/8MB tags=[9565,9595)
+rtsp c0: sent=25752/34203617B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=25752/34203617B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=51504 epoch=0 rej453=0 fds=16
+rtsp c0: sent=25994/34525227B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=25994/34525227B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=51988 epoch=0 rej453=0 fds=16
+rtsp c0: sent=26139/34717596B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=26139/34717596B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=52278 epoch=0 rej453=0 fds=16
+rtsp c0: sent=26385/35045707B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=26385/35045707B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=52770 epoch=0 rej453=0 fds=16
+rtsp c0: sent=26527/35231251B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=26527/35231251B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=53054 epoch=0 rej453=0 fds=16
+rtsp-ring: in=9670 evict=9640 depth=30 bytes=0.49/8MB tags=[9640,9670)
+rtsp c0: sent=26779/35569346B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=26779/35569346B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=53558 epoch=0 rej453=0 fds=16
+rtsp c0: sent=26897/35726535B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=26897/35726535B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=53794 epoch=0 rej453=0 fds=16
+rtsp c0: sent=27112/36014741B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=27112/36014741B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=54224 epoch=0 rej453=0 fds=16
+rtsp c0: sent=27263/36215250B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=27263/36215250B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=54526 epoch=0 rej453=0 fds=16
+rtsp c0: sent=27495/36526969B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=27495/36526969B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=54990 epoch=0 rej453=0 fds=16
+rtsp-ring: in=9745 evict=9715 depth=30 bytes=0.48/8MB tags=[9715,9745)
+rtsp c0: sent=27637/36718254B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=27637/36718254B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=55274 epoch=0 rej453=0 fds=16
+rtsp c0: sent=27873/37036705B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=27873/37036705B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=55746 epoch=0 rej453=0 fds=16
+rtsp c0: sent=28016/37229241B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=28016/37229241B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=56032 epoch=0 rej453=0 fds=16
+rtsp c0: sent=28253/37548901B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=28253/37548901B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=56506 epoch=0 rej453=0 fds=16
+rtsp c0: sent=28400/37745886B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=28400/37745886B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=56800 epoch=0 rej453=0 fds=16
+rtsp-ring: in=9820 evict=9790 depth=30 bytes=0.49/8MB tags=[9790,9820)
+rtsp c0: sent=28642/38065800B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=28642/38065800B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=57284 epoch=0 rej453=0 fds=16
+rtsp c0: sent=28786/38257306B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=28786/38257306B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=57572 epoch=0 rej453=0 fds=16
+rtsp c0: sent=29031/38581399B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=29031/38581399B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=58062 epoch=0 rej453=0 fds=16
+rtsp c0: sent=29175/38771396B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=29175/38771396B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=58350 epoch=0 rej453=0 fds=16
+rtsp c0: sent=29430/39113355B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=29430/39113355B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=58860 epoch=0 rej453=0 fds=16
+rtsp-ring: in=9895 evict=9865 depth=30 bytes=0.49/8MB tags=[9865,9895)
+rtsp c0: sent=29563/39290328B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=29563/39290328B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=59126 epoch=0 rej453=0 fds=16
+rtsp c0: sent=29761/39550749B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=29761/39550749B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=59522 epoch=0 rej453=0 fds=16
+rtsp c0: sent=29904/39741952B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=29904/39741952B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=59808 epoch=0 rej453=0 fds=16
+rtsp c0: sent=30137/40054262B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=30137/40054262B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=60274 epoch=0 rej453=0 fds=16
+rtsp c0: sent=30298/40270097B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=30298/40270097B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=60596 epoch=0 rej453=0 fds=16
+rtsp-ring: in=9970 evict=9940 depth=30 bytes=0.51/8MB tags=[9940,9970)
+rtsp c0: sent=30537/40589177B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=30537/40589177B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=61074 epoch=0 rej453=0 fds=16
+rtsp c0: sent=30675/40770358B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=30675/40770358B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=61350 epoch=0 rej453=0 fds=16
+rtsp c0: sent=30923/41101531B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=30923/41101531B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=61846 epoch=0 rej453=0 fds=16
+rtsp c0: sent=31058/41281081B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=31058/41281081B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=62116 epoch=0 rej453=0 fds=16
+rtsp c0: sent=31308/41614760B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=31308/41614760B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=62616 epoch=0 rej453=0 fds=16
+rtsp-ring: in=10045 evict=10015 depth=30 bytes=0.49/8MB tags=[10015,10045)
+rtsp c0: sent=31446/41797105B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=31446/41797105B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=62892 epoch=0 rej453=0 fds=16
+rtsp c0: sent=31686/42115156B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=31686/42115156B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=63372 epoch=0 rej453=0 fds=16
+rtsp c0: sent=31821/42293437B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=31821/42293437B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=63642 epoch=0 rej453=0 fds=16
+rtsp c0: sent=32069/42625336B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=32069/42625336B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=64138 epoch=0 rej453=0 fds=16
+rtsp c0: sent=32210/42810104B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=32210/42810104B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=64420 epoch=0 rej453=0 fds=16
+rtsp-ring: in=10120 evict=10090 depth=30 bytes=0.49/8MB tags=[10090,10120)
+rtsp c0: sent=32460/43144287B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=32460/43144287B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=64920 epoch=0 rej453=0 fds=16
+rtsp c0: sent=32596/43321924B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=32596/43321924B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=65192 epoch=0 rej453=0 fds=16
+rtsp c0: sent=32844/43651121B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=32844/43651121B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=65688 epoch=0 rej453=0 fds=16
+rtsp c0: sent=32981/43829768B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=32981/43829768B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=65962 epoch=0 rej453=0 fds=16
+rtsp c0: sent=33232/44163571B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=33232/44163571B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=66464 epoch=0 rej453=0 fds=16
+rtsp-ring: in=10195 evict=10165 depth=30 bytes=0.49/8MB tags=[10165,10195)
+rtsp c0: sent=33365/44339055B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=33365/44339055B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=66730 epoch=0 rej453=0 fds=16
+rtsp c0: sent=33619/44674146B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=33619/44674146B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=67238 epoch=0 rej453=0 fds=16
+rtsp c0: sent=33765/44864530B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=33765/44864530B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=67530 epoch=0 rej453=0 fds=16
+rtsp c0: sent=34005/45182592B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=34005/45182592B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=68010 epoch=0 rej453=0 fds=16
+rtsp c0: sent=34133/45349816B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=34133/45349816B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=68266 epoch=0 rej453=0 fds=16
+rtsp-ring: in=10270 evict=10240 depth=30 bytes=0.48/8MB tags=[10240,10270)
+rtsp c0: sent=34383/45681631B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=34383/45681631B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=68766 epoch=0 rej453=0 fds=16
+rtsp c0: sent=34519/45865296B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=34519/45865296B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=69038 epoch=0 rej453=0 fds=16
+rtsp c0: sent=34774/46204640B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=34774/46204640B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=69548 epoch=0 rej453=0 fds=16
+rtsp c0: sent=34915/46393566B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=34915/46393566B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=69830 epoch=0 rej453=0 fds=16
+rtsp c0: sent=35149/46704625B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=35149/46704625B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=70298 epoch=0 rej453=0 fds=16
+rtsp-ring: in=10345 evict=10315 depth=30 bytes=0.46/8MB tags=[10315,10345)
+rtsp c0: sent=35283/46881339B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=35283/46881339B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=70566 epoch=0 rej453=0 fds=16
+rtsp c0: sent=35511/47183193B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=35511/47183193B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=71022 epoch=0 rej453=0 fds=16
+rtsp c0: sent=35654/47372956B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=35654/47372956B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=71308 epoch=0 rej453=0 fds=16
+rtsp c0: sent=35900/47699477B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=35900/47699477B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=71800 epoch=0 rej453=0 fds=16
+rtsp c0: sent=36050/47895429B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=36050/47895429B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=72100 epoch=0 rej453=0 fds=16
+rtsp-ring: in=10420 evict=10390 depth=30 bytes=0.48/8MB tags=[10390,10420)
+rtsp c0: sent=36285/48209285B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=36285/48209285B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=72570 epoch=0 rej453=0 fds=16
+rtsp c0: sent=36419/48388664B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=36419/48388664B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=72838 epoch=0 rej453=0 fds=16
+rtsp c0: sent=36646/48689552B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=36646/48689552B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=73292 epoch=0 rej453=0 fds=16
+rtsp c0: sent=36786/48870014B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=36786/48870014B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=73572 epoch=0 rej453=0 fds=16
+rtsp c0: sent=37033/49201013B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=37033/49201013B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=74066 epoch=0 rej453=0 fds=16
+rtsp-ring: in=10495 evict=10465 depth=30 bytes=0.48/8MB tags=[10465,10495)
+rtsp c0: sent=37168/49377489B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=37168/49377489B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=74336 epoch=0 rej453=0 fds=16
+rtsp c0: sent=37395/49679200B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=37395/49679200B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=74790 epoch=0 rej453=0 fds=16
+rtsp c0: sent=37553/49889767B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=37553/49889767B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=75106 epoch=0 rej453=0 fds=16
+rtsp c0: sent=37786/50199507B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=37786/50199507B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=75572 epoch=0 rej453=0 fds=16
+rtsp c0: sent=37938/50399929B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=37938/50399929B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=75876 epoch=0 rej453=0 fds=16
+rtsp-ring: in=10570 evict=10540 depth=30 bytes=0.50/8MB tags=[10540,10570)
+rtsp c0: sent=38175/50718336B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=38175/50718336B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=76350 epoch=0 rej453=0 fds=16
+rtsp c0: sent=38332/50927964B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=38332/50927964B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=76664 epoch=0 rej453=0 fds=16
+rtsp c0: sent=38549/51213526B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=38549/51213526B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=77098 epoch=0 rej453=0 fds=16
+rtsp c0: sent=38681/51388332B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=38681/51388332B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=77362 epoch=0 rej453=0 fds=16
+rtsp c0: sent=38886/51659679B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=38886/51659679B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=77772 epoch=0 rej453=0 fds=16
+rtsp-ring: in=10645 evict=10615 depth=30 bytes=0.45/8MB tags=[10615,10645)
+rtsp c0: sent=39038/51861664B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=39038/51861664B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=78076 epoch=0 rej453=0 fds=16
+rtsp c0: sent=39283/52190411B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=39283/52190411B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=78566 epoch=0 rej453=0 fds=16
+rtsp c0: sent=39430/52384425B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=39430/52384425B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=78860 epoch=0 rej453=0 fds=16
+rtsp c0: sent=39679/52714827B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=39679/52714827B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=79358 epoch=0 rej453=0 fds=16
+rtsp c0: sent=39822/52903527B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=39822/52903527B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=79644 epoch=0 rej453=0 fds=16
+rtsp-ring: in=10720 evict=10690 depth=30 bytes=0.51/8MB tags=[10690,10720)
+rtsp c0: sent=40084/53253016B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=40084/53253016B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=80168 epoch=0 rej453=0 fds=16
+rtsp c0: sent=40227/53442314B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=40227/53442314B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=80454 epoch=0 rej453=0 fds=16
+rtsp c0: sent=40426/53707775B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=40426/53707775B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=80852 epoch=0 rej453=0 fds=16
+rtsp c0: sent=40560/53884061B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=40560/53884061B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=81120 epoch=0 rej453=0 fds=16
+rtsp c0: sent=40784/54182371B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=40784/54182371B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=81568 epoch=0 rej453=0 fds=16
+rtsp-ring: in=10795 evict=10765 depth=30 bytes=0.48/8MB tags=[10765,10795)
+rtsp c0: sent=40937/54385815B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=40937/54385815B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=81874 epoch=0 rej453=0 fds=16
+rtsp c0: sent=41165/54691360B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=41165/54691360B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=82330 epoch=0 rej453=0 fds=16
+rtsp c0: sent=41328/54908414B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=41328/54908414B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=82656 epoch=0 rej453=0 fds=16
+rtsp c0: sent=41563/55219636B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=41563/55219636B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=83126 epoch=0 rej453=0 fds=16
+rtsp c0: sent=41719/55426773B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=41719/55426773B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=83438 epoch=0 rej453=0 fds=16
+rtsp-ring: in=10870 evict=10840 depth=30 bytes=0.48/8MB tags=[10840,10870)
+rtsp c0: sent=41945/55729620B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=41945/55729620B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=83890 epoch=0 rej453=0 fds=16
+rtsp c0: sent=42147/56000418B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=42147/56000418B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=84294 epoch=0 rej453=0 fds=16
+rtsp c0: sent=42317/56224775B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=42317/56224775B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=84634 epoch=0 rej453=0 fds=16
+rtsp c0: sent=42442/56388785B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=42442/56388785B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=84884 epoch=0 rej453=0 fds=16
+rtsp c0: sent=42664/56683644B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=42664/56683644B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=85328 epoch=0 rej453=0 fds=16
+rtsp-ring: in=10945 evict=10915 depth=30 bytes=0.56/8MB tags=[10915,10945)
+rtsp c0: sent=42880/56977824B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=42880/56977824B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=85760 epoch=0 rej453=0 fds=16
+rtsp c0: sent=43047/57197290B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=43047/57197290B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=86094 epoch=0 rej453=0 fds=16
+rtsp c0: sent=43172/57362167B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=43172/57362167B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=86344 epoch=0 rej453=0 fds=16
+rtsp c0: sent=43382/57636626B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=43382/57636626B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=86764 epoch=0 rej453=0 fds=16
+rtsp c0: sent=43580/57901848B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=43580/57901848B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=87160 epoch=0 rej453=0 fds=16
+rtsp-ring: in=11020 evict=10990 depth=30 bytes=0.51/8MB tags=[10990,11020)
+rtsp c0: sent=43788/58174660B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=43788/58174660B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=87576 epoch=0 rej453=0 fds=16
+rtsp c0: sent=43953/58397882B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=43953/58397882B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=87906 epoch=0 rej453=0 fds=16
+rtsp c0: sent=44182/58701993B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=44182/58701993B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=88364 epoch=0 rej453=0 fds=16
+rtsp c0: sent=44344/58916225B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=44344/58916225B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=88688 epoch=0 rej453=0 fds=16
+rtsp c0: sent=44555/59195595B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=44555/59195595B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=89110 epoch=0 rej453=0 fds=16
+rtsp-ring: in=11095 evict=11065 depth=30 bytes=0.46/8MB tags=[11065,11095)
+rtsp c0: sent=44706/59393189B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=44706/59393189B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=89412 epoch=0 rej453=0 fds=16
+rtsp c0: sent=44939/59703273B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=44939/59703273B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=89878 epoch=0 rej453=0 fds=16
+rtsp c0: sent=45104/59924066B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=45104/59924066B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=90208 epoch=0 rej453=0 fds=16
+rtsp c0: sent=45353/60255345B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=45353/60255345B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=90706 epoch=0 rej453=0 fds=16
+rtsp c0: sent=45499/60449936B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=45499/60449936B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=90998 epoch=0 rej453=0 fds=16
+rtsp-ring: in=11170 evict=11140 depth=30 bytes=0.49/8MB tags=[11140,11170)
+rtsp c0: sent=45741/60770140B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=45741/60770140B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=91482 epoch=0 rej453=0 fds=16
+rtsp c0: sent=45900/60980656B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=45900/60980656B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=91800 epoch=0 rej453=0 fds=16
+rtsp c0: sent=46130/61288352B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=46130/61288352B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=92260 epoch=0 rej453=0 fds=16
+rtsp c0: sent=46265/61465626B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=46265/61465626B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=92530 epoch=0 rej453=0 fds=16
+rtsp c0: sent=46485/61759390B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=46485/61759390B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=92970 epoch=0 rej453=0 fds=16
+rtsp-ring: in=11245 evict=11215 depth=30 bytes=0.47/8MB tags=[11215,11245)
+rtsp c0: sent=46633/61955174B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=46633/61955174B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=93266 epoch=0 rej453=0 fds=16
+rtsp c0: sent=46865/62266385B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=46865/62266385B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=93730 epoch=0 rej453=0 fds=16
+rtsp c0: sent=47012/62463335B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=47023/62478032B skip=0 evict=0 dead=0 lag=0ms idle=0.0s
+rtsp: conn=2 play=2/4 sent=94035 epoch=0 rej453=0 fds=16
+rtsp c0: sent=47265/62802437B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=47265/62802437B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=94530 epoch=0 rej453=0 fds=16
+rtsp c0: sent=47407/62993440B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=47407/62993440B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=94814 epoch=0 rej453=0 fds=16
+rtsp-ring: in=11320 evict=11290 depth=30 bytes=0.45/8MB tags=[11290,11320)
+rtsp c0: sent=47622/63279135B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=47622/63279135B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=95244 epoch=0 rej453=0 fds=16
+rtsp c0: sent=47767/63471275B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=47767/63471275B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=95534 epoch=0 rej453=0 fds=16
+rtsp c0: sent=47998/63779236B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=47998/63779236B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=95996 epoch=0 rej453=0 fds=16
+rtsp c0: sent=48146/63976108B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=48146/63976108B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=96292 epoch=0 rej453=0 fds=16
+rtsp c0: sent=48382/64292873B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=48382/64292873B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=96764 epoch=0 rej453=0 fds=16
+rtsp-ring: in=11395 evict=11365 depth=30 bytes=0.48/8MB tags=[11365,11395)
+rtsp c0: sent=48521/64477426B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=48521/64477426B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=97042 epoch=0 rej453=0 fds=16
+rtsp c0: sent=48762/64798723B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=48762/64798723B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=97524 epoch=0 rej453=0 fds=16
+rtsp c0: sent=48913/65000184B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=48913/65000184B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=97826 epoch=0 rej453=0 fds=16
+rtsp c0: sent=49151/65319444B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=49151/65319444B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=98302 epoch=0 rej453=0 fds=16
+rtsp c0: sent=49286/65497793B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=49286/65497793B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=98572 epoch=0 rej453=0 fds=16
+rtsp-ring: in=11470 evict=11440 depth=30 bytes=0.50/8MB tags=[11440,11470)
+rtsp c0: sent=49547/65846373B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=49547/65846373B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=99094 epoch=0 rej453=0 fds=16
+rtsp c0: sent=49689/66033754B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=49689/66033754B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=99378 epoch=0 rej453=0 fds=16
+rtsp c0: sent=49909/66324597B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=49909/66324597B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=99818 epoch=0 rej453=0 fds=16
+rtsp c0: sent=50042/66498119B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=50042/66498119B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=100084 epoch=0 rej453=0 fds=16
+rtsp c0: sent=50249/66771822B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=50249/66771822B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=100498 epoch=0 rej453=0 fds=16
+rtsp-ring: in=11545 evict=11515 depth=30 bytes=0.46/8MB tags=[11515,11545)
+rtsp c0: sent=50401/66975770B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=50401/66975770B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=100802 epoch=0 rej453=0 fds=16
+rtsp c0: sent=50640/67296520B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=50640/67296520B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=101280 epoch=0 rej453=0 fds=16
+rtsp c0: sent=50798/67505699B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=50798/67505699B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=101596 epoch=0 rej453=0 fds=16
+rtsp c0: sent=51033/67820832B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=51033/67820832B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=102066 epoch=0 rej453=0 fds=16
+rtsp c0: sent=51167/67998646B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=51167/67998646B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=102334 epoch=0 rej453=0 fds=16
+rtsp-ring: in=11620 evict=11590 depth=30 bytes=0.47/8MB tags=[11590,11620)
+rtsp c0: sent=51405/68315404B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=51405/68315404B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=102810 epoch=0 rej453=0 fds=16
+rtsp c0: sent=51524/68473775B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=51524/68473775B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=103048 epoch=0 rej453=0 fds=16
+rtsp c0: sent=51727/68741101B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=51727/68741101B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=103454 epoch=0 rej453=0 fds=16
+rtsp c0: sent=51898/68971527B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=51898/68971527B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=103796 epoch=0 rej453=0 fds=16
+rtsp c0: sent=52124/69271941B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=52124/69271941B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=104248 epoch=0 rej453=0 fds=16
+rtsp-ring: in=11695 evict=11665 depth=30 bytes=0.48/8MB tags=[11665,11695)
+rtsp c0: sent=52277/69475522B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=52277/69475522B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=104554 epoch=0 rej453=0 fds=16
+rtsp c0: sent=52508/69783062B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=52508/69783062B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=105016 epoch=0 rej453=0 fds=16
+rtsp c0: sent=52662/69987930B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=52662/69987930B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=105324 epoch=0 rej453=0 fds=16
+rtsp c0: sent=52890/70288370B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=52890/70288370B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=105780 epoch=0 rej453=0 fds=16
+rtsp c0: sent=53049/70497990B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=53049/70497990B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=106098 epoch=0 rej453=0 fds=16
+rtsp-ring: in=11770 evict=11740 depth=30 bytes=0.50/8MB tags=[11740,11770)
+rtsp c0: sent=53284/70810094B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=53284/70810094B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=106568 epoch=0 rej453=0 fds=16
+rtsp c0: sent=53428/71001482B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=53428/71001482B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=106856 epoch=0 rej453=0 fds=16
+rtsp c0: sent=53658/71308881B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=53658/71308881B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=107316 epoch=0 rej453=0 fds=16
+rtsp c0: sent=53804/71502679B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=53804/71502679B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=107608 epoch=0 rej453=0 fds=16
+rtsp c0: sent=54051/71831753B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=54051/71831753B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=108102 epoch=0 rej453=0 fds=16
+rtsp-ring: in=11845 evict=11815 depth=30 bytes=0.50/8MB tags=[11815,11845)
+rtsp c0: sent=54197/72024299B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=54197/72024299B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=108394 epoch=0 rej453=0 fds=16
+rtsp c0: sent=54443/72352518B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=54443/72352518B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=108886 epoch=0 rej453=0 fds=16
+rtsp c0: sent=54573/72523474B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=54573/72523474B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=109146 epoch=0 rej453=0 fds=16
+rtsp c0: sent=54820/72852725B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=54830/72866583B skip=0 evict=0 dead=0 lag=0ms idle=0.0s
+rtsp: conn=2 play=2/4 sent=109650 epoch=0 rej453=0 fds=16
+rtsp c0: sent=54957/73032594B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=54957/73032594B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=109914 epoch=0 rej453=0 fds=16
+rtsp-ring: in=11920 evict=11890 depth=30 bytes=0.49/8MB tags=[11890,11920)
+rtsp c0: sent=55207/73364869B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=55207/73364869B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=110414 epoch=0 rej453=0 fds=16
+rtsp c0: sent=55343/73544841B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=55343/73544841B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=110686 epoch=0 rej453=0 fds=16
+rtsp c0: sent=55593/73876864B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=55593/73876864B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=111186 epoch=0 rej453=0 fds=16
+rtsp c0: sent=55729/74056987B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=55729/74056987B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=111458 epoch=0 rej453=0 fds=16
+rtsp c0: sent=55977/74388777B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=55977/74388777B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=111954 epoch=0 rej453=0 fds=16
+rtsp-ring: in=11995 evict=11965 depth=30 bytes=0.49/8MB tags=[11965,11995)
+rtsp c0: sent=56113/74572235B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=56113/74572235B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=112226 epoch=0 rej453=0 fds=16
+rtsp c0: sent=56350/74887388B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=56350/74887388B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=112700 epoch=0 rej453=0 fds=16
+rtsp c0: sent=56495/75082392B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=56495/75082392B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=112990 epoch=0 rej453=0 fds=16
+rtsp c0: sent=56728/75393380B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=56728/75393380B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=113456 epoch=0 rej453=0 fds=16
+rtsp c0: sent=56875/75585863B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=56875/75585863B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=113750 epoch=0 rej453=0 fds=16
+rtsp-ring: in=12070 evict=12040 depth=30 bytes=0.49/8MB tags=[12040,12070)
+rtsp c0: sent=57119/75912448B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=57119/75912448B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=114238 epoch=0 rej453=0 fds=16
+rtsp c0: sent=57258/76096559B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=57258/76096559B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=114516 epoch=0 rej453=0 fds=16
+rtsp c0: sent=57507/76428417B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=57507/76428417B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=115014 epoch=0 rej453=0 fds=16
+rtsp c0: sent=57644/76613213B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=57644/76613213B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=115288 epoch=0 rej453=0 fds=16
+rtsp c0: sent=57889/76940827B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=57889/76940827B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=115778 epoch=0 rej453=0 fds=16
+rtsp-ring: in=12145 evict=12115 depth=30 bytes=0.48/8MB tags=[12115,12145)
+rtsp c0: sent=58024/77119477B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=58024/77119477B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=116048 epoch=0 rej453=0 fds=16
+rtsp c0: sent=58273/77449641B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=58273/77449641B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=116546 epoch=0 rej453=0 fds=16
+rtsp c0: sent=58411/77631586B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=58411/77631586B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=116822 epoch=0 rej453=0 fds=16
+rtsp c0: sent=58659/77963695B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=58659/77963695B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=117318 epoch=0 rej453=0 fds=16
+rtsp c0: sent=58798/78147451B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=58798/78147451B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=117596 epoch=0 rej453=0 fds=16
+rtsp-ring: in=12220 evict=12190 depth=30 bytes=0.50/8MB tags=[12190,12220)
+rtsp c0: sent=59052/78483887B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=59052/78483887B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=118104 epoch=0 rej453=0 fds=16
+rtsp c0: sent=59190/78666191B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=59190/78666191B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=118380 epoch=0 rej453=0 fds=16
+rtsp c0: sent=59428/78986132B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=59428/78986132B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=118856 epoch=0 rej453=0 fds=16
+rtsp c0: sent=59563/79162832B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=59563/79162832B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=119126 epoch=0 rej453=0 fds=16
+rtsp c0: sent=59821/79505234B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=59821/79505234B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=119642 epoch=0 rej453=0 fds=16
+rtsp-ring: in=12295 evict=12265 depth=30 bytes=0.49/8MB tags=[12265,12295)
+rtsp c0: sent=59954/79680341B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=59954/79680341B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=119908 epoch=0 rej453=0 fds=16
+rtsp c0: sent=60202/80011384B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=60202/80011384B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=120404 epoch=0 rej453=0 fds=16
+rtsp c0: sent=60335/80187367B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=60335/80187367B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=120670 epoch=0 rej453=0 fds=16
+rtsp c0: sent=60587/80525722B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=60587/80525722B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=121174 epoch=0 rej453=0 fds=16
+rtsp c0: sent=60720/80701119B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=60720/80701119B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=121440 epoch=0 rej453=0 fds=16
+rtsp-ring: in=12370 evict=12340 depth=30 bytes=0.48/8MB tags=[12340,12370)
+rtsp c0: sent=60966/81032387B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=60966/81032387B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=121932 epoch=0 rej453=0 fds=16
+rtsp c0: sent=61103/81211819B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=61103/81211819B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=122206 epoch=0 rej453=0 fds=16
+rtsp c0: sent=61346/81541088B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=61346/81541088B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=122692 epoch=0 rej453=0 fds=16
+rtsp c0: sent=61481/81719889B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=61481/81719889B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=122962 epoch=0 rej453=0 fds=16
+rtsp c0: sent=61738/82061781B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=61738/82061781B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=123476 epoch=0 rej453=0 fds=16
+rtsp-ring: in=12445 evict=12415 depth=30 bytes=0.50/8MB tags=[12415,12445)
+rtsp c0: sent=61874/82242406B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=61874/82242406B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=123748 epoch=0 rej453=0 fds=16
+rtsp c0: sent=62117/82568391B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=62117/82568391B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=124234 epoch=0 rej453=0 fds=16
+rtsp c0: sent=62255/82751555B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=62255/82751555B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=124510 epoch=0 rej453=0 fds=16
+rtsp c0: sent=62496/83072093B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=62496/83072093B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=124992 epoch=0 rej453=0 fds=16
+rtsp c0: sent=62633/83252494B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=62633/83252494B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=125266 epoch=0 rej453=0 fds=16
+rtsp-ring: in=12520 evict=12490 depth=30 bytes=0.47/8MB tags=[12490,12520)
+rtsp c0: sent=62869/83566516B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=62869/83566516B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=125738 epoch=0 rej453=0 fds=16
+rtsp c0: sent=63003/83742565B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=63003/83742565B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=126006 epoch=0 rej453=0 fds=16
+rtsp c0: sent=63246/84066001B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=63246/84066001B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=126492 epoch=0 rej453=0 fds=16
+rtsp c0: sent=63384/84248573B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=63384/84248573B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=126768 epoch=0 rej453=0 fds=16
+rtsp c0: sent=63628/84573988B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=63628/84573988B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=127256 epoch=0 rej453=0 fds=16
+rtsp-ring: in=12595 evict=12565 depth=30 bytes=0.49/8MB tags=[12565,12595)
+rtsp c0: sent=63765/84758944B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=63765/84758944B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=127530 epoch=0 rej453=0 fds=16
+rtsp c0: sent=64000/85072094B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=64000/85072094B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=128000 epoch=0 rej453=0 fds=16
+rtsp c0: sent=64134/85251781B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=64134/85251781B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=128268 epoch=0 rej453=0 fds=16
+rtsp c0: sent=64385/85588081B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=64385/85588081B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=128770 epoch=0 rej453=0 fds=16
+rtsp c0: sent=64530/85779204B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=64530/85779204B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=129060 epoch=0 rej453=0 fds=16
+rtsp-ring: in=12670 evict=12640 depth=30 bytes=0.47/8MB tags=[12640,12670)
+rtsp c0: sent=64760/86083744B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=64760/86083744B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=129520 epoch=0 rej453=0 fds=16
+rtsp c0: sent=64899/86267419B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=64899/86267419B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=129798 epoch=0 rej453=0 fds=16
+rtsp c0: sent=65129/86575234B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=65129/86575234B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=130258 epoch=0 rej453=0 fds=16
+rtsp c0: sent=65262/86749924B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=65262/86749924B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=130524 epoch=0 rej453=0 fds=16
+rtsp c0: sent=65506/87071537B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=65506/87071537B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=131012 epoch=0 rej453=0 fds=16
+rtsp-ring: in=12745 evict=12715 depth=30 bytes=0.49/8MB tags=[12715,12745)
+rtsp c0: sent=65651/87264479B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=65651/87264479B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=131302 epoch=0 rej453=0 fds=16
+rtsp c0: sent=65891/87585643B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=65891/87585643B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=131782 epoch=0 rej453=0 fds=16
+rtsp c0: sent=66041/87781726B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=66041/87781726B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=132082 epoch=0 rej453=0 fds=16
+rtsp c0: sent=66279/88098401B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=66279/88098401B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=132558 epoch=0 rej453=0 fds=16
+rtsp c0: sent=66422/88289315B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=66422/88289315B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=132844 epoch=0 rej453=0 fds=16
+rtsp-ring: in=12820 evict=12790 depth=30 bytes=0.49/8MB tags=[12790,12820)
+rtsp c0: sent=66666/88611929B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=66666/88611929B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=133332 epoch=0 rej453=0 fds=16
+rtsp c0: sent=66802/88789608B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=66802/88789608B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=133604 epoch=0 rej453=0 fds=16
+rtsp c0: sent=67057/89131307B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=67057/89131307B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=134114 epoch=0 rej453=0 fds=16
+rtsp c0: sent=67186/89301982B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=67186/89301982B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=134372 epoch=0 rej453=0 fds=16
+rtsp c0: sent=67415/89604775B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=67415/89604775B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=134830 epoch=0 rej453=0 fds=16
+rtsp-ring: in=12895 evict=12865 depth=30 bytes=0.48/8MB tags=[12865,12895)
+rtsp c0: sent=67561/89799502B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=67561/89799502B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=135122 epoch=0 rej453=0 fds=16
+rtsp c0: sent=67796/90113059B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=67796/90113059B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=135592 epoch=0 rej453=0 fds=16
+rtsp c0: sent=67945/90308788B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=67945/90308788B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=135890 epoch=0 rej453=0 fds=16
+rtsp c0: sent=68193/90640733B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=68193/90640733B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=136386 epoch=0 rej453=0 fds=16
+rtsp c0: sent=68328/90820926B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=68328/90820926B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=136656 epoch=0 rej453=0 fds=16
+rtsp-ring: in=12970 evict=12940 depth=30 bytes=0.49/8MB tags=[12940,12970)
+rtsp c0: sent=68573/91149029B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=68573/91149029B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=137146 epoch=0 rej453=0 fds=16
+rtsp c0: sent=68708/91326368B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=68708/91326368B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=137416 epoch=0 rej453=0 fds=16
+rtsp c0: sent=68945/91644354B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=68945/91644354B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=137890 epoch=0 rej453=0 fds=16
+rtsp c0: sent=69083/91822147B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=69083/91822147B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=138166 epoch=0 rej453=0 fds=16
+rtsp c0: sent=69336/92160631B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=69336/92160631B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=138672 epoch=0 rej453=0 fds=16
+rtsp-ring: in=13045 evict=13015 depth=30 bytes=0.50/8MB tags=[13015,13045)
+rtsp c0: sent=69474/92344586B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=69474/92344586B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=138948 epoch=0 rej453=0 fds=16
+rtsp c0: sent=69725/92679361B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=69725/92679361B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=139450 epoch=0 rej453=0 fds=16
+rtsp c0: sent=69859/92853839B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=69859/92853839B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=139718 epoch=0 rej453=0 fds=16
+rtsp c0: sent=70108/93188441B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=70108/93188441B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=140216 epoch=0 rej453=0 fds=16
+rtsp c0: sent=70241/93363620B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=70241/93363620B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=140482 epoch=0 rej453=0 fds=16
+rtsp-ring: in=13120 evict=13090 depth=30 bytes=0.50/8MB tags=[13090,13120)
+rtsp c0: sent=70500/93708468B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=70500/93708468B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=141000 epoch=0 rej453=0 fds=16
+rtsp c0: sent=70632/93884605B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=70632/93884605B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=141264 epoch=0 rej453=0 fds=16
+rtsp c0: sent=70874/94206787B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=70874/94206787B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=141748 epoch=0 rej453=0 fds=16
+rtsp c0: sent=71012/94392368B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=71012/94392368B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=142024 epoch=0 rej453=0 fds=16
+rtsp c0: sent=71250/94707655B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=71250/94707655B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=142500 epoch=0 rej453=0 fds=16
+rtsp-ring: in=13195 evict=13165 depth=30 bytes=0.47/8MB tags=[13165,13195)
+rtsp c0: sent=71389/94892021B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=71389/94892021B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=142778 epoch=0 rej453=0 fds=16
+rtsp c0: sent=71642/95230794B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=71642/95230794B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=143284 epoch=0 rej453=0 fds=16
+rtsp c0: sent=71789/95427326B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=71789/95427326B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=143578 epoch=0 rej453=0 fds=16
+rtsp c0: sent=72026/95740809B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=72026/95740809B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=144052 epoch=0 rej453=0 fds=16
+rtsp c0: sent=72154/95910853B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=72154/95910853B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=144308 epoch=0 rej453=0 fds=16
+rtsp-ring: in=13270 evict=13240 depth=30 bytes=0.48/8MB tags=[13240,13270)
+rtsp c0: sent=72403/96244591B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=72403/96244591B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=144806 epoch=0 rej453=0 fds=16
+rtsp c0: sent=72538/96426183B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=72538/96426183B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=145076 epoch=0 rej453=0 fds=16
+rtsp c0: sent=72780/96749777B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=72780/96749777B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=145560 epoch=0 rej453=0 fds=16
+rtsp c0: sent=72917/96932318B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=72917/96932318B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=145834 epoch=0 rej453=0 fds=16
+rtsp c0: sent=73163/97261727B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=73163/97261727B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=146326 epoch=0 rej453=0 fds=16
+rtsp-ring: in=13345 evict=13315 depth=30 bytes=0.49/8MB tags=[13315,13345)
+rtsp c0: sent=73297/97441469B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=73297/97441469B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=146594 epoch=0 rej453=0 fds=16
+rtsp c0: sent=73537/97762527B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=73537/97762527B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=147074 epoch=0 rej453=0 fds=16
+rtsp c0: sent=73671/97939323B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=73671/97939323B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=147342 epoch=0 rej453=0 fds=16
+rtsp c0: sent=73905/98252382B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=73905/98252382B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=147810 epoch=0 rej453=0 fds=16
+rtsp c0: sent=74047/98440187B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=74047/98440187B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=148094 epoch=0 rej453=0 fds=16
+rtsp-ring: in=13420 evict=13390 depth=30 bytes=0.50/8MB tags=[13390,13420)
+rtsp c0: sent=74296/98771957B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=74296/98771957B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=148592 epoch=0 rej453=0 fds=16
+rtsp c0: sent=74441/98961729B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=74441/98961729B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=148882 epoch=0 rej453=0 fds=16
+rtsp c0: sent=74692/99293612B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=74692/99293612B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=149384 epoch=0 rej453=0 fds=16
+rtsp c0: sent=74826/99472455B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=74826/99472455B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=149652 epoch=0 rej453=0 fds=16
+rtsp c0: sent=75072/99797755B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=75072/99797755B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=150144 epoch=0 rej453=0 fds=16
+rtsp-ring: in=13495 evict=13465 depth=30 bytes=0.48/8MB tags=[13465,13495)
+rtsp c0: sent=75205/99976674B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=75205/99976674B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=150410 epoch=0 rej453=0 fds=16
+rtsp c0: sent=75461/100318005B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=75461/100318005B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=150922 epoch=0 rej453=0 fds=16
+rtsp c0: sent=75593/100493596B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=75593/100493596B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=151186 epoch=0 rej453=0 fds=16
+rtsp c0: sent=75805/100773833B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=75805/100773833B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=151610 epoch=0 rej453=0 fds=16
+rtsp c0: sent=75948/100963417B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=75948/100963417B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=151896 epoch=0 rej453=0 fds=16
+rtsp-ring: in=13570 evict=13540 depth=30 bytes=0.48/8MB tags=[13540,13570)
+rtsp c0: sent=76181/101271489B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=76181/101271489B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=152362 epoch=0 rej453=0 fds=16
+rtsp c0: sent=76330/101470210B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=76330/101470210B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=152660 epoch=0 rej453=0 fds=16
+rtsp c0: sent=76555/101770192B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=76555/101770192B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=153110 epoch=0 rej453=0 fds=16
+rtsp c0: sent=76713/101980364B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=76713/101980364B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=153426 epoch=0 rej453=0 fds=16
+rtsp c0: sent=76941/102283718B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=76941/102283718B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=153882 epoch=0 rej453=0 fds=16
+rtsp-ring: in=13645 evict=13615 depth=30 bytes=0.48/8MB tags=[13615,13645)
+rtsp c0: sent=77092/102482508B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=77092/102482508B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=154184 epoch=0 rej453=0 fds=16
+rtsp c0: sent=77319/102784793B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=77319/102784793B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=154638 epoch=0 rej453=0 fds=16
+rtsp c0: sent=77473/102986645B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=77473/102986645B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=154946 epoch=0 rej453=0 fds=16
+rtsp c0: sent=77697/103286113B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=77697/103286113B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=155394 epoch=0 rej453=0 fds=16
+rtsp c0: sent=77843/103481401B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=77843/103481401B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=155686 epoch=0 rej453=0 fds=16
+rtsp-ring: in=13720 evict=13690 depth=30 bytes=0.47/8MB tags=[13690,13720)
+rtsp c0: sent=78066/103777618B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=78066/103777618B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=156132 epoch=0 rej453=0 fds=16
+rtsp c0: sent=78210/103968081B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=78210/103968081B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=156420 epoch=0 rej453=0 fds=16
+rtsp c0: sent=78448/104284000B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=78448/104284000B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=156896 epoch=0 rej453=0 fds=16
+rtsp c0: sent=78592/104477184B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=78592/104477184B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=157184 epoch=0 rej453=0 fds=16
+rtsp c0: sent=78826/104787615B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=78826/104787615B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=157652 epoch=0 rej453=0 fds=16
+rtsp-ring: in=13795 evict=13765 depth=30 bytes=0.51/8MB tags=[13765,13795)
+rtsp c0: sent=78993/105011979B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=78993/105011979B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=157986 epoch=0 rej453=0 fds=16
+rtsp c0: sent=79223/105318833B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=79223/105318833B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=158446 epoch=0 rej453=0 fds=16
+rtsp c0: sent=79349/105484966B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=79349/105484966B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=158698 epoch=0 rej453=0 fds=16
+rtsp c0: sent=79572/105782950B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=79572/105782950B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=159144 epoch=0 rej453=0 fds=16
+rtsp c0: sent=79726/105984878B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=79726/105984878B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=159452 epoch=0 rej453=0 fds=16
+rtsp-ring: in=13870 evict=13840 depth=30 bytes=0.48/8MB tags=[13840,13870)
+rtsp c0: sent=79956/106289374B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=79956/106289374B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=159912 epoch=0 rej453=0 fds=16
+rtsp c0: sent=80095/106472005B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=80095/106472005B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=160190 epoch=0 rej453=0 fds=16
+rtsp c0: sent=80320/106770159B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=80320/106770159B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=160640 epoch=0 rej453=0 fds=16
+rtsp c0: sent=80471/106970176B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=80471/106970176B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=160942 epoch=0 rej453=0 fds=16
+rtsp c0: sent=80716/107297096B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=80716/107297096B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=161432 epoch=0 rej453=0 fds=16
+rtsp-ring: in=13945 evict=13915 depth=30 bytes=0.49/8MB tags=[13915,13945)
+rtsp c0: sent=80857/107483656B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=80857/107483656B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=161714 epoch=0 rej453=0 fds=16
+rtsp c0: sent=81108/107819473B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=81108/107819473B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=162216 epoch=0 rej453=0 fds=16
+rtsp c0: sent=81240/107995898B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=81240/107995898B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=162480 epoch=0 rej453=0 fds=16
+rtsp c0: sent=81490/108328850B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=81490/108328850B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=162980 epoch=0 rej453=0 fds=16
+rtsp c0: sent=81611/108487966B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=81611/108487966B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=163222 epoch=0 rej453=0 fds=16
+rtsp-ring: in=14020 evict=13990 depth=30 bytes=0.47/8MB tags=[13990,14020)
+rtsp c0: sent=81861/108820035B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=81861/108820035B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=163722 epoch=0 rej453=0 fds=16
+rtsp c0: sent=81997/109000565B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=81997/109000565B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=163994 epoch=0 rej453=0 fds=16
+rtsp c0: sent=82248/109334463B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=82248/109334463B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=164496 epoch=0 rej453=0 fds=16
+rtsp c0: sent=82385/109516465B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=82385/109516465B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=164770 epoch=0 rej453=0 fds=16
+rtsp c0: sent=82639/109856490B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=82639/109856490B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=165278 epoch=0 rej453=0 fds=16
+rtsp-ring: in=14095 evict=14065 depth=30 bytes=0.49/8MB tags=[14065,14095)
+rtsp c0: sent=82773/110030429B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=82773/110030429B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=165546 epoch=0 rej453=0 fds=16
+rtsp c0: sent=83014/110354479B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=83014/110354479B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=166028 epoch=0 rej453=0 fds=16
+rtsp c0: sent=83146/110530172B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=83146/110530172B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=166292 epoch=0 rej453=0 fds=16
+rtsp c0: sent=83382/110843986B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=83382/110843986B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=166764 epoch=0 rej453=0 fds=16
+rtsp c0: sent=83544/111058904B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=83544/111058904B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=167088 epoch=0 rej453=0 fds=16
+rtsp-ring: in=14170 evict=14140 depth=30 bytes=0.47/8MB tags=[14140,14170)
+rtsp c0: sent=83752/111333735B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=83752/111333735B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=167504 epoch=0 rej453=0 fds=16
+rtsp c0: sent=83899/111532479B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=83899/111532479B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=167798 epoch=0 rej453=0 fds=16
+rtsp c0: sent=84124/111827738B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=84124/111827738B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=168248 epoch=0 rej453=0 fds=16
+rtsp c0: sent=84273/112026793B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=84273/112026793B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=168546 epoch=0 rej453=0 fds=16
+rtsp c0: sent=84505/112334052B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=84505/112334052B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=169010 epoch=0 rej453=0 fds=16
+rtsp-ring: in=14245 evict=14215 depth=30 bytes=0.48/8MB tags=[14215,14245)
+rtsp c0: sent=84658/112537827B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=84658/112537827B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=169316 epoch=0 rej453=0 fds=16
+rtsp c0: sent=84886/112841262B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=84886/112841262B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=169772 epoch=0 rej453=0 fds=16
+rtsp c0: sent=85031/113034392B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=85031/113034392B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=170062 epoch=0 rej453=0 fds=16
+rtsp c0: sent=85259/113338171B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=85259/113338171B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=170518 epoch=0 rej453=0 fds=16
+rtsp c0: sent=85406/113530005B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=85406/113530005B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=170812 epoch=0 rej453=0 fds=16
+rtsp-ring: in=14320 evict=14290 depth=30 bytes=0.48/8MB tags=[14290,14320)
+rtsp c0: sent=85645/113845775B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=85645/113845775B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=171290 epoch=0 rej453=0 fds=16
+rtsp c0: sent=85789/114033179B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=85789/114033179B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=171578 epoch=0 rej453=0 fds=16
+rtsp c0: sent=86027/114350381B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=86027/114350381B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=172054 epoch=0 rej453=0 fds=16
+rtsp c0: sent=86163/114533529B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=86163/114533529B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=172326 epoch=0 rej453=0 fds=16
+rtsp c0: sent=86410/114860604B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=86410/114860604B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=172820 epoch=0 rej453=0 fds=16
+rtsp-ring: in=14395 evict=14365 depth=30 bytes=0.50/8MB tags=[14365,14395)
+rtsp c0: sent=86559/115057133B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=86559/115057133B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=173118 epoch=0 rej453=0 fds=16
+rtsp c0: sent=86805/115386193B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=86805/115386193B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=173610 epoch=0 rej453=0 fds=16
+rtsp c0: sent=86951/115580639B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=86951/115580639B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=173902 epoch=0 rej453=0 fds=16
+rtsp c0: sent=87189/115897123B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=87189/115897123B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=174378 epoch=0 rej453=0 fds=16
+rtsp c0: sent=87336/116088948B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=87336/116088948B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=174672 epoch=0 rej453=0 fds=16
+rtsp-ring: in=14470 evict=14440 depth=30 bytes=0.47/8MB tags=[14440,14470)
+rtsp c0: sent=87560/116389318B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=87560/116389318B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=175120 epoch=0 rej453=0 fds=16
+rtsp c0: sent=87698/116570961B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=87698/116570961B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=175396 epoch=0 rej453=0 fds=16
+rtsp c0: sent=87930/116882132B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=87930/116882132B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=175860 epoch=0 rej453=0 fds=16
+rtsp c0: sent=88083/117084274B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=88083/117084274B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=176166 epoch=0 rej453=0 fds=16
+rtsp c0: sent=88325/117405262B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=88325/117405262B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=176650 epoch=0 rej453=0 fds=16
+rtsp-ring: in=14545 evict=14515 depth=30 bytes=0.50/8MB tags=[14515,14545)
+rtsp c0: sent=88472/117600853B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=88472/117600853B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=176944 epoch=0 rej453=0 fds=16
+rtsp c0: sent=88718/117927784B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=88718/117927784B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=177436 epoch=0 rej453=0 fds=16
+rtsp c0: sent=88858/118115199B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=88858/118115199B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=177716 epoch=0 rej453=0 fds=16
+rtsp c0: sent=89079/118409225B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=89079/118409225B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=178158 epoch=0 rej453=0 fds=16
+rtsp c0: sent=89238/118623182B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=89238/118623182B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=178476 epoch=0 rej453=0 fds=16
+rtsp-ring: in=14621 evict=14591 depth=30 bytes=0.49/8MB tags=[14591,14621)
+rtsp c0: sent=89477/118940509B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=89477/118940509B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=178954 epoch=0 rej453=0 fds=16
+rtsp c0: sent=89614/119120448B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=89614/119120448B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=179228 epoch=0 rej453=0 fds=16
+rtsp c0: sent=89847/119430670B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=89847/119430670B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=179694 epoch=0 rej453=0 fds=16
+rtsp c0: sent=89986/119613031B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=89986/119613031B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=179972 epoch=0 rej453=0 fds=16
+rtsp c0: sent=90232/119939342B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=90232/119939342B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=180464 epoch=0 rej453=0 fds=16
+rtsp-ring: in=14695 evict=14665 depth=30 bytes=0.50/8MB tags=[14665,14695)
+rtsp c0: sent=90377/120132785B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=90377/120132785B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=180754 epoch=0 rej453=0 fds=16
+rtsp c0: sent=90626/120465721B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=90626/120465721B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=181252 epoch=0 rej453=0 fds=16
+rtsp c0: sent=90766/120653865B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=90766/120653865B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=181532 epoch=0 rej453=0 fds=16
+rtsp c0: sent=91003/120967534B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=91003/120967534B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=182006 epoch=0 rej453=0 fds=16
+rtsp c0: sent=91138/121144292B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=91138/121144292B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=182276 epoch=0 rej453=0 fds=16
+rtsp-ring: in=14770 evict=14740 depth=30 bytes=0.48/8MB tags=[14740,14770)
+rtsp c0: sent=91375/121459792B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=91375/121459792B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=182750 epoch=0 rej453=0 fds=16
+rtsp c0: sent=91527/121664396B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=91527/121664396B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=183054 epoch=0 rej453=0 fds=16
+rtsp c0: sent=91761/121977446B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=91761/121977446B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=183522 epoch=0 rej453=0 fds=16
+rtsp c0: sent=91906/122169217B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=91906/122169217B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=183812 epoch=0 rej453=0 fds=16
+rtsp c0: sent=92149/122493565B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=92149/122493565B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=184298 epoch=0 rej453=0 fds=16
+rtsp-ring: in=14846 evict=14816 depth=30 bytes=0.49/8MB tags=[14816,14846)
+rtsp c0: sent=92304/122699557B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=92304/122699557B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=184608 epoch=0 rej453=0 fds=16
+rtsp c0: sent=92539/123008826B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=92539/123008826B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=185078 epoch=0 rej453=0 fds=16
+rtsp c0: sent=92671/123179174B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=92671/123179174B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=185342 epoch=0 rej453=0 fds=16
+rtsp c0: sent=92904/123490003B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=92904/123490003B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=185808 epoch=0 rej453=0 fds=16
+rtsp c0: sent=93065/123701912B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=93065/123701912B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=186130 epoch=0 rej453=0 fds=16
+rtsp-ring: in=14920 evict=14890 depth=30 bytes=0.48/8MB tags=[14890,14920)
+rtsp c0: sent=93286/123993669B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=93286/123993669B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=186572 epoch=0 rej453=0 fds=16
+rtsp c0: sent=93437/124193564B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=93437/124193564B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=186874 epoch=0 rej453=0 fds=16
+rtsp c0: sent=93670/124502569B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=93670/124502569B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=187340 epoch=0 rej453=0 fds=16
+rtsp c0: sent=93816/124696341B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=93816/124696341B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=187632 epoch=0 rej453=0 fds=16
+rtsp c0: sent=94055/125017230B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=94055/125017230B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=188110 epoch=0 rej453=0 fds=16
+rtsp-ring: in=14996 evict=14966 depth=30 bytes=0.49/8MB tags=[14966,14996)
+rtsp c0: sent=94214/125231980B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=94214/125231980B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=188428 epoch=0 rej453=0 fds=16
+rtsp c0: sent=94436/125524964B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=94436/125524964B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=188872 epoch=0 rej453=0 fds=16
+rtsp c0: sent=94595/125737032B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=94595/125737032B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=189190 epoch=0 rej453=0 fds=16
+rtsp c0: sent=94838/126060608B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=94838/126060608B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=189676 epoch=0 rej453=0 fds=16
+rtsp c0: sent=94985/126255680B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=94985/126255680B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=189970 epoch=0 rej453=0 fds=16
+rtsp-ring: in=15070 evict=15040 depth=30 bytes=0.46/8MB tags=[15040,15070)
+rtsp c0: sent=95190/126525764B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=95190/126525764B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=190380 epoch=0 rej453=0 fds=16
+rtsp c0: sent=95344/126731582B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=95344/126731582B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=190688 epoch=0 rej453=0 fds=16
+rtsp c0: sent=95576/127039666B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=95576/127039666B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=191152 epoch=0 rej453=0 fds=16
+rtsp c0: sent=95722/127236649B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=95722/127236649B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=191444 epoch=0 rej453=0 fds=16
+rtsp c0: sent=95939/127526041B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=95939/127526041B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=191878 epoch=0 rej453=0 fds=16
+rtsp-ring: in=15146 evict=15116 depth=30 bytes=0.46/8MB tags=[15116,15146)
+rtsp c0: sent=96086/127721259B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=96086/127721259B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=192172 epoch=0 rej453=0 fds=16
+rtsp c0: sent=96310/128021502B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=96310/128021502B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=192620 epoch=0 rej453=0 fds=16
+rtsp c0: sent=96472/128234204B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=96472/128234204B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=192944 epoch=0 rej453=0 fds=16
+rtsp c0: sent=96708/128551725B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=96708/128551725B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=193416 epoch=0 rej453=0 fds=16
+rtsp c0: sent=96850/128738938B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=96850/128738938B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=193700 epoch=0 rej453=0 fds=16
+rtsp-ring: in=15221 evict=15191 depth=30 bytes=0.48/8MB tags=[15191,15221)
+rtsp c0: sent=97086/129053200B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=97086/129053200B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=194172 epoch=0 rej453=0 fds=16
+rtsp c0: sent=97236/129251209B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=97236/129251209B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=194472 epoch=0 rej453=0 fds=16
+rtsp c0: sent=97456/129542273B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=97456/129542273B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=194912 epoch=0 rej453=0 fds=16
+rtsp c0: sent=97612/129748012B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=97612/129748012B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=195224 epoch=0 rej453=0 fds=16
+rtsp c0: sent=97856/130074389B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=97856/130074389B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=195712 epoch=0 rej453=0 fds=16
+rtsp-ring: in=15295 evict=15265 depth=30 bytes=0.50/8MB tags=[15265,15295)
+rtsp c0: sent=97999/130260462B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=97999/130260462B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=195998 epoch=0 rej453=0 fds=16
+rtsp c0: sent=98237/130575861B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=98237/130575861B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=196474 epoch=0 rej453=0 fds=16
+rtsp c0: sent=98380/130765066B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=98380/130765066B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=196760 epoch=0 rej453=0 fds=16
+rtsp c0: sent=98614/131075243B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=98614/131075243B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=197228 epoch=0 rej453=0 fds=16
+rtsp c0: sent=98768/131278235B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=98768/131278235B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=197536 epoch=0 rej453=0 fds=16
+rtsp-ring: in=15370 evict=15340 depth=30 bytes=0.49/8MB tags=[15340,15370)
+rtsp c0: sent=98990/131576439B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=98990/131576439B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=197980 epoch=0 rej453=0 fds=16
+rtsp c0: sent=99139/131773670B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=99139/131773670B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=198278 epoch=0 rej453=0 fds=16
+rtsp c0: sent=99388/132106128B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=99388/132106128B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=198776 epoch=0 rej453=0 fds=16
+rtsp c0: sent=99532/132298077B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=99532/132298077B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=199064 epoch=0 rej453=0 fds=16
+rtsp c0: sent=99752/132590963B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=99752/132590963B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=199504 epoch=0 rej453=0 fds=16
+rtsp-ring: in=15446 evict=15416 depth=30 bytes=0.45/8MB tags=[15416,15446)
+rtsp c0: sent=99889/132771404B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=99889/132771404B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=199778 epoch=0 rej453=0 fds=16
+rtsp c0: sent=100107/133064068B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=100107/133064068B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=200214 epoch=0 rej453=0 fds=16
+rtsp c0: sent=100270/133280985B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=100270/133280985B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=200540 epoch=0 rej453=0 fds=16
+rtsp c0: sent=100505/133592643B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=100505/133592643B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=201010 epoch=0 rej453=0 fds=16
+rtsp c0: sent=100646/133780966B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=100646/133780966B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=201292 epoch=0 rej453=0 fds=16
+rtsp-ring: in=15520 evict=15490 depth=30 bytes=0.48/8MB tags=[15490,15520)
+rtsp c0: sent=100878/134089025B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=100878/134089025B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=201756 epoch=0 rej453=0 fds=16
+rtsp c0: sent=101017/134272223B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=101017/134272223B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=202034 epoch=0 rej453=0 fds=16
+rtsp c0: sent=101272/134614442B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=101272/134614442B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=202544 epoch=0 rej453=0 fds=16
+rtsp c0: sent=101415/134801504B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=101415/134801504B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=202830 epoch=0 rej453=0 fds=16
+rtsp c0: sent=101666/135135361B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=101666/135135361B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=203332 epoch=0 rej453=0 fds=16
+rtsp-ring: in=15596 evict=15566 depth=30 bytes=0.49/8MB tags=[15566,15596)
+rtsp c0: sent=101802/135316019B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=101802/135316019B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=203604 epoch=0 rej453=0 fds=16
+rtsp c0: sent=102046/135643624B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=102046/135643624B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=204092 epoch=0 rej453=0 fds=16
+rtsp c0: sent=102163/135796785B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=102163/135796785B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=204326 epoch=0 rej453=0 fds=16
+rtsp c0: sent=102408/136124937B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=102408/136124937B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=204816 epoch=0 rej453=0 fds=16
+rtsp c0: sent=102561/136325179B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=102561/136325179B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=205122 epoch=0 rej453=0 fds=16
+rtsp-ring: in=15671 evict=15641 depth=30 bytes=0.50/8MB tags=[15641,15671)
+rtsp c0: sent=102808/136655594B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=102808/136655594B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=205616 epoch=0 rej453=0 fds=16
+rtsp c0: sent=102946/136839394B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=102946/136839394B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=205892 epoch=0 rej453=0 fds=16
+rtsp c0: sent=103165/137130823B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=103165/137130823B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=206330 epoch=0 rej453=0 fds=16
+rtsp c0: sent=103305/137314810B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=103305/137314810B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=206610 epoch=0 rej453=0 fds=16
+rtsp c0: sent=103549/137639761B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=103549/137639761B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=207098 epoch=0 rej453=0 fds=16
+rtsp-ring: in=15746 evict=15716 depth=30 bytes=0.47/8MB tags=[15716,15746)
+rtsp c0: sent=103691/137826582B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=103691/137826582B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=207382 epoch=0 rej453=0 fds=16
+rtsp c0: sent=103895/138098436B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=103895/138098436B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=207790 epoch=0 rej453=0 fds=16
+rtsp c0: sent=104058/138314939B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=104058/138314939B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=208116 epoch=0 rej453=0 fds=16
+rtsp c0: sent=104284/138615559B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=104284/138615559B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=208568 epoch=0 rej453=0 fds=16
+rtsp c0: sent=104420/138796174B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=104420/138796174B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=208840 epoch=0 rej453=0 fds=16
+rtsp-ring: in=15821 evict=15791 depth=30 bytes=0.47/8MB tags=[15791,15821)
+rtsp c0: sent=104662/139117983B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=104662/139117983B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=209324 epoch=0 rej453=0 fds=16
+rtsp c0: sent=104811/139314050B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=104811/139314050B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=209622 epoch=0 rej453=0 fds=16
+rtsp c0: sent=105032/139607642B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=105032/139607642B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=210064 epoch=0 rej453=0 fds=16
+rtsp c0: sent=105187/139812070B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=105187/139812070B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=210374 epoch=0 rej453=0 fds=16
+rtsp c0: sent=105414/140113256B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=105414/140113256B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=210828 epoch=0 rej453=0 fds=16
+rtsp-ring: in=15896 evict=15866 depth=30 bytes=0.47/8MB tags=[15866,15896)
+rtsp c0: sent=105558/140301416B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=105558/140301416B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=211116 epoch=0 rej453=0 fds=16
+rtsp c0: sent=105792/140614112B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=105792/140614112B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=211584 epoch=0 rej453=0 fds=16
+rtsp c0: sent=105945/140816835B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=105945/140816835B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=211890 epoch=0 rej453=0 fds=16
+rtsp c0: sent=106186/141136336B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=106186/141136336B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=212372 epoch=0 rej453=0 fds=16
+rtsp c0: sent=106325/141318991B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=106325/141318991B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=212650 epoch=0 rej453=0 fds=16
+rtsp-ring: in=15970 evict=15940 depth=30 bytes=0.48/8MB tags=[15940,15970)
+rtsp c0: sent=106556/141626639B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=106556/141626639B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=213112 epoch=0 rej453=0 fds=16
+rtsp c0: sent=106715/141837890B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=106715/141837890B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=213430 epoch=0 rej453=0 fds=16
+rtsp c0: sent=106961/142161079B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=106961/142161079B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=213922 epoch=0 rej453=0 fds=16
+rtsp c0: sent=107106/142350426B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=107106/142350426B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=214212 epoch=0 rej453=0 fds=16
+rtsp c0: sent=107350/142673969B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=107350/142673969B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=214700 epoch=0 rej453=0 fds=16
+rtsp-ring: in=16046 evict=16016 depth=30 bytes=0.49/8MB tags=[16016,16046)
+rtsp c0: sent=107490/142862343B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=107490/142862343B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=214980 epoch=0 rej453=0 fds=16
+rtsp c0: sent=107729/143180572B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=107729/143180572B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=215458 epoch=0 rej453=0 fds=16
+rtsp c0: sent=107869/143367508B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=107869/143367508B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=215738 epoch=0 rej453=0 fds=16
+rtsp c0: sent=108115/143694399B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=108115/143694399B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=216230 epoch=0 rej453=0 fds=16
+rtsp c0: sent=108257/143882723B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=108257/143882723B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=216514 epoch=0 rej453=0 fds=16
+rtsp-ring: in=16121 evict=16091 depth=30 bytes=0.49/8MB tags=[16091,16121)
+rtsp c0: sent=108499/144204886B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=108499/144204886B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=216998 epoch=0 rej453=0 fds=16
+rtsp c0: sent=108636/144389959B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=108636/144389959B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=217272 epoch=0 rej453=0 fds=16
+rtsp c0: sent=108860/144686189B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=108860/144686189B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=217720 epoch=0 rej453=0 fds=16
+rtsp c0: sent=109015/144894671B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=109015/144894671B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=218030 epoch=0 rej453=0 fds=16
+rtsp c0: sent=109263/145224900B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=109263/145224900B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=218526 epoch=0 rej453=0 fds=16
+rtsp-ring: in=16196 evict=16166 depth=30 bytes=0.48/8MB tags=[16166,16196)
+rtsp c0: sent=109405/145413875B skip=0 evict=0 dead=0 lag=0ms idle=0.0s
+rtsp c1: sent=109405/145413875B skip=0 evict=0 dead=0 lag=0ms idle=0.0s
+rtsp: conn=2 play=2/4 sent=218810 epoch=0 rej453=0 fds=16
+rtsp c0: sent=109642/145732492B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=109642/145732492B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=219284 epoch=0 rej453=0 fds=16
+rtsp c0: sent=109783/145918845B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=109783/145918845B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=219566 epoch=0 rej453=0 fds=16
+rtsp c0: sent=110020/146233745B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=110020/146233745B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=220040 epoch=0 rej453=0 fds=16
+rtsp c0: sent=110153/146408720B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=110153/146408720B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=220306 epoch=0 rej453=0 fds=16
+rtsp-ring: in=16271 evict=16241 depth=30 bytes=0.46/8MB tags=[16241,16271)
+rtsp c0: sent=110386/146717949B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=110386/146717949B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=220772 epoch=0 rej453=0 fds=16
+rtsp c0: sent=110522/146897328B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=110522/146897328B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=221044 epoch=0 rej453=0 fds=16
+rtsp c0: sent=110755/147208111B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=110755/147208111B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=221510 epoch=0 rej453=0 fds=16
+rtsp c0: sent=110910/147415135B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=110910/147415135B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=221820 epoch=0 rej453=0 fds=16
+rtsp c0: sent=111142/147724061B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=111142/147724061B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=222284 epoch=0 rej453=0 fds=16
+rtsp-ring: in=16346 evict=16316 depth=30 bytes=0.48/8MB tags=[16316,16346)
+rtsp c0: sent=111300/147932602B skip=0 evict=0 dead=0 lag=0ms idle=0.0s
+rtsp c1: sent=111300/147932602B skip=0 evict=0 dead=0 lag=0ms idle=0.0s
+rtsp: conn=2 play=2/4 sent=222600 epoch=0 rej453=0 fds=16
+rtsp c0: sent=111538/148248390B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=111538/148248390B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=223076 epoch=0 rej453=0 fds=16
+rtsp c0: sent=111681/148439238B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=111681/148439238B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=223362 epoch=0 rej453=0 fds=16
+rtsp c0: sent=111914/148753715B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=111914/148753715B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=223828 epoch=0 rej453=0 fds=16
+rtsp c0: sent=112059/148947466B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=112059/148947466B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=224118 epoch=0 rej453=0 fds=16
+rtsp-ring: in=16421 evict=16391 depth=30 bytes=0.46/8MB tags=[16391,16421)
+rtsp c0: sent=112275/149233418B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=112275/149233418B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=224550 epoch=0 rej453=0 fds=16
+rtsp c0: sent=112424/149433150B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=112424/149433150B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=224848 epoch=0 rej453=0 fds=16
+rtsp c0: sent=112652/149737191B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=112652/149737191B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=225304 epoch=0 rej453=0 fds=16
+rtsp c0: sent=112804/149940368B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=112804/149940368B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=225608 epoch=0 rej453=0 fds=16
+rtsp c0: sent=113057/150276992B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=113057/150276992B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=226114 epoch=0 rej453=0 fds=16
+rtsp-ring: in=16496 evict=16466 depth=30 bytes=0.49/8MB tags=[16466,16496)
+rtsp c0: sent=113192/150457364B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=113192/150457364B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=226384 epoch=0 rej453=0 fds=16
+rtsp c0: sent=113401/150731831B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=113401/150731831B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=226802 epoch=0 rej453=0 fds=16
+rtsp c0: sent=113590/150985972B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=113590/150985972B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=227180 epoch=0 rej453=0 fds=16
+rtsp c0: sent=113762/151213119B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=113762/151213119B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=227524 epoch=0 rej453=0 fds=16
+rtsp c0: sent=113899/151395075B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=113899/151395075B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=227798 epoch=0 rej453=0 fds=16
+rtsp-ring: in=16571 evict=16541 depth=30 bytes=0.46/8MB tags=[16541,16571)
+rtsp c0: sent=114121/151687682B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=114121/151687682B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=228242 epoch=0 rej453=0 fds=16
+rtsp c0: sent=114293/151917655B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=114293/151917655B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=228586 epoch=0 rej453=0 fds=16
+rtsp c0: sent=114535/152238693B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=114535/152238693B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=229070 epoch=0 rej453=0 fds=16
+rtsp c0: sent=114674/152422532B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=114674/152422532B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=229348 epoch=0 rej453=0 fds=16
+rtsp c0: sent=114901/152725927B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=114901/152725927B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=229802 epoch=0 rej453=0 fds=16
+rtsp-ring: in=16646 evict=16616 depth=30 bytes=0.48/8MB tags=[16616,16646)
+rtsp c0: sent=115049/152923892B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=115049/152923892B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=230098 epoch=0 rej453=0 fds=16
+rtsp c0: sent=115309/153270930B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=115309/153270930B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=230618 epoch=0 rej453=0 fds=16
+rtsp c0: sent=115446/153454627B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=115446/153454627B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=230892 epoch=0 rej453=0 fds=16
+rtsp c0: sent=115672/153758325B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=115672/153758325B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=231344 epoch=0 rej453=0 fds=16
+rtsp c0: sent=115812/153942631B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=115812/153942631B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=231624 epoch=0 rej453=0 fds=16
+rtsp-ring: in=16721 evict=16691 depth=30 bytes=0.45/8MB tags=[16691,16721)
+rtsp c0: sent=116027/154227732B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=116027/154227732B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=232054 epoch=0 rej453=0 fds=16
+rtsp c0: sent=116173/154421852B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=116173/154421852B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=232346 epoch=0 rej453=0 fds=16
+rtsp c0: sent=116413/154741583B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=116413/154741583B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=232826 epoch=0 rej453=0 fds=16
+rtsp c0: sent=116562/154939031B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=116562/154939031B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=233124 epoch=0 rej453=0 fds=16
+rtsp c0: sent=116818/155282691B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=116818/155282691B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=233636 epoch=0 rej453=0 fds=16
+rtsp-ring: in=16796 evict=16766 depth=30 bytes=0.50/8MB tags=[16766,16796)
+rtsp c0: sent=116958/155466302B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=116958/155466302B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=233916 epoch=0 rej453=0 fds=16
+rtsp c0: sent=117184/155767463B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=117184/155767463B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=234368 epoch=0 rej453=0 fds=16
+rtsp c0: sent=117321/155949933B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=117321/155949933B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=234642 epoch=0 rej453=0 fds=16
+rtsp c0: sent=117561/156265173B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=117561/156265173B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=235122 epoch=0 rej453=0 fds=16
+rtsp c0: sent=117705/156457397B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=117705/156457397B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=235410 epoch=0 rej453=0 fds=16
+rtsp-ring: in=16871 evict=16841 depth=30 bytes=0.49/8MB tags=[16841,16871)
+rtsp c0: sent=117950/156782761B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=117950/156782761B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=235900 epoch=0 rej453=0 fds=16
+rtsp c0: sent=118078/156951214B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=118078/156951214B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=236156 epoch=0 rej453=0 fds=16
+rtsp c0: sent=118317/157272128B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=118317/157272128B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=236634 epoch=0 rej453=0 fds=16
+rtsp c0: sent=118460/157460844B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=118460/157460844B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=236920 epoch=0 rej453=0 fds=16
+rtsp c0: sent=118713/157796716B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=118713/157796716B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=237426 epoch=0 rej453=0 fds=16
+rtsp-ring: in=16945 evict=16915 depth=30 bytes=0.50/8MB tags=[16915,16945)
+rtsp c0: sent=118840/157969874B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=118840/157969874B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=237680 epoch=0 rej453=0 fds=16
+rtsp c0: sent=119093/158308388B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=119093/158308388B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=238186 epoch=0 rej453=0 fds=16
+rtsp c0: sent=119226/158482448B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=119226/158482448B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=238452 epoch=0 rej453=0 fds=16
+rtsp c0: sent=119466/158800043B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=119466/158800043B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=238932 epoch=0 rej453=0 fds=16
+rtsp c0: sent=119605/158985055B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=119605/158985055B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=239210 epoch=0 rej453=0 fds=16
+rtsp-ring: in=17021 evict=16991 depth=30 bytes=0.50/8MB tags=[16991,17021)
+rtsp c0: sent=119860/159325215B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=119860/159325215B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=239720 epoch=0 rej453=0 fds=16
+rtsp c0: sent=119994/159504216B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=119994/159504216B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=239988 epoch=0 rej453=0 fds=16
+rtsp c0: sent=120241/159834759B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=120241/159834759B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=240482 epoch=0 rej453=0 fds=16
+rtsp c0: sent=120386/160030178B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=120386/160030178B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=240772 epoch=0 rej453=0 fds=16
+rtsp c0: sent=120613/160332059B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=120613/160332059B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=241226 epoch=0 rej453=0 fds=16
+rtsp-ring: in=17095 evict=17065 depth=30 bytes=0.43/8MB tags=[17065,17095)
+rtsp c0: sent=120721/160473509B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=120721/160473509B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=241442 epoch=0 rej453=0 fds=16
+rtsp c0: sent=120933/160750702B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=120933/160750702B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=241866 epoch=0 rej453=0 fds=16
+rtsp c0: sent=121094/160968010B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=121094/160968010B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=242188 epoch=0 rej453=0 fds=16
+rtsp c0: sent=121334/161289157B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=121334/161289157B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=242668 epoch=0 rej453=0 fds=16
+rtsp c0: sent=121483/161484305B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=121483/161484305B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=242966 epoch=0 rej453=0 fds=16
+rtsp-ring: in=17171 evict=17141 depth=30 bytes=0.48/8MB tags=[17141,17171)
+rtsp c0: sent=121717/161794394B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=121717/161794394B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=243434 epoch=0 rej453=0 fds=16
+rtsp c0: sent=121870/161995366B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=121870/161995366B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=243740 epoch=0 rej453=0 fds=16
+rtsp c0: sent=122105/162305872B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=122105/162305872B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=244210 epoch=0 rej453=0 fds=16
+rtsp c0: sent=122256/162508761B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=122256/162508761B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=244512 epoch=0 rej453=0 fds=16
+rtsp c0: sent=122496/162826230B skip=0 evict=0 dead=0 lag=0ms idle=0.0s
+rtsp c1: sent=122496/162826230B skip=0 evict=0 dead=0 lag=0ms idle=0.0s
+rtsp: conn=2 play=2/4 sent=244992 epoch=0 rej453=0 fds=16
+rtsp-ring: in=17246 evict=17216 depth=30 bytes=0.46/8MB tags=[17216,17246)
+rtsp c0: sent=122623/162996543B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=122623/162996543B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=245246 epoch=0 rej453=0 fds=16
+rtsp c0: sent=122863/163317307B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=122863/163317307B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=245726 epoch=0 rej453=0 fds=16
+rtsp c0: sent=123012/163515258B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=123012/163515258B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=246024 epoch=0 rej453=0 fds=16
+rtsp c0: sent=123242/163822568B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=123242/163822568B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=246484 epoch=0 rej453=0 fds=16
+rtsp c0: sent=123396/164027498B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=123396/164027498B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=246792 epoch=0 rej453=0 fds=16
+rtsp-ring: in=17321 evict=17291 depth=30 bytes=0.49/8MB tags=[17291,17321)
+rtsp c0: sent=123635/164347946B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=123635/164347946B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=247270 epoch=0 rej453=0 fds=16
+rtsp c0: sent=123778/164538136B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=123778/164538136B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=247556 epoch=0 rej453=0 fds=16
+rtsp c0: sent=124012/164852039B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=124012/164852039B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=248024 epoch=0 rej453=0 fds=16
+rtsp c0: sent=124153/165041819B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=124153/165041819B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=248306 epoch=0 rej453=0 fds=16
+rtsp c0: sent=124391/165359168B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=124391/165359168B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=248782 epoch=0 rej453=0 fds=16
+rtsp-ring: in=17396 evict=17366 depth=30 bytes=0.49/8MB tags=[17366,17396)
+rtsp c0: sent=124536/165552409B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=124536/165552409B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=249072 epoch=0 rej453=0 fds=16
+rtsp c0: sent=124782/165881487B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=124782/165881487B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=249564 epoch=0 rej453=0 fds=16
+rtsp c0: sent=124927/166069722B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=124927/166069722B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=249854 epoch=0 rej453=0 fds=16
+rtsp c0: sent=125162/166380485B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=125162/166380485B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=250324 epoch=0 rej453=0 fds=16
+rtsp c0: sent=125304/166567768B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=125304/166567768B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=250608 epoch=0 rej453=0 fds=16
+rtsp-ring: in=17471 evict=17441 depth=30 bytes=0.48/8MB tags=[17441,17471)
+rtsp c0: sent=125539/166881491B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=125539/166881491B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/4 sent=251078 epoch=0 rej453=0 fds=16
+rtsp c0: 发送判死(why=error errno=104), 断开
+rtsp c1: 发送判死(why=error errno=104), 断开
+rtsp c0: 连接关闭
+rtsp c1: 连接关闭
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=17546 evict=17516 depth=30 bytes=0.49/8MB tags=[17516,17546)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=17621 evict=17591 depth=30 bytes=0.49/8MB tags=[17591,17621)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=17696 evict=17666 depth=30 bytes=0.48/8MB tags=[17666,17696)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=17771 evict=17741 depth=30 bytes=0.48/8MB tags=[17741,17771)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=17846 evict=17816 depth=30 bytes=0.50/8MB tags=[17816,17846)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=17921 evict=17891 depth=30 bytes=0.48/8MB tags=[17891,17921)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=17996 evict=17966 depth=30 bytes=0.48/8MB tags=[17966,17996)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=18071 evict=18041 depth=30 bytes=0.45/8MB tags=[18041,18071)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=18146 evict=18116 depth=30 bytes=0.47/8MB tags=[18116,18146)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=18221 evict=18191 depth=30 bytes=0.50/8MB tags=[18191,18221)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=18296 evict=18266 depth=30 bytes=0.49/8MB tags=[18266,18296)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=18371 evict=18341 depth=30 bytes=0.48/8MB tags=[18341,18371)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=18446 evict=18416 depth=30 bytes=0.48/8MB tags=[18416,18446)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=18521 evict=18491 depth=30 bytes=0.50/8MB tags=[18491,18521)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=18596 evict=18566 depth=30 bytes=0.44/8MB tags=[18566,18596)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=18671 evict=18641 depth=30 bytes=0.47/8MB tags=[18641,18671)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=18746 evict=18716 depth=30 bytes=0.50/8MB tags=[18716,18746)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=18821 evict=18791 depth=30 bytes=0.49/8MB tags=[18791,18821)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=18896 evict=18866 depth=30 bytes=0.49/8MB tags=[18866,18896)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=18971 evict=18941 depth=30 bytes=0.46/8MB tags=[18941,18971)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=19046 evict=19016 depth=30 bytes=0.49/8MB tags=[19016,19046)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=19121 evict=19091 depth=30 bytes=0.45/8MB tags=[19091,19121)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=19196 evict=19166 depth=30 bytes=0.46/8MB tags=[19166,19196)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=19271 evict=19241 depth=30 bytes=0.50/8MB tags=[19241,19271)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=19346 evict=19316 depth=30 bytes=0.49/8MB tags=[19316,19346)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=19421 evict=19391 depth=30 bytes=0.51/8MB tags=[19391,19421)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=19496 evict=19466 depth=30 bytes=0.45/8MB tags=[19466,19496)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=19571 evict=19541 depth=30 bytes=0.47/8MB tags=[19541,19571)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=19646 evict=19616 depth=30 bytes=0.50/8MB tags=[19616,19646)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=19721 evict=19691 depth=30 bytes=0.44/8MB tags=[19691,19721)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=19796 evict=19766 depth=30 bytes=0.56/8MB tags=[19766,19796)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=19871 evict=19841 depth=30 bytes=0.52/8MB tags=[19841,19871)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=19946 evict=19916 depth=30 bytes=0.46/8MB tags=[19916,19946)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=20021 evict=19991 depth=30 bytes=0.44/8MB tags=[19991,20021)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=20096 evict=20066 depth=30 bytes=0.49/8MB tags=[20066,20096)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=20171 evict=20141 depth=30 bytes=0.51/8MB tags=[20141,20171)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=20246 evict=20216 depth=30 bytes=0.49/8MB tags=[20216,20246)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=20321 evict=20291 depth=30 bytes=0.50/8MB tags=[20291,20321)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=20396 evict=20366 depth=30 bytes=0.49/8MB tags=[20366,20396)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=20471 evict=20441 depth=30 bytes=0.49/8MB tags=[20441,20471)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=20546 evict=20516 depth=30 bytes=0.49/8MB tags=[20516,20546)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=20621 evict=20591 depth=30 bytes=0.49/8MB tags=[20591,20621)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=20696 evict=20666 depth=30 bytes=0.49/8MB tags=[20666,20696)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+>>> 收到 SIGTERM, 已停止

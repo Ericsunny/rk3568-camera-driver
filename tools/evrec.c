@@ -1553,6 +1553,8 @@ static void usage(void)
 "  --rtsp [PORT]     开推流, 省略端口=8554, 0=关闭(默认关闭)\n"
 "  --rtsp-clients N  最大并发播放客户端数(默认 4, 超出的 PLAY 收 453)\n"
 "  --rtsp-deadline-s N  慢客户端硬上限: 连续 N 秒零发送进展判死(默认 5)\n"
+"  --ts-offset N    RTP 时间戳注入偏移(回绕测试用, 默认 0=关); 例:\n"
+"                   --ts-offset $((0xFFFFFFFF-90000*60)) 使 ts 在第 60s 回绕\n"
 "  --rtsp-ring N     推流分发环深度(包数, 默认 30)\n"
 "  --rtsp-ring-mb M  推流分发环字节上限(MB, 默认 8; 双上限, 字节优先逐出)\n"
 "  --rtp-trace FILE  每个 RTP 包一行(seq/ts/mark/nal/fu/s/e/payload/send),\n"
@@ -1594,8 +1596,8 @@ int main(int argc, char **argv)
 			"--trigger", "--kbps", "--model", "--max-events",
 			"--det-score", "--det-frames", "--obj-thresh",
 			"--rga-size", "--rtsp-ring", "--rtsp-ring-mb",
-			"--rtsp-clients", "--rtsp-deadline-s", "--recover",
-			"--fault-sim", "--rtp-trace",
+			"--rtsp-clients", "--rtsp-deadline-s", "--ts-offset",
+			"--recover", "--fault-sim", "--rtp-trace",
 		};
 		size_t j;
 
@@ -1657,6 +1659,7 @@ int main(int argc, char **argv)
 		else if (!strcmp(argv[i], "--rtsp-ring-mb")) rtsp_hub_set_ring_mb(atoi(argv[++i]));
 		else if (!strcmp(argv[i], "--rtsp-clients")) rtsp_hub_set_max_clients(atoi(argv[++i]));
 		else if (!strcmp(argv[i], "--rtsp-deadline-s")) rtsp_hub_set_deadline(atoi(argv[++i]));
+		else if (!strcmp(argv[i], "--ts-offset")) rtsp_hub_set_ts_offset((uint32_t)strtoul(argv[++i], NULL, 0));
 		else if (!strcmp(argv[i], "--rtp-trace")) rtsp_hub_set_trace_path(argv[++i]);
 		else if (!strcmp(argv[i], "--recover")) {
 			g_recover = atoi(argv[++i]);

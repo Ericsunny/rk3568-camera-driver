@@ -162,6 +162,7 @@ struct rtsp_cli {
 static struct rtsp_cli g_cli[RTSP_CLI_MAX];
 static int g_max_clients = 4;		/* --rtsp-clients, clamp [1,8] */
 static int g_deadline_s = 5;		/* --rtsp-deadline-s(§4.4 硬上限), clamp [1,120] */
+static uint32_t g_ts_off;		/* --ts-offset: RTP ts 注入偏移(回绕测试), 0=关 */
 static unsigned long g_rej453;		/* 453/槽满拒绝次数(容量指标, B2) */
 static unsigned long g_rtsp_disc;	/* 对端主动断开(EPIPE/ECONNRESET) */
 static unsigned long g_hub_epoch;	/* B4: 链路恢复次数(notify_recover ++) */
@@ -1442,6 +1443,11 @@ void rtsp_hub_set_deadline(int s)
 	g_deadline_s = s;
 }
 
+void rtsp_hub_set_ts_offset(uint32_t off)
+{
+	g_ts_off = off;
+}
+
 void rtsp_hub_set_ring_mb(int mb)
 {
 	if (mb < 1)
@@ -1504,7 +1510,7 @@ void pkb_push(const unsigned char *src, int len, unsigned seq, int key,
 	p->len = len;
 	p->seq = seq;
 	p->key = (unsigned char)(key ? 1 : 0);
-	p->ts90 = (uint32_t)(ts_ms * 90.0);
+	p->ts90 = (uint32_t)(ts_ms * 90.0) + g_ts_off;	/* g_ts_off=注入回绕用, 0=无 */
 	p->tag = tag;
 	g_pkb_next_tag = tag + 1;
 	g_pkb_bytes += (unsigned long)len - ev_bytes;

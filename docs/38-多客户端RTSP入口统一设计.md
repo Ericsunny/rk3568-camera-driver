@@ -3,8 +3,8 @@
 > 状态:**H1-H6 全部完成并板测验证(2026-10-29)**——H1 提炼(行为等价+DoD 绑定)、
 > H3 多客户端、H4 硬上限、H6 cam_rtsp 标 deprecated;板测:H5 矩阵(A3/V1-V6/B3/B4)
 > + V7 双客户端 2h soak 全 PASS(evidence/2026-10-29-H5板测/、2026-10-29-V7-2h-soak/)。
-> 剩:cam_rtsp 实际删除(H6 标记后保留一个版本周期)、24h soak(tag 前置, RSS 碎片
-> 注记待复核)。目标:把 `cam_rtsp.c` 与 `evrec.c` 的 RTSP 服务端收敛为一个可复用
+> 剩:24h soak(tag 前置, RSS 碎片注记待复核)。cam_rtsp 已于 H6 实删(2026-10-29)。
+> 目标:把 `cam_rtsp.c` 与 `evrec.c` 的 RTSP 服务端收敛为一个可复用
 > 模块 `rtsp_hub.c`,产品入口保持 `evrec`。
 
 ## 1. 现状:两套实现,各自合理但不可组合
@@ -99,6 +99,9 @@ commit 做删除,可回退。
 > **执行记录(2026-10-29, H6)**:已标 deprecated(源码头横幅 + main 启动警告 +
 > Makefile 注释),保留一个版本待删;README 诚实清单的"RTSP 只支持单客户端"
 > 同步改为多客户端口径。V7(2h)通过后进入实际删除。
+> **实际删除已执行(2026-10-29)**:`tools/cam_rtsp.c` 删除,Makefile 目标与
+> APP_BIN 移除,docs/31 加历史指针,`make apps` 板上验证仅剩 evrec/camd。
+> 历史版本见 git;本文件 §1/§4 中的 cam_rtsp 对比为设计存档,保留。
 
 ## 4. 关键设计点(对应 review 四重点)
 

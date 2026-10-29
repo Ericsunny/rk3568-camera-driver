@@ -1,6 +1,10 @@
 /*
  * cam_rtsp.c —— RK3568 单路相机 RTSP 推流(MPP 硬编 + 零依赖 RTSP 服务)
  *
+ * 【已废弃 2026-10-29(docs/38 H6)】产品入口 = `evrec --rtsp`(rtsp_hub 多客户端:
+ * 每客户端独立游标/453 拒绝/半开超时, 且与事件录像并存)。本文件仅作历史参照
+ * 保留一个版本, 后续删除; RTSP 层新功能一律进 tools/rtsp_hub.c。
+ *
  * 链路: /dev/video5 (NV12, V4L2 mmap) → VEPU H.264 → RTP(FU-A) → RTSP over TCP
  *
  * 板上编译: gcc -O2 -pthread -o cam_rtsp cam_rtsp.c -lrockchip_mpp
@@ -830,6 +834,8 @@ int main(int argc, char **argv)
 	int opt;
 	setvbuf(stdout, NULL, _IONBF, 0);
 	setvbuf(stderr, NULL, _IONBF, 0);
+	fprintf(stderr,
+		"[deprecated] cam_rtsp 已由 evrec --rtsp 取代(docs/38 H6), 仅作历史参照, 将在后续版本删除\n");
 	while ((opt = getopt(argc, argv, "d:w:h:r:b:p:H:")) != -1) {
 		switch (opt) {
 		case 'd': g_dev = optarg; break;

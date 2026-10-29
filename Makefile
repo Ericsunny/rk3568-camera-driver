@@ -7,7 +7,8 @@
 # 常用:
 #   make              # 全部板端目标(自动探测 RGA/RKNN,缺了会降级并提示)
 #   make tools        # 只编纯 glibc 工具(任何 aarch64 板都能过)
-#   make apps         # evrec / camd / cam_rtsp(需 librockchip_mpp + RGA/RKNN)
+#   make apps         # evrec / camd / cam_rtsp(需 librockchip_mpp + RGA/RKNN;
+#                     #   cam_rtsp 已废弃(docs/38 H6), 仅保留历史参照, 产品入口=evrec --rtsp)
 #   make spy          # ioctlspy(LD_PRELOAD 注入库,-shared)
 #   make clean
 #
@@ -71,6 +72,7 @@ evrec: tools/evrec.c tools/rtsp_hub.c
 camd: tools/camd.c
 	$(CC) $(CFLAGS) $(PTH) $(DEFS) $(INCS) -o $@ $< $(APP_LIBS)
 
+# 已废弃(docs/38 H6): 产品入口 = evrec --rtsp; 目标仅为历史参照可编译, 将随 H6 后续版本删除
 cam_rtsp: tools/cam_rtsp.c
 	$(CC) $(CFLAGS) $(PTH) $(DEFS) $(INCS) -o $@ $< $(APP_LIBS)
 

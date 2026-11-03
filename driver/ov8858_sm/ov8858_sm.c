@@ -496,14 +496,14 @@ static int ov8858_sm_set_fmt(struct v4l2_subdev *sd,
 
 	/* TRY 的防御提前(cfg 判空 + pad 边界, 同 get_fmt);ACTIVE 不再拒
 	 * 非 0 pad: rkcif 以流编号当 pad 的 BSP 约定下, ACTIVE 拒绝 =
-	 * 开机 panic(详见 get_fmt 注释)。ACTIVE 语义保持原样 —— 夹到
-	 * 最近支持模式 + 提交 is_1080p。
+	 * 开机 panic(详见 get_fmt 注释)。ACTIVE 根据请求选择支持模式，
+	 * 然后提交 is_1080p。
 	 */
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY &&
 	    (!cfg || fmt->pad != 0))
 		return -EINVAL;
 
-	/*无论 TRY 还是 ACTIVE,都先按请求把 fmt 夹到最近的支持模式 */
+	/* 只有精确请求 1920x1080 才选 1080p，其余请求选 1632x1224。 */
 	ov8858_sm_fill_fmt_mode(want_1080p, &fmt->format);
 
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
@@ -1091,23 +1091,25 @@ static int ov8858_sm_probe(struct i2c_client *client, const struct i2c_device_id
 	if (ret)
 		goto err_free_handler;
 
-	ret = v4l2_async_register_subdev(&ov8858->subdev);
-	if (ret)
-		goto err_entity;
+	/* probe 已经断电，让 PM 状态与硬件资源状态一致。
+	 * probe 没有持有本设备的 PM 引用，不能在这里调用 put。
+	 * 注: pm_runtime_set_suspended() 返回 void, 不可判错。 */
+	pm_runtime_set_suspended(&client->dev);
 
-	/* L4:交给 runtime PM。probe 里已经读过 ID 并断电,
-	 * 这里把"当前状态"标成 active 并允许 2s 后自动挂起。 */
 	pm_runtime_set_autosuspend_delay(&client->dev, 2000);
 	pm_runtime_use_autosuspend(&client->dev);
-	pm_runtime_set_active(&client->dev);
 	pm_runtime_enable(&client->dev);
-	pm_runtime_mark_last_busy(&client->dev);
-	pm_runtime_put_autosuspend(&client->dev);
+
+	/* 对外注册前启用 runtime PM，避免开流早于 PM 初始化。 */
+	ret = v4l2_async_register_subdev(&ov8858->subdev);
+	if (ret)
+		goto err_disable_pm;
 
 	dev_info(&client->dev, "OV8858 SM camera driver probed (runtime PM on)\n");
 	return 0;
 
-err_entity:
+err_disable_pm:
+	pm_runtime_disable(&client->dev);
 	media_entity_cleanup(&ov8858->subdev.entity);
 err_free_handler:
 	v4l2_ctrl_handler_free(&ov8858->ctrl_handler);

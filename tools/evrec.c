@@ -426,7 +426,7 @@ static void rga_init(void)
 }
 
 /* 用 mmap 虚拟地址做源, 不需要 EXPBUF(第①步先证明缩放可用) */
-static void rga_scale(const void *src_va, unsigned sw, unsigned sh)
+static int rga_scale(const void *src_va, unsigned sw, unsigned sh)
 {
 	IM_STATUS st;
 
@@ -435,11 +435,15 @@ static void rga_scale(const void *src_va, unsigned sw, unsigned sh)
 	st = imresize_t(g_rga_src, g_rga_dst, 0, 0, 0, 1);
 	if (st != IM_STATUS_SUCCESS) {
 		fprintf(stderr, "RGA 失败: %s\n", imStrError(st));
-		return;
+		return -1;
 	}
 	{	/* 采样均值: 与 camd 同口径(Y 平面每 16 像素取 1) */
 		unsigned long sum = 0, n = 0;
+#ifdef HAVE_RKNN
 		unsigned char *y = g_rgb;
+#else
+		unsigned char *y = g_rga_buf;
+#endif
 
 		for (int i = 0; i < g_rga_w * g_rga_h; i += 16) {
 			sum += y[i];
@@ -448,6 +452,7 @@ static void rga_scale(const void *src_va, unsigned sw, unsigned sh)
 		g_rga_sum += sum;
 		g_rga_n += n;
 	}
+	return 0;
 }
 #endif
 
@@ -1840,10 +1845,11 @@ int main(int argc, char **argv)
 #ifdef HAVE_RGA
 #ifdef HAVE_RKNN
 		if (g_detect) {
-			rga_scale(cap.map[b.index], w, h);
+			int rga_rc = rga_scale(cap.map[b.index], w, h);
 			t_rga = now_ms(CLOCK_MONOTONIC) - t_stage;
 			t_stage += t_rga;
-			npu_run(g_rgb);
+			if (rga_rc == 0)
+				npu_run(g_rgb);
 			t_npu = now_ms(CLOCK_MONOTONIC) - t_stage;
 			t_stage += t_npu;
 		}

@@ -7,7 +7,7 @@
 
 1. **不 force-push、不改写已推送历史**;打 tag / 发 Release / 合并 PR 必须用户明确批准。
 2. **刷写类操作逐次请批**:覆盖 /boot、分区、bootloader、整片 eMMC 都算;/boot 历史上只允许过"覆盖 Image 文件"这一种。
-3. 只在 `feature/*`、`fix/*`、`docs/*` 分支工作,PR 进 main;CI 红了先修 CI 再谈合并。
+3. **代码改动**走 `feature/*`、`fix/*` 分支 + PR 进 main;**docs/ 编号文档的新增/修订、README 数字同步、只读体检的报告文件,按仓库惯例可直接提交 main**(历届会话如此);CI 红了先修 CI 再谈合并。
 4. 提交/推送前跑 `tools/check_secrets.sh`(本地脚本,.gitignore 已排除):evidence/ 历史日志曾混入出厂默认凭据,新增证据**必须先脱敏再入库**。
 5. 板子与 PC 是共享硬件:**串口独占**(COM7,用前确认 MobaXterm/putty 已断开);板上危险命令(rm -rf、dd、flash 写)逐条请批。
 6. 结论措辞克制:不写"永久""全部排除""必然";只写证据支撑得住的口径(用户 review 逐项核对数字,极严)。
@@ -22,6 +22,7 @@
 | 板端 evrec | `gcc -DHAVE_RKNN -DHAVE_RGA -lm`;rknn_api.h 补到 /usr/include;librknnrt 2.3.2(与模型配套,勿动);板端后台常驻用 nohup+disown |
 | TFTP | PC `D:\vm\tftp_serverd.py`(计划任务常驻;PC 重启后 bind 失败→重拉即愈) |
 | ffmpeg | `D:\vm\rk_recovery\ffbin\`(ffprobe/拉流/解码测试用) |
+| gh CLI | `C:\Users\Administrator\AppData\Local\Programs\gh\bin\gh.exe`(已登录 keyring,HTTPS 走代理;**不在默认 PATH**,沙箱里用全路径或先 export) |
 | 板约束 | 板无公网(apt 不可用,GitHub 慢→主机 curl 下载再 scp);/tmp 是 tmpfs 重启清空;**scp 后必须 md5 双端核对**(scp 有静默失败前科) |
 
 ## 已知坑(前科实锤,别再踩)

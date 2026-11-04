@@ -28,3 +28,6 @@ det_*.png
 # 证据日志例外(验收证据必须入库;运行期日志仍忽略)
 !evidence/**/*.log
 __pycache__/
+
+# push 前三查脚本:本地维护,不入库(含凭据匹配模式)
+tools/check_secrets.sh

@@ -1864,7 +1864,12 @@ int main(int argc, char **argv)
 			g_osd_ms = cap_ms;
 			draw_osd(mpp_buffer_get_ptr(g_fbuf), (int)cap.stride, w, h);
 		}
-		xioctl(cap.fd, VIDIOC_QBUF, &b);
+		if (xioctl(cap.fd, VIDIOC_QBUF, &b) < 0) {
+			if (g_stop)
+				break;
+			perror("QBUF");
+			goto link_fault;
+		}
 
 		mpp_frame_init(&frame);
 		mpp_frame_set_width(frame, w);

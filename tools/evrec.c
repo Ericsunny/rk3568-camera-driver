@@ -2135,6 +2135,7 @@ link_fault:
 			fflush(stdout);
 		} else {
 			fprintf(stderr, ">>> SIGTERM: 事件落盘失败\n");
+			rc = 1;
 		}
 	}
 	/* 信号 handler 只置 g_stop: 这里在锁内把它同步成 sender 的停止条件,

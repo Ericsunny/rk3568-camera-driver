@@ -51,7 +51,7 @@
 2. **零拷贝**:CPU 降到 1/3,但帧率没变——瓶颈在采集,收益在余量。
 3. **suspend**:本板无 RTC、无远程唤醒源,**真实 suspend 退出无法验证**(`pm_test=devices` 模拟通过),不写成"通过"。
 
-**当前工程边界(诚实清单)**:**3A 与采集共存**——rkaiq_3A 常驻时直接开流(AE/AWB 生效),干净停后无需重启,唯一红线是采流中不 stop/kill 3A(否则 STREAMOFF 超时 wedge,唯一恢复=重启),完整矩阵见 docs/29 §10、一键栈 `tools/run_3a_stack.sh`。**零拷贝三口径**——`zerocopy/` 实验链路输入+输出全 native(首屏"0 B/帧"指它);`camd --npu-native` 仅输入 native(RGA 直写输入 dmabuf+mem_sync;ab 108 帧字节级一致,证据 `evidence/2026-10-25-质量保障线/fv_ab_input_only.json`),**输出仍经 `rknn_outputs_get` 拷回**(输出 native 已试过:~5%/帧字节差、FROM_DEVICE sync 无效,疑 runtime requant——字节级验收不过,回退,证据同目录);`evrec` 检测路径当前为全拷贝。RTSP **多客户端**已并入产品入口(`evrec --rtsp`:每客户端独立游标/独立 seq·ssrc,默认上限 4、超额回 453+Retry-After,SETUP 后 10s 半开超时;2 客户端 660s 并发与 H5 板测矩阵见 `evidence/2026-10-29-H5板测/`),`cam_rtsp` 已删除(docs/38 H6,历史见 git);稳定性证据:12 分钟事件录像 / 300 次开关流 / 1800 帧长跑 / **2h 服务级 soak(80 事件,RSS 21.7~43.6MB 有界、fd 恒 14、40.6~46.1°C,见 evidence/)**,仍**没有 24 小时连续、没有 4 客户端满载长跑、没有掉电与 SD 卡写满场景**;**带流 suspend 已加双层保护**(驱动 streaming 时返回 `-EBUSY` 拒绝挂起 + `tools/suspend_guard.sh` 应用层护栏),但**不宣称 suspend 已修复**——真实唤醒仍无验证手段(`pm_test=devices` 干跑通过);OV8858 走 CIF RAW10 链路,**没有也不做 ISP 3A**(RK3568 单 ISP 给了 IMX415;OV8858 只有 mini3a 软件闭环,非产品级 IQ),bring-up 自测手段是 sensor 内部 test pattern ctrl(寄存器依据厂商驱动+datasheet 对照,非猜测)。
+**当前工程边界(诚实清单)**:**3A 与采集共存**——rkaiq_3A 常驻时直接开流(AE/AWB 生效);要无 3A 独占压测走 `disable rkaiq_3A + reboot`;**没有"停掉 3A 再采"的合法路径**——本 boot 启动过 3A 后 stop 再直接采必 params 超时 wedge(A4′/E1,docs/35 §4.1),唯一红线是采流中不 stop/kill 3A(否则 STREAMOFF 超时 wedge,唯一恢复=重启),完整矩阵见 docs/29 §10、一键栈 `tools/run_3a_stack.sh`。**零拷贝三口径**——`zerocopy/` 实验链路输入+输出全 native(首屏"0 B/帧"指它);`camd --npu-native` 仅输入 native(RGA 直写输入 dmabuf+mem_sync;ab 108 帧字节级一致,证据 `evidence/2026-10-25-质量保障线/fv_ab_input_only.json`),**输出仍经 `rknn_outputs_get` 拷回**(输出 native 已试过:~5%/帧字节差、FROM_DEVICE sync 无效,疑 runtime requant——字节级验收不过,回退,证据同目录);`evrec` 检测路径当前为全拷贝。RTSP **多客户端**已并入产品入口(`evrec --rtsp`:每客户端独立游标/独立 seq·ssrc,默认上限 4、超额回 453+Retry-After,SETUP 后 10s 半开超时;2 客户端 660s 并发与 H5 板测矩阵见 `evidence/2026-10-29-H5板测/`),`cam_rtsp` 已删除(docs/38 H6,历史见 git);稳定性证据:12 分钟事件录像 / 300 次开关流 / 1800 帧长跑 / **2h 服务级 soak(80 事件,RSS 21.7~43.6MB 有界、fd 恒 14、40.6~46.1°C,见 evidence/)**,仍**没有 24 小时连续、没有 4 客户端满载长跑、没有掉电与 SD 卡写满场景**;**带流 suspend 已加双层保护**(驱动 streaming 时返回 `-EBUSY` 拒绝挂起 + `tools/suspend_guard.sh` 应用层护栏),但**不宣称 suspend 已修复**——真实唤醒仍无验证手段(`pm_test=devices` 干跑通过);OV8858 走 CIF RAW10 链路,**没有也不做 ISP 3A**(RK3568 单 ISP 给了 IMX415;OV8858 只有 mini3a 软件闭环,非产品级 IQ),bring-up 自测手段是 sensor 内部 test pattern ctrl(寄存器依据厂商驱动+datasheet 对照,非猜测)。
 
 > 一句口径:**每个数字都有对应的测量方法([docs/31 对照表](docs/31-程序与证据对照表.md));没有测过的,不写在结果里。**
 
@@ -111,7 +111,7 @@ sh tools/quickstart.sh "#52"    # 全过退出 0
 | 2 | 手写用户态 3A 闭环,AE/AWB 双收敛 | Y: 1 → 101,U/V → 128/128;约 250 行 C,见 [`mini3a/`](mini3a/) |
 | 3 | 修复厂商 BSP params 通路结构体尺寸缺陷 | `isp_params.c` v21 分支补 `sizeof(...)`:5813 → 10475 |
 | 4 | "点不亮"真因:物理接口假设错误(非供电/时钟) | 三次误判修正链 + 物理口↔总线映射表:[`docs/09`](docs/09-L1A-I2C调试复盘-物理口与总线映射.md) |
-| 5 | 裸写 OV8858 驱动出图 | 当时 821 行(当前 1210 行),29.3 fps / 帧结构 100% 有效:[`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md) |
+| 5 | 裸写 OV8858 驱动出图 | 当时 821 行(当前 1208 行),29.3 fps / 帧结构 100% 有效:[`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md) |
 | 6 | 零拷贝三模式对比 | 0 B/帧、69.9 ms、−66% CPU、+25% 吞吐:[`zerocopy/`](zerocopy/) |
 | 7 | 异构双摄零干扰 | 15.00 / 30.02 fps,249.8 MB/s:[`docs/19`](docs/19-L3异构双摄报告.md) |
 | 8 | ISP 白平衡修正 | 色度 U−21.4/V−27.0 → U−1.4/V−0.9:[`docs/21`](docs/21-L2-AWB.md) |
@@ -152,7 +152,7 @@ driver/ov8858_sm/   从 datasheet 裸写的 OV8858 sensor 驱动(1210 行 .c + 4
 zerocopy/           V4L2 零拷贝链路:EXPBUF→dmabuf→RGA→NPU,三模式 perf 对比
 mini3a/             用户态 3A 闭环(采集线程 + AE/AWB 控制环)
 tools/              evrec(事件录像+RTSP)/ camd(双消费者)/ 自检/回归/IQ 补丁/对焦量化等全部工具
-docs/               30 份任务书、排障复盘、对照报告、总报告与验收环境(39=交接快照与任务队列)
+docs/               31 份(30 份编号 08–40 + manifest):任务书、排障复盘、对照报告、总报告、验收环境与全仓体检
 evidence/           实测证据图与原始输出(第一帧/双路预览/anchor 修复前后/回归数据…)
 ```
 

@@ -1167,8 +1167,14 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 		}
 	}
 	j = fopen(jpath, "w");
-	if (j) {
-		fprintf(j,
+	if (!j) {
+		fprintf(stderr, ">>> fopen %s 失败: %s\n", jpath, strerror(errno));
+		return -1;
+	}
+	{
+		int failed = 0;
+
+		if (fprintf(j,
 			"{\"file\":\"%s.h264\",\"trigger_seq\":%u,"
 			"\"trigger_ts_ms\":%.1f,\"close_reason\":\"%s\","
 			"\"bytes\":%lu,\"duration_ms\":%.1f,"
@@ -1182,8 +1188,16 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 			g_ev_event_id, g_ev_segment,
 			g_ev_coalesced, g_ev_cdskip, disk_free_mb(),
 			g_ev_first_ts, g_ev_last_ts,
-			g_ev_werr ? "true" : "false");
-		fclose(j);
+			g_ev_werr ? "true" : "false") < 0) {
+			fprintf(stderr, ">>> 写入 %s 失败: %s\n", jpath, strerror(errno));
+			failed = 1;
+		}
+		if (fclose(j) != 0) {
+			fprintf(stderr, ">>> 关闭 %s 失败: %s\n", jpath, strerror(errno));
+			failed = 1;
+		}
+		if (failed)
+			return -1;
 	}
 	return 0;
 }

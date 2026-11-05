@@ -115,6 +115,8 @@ sh tools/quickstart.sh "#52"    # 全过退出 0
 事件录像产品链路 [`docs/32`](docs/32-事件录像.md);踩坑与边界 → 各 docs 的"未完成/边界"节;
 2026-10-27 启动 panic 翻案全过程 → [`evidence/2026-10-27-上电调试/`](evidence/2026-10-27-上电调试/README.md)。
 
+**图像评估准备** → [RAW10 离线统计工具与解释边界](tools/raw10_stats.md),目前仅经合成数据测试,真实采集与画质结论待验证。
+
 ---
 
 <details>

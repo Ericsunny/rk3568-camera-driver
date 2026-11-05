@@ -1,0 +1,5 @@
+aarch64-rockchip-linux-gnu-gcc.br_real (Buildroot 2018.02-rc3-g548dfbfc13-dirty) 9.3.0
+Command: LD_LIBRARY_PATH=<toolchain>/lib <toolchain>/bin/aarch64-rockchip-linux-gnu-gcc -std=c11 -O2 -Wall -Wextra -Werror -shared -fPIC -pthread tools/evrec_fault_preload.c -ldl -o libevfi-aarch64.so
+compile_exit=0
+libevfi-aarch64.so: ELF 64-bit LSB shared object, ARM aarch64, version 1 (SYSV), dynamically linked, not stripped
+1e4bb2b3fcf701c60fcaf9016586afb804813247d67c2004e9e65db202f11dfd  libevfi-aarch64.so

@@ -1,0 +1,9 @@
+ordinary sigterm: control and five failures PASS
+ordinary target-left: control and five failures PASS
+ordinary unrelated event paths are unaffected: PASS
+fortified sigterm: control and five failures PASS
+fortified target-left: control and five failures PASS
+fortified unrelated event paths are unaffected: PASS
+scope, symlink and unhit occurrence: PASS
+selected occurrence injects only once: PASS
+invalid configuration fails closed: PASS

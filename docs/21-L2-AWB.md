@@ -3,7 +3,7 @@
 > **目标**:让 IMX415 经 rkisp 出的 NV12 **不再是绿的**,用正规 3A/WB 通路。
 > **结果**:通过 **ISP params 通路**下发白平衡增益,色偏从 `U−21.4 / V−27.0` 收敛到 `U−1.4 / V−0.9`。
 
-![before/after](evidence/2026-10-21-L2-AWB对比.png)
+![before/after](../evidence/2026-10-21-L2-AWB对比.png)
 
 ---
 

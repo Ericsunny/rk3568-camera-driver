@@ -2001,10 +2001,6 @@ static int session(void)
 	wake_all();
 	pthread_join(t_rt, NULL);
 	pthread_join(t_ev, NULL);
-	/* 采样器只在消费者排空后停止，且必须在下次 session 前回收。 */
-	atomic_store(&g_run, false);
-	pthread_join(t_smpl, NULL);
-
 	dev_streamoff();
 	rc = atomic_load(&g_fatal);
 	goto out;
@@ -2019,8 +2015,10 @@ thread_fail:
 		pthread_join(t_rt, NULL);
 	if (ev_started)
 		pthread_join(t_ev, NULL);
-	if (smpl_started)
+	if (smpl_started) {
 		pthread_join(t_smpl, NULL);
+		smpl_started = false;
+	}
 	/* 消费者可能尚未启动或已退出，清掉队列持有的 buffer 引用。 */
 	for (int id = 0; id < 2; id++) {
 		struct node *n;
@@ -2033,6 +2031,11 @@ thread_fail:
 	rc = 1;
 out:
 	dev_close();
+	/* 保留到设备清理后的 RSS 采样窗口；返回或读统计前回收采样器。 */
+	if (smpl_started) {
+		atomic_store(&g_run, false);
+		pthread_join(t_smpl, NULL);
+	}
 	if (rc)
 		diag_bundle(rc);
 	return rc;

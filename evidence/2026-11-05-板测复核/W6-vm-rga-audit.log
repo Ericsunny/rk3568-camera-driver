@@ -1,0 +1,32 @@
+host_utc_before=2026-11-05T11:40:56.0541727Z
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+VM_REV
+caaf385a7f9f3d456a91c00cbfddb22f76a45df8
+SOURCE_HASHES
+e3499e28f256fa741ddac564bcce6afa2b41b4fd4220ee147ad8b342e363fe1e  drivers/video/rockchip/rga/rga_drv.c
+f3519697068ae3670fd01184acc486eadcba96d15338ee7d266235a8576acb5b  drivers/video/rockchip/rga/rga.h
+IOCTL_CONSTANTS
+9:#define RGA_BLIT_SYNC	0x5017
+10:#define RGA_BLIT_ASYNC  0x5018
+13:#define RGA_GET_VERSION 0x501b
+UNKNOWN_IOCTL
+1671-			else
+1672-				snprintf(drvdata->version, 16, "1.003");
+1673-		}
+1674-
+1675-			ret = copy_to_user((void *)arg, drvdata->version, 16);
+1676-            break;
+1677-		default:
+1678:			ERR("unknown ioctl cmd!\n");
+1679-			ret = -EINVAL;
+1680-			break;
+1681-	}
+1682-
+1683-	mutex_unlock(&rga_service.mutex);
+1684-
+1685-	return ret;
+WORKTREE
+ssh_exit=0
+host_utc_after=2026-11-05T11:40:56.7294607Z

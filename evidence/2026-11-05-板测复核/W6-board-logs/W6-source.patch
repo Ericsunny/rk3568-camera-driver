@@ -1,0 +1,36 @@
+--- zc_npu_review.cpp	2026-11-05 19:33:26.927159695 +0800
++++ zc_npu_w6.cpp	2026-11-05 19:33:26.937159696 +0800
+@@ -392,7 +392,10 @@
+ 			rga_buffer_t d; memset(&d, 0, sizeof d);
+ 			d.vir_addr = host_rgb; d.width = OUT_W; d.height = OUT_H;
+ 			d.wstride = OUT_W; d.hstride = OUT_H; d.format = RK_FORMAT_RGB_888;
+-			if (imresize(s, d) != IM_STATUS_SUCCESS) { fprintf(stderr, "W4 RGA failed\n"); break; }
++			fprintf(stderr, "W6_BEGIN:%d\n", f);
++			IM_STATUS w6_status = imresize(s, d);
++			fprintf(stderr, "W6_END:%d:%d\n", f, (int)w6_status);
++			if (w6_status != IM_STATUS_SUCCESS) { fprintf(stderr, "W4 RGA failed\n"); break; }
+ 		} else if (mode == 'b') {
+ 			rga_buffer_t s; memset(&s, 0, sizeof s);
+ 			s.vir_addr = (void *)src_va; s.width = sw; s.height = sh;
+@@ -400,7 +403,10 @@
+ 			rga_buffer_t d; memset(&d, 0, sizeof d);
+ 			d.vir_addr = host_rgb; d.width = OUT_W; d.height = OUT_H;
+ 			d.wstride = OUT_W; d.hstride = OUT_H; d.format = RK_FORMAT_RGB_888;
+-			if (imresize(s, d) != IM_STATUS_SUCCESS) { fprintf(stderr, "W4 RGA failed\n"); break; }
++			fprintf(stderr, "W6_BEGIN:%d\n", f);
++			IM_STATUS w6_status = imresize(s, d);
++			fprintf(stderr, "W6_END:%d:%d\n", f, (int)w6_status);
++			if (w6_status != IM_STATUS_SUCCESS) { fprintf(stderr, "W4 RGA failed\n"); break; }
+ 		} else {
+ 			/* C:用 setup 阶段导出的 dmabuf fd,RGA 直接写进 rknn 输入 tensor */
+ 			if (exp_fds[idx] >= 0) {
+@@ -412,7 +418,9 @@
+ 				d.fd = in_mem->fd; d.width = OUT_W; d.height = OUT_H;
+ 				d.wstride = OUT_W; d.hstride = OUT_H; d.format = RK_FORMAT_RGB_888;
+ 				double q0 = now_ms();
++				fprintf(stderr, "W6_BEGIN:%d\n", f);
+ 				IM_STATUS st = imresize(s, d);
++				fprintf(stderr, "W6_END:%d:%d\n", f, (int)st);
+ 				if (st != IM_STATUS_SUCCESS) { fprintf(stderr, "W4 RGA failed\n"); break; }
+ 				double q1 = now_ms();
+ 				/* uint8 -> int8(zp=-128):RGA2 没有 NN 单元,只能做一遍偏置。

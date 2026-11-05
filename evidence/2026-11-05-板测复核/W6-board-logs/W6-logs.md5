@@ -1,0 +1,13 @@
+6afc30b7fce017a1954df757f7d2263e  W6.stdout
+d41d8cd98f00b204e9800998ecf8427e  W6.stderr
+26ab0db90d72e28ad0ba1e22ee510510  W6.exit
+d41d8cd98f00b204e9800998ecf8427e  build.stdout
+9686177de1d87f27b8c129c445db1758  build.stderr
+897316929176464ebc9ad085f31e7284  build.exit
+6285bb095be05685c30735f4ef510a4e  W6-source.patch
+c45b910681ecc22285cc7f1c2a60b455  results/a/stdout
+e6068f25244afeaa7d7d9c00c589065b  results/a/stderr
+f04800c716ccff07556067d0f72b4714  results/a/trace.log
+9f569da143b3bf4329331b0c90d358f3  results/a/kernel.log
+d41d8cd98f00b204e9800998ecf8427e  results/a/kernel.stderr
+5cf6941abf757ac35c7609ba1fe931d6  results/a/monitor.txt

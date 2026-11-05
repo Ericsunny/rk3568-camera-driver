@@ -1,0 +1,15 @@
+2026-11-05: SCP operations exit 0; listed PC and board MD5 values match.
+Name                         PC MD5                            Board MD5
+zc_npu.cpp                   a226d7ed7ee46ea28c030e9bf4c12fa8 a226d7ed7ee46ea28c030e9bf4c12fa8
+zc_npu_review.cpp            e57dc5d61e1c56ed2fd05b48c2fef144 e57dc5d61e1c56ed2fd05b48c2fef144
+zc_npu_w6.cpp                dbecf7d37e33f0be0ef992f77e1ebe76 dbecf7d37e33f0be0ef992f77e1ebe76
+W4-prepare.py                3fa41d0cdeecbc72528488b8ba29391e 3fa41d0cdeecbc72528488b8ba29391e
+W6-prepare.py                66c960e71f8aeb6d83696c9aa62f967c 66c960e71f8aeb6d83696c9aa62f967c
+w6_trace_monitor.py          a76494264b88e34d9ed138f596183b1d a76494264b88e34d9ed138f596183b1d
+zc_npu_w6                    8fdfe57cb827920acd182b6ab3c07dff 8fdfe57cb827920acd182b6ab3c07dff
+W6-source.patch              6285bb095be05685c30735f4ef510a4e 6285bb095be05685c30735f4ef510a4e
+librknnrt.so                 a37ee1d5d664c79836bf6e35b7ef6289 a37ee1d5d664c79836bf6e35b7ef6289
+librga.so                    1d525d6302fe707ef1a4494f88773d17 1d525d6302fe707ef1a4494f88773d17
+yolov8n_rk3568_i8.rknn       94fde17f2cde08b4f22c022b8674f116 94fde17f2cde08b4f22c022b8674f116
+VM and PC generated-source checks also match. Board independently regenerated both stages and cmp succeeded; see W6-build.log.
+Pre-registration commit e1dfd30; no production executable or service was replaced.

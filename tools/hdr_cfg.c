@@ -16,6 +16,7 @@ int main(int argc, char **argv)
 {
 	const char *dev = argc > 1 ? argv[1] : "/dev/v4l-subdev6";
 	int want = argc > 2 ? atoi(argv[2]) : HDR_X2;
+	int rc = 0;
 	int fd = open(dev, O_RDWR);
 	if (fd < 0) { printf("open %s: %s\n", dev, strerror(errno)); return 1; }
 
@@ -24,8 +25,10 @@ int main(int argc, char **argv)
 	f.pad = 0; f.which = V4L2_SUBDEV_FORMAT_ACTIVE;
 	if (ioctl(fd, VIDIOC_SUBDEV_G_FMT, &f) == 0)
 		printf("before: %ux%u code=0x%04x\n", f.format.width, f.format.height, f.format.code);
-	else
+	else {
 		printf("G_FMT: %s\n", strerror(errno));
+		rc = 1;
+	}
 
 	memset(&f, 0, sizeof(f));
 	f.pad = 0; f.which = V4L2_SUBDEV_FORMAT_ACTIVE;
@@ -35,23 +38,33 @@ int main(int argc, char **argv)
 	f.format.colorspace = V4L2_COLORSPACE_SRGB;
 	if (ioctl(fd, VIDIOC_SUBDEV_S_FMT, &f) == 0)
 		printf("S_FMT ok: %ux%u vc=%u\n", f.format.width, f.format.height, 0u);
-	else
+	else {
 		printf("S_FMT: %s\n", strerror(errno));
+		rc = 1;
+	}
 
 	struct rkmodule_hdr_cfg cfg;
 	memset(&cfg, 0, sizeof(cfg));
 	cfg.hdr_mode = want;
 	if (ioctl(fd, RKMODULE_SET_HDR_CFG, &cfg) == 0)
 		printf("SET_HDR_CFG(%d) ok\n", want);
-	else
+	else {
 		printf("SET_HDR_CFG(%d): %s\n", want, strerror(errno));
+		rc = 1;
+	}
 
 	memset(&cfg, 0, sizeof(cfg));
-	if (ioctl(fd, RKMODULE_GET_HDR_CFG, &cfg) == 0)
+	if (ioctl(fd, RKMODULE_GET_HDR_CFG, &cfg) == 0) {
 		printf("GET_HDR_CFG -> hdr_mode=%u esp=%d\n", cfg.hdr_mode, cfg.esp.mode);
-	else
+		if (cfg.hdr_mode != want) {
+			fprintf(stderr, "HDR mode mismatch: wanted %d, got %u\n", want, cfg.hdr_mode);
+			rc = 1;
+		}
+	} else {
 		printf("GET_HDR_CFG: %s\n", strerror(errno));
+		rc = 1;
+	}
 
-	close(fd);
-	return 0;
+	if (close(fd) != 0) { perror("close"); rc = 1; }
+	return rc;
 }

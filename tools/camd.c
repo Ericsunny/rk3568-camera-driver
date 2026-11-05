@@ -64,9 +64,13 @@ typedef struct {
 
 static void lat_init(lat_t *l, int cap)
 {
+	/* 恢复会话会再次初始化 RGA/NPU 延迟环；旧会话已结束。 */
+	free(l->ring);
 	memset(l, 0, sizeof(*l));
 	l->cap = cap;
 	l->ring = cap ? calloc(cap, sizeof(uint32_t)) : NULL;
+	if (!l->ring)
+		l->cap = 0;
 }
 
 static void lat_reset(lat_t *l)
@@ -1365,6 +1369,11 @@ static int dev_open(void)
 		}
 
 		cap.nodes[i] = calloc(1, sizeof(struct node));
+		if (!cap.nodes[i]) {
+			close(exp.fd);
+			fatal(1, "buffer %d 节点分配失败", i);
+			return -1;
+		}
 		cap.nodes[i]->idx = i;
 		cap.nodes[i]->len = pl.length;
 		/* 本内核 v4l2_plane 没有 bytesperline 字段;用 S_FMT 回填的
@@ -1375,8 +1384,13 @@ static int dev_open(void)
 		cap.nodes[i]->dmabuf_fd = exp.fd;
 		cap.mmap[i] = mmap(NULL, pl.length, PROT_READ | PROT_WRITE,
 				   MAP_SHARED, cap.fd, pl.m.mem_offset);
-		if (cap.mmap[i] == MAP_FAILED)
+		if (cap.mmap[i] == MAP_FAILED) {
 			cap.mmap[i] = NULL;
+			if (g_copy) {
+				fatal(1, "buffer %d mmap 失败: %s", i, strerror(errno));
+				return -1;
+			}
+		}
 		atomic_init(&cap.nodes[i]->refs, 0);
 	}
 
@@ -1898,7 +1912,9 @@ static void diag_bundle(int rc)
 static int session(void)
 {
 	pthread_t t_cap, t_smpl, t_rt, t_ev;
-	int rc = 0;
+	int rc = 0, err;
+	bool smpl_started = false, cap_started = false;
+	bool rt_started = false, ev_started = false;
 
 	atomic_store(&g_run, true);
 	atomic_store(&g_draining, false);
@@ -1962,19 +1978,59 @@ static int session(void)
 	g_cpu_ticks_start = proc_cpu_ticks();
 	if (g_fault == 4)
 		stopfail_arm();
-	pthread_create(&t_smpl, NULL, sampler_thread, NULL);
-	pthread_create(&t_cap, NULL, capture_thread, NULL);
-	pthread_create(&t_rt, NULL, rt_thread, NULL);
-	pthread_create(&t_ev, NULL, ev_thread, NULL);
+	/* 保持原有启动顺序；任何创建失败都只回收已启动的线程。 */
+	err = pthread_create(&t_smpl, NULL, sampler_thread, NULL);
+	if (err)
+		goto thread_fail;
+	smpl_started = true;
+	err = pthread_create(&t_cap, NULL, capture_thread, NULL);
+	if (err)
+		goto thread_fail;
+	cap_started = true;
+	err = pthread_create(&t_rt, NULL, rt_thread, NULL);
+	if (err)
+		goto thread_fail;
+	rt_started = true;
+	err = pthread_create(&t_ev, NULL, ev_thread, NULL);
+	if (err)
+		goto thread_fail;
+	ev_started = true;
 
 	pthread_join(t_cap, NULL);
 	atomic_store(&g_draining, true);
 	wake_all();
 	pthread_join(t_rt, NULL);
 	pthread_join(t_ev, NULL);
+	/* 采样器只在消费者排空后停止，且必须在下次 session 前回收。 */
+	atomic_store(&g_run, false);
+	pthread_join(t_smpl, NULL);
 
 	dev_streamoff();
 	rc = atomic_load(&g_fatal);
+	goto out;
+
+thread_fail:
+	atomic_store(&g_run, false);
+	atomic_store(&g_draining, true);
+	wake_all();
+	if (cap_started)
+		pthread_join(t_cap, NULL);
+	if (rt_started)
+		pthread_join(t_rt, NULL);
+	if (ev_started)
+		pthread_join(t_ev, NULL);
+	if (smpl_started)
+		pthread_join(t_smpl, NULL);
+	/* 消费者可能尚未启动或已退出，清掉队列持有的 buffer 引用。 */
+	for (int id = 0; id < 2; id++) {
+		struct node *n;
+
+		while ((n = q_pop(id, 0)) != NULL)
+			node_release(n);
+	}
+	fatal(1, "pthread_create 失败: %s", strerror(err));
+	dev_streamoff();
+	rc = 1;
 out:
 	dev_close();
 	if (rc)

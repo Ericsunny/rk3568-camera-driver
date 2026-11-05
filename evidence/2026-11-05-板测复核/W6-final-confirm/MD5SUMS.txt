@@ -1,0 +1,7 @@
+d9c539c3f0cc2249be49c715b87a2a21  dmesg-before.txt
+caf1437ac7d435c5ab60dc72a93f6c1f  dmesg-after.txt
+90456d79171637863005c2574ee13fe4  trace.log
+7a82ecf6b59deae422818337bc9a796b  stdout
+5036be3b1681214763e47b3120325221  stderr
+a8526de0113a441966fb8cb305ccb4d1  confirmation.tar.gz (board and PC)
+59a0e207b81e318160c9020dc63748cf  s4_det.ppm (board only)

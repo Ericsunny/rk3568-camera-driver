@@ -68,3 +68,6 @@ jobs:
 
       - name: RAW10 统计合成数据测试(不访问设备)
         run: python3 tools/tests/test_raw10_stats.py
+
+      - name: W6 硬件提交与异常监测替身测试(不访问设备)
+        run: python3 tools/tests/test_w6_trace_monitor.py

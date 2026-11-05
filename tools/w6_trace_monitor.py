@@ -11,6 +11,8 @@ import time
 
 KNOWN_IMX = 'imx415 1-001a: write reg array error'
 KNOWN_RGA = 'librga fail to get driver version! Compatibility mode will be enabled.'
+KNOWN_RGA_KERNEL = 'rga2: unknown ioctl cmd!'
+FRAME_STALL_SECONDS = 8.0
 ERROR = re.compile(r'\b(error|fail(?:ed|ure)?|timeout|oops|panic|bug|warn(?:ing)?)\b', re.I)
 CPU = re.compile(r'((?:cpu|software).*(?:fallback|fall.?back))|((?:fallback|fall.?back).*(?:cpu|software))', re.I)
 STAMP = re.compile(r'\[\s*(\d+(?:\.\d+)?)\]')
@@ -23,6 +25,10 @@ class TraceCheck:
         self.active = None
         self.hits = 0
         self.completed = 0
+        self.first_begin_epoch = None
+        self.first_end_epoch = None
+        self.version_query_epoch = None
+        self.compat_query_epoch = None
 
     def line(self, line):
         opened = re.search(r'openat\(.*"/dev/rga".*\)\s*=\s*(\d+)(?:</dev/rga>)?', line)
@@ -33,6 +39,18 @@ class TraceCheck:
             self.fds.discard(int(closed.group(1)))
         begin = re.search(r'write\([^\n]*"W6_BEGIN:(\d+)\\n"', line)
         end = re.search(r'write\([^\n]*"W6_END:(\d+):(\d+)\\n"', line)
+        timestamp = re.match(r'^\s*(?:\d+\s+)?(\d{9,}\.\d+)\s+', line)
+        if self.active == 0 and timestamp:
+            version = re.search(r'ioctl\((0x[0-9a-fA-F]+|\d+),\s*0x801c7201,.*\)\s*=\s*-1 EINVAL', line)
+            compat = re.search(r'ioctl\((0x[0-9a-fA-F]+|\d+),\s*0x601b,.*\)\s*=\s*(?:0x0|0)(?:\s|$)', line)
+            if version and int(version.group(1), 0) in self.fds:
+                self.version_query_epoch = float(timestamp.group(1))
+            if compat and int(compat.group(1), 0) in self.fds:
+                self.compat_query_epoch = float(timestamp.group(1))
+        if begin and int(begin.group(1)) == 0 and timestamp:
+            self.first_begin_epoch = float(timestamp.group(1))
+        if end and int(end.group(1)) == 0 and timestamp:
+            self.first_end_epoch = float(timestamp.group(1))
         if begin:
             if self.active is not None or int(begin.group(1)) != self.completed:
                 raise ValueError('unexpected RGA begin marker')
@@ -62,6 +80,39 @@ def kernel_problem(line, since):
     if LEVEL.search(line) or ERROR.search(line) or CPU.search(line):
         return line.strip()
     return None
+
+
+class KernelWatch:
+    """Allow at most one exact RGA init message, correlated to first traced frame."""
+    def __init__(self, since, epoch_at_boot):
+        self.since = since
+        self.epoch_at_boot = epoch_at_boot
+        self.rga_time = None
+
+    def line(self, line):
+        stamp = STAMP.search(line)
+        if stamp and float(stamp.group(1)) < self.since:
+            return None
+        exact = re.fullmatch(r'\s*kern\s*:\s*err\s*:\s*\[\s*(\d+(?:\.\d+)?)\]\s*rga2: unknown ioctl cmd!\s*', line)
+        if exact:
+            if self.rga_time is not None:
+                return 'repeated RGA unknown ioctl kernel error'
+            self.rga_time = float(exact.group(1)) + self.epoch_at_boot
+            return None
+        return kernel_problem(line, self.since)
+
+    def validate(self, check, final=False):
+        if self.rga_time is None:
+            return
+        if check.first_begin_epoch is None or check.first_end_epoch is None:
+            if final:
+                raise ValueError('RGA init error cannot be correlated to first frame')
+            return
+        if not check.first_begin_epoch <= self.rga_time <= check.first_end_epoch:
+            raise ValueError('RGA unknown ioctl outside first-frame initialization')
+        if (check.version_query_epoch is None or check.compat_query_epoch is None or
+                not check.version_query_epoch <= self.rga_time <= check.compat_query_epoch):
+            raise ValueError('RGA unknown ioctl not correlated to version probe')
 
 
 def app_problem(line):
@@ -127,6 +178,8 @@ def run(mode, root, binary, expected_boot, service_pid, duration, temperature, m
     kern = out / 'kernel.log'; kernerr = out / 'kernel.stderr'
     service_start = proc_start(service_pid)
     since = time.clock_gettime(time.CLOCK_BOOTTIME)
+    epoch_at_boot = time.time() - time.clock_gettime(time.CLOCK_BOOTTIME)
+    watch = KernelWatch(since, epoch_at_boot)
     check = TraceCheck()
     tails = {p: Tail(p) for p in (trace, appout, apperr, kern)}
     reason = 'internal error'
@@ -141,7 +194,7 @@ def run(mode, root, binary, expected_boot, service_pid, duration, temperature, m
             time.sleep(.2)
             if logger.poll() is not None:
                 raise ValueError('kernel log monitor could not start')
-            cmd = ['strace', '-f', '-yy', '-s', '160', '-e', 'trace=write,ioctl,openat,close',
+            cmd = ['strace', '-f', '-ttt', '-yy', '-s', '160', '-e', 'trace=write,ioctl,openat,close',
                    '-e', 'raw=ioctl', '-o', str(trace), 'stdbuf', '-oL', '-eL', str(binary),
                    mode, '30', '/dev/video5']
             env = os.environ.copy(); env['RUNS'] = '1'
@@ -149,6 +202,8 @@ def run(mode, root, binary, expected_boot, service_pid, duration, temperature, m
                                       stdin=subprocess.DEVNULL, start_new_session=True)
             deadline = time.monotonic() + duration
             next_d_check = 0
+            last_progress = time.monotonic()
+            prior_completed = 0
             while True:
                 if logger.poll() is not None:
                     raise ValueError('kernel log monitor exited')
@@ -162,7 +217,7 @@ def run(mode, root, binary, expected_boot, service_pid, duration, temperature, m
                     check_resources(root, temperature, max_temp, reserve_bytes, reserve_inodes)
                     next_d_check = time.monotonic() + .5
                 for line in tails[kern].lines():
-                    problem = kernel_problem(line, since)
+                    problem = watch.line(line)
                     if problem: raise ValueError('new kernel error: ' + problem)
                 for path in (appout, apperr):
                     for line in tails[path].lines():
@@ -170,6 +225,12 @@ def run(mode, root, binary, expected_boot, service_pid, duration, temperature, m
                         if problem: raise ValueError('application error: ' + problem)
                 for line in tails[trace].lines():
                     check.line(line)
+                watch.validate(check)
+                if check.completed != prior_completed:
+                    prior_completed = check.completed
+                    last_progress = time.monotonic()
+                if time.monotonic() - last_progress >= FRAME_STALL_SECONDS:
+                    raise ValueError('frame progress stalled for 8 seconds')
                 if target.poll() is not None:
                     for line in tails[trace].lines(final=True): check.line(line)
                     for path in (appout, apperr):
@@ -178,6 +239,7 @@ def run(mode, root, binary, expected_boot, service_pid, duration, temperature, m
                             if problem: raise ValueError('application error: ' + problem)
                     if target.returncode != 0: raise ValueError('test process exit %d' % target.returncode)
                     check.finish(30)
+                    watch.validate(check, final=True)
                     reason = 'complete; hardware submissions observed, hidden CPU work not excluded'
                     break
                 if time.monotonic() >= deadline: raise ValueError('trial timeout')
@@ -196,9 +258,12 @@ def run(mode, root, binary, expected_boot, service_pid, duration, temperature, m
                 try: logger.wait(timeout=5)
                 except subprocess.TimeoutExpired: reason += '; kernel monitor did not terminate'
         for line in tails[kern].lines(final=True):
-            problem = kernel_problem(line, since)
+            problem = watch.line(line)
             if problem and reason.startswith('complete;'):
                 reason = 'new kernel error: ' + problem
+        if reason.startswith('complete;'):
+            try: watch.validate(check, final=True)
+            except ValueError as exc: reason = str(exc)
     with (out / 'monitor.txt').open('x') as f:
         f.write('mode=%s\nboot_time_start=%.6f\nobserved_rga_frames=%d\nreason=%s\n' %
                 (mode, since, check.completed, reason))

@@ -1,0 +1,19 @@
+host_utc_before=2026-11-05T10:27:06.4978838Z
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+COMMAND
+gcc -O2 -Wall -Wextra -o capbench capbench.c
+2026-11-05T10:27:05Z
+STDOUT
+STDERR
+capbench.c: In function ‘main’:
+capbench.c:94:23: warning: variable ‘t_last’ set but not used [-Wunused-but-set-variable]
+   94 |  double t_start = t0, t_last = 0;
+      |                       ^~~~~~
+EXIT=0
+capbench: ELF 64-bit LSB shared object, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=e9dd40d5a3c799c81cdba34b0621ce57dff8f16a, for GNU/Linux 3.7.0, not stripped
+72baf7f999b953b247aff5a084e63f18  capbench
+e077c1e738b27c9aa0178804013cf6b7a8fd486b9fca2f82ce769fd9ddea294f  capbench
+ssh_exit=0
+host_utc_after=2026-11-05T10:27:08.9177882Z

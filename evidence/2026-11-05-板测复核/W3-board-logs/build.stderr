@@ -1,0 +1,4 @@
+capbench.c: In function ‘main’:
+capbench.c:94:23: warning: variable ‘t_last’ set but not used [-Wunused-but-set-variable]
+   94 |  double t_start = t0, t_last = 0;
+      |                       ^~~~~~

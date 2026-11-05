@@ -1,0 +1,36 @@
+START_UTC
+2026-11-05T10:27:50Z
+START_UPTIME
+29359.92 108148.19
+FORMAT_BEFORE
+Format Video Capture Multiplanar:
+	Width/Height      : 1632/1224
+	Pixel Format      : 'BG10' (10-bit Bayer BGBG/GRGR)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : Default
+	Transfer Function : Default
+	YCbCr/HSV Encoding: Default
+	Quantization      : Default
+	Plane 0           :
+	   Bytes per Line : 2048
+	   Size Image     : 2506752
+END_UTC
+2026-11-05T10:27:58Z
+END_UPTIME
+29368.21 108179.43
+FORMAT_AFTER
+Format Video Capture Multiplanar:
+	Width/Height      : 1632/1224
+	Pixel Format      : 'BG10' (10-bit Bayer BGBG/GRGR)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : Default
+	Transfer Function : Default
+	YCbCr/HSV Encoding: Default
+	Quantization      : Default
+	Plane 0           :
+	   Bytes per Line : 2048
+	   Size Image     : 2506752

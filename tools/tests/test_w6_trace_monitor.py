@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location('w6', Path(__file__).resolve().parents[1] / 'w6_trace_monitor.py')
 w6 = importlib.util.module_from_spec(spec)
@@ -92,15 +93,17 @@ with open(path,'w',buffering=1) as f:
             old_path = os.environ['PATH']; os.environ['PATH'] = str(bindir) + os.pathsep + old_path
             try:
                 boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
-                rc = w6.run('a', root, root / 'unused-binary', boot, os.getpid(), 5,
-                            temperature, 70000, 1, 1)
+                # Isolate the host's unrelated processes; production D-state check is unchanged.
+                with patch.object(w6, 'find_d_state', return_value=None):
+                    rc = w6.run('a', root, root / 'unused-binary', boot, os.getpid(), 5,
+                                temperature, 70000, 1, 1)
                 self.assertEqual(rc, 0, (root / 'a/monitor.txt').read_text())
                 self.assertIn('observed_rga_frames=30', (root / 'a/monitor.txt').read_text())
             finally:
                 os.environ['PATH'] = old_path
 
     def test_supervisor_stops_on_missing_ioctl_and_new_kernel_error(self):
-        for scenario in ('missing_ioctl', 'kernel_error'):
+        for scenario in ('missing_ioctl', 'kernel_error', 'd_state'):
             with self.subTest(scenario=scenario), tempfile.TemporaryDirectory(prefix='w6-stop-') as tmp:
                 root = Path(tmp); bindir = root / 'bin'; bindir.mkdir()
                 fake_dmesg = bindir / 'dmesg'
@@ -128,12 +131,16 @@ with open(path,'w',buffering=1) as f:
                 old_path = os.environ['PATH']; os.environ['PATH'] = str(bindir) + os.pathsep + old_path
                 try:
                     boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
-                    rc = w6.run('a', root, root / 'unused-binary', boot, os.getpid(), 5,
-                                temperature, 70000, 1, 1)
+                    states = [None, '123'] if scenario == 'd_state' else None
+                    with patch.object(w6, 'find_d_state', side_effect=states, return_value=None):
+                        rc = w6.run('a', root, root / 'unused-binary', boot, os.getpid(), 5,
+                                    temperature, 70000, 1, 1)
                     result = (root / 'a/monitor.txt').read_text()
                     self.assertEqual(rc, 2, result)
-                    self.assertIn('lacks successful hardware ioctl' if scenario == 'missing_ioctl'
-                                  else 'new kernel error', result)
+                    expected = {'missing_ioctl': 'lacks successful hardware ioctl',
+                                'kernel_error': 'new kernel error',
+                                'd_state': 'D-state process detected: 123'}
+                    self.assertIn(expected[scenario], result)
                 finally:
                     os.environ['PATH'] = old_path
 

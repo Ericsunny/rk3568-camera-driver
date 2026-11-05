@@ -1,0 +1,42 @@
+START_UTC
+2026-11-05T10:17:31Z
+START_UPTIME
+28740.81 105910.87
+FORMAT_BEFORE
+Format Video Capture Multiplanar:
+	Width/Height      : 3840/2160
+	Pixel Format      : 'NV12' (Y/CbCr 4:2:0)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : Default
+	Transfer Function : Default
+	YCbCr/HSV Encoding: Default
+	Quantization      : Full Range
+	Plane 0           :
+	   Bytes per Line : 3840
+	   Size Image     : 12441600
+COMMAND: timeout 20s v4l2-ctl -d /dev/video5 --stream-no-query --stream-mmap=3 --stream-count=2 --stream-to=<run>/two.nv12
+CAPTURE_EXIT=0
+CAPTURE_STDOUT
+CAPTURE_STDERR
+<<
+TOTAL_BYTES=24883200
+FRAME_SIZES
+12441600 /root/camera-window/review-20261105-1015Z-c08f2a/frame-aa.nv12
+12441600 /root/camera-window/review-20261105-1015Z-c08f2a/frame-ab.nv12
+24883200 总用量
+MD5
+f02275cd61c760645e09e7da00846413  /root/camera-window/review-20261105-1015Z-c08f2a/two.nv12
+19fb971530bb5ea96c5e3efb0d5da15e  /root/camera-window/review-20261105-1015Z-c08f2a/frame-aa.nv12
+5de233f5fefc42a8b566b37df67af420  /root/camera-window/review-20261105-1015Z-c08f2a/frame-ab.nv12
+SHA256
+c6fc1bfe9ba7f0a0fc1ee930fe6e00f750b3d42f882b8e5e7075820e200511d1  /root/camera-window/review-20261105-1015Z-c08f2a/two.nv12
+31b349ede0e6bbdae41926a97fda8485f65ad1bd550943dc566676d65701c09b  /root/camera-window/review-20261105-1015Z-c08f2a/frame-aa.nv12
+668d7b4317fb31d96f82aa83f988f17810d83c8fc5b9de97282dd75842720e68  /root/camera-window/review-20261105-1015Z-c08f2a/frame-ab.nv12
+CMP_EXIT=1
+END_UTC
+2026-11-05T10:17:32Z
+END_UPTIME
+28742.35 105915.38
+RESULT=DIFFERENT

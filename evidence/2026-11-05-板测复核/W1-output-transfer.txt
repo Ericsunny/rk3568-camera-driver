@@ -1,0 +1,8 @@
+2026-11-05: scp board outputs to a unique PC temporary directory; each scp exit 0.
+Name               PC MD5                            Board MD5
+frame-aa.nv12      19fb971530bb5ea96c5e3efb0d5da15e 19fb971530bb5ea96c5e3efb0d5da15e
+frame-ab.nv12      5de233f5fefc42a8b566b37df67af420 5de233f5fefc42a8b566b37df67af420
+W1.stdout          01c243952516cd6263c73ba8ccd22adf 01c243952516cd6263c73ba8ccd22adf
+W1.stderr          d41d8cd98f00b204e9800998ecf8427e d41d8cd98f00b204e9800998ecf8427e
+W1.exit            897316929176464ebc9ad085f31e7284 897316929176464ebc9ad085f31e7284
+The raw frame files remain on the board and in the PC temporary copy, not in git.

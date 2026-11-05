@@ -105,6 +105,8 @@ int main(void)
 		io_fault = i;
 		check(focus_main(6, focus_argv) == (i ? 1 : 0), "focus output status");
 	}
+	io_fault = 0; memset(frame, 0, sizeof(frame));
+	check(focus_main(6, focus_argv) != 0, "focus missing output status");
 	for (i = 0; i <= 6; i++) {
 		hdr_fault = i;
 		check(hdr_cfg_main(2, hdr_argv) == (i ? 1 : 0), "HDR failure status");

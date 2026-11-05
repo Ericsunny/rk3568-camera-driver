@@ -194,6 +194,9 @@ int main(int argc, char **argv)
 			if (fclose(f) != 0) { perror("fclose best_out"); output_error = 1; }
 			if (!output_error) printf("最佳帧已存 -> %s (%zu 字节)\n", best_out, sz);
 		}
+	} else if (best_out) {
+		fprintf(stderr, "未能生成最佳帧: %s\n", best_out);
+		output_error = 1;
 	}
 	free(best);
 	for (unsigned i = 0; i < req.count; i++) munmap(mem[i], len[i]);

@@ -70,6 +70,28 @@ class TraceTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'storage'):
                 w6.check_resources(root, temperature, 70000, 2**62, 1)
 
+    def test_kernel_rga_allowance_is_single_and_within_first_frame(self):
+        line = 'kern :err : [100.250000] rga2: unknown ioctl cmd!'
+        check = w6.TraceCheck()
+        check.first_begin_epoch = 1100.2
+        check.first_end_epoch = 1100.3
+        check.version_query_epoch = 1100.24
+        check.compat_query_epoch = 1100.26
+        watch = w6.KernelWatch(100.0, 1000.0)
+        self.assertIsNone(watch.line(line))
+        watch.validate(check, final=True)
+        self.assertIn('repeated', watch.line(line))
+        late = w6.KernelWatch(100.0, 1000.0)
+        self.assertIsNone(late.line('kern :err : [101.000000] rga2: unknown ioctl cmd!'))
+        with self.assertRaisesRegex(ValueError, 'outside first-frame'):
+            late.validate(check, final=True)
+        missing = w6.KernelWatch(100.0, 1000.0)
+        self.assertIsNone(missing.line(line))
+        with self.assertRaisesRegex(ValueError, 'cannot be correlated'):
+            missing.validate(w6.TraceCheck(), final=True)
+        unexpected = w6.KernelWatch(100.0, 1000.0)
+        self.assertIsNotNone(unexpected.line('kern :err : [100.250000] rga2: unknown ioctl cmd! extra'))
+
     def test_supervisor_with_simulated_tracer_and_logger(self):
         with tempfile.TemporaryDirectory(prefix='w6-supervisor-') as tmp:
             root = Path(tmp); bindir = root / 'bin'; bindir.mkdir()
@@ -103,7 +125,7 @@ with open(path,'w',buffering=1) as f:
                 os.environ['PATH'] = old_path
 
     def test_supervisor_stops_on_missing_ioctl_and_new_kernel_error(self):
-        for scenario in ('missing_ioctl', 'kernel_error', 'd_state'):
+        for scenario in ('missing_ioctl', 'kernel_error', 'd_state', 'stall'):
             with self.subTest(scenario=scenario), tempfile.TemporaryDirectory(prefix='w6-stop-') as tmp:
                 root = Path(tmp); bindir = root / 'bin'; bindir.mkdir()
                 fake_dmesg = bindir / 'dmesg'
@@ -132,14 +154,16 @@ with open(path,'w',buffering=1) as f:
                 try:
                     boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
                     states = [None, '123'] if scenario == 'd_state' else None
-                    with patch.object(w6, 'find_d_state', side_effect=states, return_value=None):
+                    with patch.object(w6, 'find_d_state', side_effect=states, return_value=None), \
+                         patch.object(w6, 'FRAME_STALL_SECONDS', .1 if scenario == 'stall' else 8.0):
                         rc = w6.run('a', root, root / 'unused-binary', boot, os.getpid(), 5,
                                     temperature, 70000, 1, 1)
                     result = (root / 'a/monitor.txt').read_text()
                     self.assertEqual(rc, 2, result)
                     expected = {'missing_ioctl': 'lacks successful hardware ioctl',
                                 'kernel_error': 'new kernel error',
-                                'd_state': 'D-state process detected: 123'}
+                                'd_state': 'D-state process detected: 123',
+                                'stall': 'frame progress stalled'}
                     self.assertIn(expected[scenario], result)
                 finally:
                     os.environ['PATH'] = old_path

@@ -1,0 +1,12 @@
+test_all_bayer_orders (__main__.RawStatsTest) ... ok
+test_bad_size_stride_roi_and_duplicate (__main__.RawStatsTest) ... ok
+test_known_byte_order (__main__.RawStatsTest) ... ok
+test_output_never_overwrites (__main__.RawStatsTest) ... ok
+test_padded_two_frames_and_temporal_statistics (__main__.RawStatsTest) ... ok
+test_roi_uses_full_frame_bayer_phase (__main__.RawStatsTest) ... ok
+test_u16_and_clipping (__main__.RawStatsTest) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.551s
+
+OK

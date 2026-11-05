@@ -62,3 +62,6 @@ jobs:
             git apply --numstat "$p" || { echo "FAIL patch format: $p"; exit 1; }
             echo "OK  $p (syntax only)"
           done
+
+      - name: RAW10 统计合成数据测试(不访问设备)
+        run: python3 tools/tests/test_raw10_stats.py

@@ -14,28 +14,28 @@ jobs:
       - name: shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)
         run: |
           rc=0
-          for f in $(git ls-files '*.sh'); do
+          while IFS= read -r -d '' f; do
             # 用脚本自己声明的解释器做语法检查: bash 脚本(如历史 bring-up 工具
             # cpu_ab.sh 的 <<< 与 step2_verify.sh 的 >(tee))用 dash 的 sh -n
             # 会假阳性 "redirection unexpected", 那不是语法错误
             if head -1 "$f" | grep -q '^#!.*bash'; then C="bash -n"; else C="sh -n"; fi
             if $C "$f"; then echo "OK  $f ($C)"; else echo "FAIL $f ($C)"; rc=1; fi
-          done
+          done < <(git ls-files -z '*.sh')
           exit $rc
 
       - name: shellcheck(有则报,不阻断)
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck >/dev/null
-          for f in $(git ls-files '*.sh'); do
+          while IFS= read -r -d '' f; do
             shellcheck -S warning "$f" || true
-          done
+          done < <(git ls-files -z '*.sh')
 
       - name: python 语法检查(py_compile)
         run: |
           rc=0
-          for f in $(git ls-files '*.py'); do
+          while IFS= read -r -d '' f; do
             if python3 -m py_compile "$f"; then echo "OK  $f"; else echo "FAIL $f"; rc=1; fi
-          done
+          done < <(git ls-files -z '*.py')
           exit $rc
 
       - name: C 纯 glibc 工具组语法检查(-fsyntax-only)

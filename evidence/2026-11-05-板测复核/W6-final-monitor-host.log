@@ -1,0 +1,30 @@
+host_utc=2026-11-05T12:27:03.463196+00:00
+PC_MD5
+252be632e72c55cf77099a2ab6fc1da3  tools/w6_trace_monitor.py
+2cf28f560e0f974af39a34674a04c7f7  tools/tests/test_w6_trace_monitor.py
+COMMAND
+cd /tmp/w6-final-c493154; md5sum tools/w6_trace_monitor.py tools/tests/test_w6_trace_monitor.py; python3 tools/tests/test_w6_trace_monitor.py
+VM_STDOUT
+252be632e72c55cf77099a2ab6fc1da3  tools/w6_trace_monitor.py
+2cf28f560e0f974af39a34674a04c7f7  tools/tests/test_w6_trace_monitor.py
+
+VM_STDERR
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+test_app_whitelist_does_not_hide_cpu_fallback (__main__.TraceTest) ... ok
+test_closed_device_and_failed_rga_return (__main__.TraceTest) ... ok
+test_kernel_rga_allowance_is_single_and_within_first_frame (__main__.TraceTest) ... ok
+test_kernel_whitelist_is_narrow_and_time_bounded (__main__.TraceTest) ... ok
+test_missing_or_failed_hardware_submission_stops (__main__.TraceTest) ... ok
+test_preflight_rejects_hot_or_full (__main__.TraceTest) ... ok
+test_successful_ioctl_between_each_marker (__main__.TraceTest) ... ok
+test_supervisor_stops_on_missing_ioctl_and_new_kernel_error (__main__.TraceTest) ... ok
+test_supervisor_with_simulated_tracer_and_logger (__main__.TraceTest) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 2.166s
+
+OK
+
+exit=0

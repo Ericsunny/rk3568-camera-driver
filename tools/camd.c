@@ -155,7 +155,7 @@ static struct {
 	struct node *nodes[MAX_BUFS];
 	void *mmap[MAX_BUFS];	/* CPU 对照路径需要可读基址 */
 	atomic_bool streaming;
-} cap;
+} cap = { .fd = -1 };
 
 static queue_t q[2];
 enum { Q_RT = 0, Q_EV = 1 };
@@ -1155,13 +1155,13 @@ static void q_init(int id, int depth, int drop_oldest, int block_ms)
 {
 	queue_t *Q = &q[id];
 
-	memset(Q, 0, sizeof(*Q));
+	/* 同步对象由 main 初始化一次；会话间只重置队列数据。 */
+	memset(Q->slot, 0, sizeof(Q->slot));
+	Q->n = Q->head = 0;
+	Q->pushed = Q->popped = Q->dropped = 0;
 	Q->cap = depth <= 0 ? 1 : (depth > MAX_Q ? MAX_Q : depth);
 	Q->drop_oldest = drop_oldest;
 	Q->block_ms = block_ms;
-	pthread_mutex_init(&Q->m, NULL);
-	pthread_cond_init(&Q->not_empty, NULL);
-	pthread_cond_init(&Q->not_full, NULL);
 }
 
 /* 入队:接管调用方传入的这一份引用 */
@@ -1374,6 +1374,7 @@ static int dev_open(void)
 			fatal(1, "buffer %d 节点分配失败", i);
 			return -1;
 		}
+		cap.nodes[i]->dmabuf_fd = -1;
 		cap.nodes[i]->idx = i;
 		cap.nodes[i]->len = pl.length;
 		/* 本内核 v4l2_plane 没有 bytesperline 字段;用 S_FMT 回填的
@@ -1462,7 +1463,7 @@ static void dev_close(void)
 			cap.mmap[i] = NULL;
 		}
 	}
-	if (cap.fd > 0) {
+	if (cap.fd >= 0) {
 		struct v4l2_requestbuffers req;
 
 		memset(&req, 0, sizeof(req));
@@ -1473,7 +1474,7 @@ static void dev_close(void)
 			fprintf(stderr, "[dbg] REQBUFS(0) 失败: %s\n", strerror(errno));
 	}
 	for (i = 0; i < cap.nbufs; i++) {
-		if (cap.nodes[i] && cap.nodes[i]->dmabuf_fd > 0) {
+		if (cap.nodes[i] && cap.nodes[i]->dmabuf_fd >= 0) {
 			int r = close(cap.nodes[i]->dmabuf_fd);
 
 			if (getenv("CAMDBG"))
@@ -1482,7 +1483,7 @@ static void dev_close(void)
 			cap.nodes[i]->dmabuf_fd = -1;
 		}
 	}
-	if (cap.fd > 0) {
+	if (cap.fd >= 0) {
 		int r = close(cap.fd);
 
 		if (getenv("CAMDBG"))
@@ -2256,6 +2257,11 @@ int main(int argc, char **argv)
 		}
 	} else {
 		dump_json(stdout, rc);
+	}
+	for (i = 0; i < 2; i++) {
+		pthread_cond_destroy(&q[i].not_empty);
+		pthread_cond_destroy(&q[i].not_full);
+		pthread_mutex_destroy(&q[i].m);
 	}
 	return rc;
 }

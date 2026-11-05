@@ -76,6 +76,7 @@ static FILE *fake_fopen(const char *, const char *);
 static int fail_create, create_calls, join_calls, fail_node, fail_map, fail_lat;
 static int node_alloc_calls, map_calls, unmap_calls;
 static int closed_device, closed_export, streamoff_calls;
+static int fake_device_fd = 100, fake_export_base = 200;
 static atomic_int sampler_active, sampler_overlap, sampler_max;
 static unsigned char fake_buffer[8][128];
 static void *lat_alloc;
@@ -89,14 +90,14 @@ static void require(int ok, const char *what)
 static int fake_open(const char *path, int flags, ...)
 {
     (void)flags;
-    if (strcmp(path, g_dev) == 0) return 100;
+    if (strcmp(path, g_dev) == 0) return fake_device_fd;
     errno = ENOENT;
     return -1;
 }
 static int fake_close(int fd)
 {
-    if (fd == 100) closed_device++;
-    if (fd >= 200 && fd < 208) closed_export++;
+    if (fd == fake_device_fd) closed_device++;
+    if (fd >= fake_export_base && fd < fake_export_base + 8) closed_export++;
     return 0;
 }
 static int fake_ioctl(int fd, unsigned long req, ...)
@@ -113,7 +114,7 @@ static int fake_ioctl(int fd, unsigned long req, ...)
         b->m.planes[0].m.mem_offset = b->index * sizeof(fake_buffer[0]);
     } else if (req == VIDIOC_EXPBUF) {
         struct v4l2_exportbuffer *exp = arg;
-        exp->fd = 200 + exp->index;
+        exp->fd = fake_export_base + exp->index;
     } else if (req == VIDIOC_DQBUF) {
         struct v4l2_buffer *b = arg;
         b->index = 0;
@@ -224,6 +225,7 @@ static void setup_session(void)
     fail_node = fail_map = 0;
     node_alloc_calls = map_calls = unmap_calls = 0;
     closed_device = closed_export = streamoff_calls = 0;
+    fake_device_fd = 100; fake_export_base = 200;
     cap.fd = -1; cap.nbufs = 1; cap.w = 4; cap.h = 4;
     cap.fourcc = V4L2_PIX_FMT_NV12;
     g_frames_limit = 1; g_ev_fps = 0; g_copy = g_rga = 0;
@@ -235,6 +237,11 @@ int main(void)
     int i, rc;
     lat_t test_lat = {0};
 
+    for (i = 0; i < 2; i++) {
+        require(pthread_mutex_init(&q[i].m, NULL) == 0, "queue mutex init");
+        require(pthread_cond_init(&q[i].not_empty, NULL) == 0, "queue condition init");
+        require(pthread_cond_init(&q[i].not_full, NULL) == 0, "queue condition init");
+    }
     for (i = 1; i <= 4; i++) {
         setup_session(); fail_create = i;
         rc = session();
@@ -285,6 +292,16 @@ int main(void)
     require(join_calls == 4 && !atomic_load(&sampler_active), "normal joins all workers");
     puts("optional mapping failure and normal session PASS");
 
+    setup_session(); fake_device_fd = 0;
+    rc = session();
+    require(rc == 0 && closed_device == 1 && closed_export == 1 && cap.fd == -1,
+            "device fd zero is closed");
+    setup_session(); fake_export_base = 0;
+    rc = session();
+    require(rc == 0 && closed_device == 1 && closed_export == 1,
+            "export fd zero is closed");
+    puts("device/export fd zero cleanup PASS");
+
     for (i = 0; i < 100; i++) lat_init(&test_lat, 8);
     lat_init(&test_lat, 0);
     require(lat_allocs == 100 && lat_frees == 100 && !test_lat.ring,
@@ -310,5 +327,10 @@ int main(void)
             "samplers never overlap across fault/recovery sessions");
     printf("30 fault/recovery pairs: max concurrent samplers=%d PASS\n",
            atomic_load(&sampler_max));
+    for (i = 0; i < 2; i++) {
+        require(pthread_cond_destroy(&q[i].not_empty) == 0, "queue condition destroy");
+        require(pthread_cond_destroy(&q[i].not_full) == 0, "queue condition destroy");
+        require(pthread_mutex_destroy(&q[i].m) == 0, "queue mutex destroy");
+    }
     return 0;
 }

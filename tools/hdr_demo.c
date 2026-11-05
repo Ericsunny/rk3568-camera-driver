@@ -228,7 +228,7 @@ int main(int argc, char **argv)
 {
 	const char *subdev = "/dev/v4l-subdev6", *outpath = NULL;
 	int exposures[8], nexp = 0, nframes = 6, i, j, keep = 0;
-	int sfd;
+	int sfd, output_error = 0;
 	double t0, t_cap, t_w, t_blur, t_fuse, t_all;
 	unsigned char **ys, *uv_mid = NULL, *fused;
 	unsigned short **ws;
@@ -376,32 +376,38 @@ int main(int argc, char **argv)
 			char name[512];
 			snprintf(name, sizeof(name), "%s.e%d.nv12", outpath, exposures[k]);
 			FILE *fp = fopen(name, "wb");
-			if (!fp)
+			if (!fp) {
+				perror("fopen input output");
+				output_error = 1;
 				continue;
-			fwrite(ys[k], 1, (size_t)W * H, fp);
-			if (uv_mid)
-				fwrite(uv_mid, 1, (size_t)W * H / 2, fp);
-			fclose(fp);
-			printf(">>> 输入已存: %s\n", name);
+			}
+			int failed = fwrite(ys[k], 1, (size_t)W * H, fp) != (size_t)W * H;
+			if (uv_mid && fwrite(uv_mid, 1, (size_t)W * H / 2, fp) != (size_t)W * H / 2)
+				failed = 1;
+			if (fclose(fp) != 0) failed = 1;
+			if (failed) { fprintf(stderr, ">>> 写入失败: %s\n", name); output_error = 1; }
+			else printf(">>> 输入已存: %s\n", name);
 		}
 	}
 
 	FILE *fp = fopen(outpath, "wb");
 	if (!fp)
 		die("fopen out");
-	fwrite(fused, 1, (size_t)W * H, fp);
+	int failed = fwrite(fused, 1, (size_t)W * H, fp) != (size_t)W * H;
 	if (uv_mid)
-		fwrite(uv_mid, 1, (size_t)W * H / 2, fp);
+		failed |= fwrite(uv_mid, 1, (size_t)W * H / 2, fp) != (size_t)W * H / 2;
 	else {
 		unsigned char *z = calloc(1, (size_t)W * H / 2);
-		fwrite(z, 1, (size_t)W * H / 2, fp);
+		if (!z || fwrite(z, 1, (size_t)W * H / 2, fp) != (size_t)W * H / 2)
+			failed = 1;
 		free(z);
 	}
-	fclose(fp);
+	if (fclose(fp) != 0) failed = 1;
+	if (failed) { fprintf(stderr, ">>> 写入失败: %s\n", outpath); output_error = 1; }
 
 	printf(">>> 耗时: 采集 %.0f ms | 权重 %.0f ms | 平滑 %.0f ms | 融合 %.0f ms | 合计 %.0f ms\n",
 	       t_cap, t_w, t_blur, t_fuse, t_all);
 	printf(">>> 融合单帧净耗时(不含采集): %.0f ms\n", t_w + t_blur + t_fuse);
-	printf(">>> 输出: %s\n", outpath);
-	return 0;
+	if (!failed) printf(">>> 输出: %s\n", outpath);
+	return output_error;
 }

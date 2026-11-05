@@ -20,6 +20,9 @@
  *      "解码帧数 == 记录数" 才算切片正确。
  */
 #define _GNU_SOURCE
+#if defined(HAVE_RGA) && !defined(HAVE_RKNN)
+#error "evrec RGA-only builds are unsupported; enable HAVE_RKNN with HAVE_RGA"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -643,7 +646,7 @@ static int npu_init(void)
 	if (stat(g_model, &st) < 0) { fprintf(stderr, "模型不存在: %s\n", g_model); return -1; }
 	f = fopen(g_model, "rb"); if (!f) return -1;
 	model = malloc((size_t)st.st_size);
-	if (!model || fread(model, 1, (size_t)st.st_size, f) != (size_t)st.st_size) { fclose(f); return -1; }
+	if (!model || fread(model, 1, (size_t)st.st_size, f) != (size_t)st.st_size) { free(model); fclose(f); return -1; }
 	fclose(f);
 
 	ret = rknn_init(&g_nctx, model, (uint32_t)st.st_size, 0, NULL);
@@ -931,11 +934,11 @@ static int ev_cooldown_active(void)
 	       now_ms(CLOCK_MONOTONIC) < g_cooldown_until_ms;
 }
 static double g_ev_first_ts, g_ev_last_ts;	/* 媒体跨度: 首包/末包 ts_ms */
-static const unsigned EV_BUF_CAP = 4u << 20;
+#define EV_BUF_CAP (4u << 20) /* 4 MiB event write batch, not a per-packet fsync */
 static int g_ev_werr;			/* 写失败标志(主循环收尾时清) */
 static char g_out_base[512];		/* 事件输出前缀(带运行时间戳, main 里赋值) */
 
-static unsigned char ev_buf[4 << 20];	/* 用户态写缓冲(批量, 不逐包 fsync) */
+static unsigned char ev_buf[EV_BUF_CAP];	/* 用户态写缓冲(批量, 不逐包 fsync) */
 static unsigned ev_bn;
 
 static void ev_flush(void)
@@ -1056,6 +1059,7 @@ static int evw_open_at(int pre_i, unsigned serial, unsigned segment,
 		       unsigned event_id)
 {
 	char path[560];
+	char expanded[sizeof(g_out_base) + 32];
 	int i, from = pre_i >= 0 ? pre_i : ring_last_idr();
 
 	/* 评审防御: 事件已在写时禁止重开 —— 重开等于 fopen("wb") 截断
@@ -1066,10 +1070,12 @@ static int evw_open_at(int pre_i, unsigned serial, unsigned segment,
 	}
 
 	if (segment == 0)
-		snprintf(g_ev_path, sizeof(g_ev_path), "%s-%02u", g_out_base, serial);
+		snprintf(expanded, sizeof(expanded), "%s-%02u", g_out_base, serial);
 	else
-		snprintf(g_ev_path, sizeof(g_ev_path), "%s-%02u-s%u", g_out_base,
+		snprintf(expanded, sizeof(expanded), "%s-%02u-s%u", g_out_base,
 			 serial, segment);
+	snprintf(g_ev_path, sizeof(g_ev_path), "%.*s", (int)sizeof(g_ev_path) - 1,
+		 expanded);
 	snprintf(path, sizeof(path), "%s.part", g_ev_path);
 	g_ev_fp = fopen(path, "wb");
 	if (!g_ev_fp) {
@@ -1240,19 +1246,6 @@ static void ring_push(unsigned char *d, int len, unsigned seq, unsigned pkt,
 static struct rec *ring_at(int i)
 {
 	return &ring[(ring_head + i) % MAX_FRAMES];
-}
-
-/* 事件结束复位环: 必须释放帧数据, 否则每个事件都会漏掉一整环编码包副本 */
-static void ring_clear(void)
-{
-	int i;
-
-	for (i = 0; i < ring_cnt; i++)
-		free(ring_at(i)->data);
-	ring_head = 0;
-	ring_cnt = 0;
-	ring_bytes = 0;
-	g_pushed = 0;
 }
 
 /* 找到 >= from 的第一个 IDR 的下标 */
@@ -1592,8 +1585,7 @@ int main(int argc, char **argv)
 {
 	const char *dev = "/dev/video5", *out = "/root/ev/ev";
 	int w = 1920, h = 1080, pre_sec = 3, post_sec = 2, kbps = 8000, gop;
-	int max_event_sec = 0;
-	int i, k, pre_i = -1, end_i = -1;
+	int i, pre_i = -1, end_i = -1;
 	int rc = 0;		/* 进程退出码: 0=正常, 1=真错误, 2=链路恢复失败 */
 	int reached_max = 0;	/* 因 --max-events 正常结束 */
 	int got_term;		/* 主循环退出时是否已收到 SIGTERM */
@@ -1745,7 +1737,8 @@ int main(int argc, char **argv)
 		/* 事件前缀必须带运行时间戳: 否则两次运行都写 PREFIX-01.h264,
 		 * 第二次 fopen("wb") 直接覆盖第一次的事件(285923c 说明里声称
 		 * 做了, 实际漏了 —— 板上 /root/ev/s5-01.part 即证据)。 */
-		snprintf(g_out_base, sizeof(g_out_base), "%s", out);
+		snprintf(g_out_base, sizeof(g_out_base), "%.*s",
+			 (int)sizeof(g_out_base) - 1, out);
 		/* S4: 水位量测目录 = 输出前缀的目录部分(无目录则用 /) */
 		{
 			const char *slash = strrchr(g_out_base, '/');

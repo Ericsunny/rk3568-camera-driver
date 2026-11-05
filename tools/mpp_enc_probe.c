@@ -112,7 +112,7 @@ int main(int argc, char **argv)
 	}
 
 	long total_bytes = 0;
-	int key = 0;
+	int key = 0, output_error = 0;
 	double t0 = now_ms();
 	for (int i = 0; i < nframes; i++) {
 		if (fread(src, 1, fsize, fi) != fsize)
@@ -134,6 +134,8 @@ int main(int argc, char **argv)
 		ret = mpi->encode_put_frame(ctx, frame);
 		if (ret != MPP_OK) {
 			fprintf(stderr, "第 %d 帧 put_frame 失败 %d\n", i, ret);
+			mpp_frame_deinit(&frame);
+			output_error = 1;
 			break;
 		}
 
@@ -142,11 +144,18 @@ int main(int argc, char **argv)
 		if (ret != MPP_OK || !packet) {
 			fprintf(stderr, "第 %d 帧 get_packet 失败 %d\n", i, ret);
 			mpp_frame_deinit(&frame);
+			output_error = 1;
 			break;
 		}
 		size_t len = mpp_packet_get_length(packet);
 		void *p = mpp_packet_get_data(packet);
-		fwrite(p, 1, len, fo);
+		if (fwrite(p, 1, len, fo) != len) {
+			perror("fwrite output");
+			output_error = 1;
+			mpp_packet_deinit(&packet);
+			mpp_frame_deinit(&frame);
+			break;
+		}
 		total_bytes += len;
 		if (i == 0 || i == nframes - 1)
 			printf("    帧 %2d: %zu 字节\n", i, len);
@@ -160,9 +169,11 @@ int main(int argc, char **argv)
 	mpp_buffer_group_put(grp);
 	mpp_destroy(ctx);
 	fclose(fi);
-	fclose(fo);
+	if (fclose(fo) != 0) { perror("fclose output"); output_error = 1; }
 	free(src);
 
+	if (output_error)
+		return 1;
 	printf(">>> 完成: %d 帧, %ld 字节, 平均 %.1f kbps @30fps, 用时 %.1f ms (%.2f ms/帧)\n",
 	       nframes, total_bytes, total_bytes * 8.0 * 30.0 / (nframes * 1000.0),
 	       dt, dt / nframes);

@@ -54,10 +54,14 @@ MODULE_PARM_DESC(stop_err_cnt, "cumulative stop_stream failure count (read-only)
 
 #define OV8858_SM_NAME "ov8858-sm"
 
-/* TODO(L1-B): every number below must come from the OV8858 datasheet. */
-/* Mode: 1080p 1920x1080@60, 2-lane RAW10, datasheet table 2-1 says 720 Mbps/lane.
+/* Datasheet table 2-1 lists 720 Mbps/lane for 4-lane RAW10 modes; the
+ * 2-lane 720 Mbps setting here comes from the vendor register table, not
+ * that table's 1080p60 row.  See ov8858_sm_regs.h and docs/17 timing.
  * link_freq (V4L2) = 720 Mbps / 2 (DDR)      = 360 MHz
  * pixel_rate       = 720 Mbps * 2 lanes / 10 = 144 Mpixel/s
+ * TODO: confirm the mode-dependent legal exposure/gain limits and the
+ * chosen V4L2 defaults against datasheet section 5.8 and sensor behavior;
+ * 0x3500-02 use 1/16-line units and gain format depends on 0x3503[2].
  */
 #define OV8858_SM_LINK_FREQ     360000000LL   /* Hz */
 #define OV8858_SM_PIXEL_RATE    144000000LL   /* pixel/s */
@@ -102,6 +106,7 @@ MODULE_DEVICE_TABLE(of, ov8858_sm_of_match);
 static int ov8858_sm_power_on(struct ov8858_sm *ov8858);
 static void ov8858_sm_power_off(struct ov8858_sm *ov8858);
 static int ov8858_sm_read_reg(struct i2c_client *client, u16 reg, u8 *val);
+static int ov8858_sm_read_diag(struct i2c_client *client, u16 reg, u8 *val);
 
 /* ---------------- register access: 16-bit address, 8-bit data ---------------- */
 
@@ -170,20 +175,22 @@ static int ov8858_sm_start_stream(struct ov8858_sm *ov8858)
 	{
 		u8 wh = 0, wl = 0, hh = 0, hl = 0, th = 0, tl = 0, vh = 0, vl = 0;
 		u8 st = 0, sub = 0, bin = 0;
+		int diag_err = 0;
 
-		ov8858_sm_read_reg(ov8858->client, 0x0100, &st);
-		ov8858_sm_read_reg(ov8858->client, 0x3814, &sub);
-		ov8858_sm_read_reg(ov8858->client, 0x3821, &bin);
-		ov8858_sm_read_reg(ov8858->client, 0x3808, &wh);
-		ov8858_sm_read_reg(ov8858->client, 0x3809, &wl);
-		ov8858_sm_read_reg(ov8858->client, 0x380a, &hh);
-		ov8858_sm_read_reg(ov8858->client, 0x380b, &hl);
-		ov8858_sm_read_reg(ov8858->client, 0x380c, &th);
-		ov8858_sm_read_reg(ov8858->client, 0x380d, &tl);
-		ov8858_sm_read_reg(ov8858->client, 0x380e, &vh);
-		ov8858_sm_read_reg(ov8858->client, 0x380f, &vl);
+		diag_err |= ov8858_sm_read_diag(ov8858->client, 0x0100, &st);
+		diag_err |= ov8858_sm_read_diag(ov8858->client, 0x3814, &sub);
+		diag_err |= ov8858_sm_read_diag(ov8858->client, 0x3821, &bin);
+		diag_err |= ov8858_sm_read_diag(ov8858->client, 0x3808, &wh);
+		diag_err |= ov8858_sm_read_diag(ov8858->client, 0x3809, &wl);
+		diag_err |= ov8858_sm_read_diag(ov8858->client, 0x380a, &hh);
+		diag_err |= ov8858_sm_read_diag(ov8858->client, 0x380b, &hl);
+		diag_err |= ov8858_sm_read_diag(ov8858->client, 0x380c, &th);
+		diag_err |= ov8858_sm_read_diag(ov8858->client, 0x380d, &tl);
+		diag_err |= ov8858_sm_read_diag(ov8858->client, 0x380e, &vh);
+		diag_err |= ov8858_sm_read_diag(ov8858->client, 0x380f, &vl);
 
-		dev_info(&ov8858->client->dev,
+		if (!diag_err)
+			dev_info(&ov8858->client->dev,
 			 "start_stream[%s]: stream=0x%02x 0x3814=0x%02x 0x3821=0x%02x size=%dx%d hts=%d vts=%d\n",
 			 ov8858->is_1080p ? "1080p" : "1632x1224",
 			 st, sub, bin, (wh << 8) | wl, (hh << 8) | hl,
@@ -696,7 +703,7 @@ static const struct v4l2_subdev_ops ov8858_sm_subdev_ops = {
 	.video = &ov8858_sm_video_ops,
 };
 
-/* Link frequency menu, in Hz. TODO(L1-B) */
+/* V4L2 link-frequency menu in Hz; 2-lane source and remaining gap above. */
 static const s64 ov8858_sm_link_freq_menu[] = {
 	OV8858_SM_LINK_FREQ,
 };
@@ -717,6 +724,16 @@ static int ov8858_sm_read_reg(struct i2c_client *client, u16 reg, u8 *val)
 		return ret;
 
 	return ret == ARRAY_SIZE(msgs) ? 0 : -EIO;
+}
+
+/* A failed diagnostic read must not be reported as a real zero value. */
+static int ov8858_sm_read_diag(struct i2c_client *client, u16 reg, u8 *val)
+{
+	int ret = ov8858_sm_read_reg(client, reg, val);
+
+	if (ret)
+		dev_warn(&client->dev, "diagnostic read 0x%04x failed: %d\n", reg, ret);
+	return ret;
 }
 
 /* Datasheet: chip ID is at 0x300B (high byte) and 0x300C (low byte). */
@@ -1052,24 +1069,26 @@ static int ov8858_sm_probe(struct i2c_client *client, const struct i2c_device_id
 	if (test_stream) {
 		u8 st = 0, mult = 0, wh = 0, wl = 0, hh = 0, hl = 0;
 		u8 th = 0, tl = 0, vh = 0, vl = 0;
+		int diag_err = 0;
 
 		dev_info(&client->dev, "test_stream: applying init sequence\n");
 		ret = ov8858_sm_start_stream(ov8858);
 		if (ret)
 			goto err_power;
 
-		ov8858_sm_read_reg(client, 0x0100, &st);
-		ov8858_sm_read_reg(client, 0x0302, &mult);
-		ov8858_sm_read_reg(client, 0x3808, &wh);
-		ov8858_sm_read_reg(client, 0x3809, &wl);
-		ov8858_sm_read_reg(client, 0x380a, &hh);
-		ov8858_sm_read_reg(client, 0x380b, &hl);
-		ov8858_sm_read_reg(client, 0x380c, &th);
-		ov8858_sm_read_reg(client, 0x380d, &tl);
-		ov8858_sm_read_reg(client, 0x380e, &vh);
-		ov8858_sm_read_reg(client, 0x380f, &vl);
+		diag_err |= ov8858_sm_read_diag(client, 0x0100, &st);
+		diag_err |= ov8858_sm_read_diag(client, 0x0302, &mult);
+		diag_err |= ov8858_sm_read_diag(client, 0x3808, &wh);
+		diag_err |= ov8858_sm_read_diag(client, 0x3809, &wl);
+		diag_err |= ov8858_sm_read_diag(client, 0x380a, &hh);
+		diag_err |= ov8858_sm_read_diag(client, 0x380b, &hl);
+		diag_err |= ov8858_sm_read_diag(client, 0x380c, &th);
+		diag_err |= ov8858_sm_read_diag(client, 0x380d, &tl);
+		diag_err |= ov8858_sm_read_diag(client, 0x380e, &vh);
+		diag_err |= ov8858_sm_read_diag(client, 0x380f, &vl);
 
-		dev_info(&client->dev,
+		if (!diag_err)
+			dev_info(&client->dev,
 			 "read back: stream=0x%02x mult=0x%02x size=%dx%d hts=%d vts=%d\n",
 			 st, mult, (wh << 8) | wl, (hh << 8) | hl,
 			 (th << 8) | tl, (vh << 8) | vl);

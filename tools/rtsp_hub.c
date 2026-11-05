@@ -49,6 +49,15 @@ static int g_sps_len, g_pps_len;
 
 #define RTSP_REQ_MAX 4096
 #define RTSP_SDP_MAX 2048
+/* RTP v2/marker bits and dynamic H.264 payload type (SDP agrees with RTP).
+ * 1400 bytes is this implementation's existing packet payload limit. */
+#define RTP_V2_HEADER 0x80
+#define RTP_MARKER_BIT 0x80
+#define H264_FU_START_BIT 0x80
+#define RTP_H264_PAYLOAD_TYPE 96
+#define RTP_H264_PAYLOAD_MAX 1400
+#define RTP_STRINGIFY_INNER(x) #x
+#define RTP_STRINGIFY(x) RTP_STRINGIFY_INNER(x)
 
 /* 发送结果: 0=整包已发出, DROP=整包丢弃(客户端还在), FATAL=连接已坏 */
 #define RTSP_TX_OK 0
@@ -370,7 +379,7 @@ static void rtp_trace_line(uint16_t seq, uint32_t ts, int nal, int fu,
 	if (!g_rtp_trace)
 		return;
 	fprintf(g_rtp_trace,
-		"seq=%u ts=%u pt=96 mark=%d nal=%d fu=%d s=%d e=%d payload=%d send=%d why=%s w=%d/%d errno=%d outq=%d/%d\n",
+		"seq=%u ts=%u pt=" RTP_STRINGIFY(RTP_H264_PAYLOAD_TYPE) " mark=%d nal=%d fu=%d s=%d e=%d payload=%d send=%d why=%s w=%d/%d errno=%d outq=%d/%d\n",
 		(unsigned)seq, (unsigned)ts, marker, nal, fu, sbit, ebit,
 		payload, rc, dg ? why[dg->why] : "?", dg ? dg->w : -1,
 		dg ? dg->total : -1, dg ? dg->err : 0,
@@ -405,7 +414,7 @@ static int rtsp_send_interleaved(int fd, int ch, const uint8_t *rtp, int len,
 				 struct txdiag *dg)
 {
 	/* 4 + RTP: RTP 头 12 + 负载 <= 1400, 连续缓冲区让短写可以简单续写 */
-	uint8_t buf[4 + 12 + 1400];
+	uint8_t buf[4 + 12 + RTP_H264_PAYLOAD_MAX];
 	int total, off = 0, outq = 0, sndbuf = 0;
 	uint64_t stall_anchor = 0;	/* H4: 首次零进展时刻(0=无进展阻塞) */
 
@@ -417,7 +426,7 @@ static int rtsp_send_interleaved(int fd, int ch, const uint8_t *rtp, int len,
 		dg->outq = -1;
 		dg->cap = -1;
 	}
-	if (len <= 12 || len > 12 + 1400)
+	if (len <= 12 || len > 12 + RTP_H264_PAYLOAD_MAX)
 		return RTSP_TX_FATAL;	/* 调用方 bug: 不可能是合法 RTP 包 */
 	total = 4 + len;
 	buf[0] = '$';
@@ -521,7 +530,7 @@ static int rtsp_send_interleaved(int fd, int ch, const uint8_t *rtp, int len,
 static int rtsp_send_nal(struct rtsp_cli *c, const uint8_t *nal, int len,
 			 uint32_t ts, int marker, struct txdiag *dg)
 {
-	const int MAXP = 1400;
+	const int MAXP = RTP_H264_PAYLOAD_MAX;
 	int rc;
 
 	if (len <= MAXP) {
@@ -529,8 +538,8 @@ static int rtsp_send_nal(struct rtsp_cli *c, const uint8_t *nal, int len,
 		uint16_t sq = c->seq;
 
 		memset(pkt, 0, 12);
-		pkt[0] = 0x80;
-		pkt[1] = 96 | (marker ? 0x80 : 0);
+		pkt[0] = RTP_V2_HEADER;
+		pkt[1] = RTP_H264_PAYLOAD_TYPE | (marker ? RTP_MARKER_BIT : 0);
 		pkt[2] = (uint8_t)(sq >> 8);
 		pkt[3] = (uint8_t)sq;
 		pkt[4] = (uint8_t)(ts >> 24);
@@ -557,8 +566,8 @@ static int rtsp_send_nal(struct rtsp_cli *c, const uint8_t *nal, int len,
 				n = MAXP - 2;
 			end = (off + n >= len);
 			memset(pkt, 0, 12);
-			pkt[0] = 0x80;
-			pkt[1] = 96 | ((end && marker) ? 0x80 : 0);
+			pkt[0] = RTP_V2_HEADER;
+			pkt[1] = RTP_H264_PAYLOAD_TYPE | ((end && marker) ? RTP_MARKER_BIT : 0);
 			pkt[2] = (uint8_t)(sq >> 8);
 			pkt[3] = (uint8_t)sq;
 			pkt[4] = (uint8_t)(ts >> 24);
@@ -567,7 +576,7 @@ static int rtsp_send_nal(struct rtsp_cli *c, const uint8_t *nal, int len,
 			pkt[7] = (uint8_t)ts;
 			pkt[12] = (uint8_t)((nal[0] & 0xe0) | 28);	/* FU indicator */
 			pkt[13] = (uint8_t)((nal[0] & 0x1f) |
-					    (first ? 0x80 : 0) | (end ? 0x40 : 0));
+					    (first ? H264_FU_START_BIT : 0) | (end ? 0x40 : 0));
 			memcpy(pkt + 14, nal + off, (size_t)n);
 			c->seq++;
 			/* 一片发不出去只能是连接坏了(整包要么全进内核, 要么
@@ -945,9 +954,9 @@ static void *rtsp_client_thread(void *arg)
 					 "c=IN IP4 0.0.0.0\r\n"
 					 "t=0 0\r\n"
 					 "a=control:*\r\n"
-					 "m=video 0 RTP/AVP 96\r\n"
-					 "a=rtpmap:96 H264/90000\r\n"
-					 "a=fmtp:96 packetization-mode=1;profile-level-id=%s;"
+					 "m=video 0 RTP/AVP " RTP_STRINGIFY(RTP_H264_PAYLOAD_TYPE) "\r\n"
+					 "a=rtpmap:" RTP_STRINGIFY(RTP_H264_PAYLOAD_TYPE) " H264/90000\r\n"
+					 "a=fmtp:" RTP_STRINGIFY(RTP_H264_PAYLOAD_TYPE) " packetization-mode=1;profile-level-id=%s;"
 					 "sprop-parameter-sets=%s,%s\r\n"
 					 "a=control:trackID=0\r\n",
 					 plid, b64s, b64p);

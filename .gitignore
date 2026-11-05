@@ -28,6 +28,20 @@ det_*.png
 # 证据日志例外(验收证据必须入库;运行期日志仍忽略)
 !evidence/**/*.log
 __pycache__/
+*.py[cod]
+
+# 顶层 Makefile 的可执行文件和动态库
+/reg_switch
+/fi_probe
+/fi_test
+/streamoff_test
+/tryfmt_test
+/focus_score
+/st_burn
+/hdr_demo
+/evrec
+/camd
+/ioctlspy.so
 
 # push 前三查脚本:本地维护,不入库(含凭据匹配模式)
 tools/check_secrets.sh

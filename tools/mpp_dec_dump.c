@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 	RK_U32 need_split = 1;
 	MppPacket pkt = NULL, ep = NULL;
 	int got = 0, idle_rounds = 0, put_done = 0, flush_done = 0;
-	int eos_seen = 0, stop_dump = 0;
+	int eos_seen = 0, stop_dump = 0, output_error = 0;
 
 	if (argc < 3) {
 		fprintf(stderr, "用法: %s <in.h264> <prefix> [cw] [ch] [max]\n",
@@ -153,13 +153,21 @@ int main(int argc, char **argv)
 						 "%s_f%03d_%dx%d_stride%d.y",
 						 argv[2], got, w, h, hs);
 					o = fopen(name, "wb");
-					if (o) {
-						for (int r = 0; r < h; r++)
-							fwrite(px + (size_t)r * hs, 1,
-							       (size_t)w, o);
-						fclose(o);
+					if (!o) {
+						perror(name);
+						output_error = 1;
+					} else {
+						for (int r = 0; r < h; r++) {
+							if (fwrite(px + (size_t)r * hs, 1,
+							           (size_t)w, o) != (size_t)w) {
+								perror("fwrite frame");
+								output_error = 1;
+								break;
+							}
+						}
+						if (fclose(o) != 0) { perror("fclose frame"); output_error = 1; }
 					}
-					if (got == 0)
+					if (got == 0 && !output_error)
 						printf(">>> 首帧 %dx%d hor_stride=%d -> %s\n",
 						       W, H, hs, name);
 				}
@@ -191,7 +199,7 @@ int main(int argc, char **argv)
 	if (eos_seen) {
 		mpp_destroy(ctx);
 		free(buf);
-		return got > 0 ? 0 : 1;
+		return got > 0 && !output_error ? 0 : 1;
 	}
 	fprintf(stderr, ">>> 未收到 EOS(码流不完整?), 跳过 mpp_destroy 以免库内崩溃\n");
 	free(buf);

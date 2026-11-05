@@ -96,6 +96,7 @@ static long score_grad(const unsigned char *y, int w, int h, int stride, long *y
 
 int main(int argc, char **argv)
 {
+	int output_error = 0;
 	if (argc < 3) {
 		printf("usage: %s <dev> <frames> [best_out] [w h]\n", argv[0]);
 		return 1;
@@ -185,10 +186,20 @@ int main(int argc, char **argv)
 	printf("\nMAX grad=%ld @frame %d\n", best_score, best_n);
 	if (best && best_score > 0) {
 		FILE *f = fopen(best_out, "wb");
-		if (f) { fwrite(best, 1, sz, f); fclose(f); printf("最佳帧已存 -> %s (%zu 字节)\n", best_out, sz); }
+		if (!f) {
+			perror("fopen best_out");
+			output_error = 1;
+		} else {
+			if (fwrite(best, 1, sz, f) != sz) { perror("fwrite best_out"); output_error = 1; }
+			if (fclose(f) != 0) { perror("fclose best_out"); output_error = 1; }
+			if (!output_error) printf("最佳帧已存 -> %s (%zu 字节)\n", best_out, sz);
+		}
+	} else if (best_out) {
+		fprintf(stderr, "未能生成最佳帧: %s\n", best_out);
+		output_error = 1;
 	}
 	free(best);
 	for (unsigned i = 0; i < req.count; i++) munmap(mem[i], len[i]);
 	close(fd);
-	return 0;
+	return output_error;
 }

@@ -24,7 +24,9 @@
 ### 核心成果(六条)
 
 **1. 按 datasheet 裸写 OV8858 V4L2 subdev 驱动并出图**
-1210 行 C:上电时序/PLL/link_freq/曝光增益 ctrl/runtime PM 全部自推;与厂商驱动**逐寄存器对照零差异**;双模式 30.0 fps、帧结构 100% 有效;自推 1080p30 并定位修复 BLC anchor 越界致帧结构缺陷(179 空行→0,30 帧零错行)。→ [`driver/ov8858_sm/`](driver/ov8858_sm/) / [`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md)
+1227 行 C:上电时序/PLL/link_freq/曝光增益 ctrl/runtime PM 全部自推;与厂商驱动**逐寄存器对照零差异**;双模式 30.0 fps、帧结构 100% 有效;自推 1080p30 并定位修复 BLC anchor 越界致帧结构缺陷(179 空行→0,30 帧零错行)。→ [`driver/ov8858_sm/`](driver/ov8858_sm/) / [`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md)
+
+> 批 C 的驱动诊断回读改动已在编译 VM 内核树配置下编译对象,**尚未部署或板测**;上述出图数字对应此前的已验收版本。
 
 **2. V4L2 零拷贝:EXPBUF → dmabuf → RGA → NPU**
 每帧 CPU 拷贝 13.67 MB → **0 B**;端到端 92.5 → **69.9 ms**;CPU **−66%**;三线程流水线在 2× 负载下 **+25%** 吞吐。三模式(A 拷贝基线 / B RGA / C 全零拷贝)定量对照,收益拆解到环节。→ [`zerocopy/`](zerocopy/) / [`docs/18`](docs/18-阶段二零拷贝任务书.md)
@@ -108,10 +110,10 @@ sh tools/quickstart.sh "#52"    # 全过退出 0
 | # | 结果 | 证据 |
 |---|------|------|
 | 1 | IMX415 从设备树使能到第一帧全链打通(3840×2160 NV12) | 双帧 md5 不同(活水验证):`ec801915…` / `aa25a360…`,均 12,441,600 B |
-| 2 | 手写用户态 3A 闭环,AE/AWB 双收敛 | Y: 1 → 101,U/V → 128/128;约 250 行 C,见 [`mini3a/`](mini3a/) |
+| 2 | 手写用户态 3A 闭环,AE/AWB 双收敛 | Y: 1 → 101,U/V → 128/128;`mini3a.c` 当前 540 行,见 [`mini3a/`](mini3a/) |
 | 3 | 修复厂商 BSP params 通路结构体尺寸缺陷 | `isp_params.c` v21 分支补 `sizeof(...)`:5813 → 10475 |
 | 4 | "点不亮"真因:物理接口假设错误(非供电/时钟) | 三次误判修正链 + 物理口↔总线映射表:[`docs/09`](docs/09-L1A-I2C调试复盘-物理口与总线映射.md) |
-| 5 | 裸写 OV8858 驱动出图 | 当时 821 行(当前 1208 行),29.3 fps / 帧结构 100% 有效:[`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md) |
+| 5 | 裸写 OV8858 驱动出图 | 当时 821 行(当前 1227 行),29.3 fps / 帧结构 100% 有效:[`docs/17`](docs/17-L1-B对照报告-自写驱动vs厂商.md) |
 | 6 | 零拷贝三模式对比 | 0 B/帧、69.9 ms、−66% CPU、+25% 吞吐:[`zerocopy/`](zerocopy/) |
 | 7 | 异构双摄零干扰 | 15.00 / 30.02 fps,249.8 MB/s:[`docs/19`](docs/19-L3异构双摄报告.md) |
 | 8 | ISP 白平衡修正 | 色度 U−21.4/V−27.0 → U−1.4/V−0.9:[`docs/21`](docs/21-L2-AWB.md) |
@@ -148,7 +150,7 @@ sh tools/quickstart.sh "#52"    # 全过退出 0
 
 ```
 Makefile            顶层板端构建(tools/apps/spy 分组,RGA/RKNN 能力自动探测)
-driver/ov8858_sm/   从 datasheet 裸写的 OV8858 sensor 驱动(1210 行 .c + 455 行 .h + 自带 Makefile)
+driver/ov8858_sm/   从 datasheet 裸写的 OV8858 sensor 驱动(1227 行 .c + 455 行 .h + 自带 Makefile)
 zerocopy/           V4L2 零拷贝链路:EXPBUF→dmabuf→RGA→NPU,三模式 perf 对比
 mini3a/             用户态 3A 闭环(采集线程 + AE/AWB 控制环)
 tools/              evrec(事件录像+RTSP)/ camd(双消费者)/ 自检/回归/IQ 补丁/对焦量化等全部工具

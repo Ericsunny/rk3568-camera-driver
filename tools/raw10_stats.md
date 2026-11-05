@@ -8,7 +8,7 @@
 - `--packing u16le-lsb`:每样本 16 位小端,有效值在低 10 位,高 6 位须为零;依据 [Linux 4.19 expanded Bayer 说明](https://www.kernel.org/doc/html/v4.19/media/uapi/v4l/pixfmt-srggb10.html)。
 - `--bayer` 是**输入帧左上角**排列,不是自动推断的 sensor 原生排列;裁剪、镜像、翻转均可能改变相位。`--stride` 是每行实际字节数,必须显式给出,不自动猜测 padding。
 
-历史资料将板端某些输出记为 `BG10` 和 compact RAW10;标准 V4L2 的 `BG10` 与标准 packed `pBAA` 是不同 FourCC,不能单凭名字认定该板文件的布局。应保存实际 `G_FMT` 的 FourCC、`bytesperline`、`sizeimage`、驱动版本与捕获工具的写盘方式,再以受控样本确认。若 vendor 布局与上面两种不同,本工具不适用,不得强行选择后解读统计。
+历史 CIF 原始日志已同时记录 `BG10` 标签与 compact 量级的帧数据;标准 V4L2 的 `BG10` 与标准 packed `pBAA` 是不同 FourCC,历史配置的标签与实际布局不一致,证据见 [docs/40 P2-14](../docs/40-全仓体检报告.md)。现役模式仍应保存实际 `G_FMT` 的 FourCC、`bytesperline`、`sizeimage`、驱动版本与捕获工具的写盘方式,再以受控样本确认。若 vendor 布局与上面两种不同,本工具不适用,不得强行选择后解读统计。
 
 每个输入文件必须恰好是 `stride × height` 字节的一帧,不同输入须是不同文件/inode;不接受多帧拼接、头部或尾部元数据。每行 padding 会纳入文件 SHA-256,但不计入像素统计。`u16le-lsb` 若在被评估行遇到超过 1023 的值则报错。输出默认 stdout;`--output` 只创建新文件,已有文件不会覆盖。创建后写盘失败可能留下不完整新文件,退出非零时不可把它视为结果。
 

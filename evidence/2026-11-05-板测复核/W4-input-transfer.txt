@@ -1,0 +1,11 @@
+2026-11-05: all listed scp commands exit 0 and PC/board MD5 values match.
+Name                         PC MD5                            Board MD5
+zc_npu.cpp                   a226d7ed7ee46ea28c030e9bf4c12fa8 a226d7ed7ee46ea28c030e9bf4c12fa8
+zc_npu_review.cpp            e57dc5d61e1c56ed2fd05b48c2fef144 e57dc5d61e1c56ed2fd05b48c2fef144
+W4-prepare.py                3fa41d0cdeecbc72528488b8ba29391e 3fa41d0cdeecbc72528488b8ba29391e
+W4-modes.sh                  8511a0814dac572fbd233c9c17d9fc60 8511a0814dac572fbd233c9c17d9fc60
+zc_npu_review                5c1abb5687b0389a2dab54fc8e8ea7c2 5c1abb5687b0389a2dab54fc8e8ea7c2
+W4-source.patch              cd08dbf6cb5c4e0e496665e6e5e60e15 cd08dbf6cb5c4e0e496665e6e5e60e15
+yolov8n_rk3568_i8.rknn       94fde17f2cde08b4f22c022b8674f116 94fde17f2cde08b4f22c022b8674f116
+The board independently regenerated zc_npu_review.cpp and cmp returned 0; see W4-build-session.log.
+Pre-registration commit: 0d7524b. The generated binary is a temporary test program, not the production evrec/camd executable.

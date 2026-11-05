@@ -1,0 +1,62 @@
+host_utc_before=2026-11-05T10:35:11.6238051Z
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+PREFLIGHT
+2026-11-05T10:35:10Z
+29799.52 109741.96
+FORMAT
+Format Video Capture Multiplanar:
+	Width/Height      : 3840/2160
+	Pixel Format      : 'NV12' (Y/CbCr 4:2:0)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : Default
+	Transfer Function : Default
+	YCbCr/HSV Encoding: Default
+	Quantization      : Full Range
+	Plane 0           :
+	   Bytes per Line : 3840
+	   Size Image     : 12441600
+W4_STDOUT
+MODE=a START_UTC
+2026-11-05T10:35:10Z
+START_UPTIME
+29799.73 109742.53
+COMMAND: RUNS=1 timeout 60s <run>/zc_npu_review a 30 /dev/video5
+MODE=a END_UTC
+2026-11-05T10:35:13Z
+END_UPTIME
+29802.70 109752.48
+STDOUT
+=== zc_npu: mode=a frames=30 dev=/dev/video5 ===
+model: in 640x640x3 INT8, out 9
+native input attr: dims=[1,640,640,3] type=2 passthrough=0 size_with_stride=1228800
+capture 3840x2160 NV12
+librga fail to get driver version! Compatibility mode will be enabled.
+
+rga_api version 1.9.2_[1]
+W4 completed=30 requested=30 wall_ms=2582.11 throughput_fps=11.62
+
+===== mode a 统计(30 帧) =====
+CPU 时间  20.47 ms/帧   (占墙钟 23.8%)
+capture   10.32 ms/帧
+preproc   26.70 ms/帧
+rknn_run  38.77 ms/帧
+postproc  7.09 ms/帧
+总拷贝    13670400 字节/帧 (13.04 MB, 2 次 memcpy)
+检测框总数 2 (最后一帧见 s4_det.ppm)
+STDERR
+EXIT=0
+/root/camera-window/review-20261105-zc-8d29c1/a/stdout:librga fail to get driver version! Compatibility mode will be enabled.
+RESULT=ERROR_LOG
+W4_STDERR
+W4_EXIT=2
+AFTER
+2026-11-05T10:35:13Z
+29802.74 109752.58
+4075751c-4b87-493e-b932-ee0d1f2827ad
+active
+ssh_exit=2
+host_utc_after=2026-11-05T10:35:16.4900920Z

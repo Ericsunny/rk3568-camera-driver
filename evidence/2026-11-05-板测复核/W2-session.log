@@ -1,0 +1,58 @@
+host_utc_before=2026-11-05T10:21:09.9463865Z
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+PREFLIGHT
+2026-11-05T10:21:08Z
+28957.83 106692.95
+FREE_KIB=7170292
+W2_STDOUT
+START_UTC
+2026-11-05T10:21:08Z
+START_UPTIME
+28958.01 106693.42
+FORMAT_BEFORE
+Format Video Capture Multiplanar:
+	Width/Height      : 1632/1224
+	Pixel Format      : 'BG10' (10-bit Bayer BGBG/GRGR)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : Default
+	Transfer Function : Default
+	YCbCr/HSV Encoding: Default
+	Quantization      : Default
+	Plane 0           :
+	   Bytes per Line : 2048
+	   Size Image     : 2506752
+COMMAND: timeout 30s v4l2-ctl -d /dev/video0 --stream-no-query --stream-mmap=3 --stream-count=120 --stream-to=<run>/cif120.raw
+CAPTURE_EXIT=0
+CAPTURE_END_UTC
+2026-11-05T10:21:12Z
+CAPTURE_END_UPTIME
+28962.34 106707.46
+CAPTURE_STDOUT
+CAPTURE_STDERR
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 30.02 fps
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 30.02 fps
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 30.02 fps
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+TOTAL_BYTES=300810240
+FRAME_SIZE
+2506752 /root/camera-window/review-20261105-cif120-64b19f/cif-first.raw
+MD5
+437ccfe1192ed65734927533ee09c194  /root/camera-window/review-20261105-cif120-64b19f/cif120.raw
+24bd2849c4369c864f1fc0da33540e2c  /root/camera-window/review-20261105-cif120-64b19f/cif-first.raw
+SHA256
+4ec992e342088d7b2218071c764f0d7d0b5390d7991ea94b5227483b99592715  /root/camera-window/review-20261105-cif120-64b19f/cif120.raw
+4c00c51c721ed29214446e1f2ab646fd55cc3ce3615ac0fb7ec6bb75c1eb1e16  /root/camera-window/review-20261105-cif120-64b19f/cif-first.raw
+RESULT=CAPTURED_ANALYSIS_PENDING
+W2_STDERR
+W2_EXIT=0
+AFTER
+2026-11-05T10:21:17Z
+28966.85 106719.05
+4075751c-4b87-493e-b932-ee0d1f2827ad
+active
+ssh_exit=0
+host_utc_after=2026-11-05T10:21:20.5822020Z

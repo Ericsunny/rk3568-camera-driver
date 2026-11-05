@@ -1,0 +1,26 @@
+host_utc_before=2026-11-05T10:55:02.1875269Z
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+BASE
+caaf385a7f9f3d456a91c00cbfddb22f76a45df8
+DIFFSTAT
+1	1	drivers/media/i2c/imx415.c
+DIFF
+diff --git a/drivers/media/i2c/imx415.c b/drivers/media/i2c/imx415.c
+index 1b5e56e7ac9a..1d748c562c9b 100644
+--- a/drivers/media/i2c/imx415.c
++++ b/drivers/media/i2c/imx415.c
+@@ -1035,7 +1035,7 @@ static __maybe_unused const struct regval imx415_linear_10bit_1920x1080_891M_reg
+ 	{0x3008, 0x7f},
+ 	{0x300A, 0x5b},
+ 	{0x3034, 0x05},
+-	// {0x301C, 0x04},
++	{0x301C, 0x04},   /* E0: 1080p 表原有此行被注释,导致 0x301C 从未写入 */
+ 	{0x3020, 0x01},
+ 	{0x3021, 0x01},
+ 	{0x3022, 0x01},
+FILE_SHA256
+85732da5753587d9dd04cb66baad0bd9385403b04d18753b9e881690f3f3de56  drivers/media/i2c/imx415.c
+ssh_exit=0
+host_utc_after=2026-11-05T10:55:02.7137189Z

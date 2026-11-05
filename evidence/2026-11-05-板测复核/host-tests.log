@@ -1,0 +1,331 @@
+host_utc_before=2026-11-05T10:46:55.0250092Z
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+COMPILER
+gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0
+RTSP_COMMAND
+gcc -std=c11 -O1 -pthread tools/tests/rtsp_wire_test.c -o rtsp-wire
+RTP single and fragmented NAL bytes: PASS
+CAMD_COMMAND
+gcc -std=c11 -O1 -g -pthread -fsanitize=address,undefined tools/tests/camd_host_test.c -lm -o camd-host
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[1]: pthread_create 失败: Resource temporarily unavailable
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[1]: pthread_create 失败: Resource temporarily unavailable
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[1]: pthread_create 失败: Resource temporarily unavailable
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[1]: pthread_create 失败: Resource temporarily unavailable
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[1]: buffer 0 节点分配失败
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=2, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[1]: buffer 1 节点分配失败
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[1]: buffer 0 mmap 失败: Cannot allocate memory
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=2, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[1]: buffer 1 mmap 失败: Cannot allocate memory
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104655
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104656
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104656
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104656
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104656
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104656
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104656
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104656
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104656
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104656
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104656
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104656
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104656
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104656
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104656
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104656
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104656
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+FATAL[2]: 实时分析消费者故障(注入)
+诊断包: /root/camd_diag_20261105_104656
+WARN: 配置不自洽 —— buffer=1, 但 rt_depth(4)+ev_depth(2)+2=8
+      ⥀ 采集可能被饿死(帧率断崖)。建议 -b 8 或降低队列深度。
+thread failure 1: rc=1 joined=0 PASS
+thread failure 2: rc=1 joined=1 PASS
+thread failure 3: rc=1 joined=2 PASS
+thread failure 4: rc=1 joined=3 PASS
+node allocation failure PASS
+later node allocation failure cleanup PASS
+>>> 实时消费者: CPU 拷贝+降采样 -> 640x360
+required mapping failure PASS
+>>> 实时消费者: CPU 拷贝+降采样 -> 640x360
+later mapping failure cleanup PASS
+optional mapping failure and normal session PASS
+device/export fd zero cleanup PASS
+latency reinitializations alloc=100 free=100 PASS
+latency ring allocation failure PASS
+30 fault/recovery pairs: max concurrent samplers=1 PASS
+EVREC_COMMAND
+python3 tools/tests/test_evrec_host.py
+>>> SIGTERM: 进行中的事件已落盘 /tmp/evrec-host-nvzbq2hs/event0
+>>> fopen /tmp/evrec-host-nvzbq2hs/event1.json 失败: Permission denied
+>>> SIGTERM: 事件落盘失败
+>>> 写入 /tmp/evrec-host-nvzbq2hs/event2.json 失败: No space left on device
+>>> SIGTERM: 事件落盘失败
+>>> 收到 SIGTERM, 已停止
+SIGTERM fault=0 rc=0 event_id=7 segment=2 write_error=0
+SIGTERM fault=1 rc=1 event_id=7 segment=2 write_error=0
+SIGTERM fault=2 rc=1 event_id=7 segment=2 write_error=0
+SIGTERM fault=3 rc=1 event_id=7 segment=2 write_error=0
+SIGTERM fault=4 rc=1 event_id=7 segment=2 write_error=1
+SIGTERM fault=5 rc=1 event_id=7 segment=2 write_error=0
+target_left fault=0 rc=0 completed=1
+target_left fault=1 rc=1 completed=0
+target_left fault=2 rc=1 completed=0
+target_left fault=3 rc=1 completed=0
+>>> 关闭 /tmp/evrec-host-nvzbq2hs/event3.json 失败: Input/output error
+>>> SIGTERM: 事件落盘失败
+>>> SIGTERM: 事件落盘失败
+>>> rename /tmp/evrec-host-nvzbq2hs/event5.part 失败: Input/output error
+>>> SIGTERM: 事件落盘失败
+>>> fopen /tmp/evrec-host-nvzbq2hs/event11.json 失败: Permission denied
+>>> 事件落盘失败
+>>> 写入 /tmp/evrec-host-nvzbq2hs/event12.json 失败: No space left on device
+>>> 事件落盘失败
+>>> 关闭 /tmp/evrec-host-nvzbq2hs/event13.json 失败: Input/output error
+>>> 事件落盘失败
+event: PASS
+QBUF failure enters recovery; SIGTERM stops; success encodes
+QBUF: Input/output error
+qbuf: PASS
+/tmp/evrec-host-nvzbq2hs/rga-only.c:24:13: warning: ‘npu_run’ defined but not used [-Wunused-function]
+   24 | static void npu_run(const unsigned char *p) { (void)p; npu_calls++; }
+      |             ^~~~~~~
+/tmp/evrec-host-nvzbq2hs/rga-only.c:18:15: warning: ‘now_ms’ defined but not used [-Wunused-function]
+   18 | static double now_ms(int clock_id) { (void)clock_id; return 1.0; }
+      |               ^~~~~~
+/tmp/evrec-host-nvzbq2hs/rga-only.c:16:31: warning: ‘t_npu’ defined but not used [-Wunused-variable]
+   16 | static double t_stage, t_rga, t_npu;
+      |                               ^~~~~
+/tmp/evrec-host-nvzbq2hs/rga-only.c:16:24: warning: ‘t_rga’ defined but not used [-Wunused-variable]
+   16 | static double t_stage, t_rga, t_npu;
+      |                        ^~~~~
+/tmp/evrec-host-nvzbq2hs/rga-only.c:16:15: warning: ‘t_stage’ defined but not used [-Wunused-variable]
+   16 | static double t_stage, t_rga, t_npu;
+      |               ^~~~~~~
+/tmp/evrec-host-nvzbq2hs/rga-only.c:15:30: warning: ‘b’ defined but not used [-Wunused-variable]
+   15 | static struct { int index; } b;
+      |                              ^
+/tmp/evrec-host-nvzbq2hs/rga-only.c:13:33: warning: ‘h’ defined but not used [-Wunused-variable]
+   13 | static int g_detect = 1, w = 4, h = 4;
+      |                                 ^
+/tmp/evrec-host-nvzbq2hs/rga-only.c:13:26: warning: ‘w’ defined but not used [-Wunused-variable]
+   13 | static int g_detect = 1, w = 4, h = 4;
+      |                          ^
+/tmp/evrec-host-nvzbq2hs/rga-only.c:13:12: warning: ‘g_detect’ defined but not used [-Wunused-variable]
+   13 | static int g_detect = 1, w = 4, h = 4;
+      |            ^~~~~~~~
+/tmp/evrec-host-nvzbq2hs/rga-only.c:11:42: warning: ‘g_rgb’ defined but not used [-Wunused-variable]
+   11 | static unsigned char *g_rga_buf = data, *g_rgb = rgb;
+      |                                          ^~~~~
+RGA 失败: injected
+RGA failure skips inference; successful buffer sampled
+rga-only: PASS
+/tmp/evrec-host-nvzbq2hs/rga-rknn.c:11:23: warning: ‘g_rga_buf’ defined but not used [-Wunused-variable]
+   11 | static unsigned char *g_rga_buf = data, *g_rgb = rgb;
+      |                       ^~~~~~~~~
+RGA failure skips inference; successful buffer sampled
+RGA 失败: injected
+RGA 失败: injected
+rga-rknn: PASS
+PRELOAD_COMMAND
+python3 tools/tests/test_evrec_preload.py
+ordinary sigterm: control and five failures PASS
+ordinary target-left: control and five failures PASS
+ordinary unrelated event paths are unaffected: PASS
+fortified sigterm: control and five failures PASS
+fortified target-left: control and five failures PASS
+fortified unrelated event paths are unaffected: PASS
+scope, symlink and unhit occurrence: PASS
+selected occurrence injects only once: PASS
+invalid configuration fails closed: PASS
+ALL_EXIT_ZERO
+ssh_exit=0
+host_utc_after=2026-11-05T10:46:59.4454343Z

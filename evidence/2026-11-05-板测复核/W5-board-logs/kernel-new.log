@@ -1,0 +1,1300 @@
+[30187.724185] rkisp rkisp-vir0: first params buf queue
+[30187.725815] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30187.725850] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30187.725857] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30187.725862] imx415 1-001a: write reg array error
+[30187.813853] imx415 1-001a: write reg array, sleep 30ms
+[30187.815252] imx415 1-001a: set vblank 0x3a vts 2250
+[30187.816616] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30187.817464] imx415 1-001a: set analog gain 0x23
+[30187.967075] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:36
+[30188.191108] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30188.192764] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30188.192774] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30188.342086] rkisp rkisp-vir0: first params buf queue
+[30188.343772] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30188.343807] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30188.343816] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30188.343823] imx415 1-001a: write reg array error
+[30188.430164] imx415 1-001a: write reg array, sleep 30ms
+[30188.431663] imx415 1-001a: set vblank 0x3a vts 2250
+[30188.433296] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30188.434378] imx415 1-001a: set analog gain 0x23
+[30188.584423] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30188.808631] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30188.810188] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30188.810197] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30188.969044] rkisp rkisp-vir0: first params buf queue
+[30188.970667] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30188.970702] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30188.970709] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30188.970714] imx415 1-001a: write reg array error
+[30189.056333] imx415 1-001a: write reg array, sleep 30ms
+[30189.057627] imx415 1-001a: set vblank 0x3a vts 2250
+[30189.058920] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30189.059777] imx415 1-001a: set analog gain 0x23
+[30189.209260] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30189.433415] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30189.436994] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30189.437018] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30189.583302] rkisp rkisp-vir0: first params buf queue
+[30189.584846] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30189.584890] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30189.584898] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30189.584905] imx415 1-001a: write reg array error
+[30189.671305] imx415 1-001a: write reg array, sleep 30ms
+[30189.672842] imx415 1-001a: set vblank 0x3a vts 2250
+[30189.674316] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30189.675362] imx415 1-001a: set analog gain 0x23
+[30189.825100] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30190.049174] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30190.050723] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30190.050732] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30190.211195] rkisp rkisp-vir0: first params buf queue
+[30190.212881] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30190.212916] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30190.212923] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30190.212929] imx415 1-001a: write reg array error
+[30190.298173] imx415 1-001a: write reg array, sleep 30ms
+[30190.299652] imx415 1-001a: set vblank 0x3a vts 2250
+[30190.300935] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30190.302132] imx415 1-001a: set analog gain 0x23
+[30190.451952] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30190.675591] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30190.677138] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30190.677149] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30190.825564] rkisp rkisp-vir0: first params buf queue
+[30190.827193] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30190.827226] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30190.827233] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30190.827239] imx415 1-001a: write reg array error
+[30190.912084] imx415 1-001a: write reg array, sleep 30ms
+[30190.913448] imx415 1-001a: set vblank 0x3a vts 2250
+[30190.914697] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30190.915619] imx415 1-001a: set analog gain 0x23
+[30191.065202] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30191.289218] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30191.290766] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30191.290775] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30191.437292] rkisp rkisp-vir0: first params buf queue
+[30191.438965] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30191.439000] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30191.439007] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30191.439013] imx415 1-001a: write reg array error
+[30191.528151] imx415 1-001a: write reg array, sleep 30ms
+[30191.529653] imx415 1-001a: set vblank 0x3a vts 2250
+[30191.530941] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30191.531854] imx415 1-001a: set analog gain 0x23
+[30191.681411] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30191.905534] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30191.907173] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30191.907184] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30192.062443] rkisp rkisp-vir0: first params buf queue
+[30192.064071] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30192.064102] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30192.064109] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30192.064115] imx415 1-001a: write reg array error
+[30192.151019] imx415 1-001a: write reg array, sleep 30ms
+[30192.152753] imx415 1-001a: set vblank 0x3a vts 2250
+[30192.154383] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30192.155512] imx415 1-001a: set analog gain 0x23
+[30192.305289] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30192.534007] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30192.535525] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30192.535534] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30192.660745] rkisp rkisp-vir0: first params buf queue
+[30192.662386] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30192.662421] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30192.662428] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30192.662434] imx415 1-001a: write reg array error
+[30192.749708] imx415 1-001a: write reg array, sleep 30ms
+[30192.751009] imx415 1-001a: set vblank 0x3a vts 2250
+[30192.752401] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30192.753273] imx415 1-001a: set analog gain 0x23
+[30192.902824] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30193.131216] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30193.133235] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30193.133245] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30193.282032] rkisp rkisp-vir0: first params buf queue
+[30193.283657] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30193.283691] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30193.283697] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30193.283703] imx415 1-001a: write reg array error
+[30193.370261] imx415 1-001a: write reg array, sleep 30ms
+[30193.371795] imx415 1-001a: set vblank 0x3a vts 2250
+[30193.373230] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30193.374107] imx415 1-001a: set analog gain 0x23
+[30193.523897] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30193.747980] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30193.749825] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30193.749845] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30193.913807] rkisp rkisp-vir0: first params buf queue
+[30193.915436] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30193.915470] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30193.915477] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30193.915484] imx415 1-001a: write reg array error
+[30194.002625] imx415 1-001a: write reg array, sleep 30ms
+[30194.003954] imx415 1-001a: set vblank 0x3a vts 2250
+[30194.005269] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30194.006132] imx415 1-001a: set analog gain 0x23
+[30194.155619] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30194.379719] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30194.381695] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30194.381704] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30194.527991] rkisp rkisp-vir0: first params buf queue
+[30194.529675] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30194.529708] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30194.529715] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30194.529721] imx415 1-001a: write reg array error
+[30194.616762] imx415 1-001a: write reg array, sleep 30ms
+[30194.618051] imx415 1-001a: set vblank 0x3a vts 2250
+[30194.619506] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30194.620348] imx415 1-001a: set analog gain 0x23
+[30194.769899] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30194.996743] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30194.998216] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30194.998234] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30195.141829] rkisp rkisp-vir0: first params buf queue
+[30195.143465] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30195.143499] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30195.143506] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30195.143512] imx415 1-001a: write reg array error
+[30195.231896] imx415 1-001a: write reg array, sleep 30ms
+[30195.233326] imx415 1-001a: set vblank 0x3a vts 2250
+[30195.234624] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30195.235581] imx415 1-001a: set analog gain 0x23
+[30195.385206] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30195.608841] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30195.610380] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30195.610389] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30195.761715] rkisp rkisp-vir0: first params buf queue
+[30195.763308] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30195.763341] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30195.763348] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30195.763354] imx415 1-001a: write reg array error
+[30195.848171] imx415 1-001a: write reg array, sleep 30ms
+[30195.849566] imx415 1-001a: set vblank 0x3a vts 2250
+[30195.850815] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30195.851880] imx415 1-001a: set analog gain 0x23
+[30196.001830] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30196.226334] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30196.228405] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30196.228416] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30196.378803] rkisp rkisp-vir0: first params buf queue
+[30196.380440] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30196.380474] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30196.380481] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30196.380487] imx415 1-001a: write reg array error
+[30196.465877] imx415 1-001a: write reg array, sleep 30ms
+[30196.467237] imx415 1-001a: set vblank 0x3a vts 2250
+[30196.468655] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30196.469721] imx415 1-001a: set analog gain 0x23
+[30196.619402] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30196.843037] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30196.844582] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30196.844592] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30196.998300] rkisp rkisp-vir0: first params buf queue
+[30197.000008] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30197.000046] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30197.000054] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30197.000060] imx415 1-001a: write reg array error
+[30197.088213] imx415 1-001a: write reg array, sleep 30ms
+[30197.089818] imx415 1-001a: set vblank 0x3a vts 2250
+[30197.091251] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30197.094015] imx415 1-001a: set analog gain 0x23
+[30197.243767] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30197.467778] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30197.469536] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30197.469545] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30197.604283] rkisp rkisp-vir0: first params buf queue
+[30197.605911] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30197.605945] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30197.605952] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30197.605958] imx415 1-001a: write reg array error
+[30197.694767] imx415 1-001a: write reg array, sleep 30ms
+[30197.696376] imx415 1-001a: set vblank 0x3a vts 2250
+[30197.697649] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30197.698555] imx415 1-001a: set analog gain 0x23
+[30197.848069] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30198.072597] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30198.074217] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30198.074228] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30198.213965] rkisp rkisp-vir0: first params buf queue
+[30198.215657] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30198.215696] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30198.215705] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30198.215712] imx415 1-001a: write reg array error
+[30198.304897] imx415 1-001a: write reg array, sleep 30ms
+[30198.306406] imx415 1-001a: set vblank 0x3a vts 2250
+[30198.307671] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30198.308572] imx415 1-001a: set analog gain 0x23
+[30198.458144] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30198.682212] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30198.683822] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30198.683831] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30198.817283] rkisp rkisp-vir0: first params buf queue
+[30198.818912] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30198.818946] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30198.818953] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30198.818960] imx415 1-001a: write reg array error
+[30198.903705] imx415 1-001a: write reg array, sleep 30ms
+[30198.905051] imx415 1-001a: set vblank 0x3a vts 2250
+[30198.906383] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30198.907222] imx415 1-001a: set analog gain 0x23
+[30199.056757] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30199.281588] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30199.284617] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30199.284635] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30199.451742] rkisp rkisp-vir0: first params buf queue
+[30199.453365] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30199.453399] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30199.453406] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30199.453412] imx415 1-001a: write reg array error
+[30199.541287] imx415 1-001a: write reg array, sleep 30ms
+[30199.542812] imx415 1-001a: set vblank 0x3a vts 2250
+[30199.544157] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30199.545058] imx415 1-001a: set analog gain 0x23
+[30199.694703] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30199.918720] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30199.920238] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30199.920249] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30200.083422] rkisp rkisp-vir0: first params buf queue
+[30200.085074] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30200.085113] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30200.085121] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30200.085127] imx415 1-001a: write reg array error
+[30200.170129] imx415 1-001a: write reg array, sleep 30ms
+[30200.171507] imx415 1-001a: set vblank 0x3a vts 2250
+[30200.172958] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30200.173810] imx415 1-001a: set analog gain 0x23
+[30200.323393] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30200.547565] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30200.549349] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30200.549359] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30200.685050] rkisp rkisp-vir0: first params buf queue
+[30200.686652] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30200.686685] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30200.686692] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30200.686699] imx415 1-001a: write reg array error
+[30200.772115] imx415 1-001a: write reg array, sleep 30ms
+[30200.773562] imx415 1-001a: set vblank 0x3a vts 2250
+[30200.775039] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30200.775974] imx415 1-001a: set analog gain 0x23
+[30200.925432] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30201.149012] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30201.150554] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30201.150565] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30201.313150] rkisp rkisp-vir0: first params buf queue
+[30201.314777] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30201.314861] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30201.314872] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30201.314883] imx415 1-001a: write reg array error
+[30201.401310] imx415 1-001a: write reg array, sleep 30ms
+[30201.402821] imx415 1-001a: set vblank 0x3a vts 2250
+[30201.404092] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30201.404949] imx415 1-001a: set analog gain 0x23
+[30201.554418] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30201.778535] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30201.780097] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30201.780108] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30201.921728] rkisp rkisp-vir0: first params buf queue
+[30201.923352] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30201.923385] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30201.923392] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30201.923398] imx415 1-001a: write reg array error
+[30202.009902] imx415 1-001a: write reg array, sleep 30ms
+[30202.011227] imx415 1-001a: set vblank 0x3a vts 2250
+[30202.012568] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30202.013424] imx415 1-001a: set analog gain 0x23
+[30202.163055] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30202.387186] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30202.389809] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30202.389818] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30202.549596] rkisp rkisp-vir0: first params buf queue
+[30202.551217] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30202.551248] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30202.551256] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30202.551262] imx415 1-001a: write reg array error
+[30202.636993] imx415 1-001a: write reg array, sleep 30ms
+[30202.638517] imx415 1-001a: set vblank 0x3a vts 2250
+[30202.640047] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30202.640962] imx415 1-001a: set analog gain 0x23
+[30202.790954] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30203.016421] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30203.017945] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30203.017955] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30203.154661] rkisp rkisp-vir0: first params buf queue
+[30203.156341] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30203.156379] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30203.156386] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30203.156393] imx415 1-001a: write reg array error
+[30203.242001] imx415 1-001a: write reg array, sleep 30ms
+[30203.243444] imx415 1-001a: set vblank 0x3a vts 2250
+[30203.244887] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30203.245960] imx415 1-001a: set analog gain 0x23
+[30203.395587] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30203.619391] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30203.621703] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30203.621716] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30203.767192] rkisp rkisp-vir0: first params buf queue
+[30203.768780] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30203.768816] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30203.768823] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30203.768829] imx415 1-001a: write reg array error
+[30203.854343] imx415 1-001a: write reg array, sleep 30ms
+[30203.855855] imx415 1-001a: set vblank 0x3a vts 2250
+[30203.857249] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30203.858197] imx415 1-001a: set analog gain 0x23
+[30204.007700] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30204.231818] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30204.233354] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30204.233362] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30204.391878] rkisp rkisp-vir0: first params buf queue
+[30204.393511] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30204.393545] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30204.393552] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30204.393558] imx415 1-001a: write reg array error
+[30204.481850] imx415 1-001a: write reg array, sleep 30ms
+[30204.483154] imx415 1-001a: set vblank 0x3a vts 2250
+[30204.484405] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30204.485332] imx415 1-001a: set analog gain 0x23
+[30204.634858] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30204.859590] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30204.862774] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30204.862784] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30204.999634] rkisp rkisp-vir0: first params buf queue
+[30205.001255] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30205.001287] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30205.001294] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30205.001300] imx415 1-001a: write reg array error
+[30205.088200] imx415 1-001a: write reg array, sleep 30ms
+[30205.089712] imx415 1-001a: set vblank 0x3a vts 2250
+[30205.090978] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30205.091878] imx415 1-001a: set analog gain 0x23
+[30205.241556] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30205.469471] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30205.470984] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30205.470993] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30205.606222] rkisp rkisp-vir0: first params buf queue
+[30205.607853] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30205.607886] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30205.607893] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30205.607899] imx415 1-001a: write reg array error
+[30205.696060] imx415 1-001a: write reg array, sleep 30ms
+[30205.697388] imx415 1-001a: set vblank 0x3a vts 2250
+[30205.698790] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30205.699761] imx415 1-001a: set analog gain 0x23
+[30205.849270] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30206.073914] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30206.075488] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30206.075498] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30206.226106] rkisp rkisp-vir0: first params buf queue
+[30206.227768] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30206.227806] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30206.227813] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30206.227819] imx415 1-001a: write reg array error
+[30206.316282] imx415 1-001a: write reg array, sleep 30ms
+[30206.317729] imx415 1-001a: set vblank 0x3a vts 2250
+[30206.319250] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30206.320193] imx415 1-001a: set analog gain 0x23
+[30206.470104] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30206.695846] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30206.697382] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30206.697392] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30206.840691] rkisp rkisp-vir0: first params buf queue
+[30206.842340] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30206.842373] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30206.842381] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30206.842386] imx415 1-001a: write reg array error
+[30206.929290] imx415 1-001a: write reg array, sleep 30ms
+[30206.930814] imx415 1-001a: set vblank 0x3a vts 2250
+[30206.932334] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30206.933255] imx415 1-001a: set analog gain 0x23
+[30207.083148] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30207.307199] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30207.308702] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30207.308711] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30207.440284] rkisp rkisp-vir0: first params buf queue
+[30207.441913] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30207.441947] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30207.441955] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30207.441961] imx415 1-001a: write reg array error
+[30207.527807] imx415 1-001a: write reg array, sleep 30ms
+[30207.529241] imx415 1-001a: set vblank 0x3a vts 2250
+[30207.530526] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30207.531378] imx415 1-001a: set analog gain 0x23
+[30207.680872] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30207.905013] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30207.906570] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30207.906579] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30208.052301] rkisp rkisp-vir0: first params buf queue
+[30208.053928] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30208.053963] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30208.053970] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30208.053977] imx415 1-001a: write reg array error
+[30208.140514] imx415 1-001a: write reg array, sleep 30ms
+[30208.141996] imx415 1-001a: set vblank 0x3a vts 2250
+[30208.143702] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30208.144663] imx415 1-001a: set analog gain 0x23
+[30208.294702] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30208.518791] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30208.520345] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30208.520354] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30208.683597] rkisp rkisp-vir0: first params buf queue
+[30208.685219] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30208.685254] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30208.685261] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30208.685267] imx415 1-001a: write reg array error
+[30208.773014] imx415 1-001a: write reg array, sleep 30ms
+[30208.774376] imx415 1-001a: set vblank 0x3a vts 2250
+[30208.775890] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30208.776781] imx415 1-001a: set analog gain 0x23
+[30208.926349] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30209.150464] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30209.151691] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30209.151710] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30209.297908] rkisp rkisp-vir0: first params buf queue
+[30209.299596] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30209.299630] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30209.299637] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30209.299643] imx415 1-001a: write reg array error
+[30209.386180] imx415 1-001a: write reg array, sleep 30ms
+[30209.387541] imx415 1-001a: set vblank 0x3a vts 2250
+[30209.388916] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30209.389809] imx415 1-001a: set analog gain 0x23
+[30209.539403] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30209.762962] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30209.764546] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30209.764556] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30209.929748] rkisp rkisp-vir0: first params buf queue
+[30209.931381] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30209.931415] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30209.931422] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30209.931428] imx415 1-001a: write reg array error
+[30210.018830] imx415 1-001a: write reg array, sleep 30ms
+[30210.020181] imx415 1-001a: set vblank 0x3a vts 2250
+[30210.021427] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30210.022341] imx415 1-001a: set analog gain 0x23
+[30210.171778] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30210.395270] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30210.396896] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30210.396903] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30210.540662] rkisp rkisp-vir0: first params buf queue
+[30210.542429] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30210.542467] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30210.542476] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30210.542483] imx415 1-001a: write reg array error
+[30210.628387] imx415 1-001a: write reg array, sleep 30ms
+[30210.629815] imx415 1-001a: set vblank 0x3a vts 2250
+[30210.631062] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30210.631945] imx415 1-001a: set analog gain 0x23
+[30210.781418] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30211.005473] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30211.007028] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30211.007037] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30211.165316] rkisp rkisp-vir0: first params buf queue
+[30211.166953] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30211.166986] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30211.166993] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30211.166998] imx415 1-001a: write reg array error
+[30211.252726] imx415 1-001a: write reg array, sleep 30ms
+[30211.254031] imx415 1-001a: set vblank 0x3a vts 2250
+[30211.255393] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30211.256285] imx415 1-001a: set analog gain 0x23
+[30211.405775] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30211.631727] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30211.633346] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30211.633359] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30211.770964] rkisp rkisp-vir0: first params buf queue
+[30211.772615] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30211.772649] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30211.772656] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30211.772662] imx415 1-001a: write reg array error
+[30211.858201] imx415 1-001a: write reg array, sleep 30ms
+[30211.859725] imx415 1-001a: set vblank 0x3a vts 2250
+[30211.861147] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30211.862350] imx415 1-001a: set analog gain 0x23
+[30212.012030] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30212.236229] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30212.237776] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30212.237785] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30212.376792] rkisp rkisp-vir0: first params buf queue
+[30212.378447] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30212.378483] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30212.378490] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30212.378496] imx415 1-001a: write reg array error
+[30212.467542] imx415 1-001a: write reg array, sleep 30ms
+[30212.469399] imx415 1-001a: set vblank 0x3a vts 2250
+[30212.470860] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30212.472228] imx415 1-001a: set analog gain 0x23
+[30212.621931] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30212.846032] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30212.847589] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30212.847598] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30212.994157] rkisp rkisp-vir0: first params buf queue
+[30212.995801] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30212.995837] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30212.995845] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30212.995852] imx415 1-001a: write reg array error
+[30213.084474] imx415 1-001a: write reg array, sleep 30ms
+[30213.085914] imx415 1-001a: set vblank 0x3a vts 2250
+[30213.087201] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30213.088047] imx415 1-001a: set analog gain 0x23
+[30213.237665] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30213.462950] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30213.464714] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30213.464725] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30213.616231] rkisp rkisp-vir0: first params buf queue
+[30213.617873] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30213.617907] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30213.617914] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30213.617920] imx415 1-001a: write reg array error
+[30213.705547] imx415 1-001a: write reg array, sleep 30ms
+[30213.706841] imx415 1-001a: set vblank 0x3a vts 2250
+[30213.708154] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30213.709033] imx415 1-001a: set analog gain 0x23
+[30213.858504] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30214.082610] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30214.084135] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30214.084145] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30214.252490] rkisp rkisp-vir0: first params buf queue
+[30214.254115] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30214.254152] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30214.254159] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30214.254165] imx415 1-001a: write reg array error
+[30214.343580] imx415 1-001a: write reg array, sleep 30ms
+[30214.345052] imx415 1-001a: set vblank 0x3a vts 2250
+[30214.346359] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30214.347232] imx415 1-001a: set analog gain 0x23
+[30214.497032] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30214.720742] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30214.722342] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30214.722352] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30214.869757] rkisp rkisp-vir0: first params buf queue
+[30214.871380] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30214.871412] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30214.871418] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30214.871425] imx415 1-001a: write reg array error
+[30214.956611] imx415 1-001a: write reg array, sleep 30ms
+[30214.957948] imx415 1-001a: set vblank 0x3a vts 2250
+[30214.959292] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30214.960157] imx415 1-001a: set analog gain 0x23
+[30215.109814] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30215.333837] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30215.335553] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30215.335562] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30215.476797] rkisp rkisp-vir0: first params buf queue
+[30215.478456] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30215.478491] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30215.478498] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30215.478505] imx415 1-001a: write reg array error
+[30215.564490] imx415 1-001a: write reg array, sleep 30ms
+[30215.565984] imx415 1-001a: set vblank 0x3a vts 2250
+[30215.567240] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30215.568072] imx415 1-001a: set analog gain 0x23
+[30215.717520] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30215.942426] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30215.943992] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30215.944002] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30216.093149] rkisp rkisp-vir0: first params buf queue
+[30216.094809] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30216.094847] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30216.094863] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30216.094870] imx415 1-001a: write reg array error
+[30216.183784] imx415 1-001a: write reg array, sleep 30ms
+[30216.185206] imx415 1-001a: set vblank 0x3a vts 2250
+[30216.186648] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30216.187498] imx415 1-001a: set analog gain 0x23
+[30216.336988] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30216.563416] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30216.565062] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30216.565072] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30216.701440] rkisp rkisp-vir0: first params buf queue
+[30216.703127] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30216.703159] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30216.703166] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30216.703172] imx415 1-001a: write reg array error
+[30216.789110] imx415 1-001a: write reg array, sleep 30ms
+[30216.790809] imx415 1-001a: set vblank 0x3a vts 2250
+[30216.792583] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30216.793810] imx415 1-001a: set analog gain 0x23
+[30216.943816] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30217.167930] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30217.169524] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30217.169534] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30217.289716] rkisp rkisp-vir0: first params buf queue
+[30217.291351] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30217.291385] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30217.291392] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30217.291398] imx415 1-001a: write reg array error
+[30217.378808] imx415 1-001a: write reg array, sleep 30ms
+[30217.380174] imx415 1-001a: set vblank 0x3a vts 2250
+[30217.381437] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30217.382426] imx415 1-001a: set analog gain 0x23
+[30217.531956] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30217.757350] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30217.758915] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30217.758925] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30217.899659] rkisp rkisp-vir0: first params buf queue
+[30217.901291] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30217.901325] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30217.901332] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30217.901338] imx415 1-001a: write reg array error
+[30217.989896] imx415 1-001a: write reg array, sleep 30ms
+[30217.991195] imx415 1-001a: set vblank 0x3a vts 2250
+[30217.992479] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30217.993333] imx415 1-001a: set analog gain 0x23
+[30218.142866] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30218.367942] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30218.369650] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30218.369661] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30218.497329] rkisp rkisp-vir0: first params buf queue
+[30218.498981] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30218.499015] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30218.499022] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30218.499028] imx415 1-001a: write reg array error
+[30218.589335] imx415 1-001a: write reg array, sleep 30ms
+[30218.590742] imx415 1-001a: set vblank 0x3a vts 2250
+[30218.592149] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30218.593086] imx415 1-001a: set analog gain 0x23
+[30218.742570] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30218.967287] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30218.970312] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30218.970323] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30219.104888] rkisp rkisp-vir0: first params buf queue
+[30219.106510] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30219.106544] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30219.106551] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30219.106557] imx415 1-001a: write reg array error
+[30219.194490] imx415 1-001a: write reg array, sleep 30ms
+[30219.196157] imx415 1-001a: set vblank 0x3a vts 2250
+[30219.197633] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30219.198602] imx415 1-001a: set analog gain 0x23
+[30219.348194] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30219.574871] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30219.576490] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30219.576500] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30219.727280] rkisp rkisp-vir0: first params buf queue
+[30219.728937] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30219.728972] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30219.728980] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30219.728986] imx415 1-001a: write reg array error
+[30219.816015] imx415 1-001a: write reg array, sleep 30ms
+[30219.817362] imx415 1-001a: set vblank 0x3a vts 2250
+[30219.818658] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30219.819514] imx415 1-001a: set analog gain 0x23
+[30219.969027] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30220.195010] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30220.196719] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30220.196730] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30220.330309] rkisp rkisp-vir0: first params buf queue
+[30220.331943] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30220.331979] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30220.331986] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30220.331992] imx415 1-001a: write reg array error
+[30220.419463] imx415 1-001a: write reg array, sleep 30ms
+[30220.420758] imx415 1-001a: set vblank 0x3a vts 2250
+[30220.422396] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30220.423418] imx415 1-001a: set analog gain 0x23
+[30220.573111] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30220.798221] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30220.799784] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30220.799794] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30220.934960] rkisp rkisp-vir0: first params buf queue
+[30220.936557] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30220.936591] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30220.936598] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30220.936605] imx415 1-001a: write reg array error
+[30221.028527] imx415 1-001a: write reg array, sleep 30ms
+[30221.030080] imx415 1-001a: set vblank 0x3a vts 2250
+[30221.031835] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30221.033017] imx415 1-001a: set analog gain 0x23
+[30221.182719] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30221.406947] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30221.408878] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30221.408888] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30221.557883] rkisp rkisp-vir0: first params buf queue
+[30221.559630] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30221.559664] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30221.559671] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30221.559677] imx415 1-001a: write reg array error
+[30221.646190] imx415 1-001a: write reg array, sleep 30ms
+[30221.647577] imx415 1-001a: set vblank 0x3a vts 2250
+[30221.648956] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30221.649859] imx415 1-001a: set analog gain 0x23
+[30221.799395] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30222.023523] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30222.025115] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30222.025124] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30222.171546] rkisp rkisp-vir0: first params buf queue
+[30222.173185] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30222.173217] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30222.173224] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30222.173231] imx415 1-001a: write reg array error
+[30222.259427] imx415 1-001a: write reg array, sleep 30ms
+[30222.261107] imx415 1-001a: set vblank 0x3a vts 2250
+[30222.262935] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30222.264165] imx415 1-001a: set analog gain 0x23
+[30222.414208] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30222.638384] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30222.639908] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30222.639918] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30222.798333] rkisp rkisp-vir0: first params buf queue
+[30222.799962] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30222.799997] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30222.800004] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30222.800010] imx415 1-001a: write reg array error
+[30222.887485] imx415 1-001a: write reg array, sleep 30ms
+[30222.888919] imx415 1-001a: set vblank 0x3a vts 2250
+[30222.890199] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30222.891054] imx415 1-001a: set analog gain 0x23
+[30223.040723] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30223.264918] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30223.266797] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30223.266808] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30223.404189] rkisp rkisp-vir0: first params buf queue
+[30223.405828] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30223.405863] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30223.405870] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30223.405875] imx415 1-001a: write reg array error
+[30223.495422] imx415 1-001a: write reg array, sleep 30ms
+[30223.496824] imx415 1-001a: set vblank 0x3a vts 2250
+[30223.498089] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30223.498963] imx415 1-001a: set analog gain 0x23
+[30223.648480] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30223.872557] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30223.874073] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30223.874083] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30224.024307] rkisp rkisp-vir0: first params buf queue
+[30224.025938] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30224.025972] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30224.025979] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30224.025985] imx415 1-001a: write reg array error
+[30224.114874] imx415 1-001a: write reg array, sleep 30ms
+[30224.116254] imx415 1-001a: set vblank 0x3a vts 2250
+[30224.117518] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30224.118531] imx415 1-001a: set analog gain 0x23
+[30224.268101] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30224.491560] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30224.493075] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30224.493082] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30224.615827] rkisp rkisp-vir0: first params buf queue
+[30224.617456] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30224.617491] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30224.617498] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30224.617504] imx415 1-001a: write reg array error
+[30224.704780] imx415 1-001a: write reg array, sleep 30ms
+[30224.706550] imx415 1-001a: set vblank 0x3a vts 2250
+[30224.707893] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30224.708999] imx415 1-001a: set analog gain 0x23
+[30224.858569] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30225.082724] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30225.084251] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30225.084260] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30225.255382] rkisp rkisp-vir0: first params buf queue
+[30225.257012] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30225.257044] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30225.257051] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30225.257058] imx415 1-001a: write reg array error
+[30225.341678] imx415 1-001a: write reg array, sleep 30ms
+[30225.343213] imx415 1-001a: set vblank 0x3a vts 2250
+[30225.344568] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30225.345724] imx415 1-001a: set analog gain 0x23
+[30225.495293] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30225.718953] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30225.720557] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30225.720566] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30225.877134] rkisp rkisp-vir0: first params buf queue
+[30225.878760] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30225.878794] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30225.878800] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30225.878807] imx415 1-001a: write reg array error
+[30225.964868] imx415 1-001a: write reg array, sleep 30ms
+[30225.966262] imx415 1-001a: set vblank 0x3a vts 2250
+[30225.967616] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30225.968619] imx415 1-001a: set analog gain 0x23
+[30226.118284] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30226.342249] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30226.343773] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30226.343781] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30226.471126] rkisp rkisp-vir0: first params buf queue
+[30226.472811] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30226.472846] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30226.472852] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30226.472859] imx415 1-001a: write reg array error
+[30226.558191] imx415 1-001a: write reg array, sleep 30ms
+[30226.559882] imx415 1-001a: set vblank 0x3a vts 2250
+[30226.561238] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30226.562253] imx415 1-001a: set analog gain 0x23
+[30226.712404] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30226.936528] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30226.938040] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30226.938051] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30227.063988] rkisp rkisp-vir0: first params buf queue
+[30227.065634] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30227.065669] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30227.065676] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30227.065682] imx415 1-001a: write reg array error
+[30227.150608] imx415 1-001a: write reg array, sleep 30ms
+[30227.152192] imx415 1-001a: set vblank 0x3a vts 2250
+[30227.153732] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30227.154648] imx415 1-001a: set analog gain 0x23
+[30227.304539] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30227.529430] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30227.530975] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30227.530984] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30227.680922] rkisp rkisp-vir0: first params buf queue
+[30227.682677] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30227.682715] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30227.682723] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30227.682729] imx415 1-001a: write reg array error
+[30227.771666] imx415 1-001a: write reg array, sleep 30ms
+[30227.773095] imx415 1-001a: set vblank 0x3a vts 2250
+[30227.774359] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30227.775344] imx415 1-001a: set analog gain 0x23
+[30227.924848] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30228.153123] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30228.154632] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30228.154641] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30228.320007] rkisp rkisp-vir0: first params buf queue
+[30228.321697] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30228.321736] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30228.321744] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30228.321751] imx415 1-001a: write reg array error
+[30228.410184] imx415 1-001a: write reg array, sleep 30ms
+[30228.411532] imx415 1-001a: set vblank 0x3a vts 2250
+[30228.412947] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30228.413805] imx415 1-001a: set analog gain 0x23
+[30228.563365] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30228.787479] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30228.788989] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30228.789000] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30228.928560] rkisp rkisp-vir0: first params buf queue
+[30228.930196] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30228.930231] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30228.930238] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30228.930244] imx415 1-001a: write reg array error
+[30229.015760] imx415 1-001a: write reg array, sleep 30ms
+[30229.017345] imx415 1-001a: set vblank 0x3a vts 2250
+[30229.018878] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30229.019993] imx415 1-001a: set analog gain 0x23
+[30229.169671] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30229.393754] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30229.395061] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30229.395070] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30229.541860] rkisp rkisp-vir0: first params buf queue
+[30229.543501] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30229.543536] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30229.543543] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30229.543549] imx415 1-001a: write reg array error
+[30229.631701] imx415 1-001a: write reg array, sleep 30ms
+[30229.633202] imx415 1-001a: set vblank 0x3a vts 2250
+[30229.634639] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30229.635899] imx415 1-001a: set analog gain 0x23
+[30229.786164] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30230.010420] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30230.011668] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30230.011679] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30230.176321] rkisp rkisp-vir0: first params buf queue
+[30230.177952] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30230.177985] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30230.177992] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30230.177998] imx415 1-001a: write reg array error
+[30230.267091] imx415 1-001a: write reg array, sleep 30ms
+[30230.268467] imx415 1-001a: set vblank 0x3a vts 2250
+[30230.269749] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30230.270604] imx415 1-001a: set analog gain 0x23
+[30230.420284] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30230.645545] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30230.647171] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30230.647183] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30230.785229] rkisp rkisp-vir0: first params buf queue
+[30230.786851] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30230.786884] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30230.786891] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30230.786897] imx415 1-001a: write reg array error
+[30230.873856] imx415 1-001a: write reg array, sleep 30ms
+[30230.875244] imx415 1-001a: set vblank 0x3a vts 2250
+[30230.876610] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30230.877473] imx415 1-001a: set analog gain 0x23
+[30231.027128] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30231.250812] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30231.253010] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30231.253021] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30231.419269] rkisp rkisp-vir0: first params buf queue
+[30231.421030] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30231.421071] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30231.421082] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30231.421090] imx415 1-001a: write reg array error
+[30231.505995] imx415 1-001a: write reg array, sleep 30ms
+[30231.507763] imx415 1-001a: set vblank 0x3a vts 2250
+[30231.509328] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30231.510244] imx415 1-001a: set analog gain 0x23
+[30231.660123] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30231.884260] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30231.885824] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30231.885835] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30232.025767] rkisp rkisp-vir0: first params buf queue
+[30232.027408] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30232.027447] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30232.027454] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30232.027460] imx415 1-001a: write reg array error
+[30232.112900] imx415 1-001a: write reg array, sleep 30ms
+[30232.114342] imx415 1-001a: set vblank 0x3a vts 2250
+[30232.115961] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30232.116952] imx415 1-001a: set analog gain 0x23
+[30232.266670] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30232.490883] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30232.492688] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30232.492698] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30232.623487] rkisp rkisp-vir0: first params buf queue
+[30232.625147] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30232.625184] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30232.625192] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30232.625198] imx415 1-001a: write reg array error
+[30232.713929] imx415 1-001a: write reg array, sleep 30ms
+[30232.715330] imx415 1-001a: set vblank 0x3a vts 2250
+[30232.716665] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30232.717522] imx415 1-001a: set analog gain 0x23
+[30232.867123] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30233.091429] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30233.093002] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30233.093011] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30233.253559] rkisp rkisp-vir0: first params buf queue
+[30233.255228] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30233.255264] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30233.255270] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30233.255277] imx415 1-001a: write reg array error
+[30233.339913] imx415 1-001a: write reg array, sleep 30ms
+[30233.341241] imx415 1-001a: set vblank 0x3a vts 2250
+[30233.342644] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30233.343497] imx415 1-001a: set analog gain 0x23
+[30233.493021] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30233.718550] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30233.720080] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30233.720089] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30233.883946] rkisp rkisp-vir0: first params buf queue
+[30233.885599] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30233.885634] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30233.885641] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30233.885647] imx415 1-001a: write reg array error
+[30233.973525] imx415 1-001a: write reg array, sleep 30ms
+[30233.975073] imx415 1-001a: set vblank 0x3a vts 2250
+[30233.976661] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30233.977566] imx415 1-001a: set analog gain 0x23
+[30234.127256] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30234.351388] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30234.353175] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30234.353185] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30234.516183] rkisp rkisp-vir0: first params buf queue
+[30234.517817] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30234.517851] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30234.517858] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30234.517864] imx415 1-001a: write reg array error
+[30234.604193] imx415 1-001a: write reg array, sleep 30ms
+[30234.605684] imx415 1-001a: set vblank 0x3a vts 2250
+[30234.607034] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30234.607899] imx415 1-001a: set analog gain 0x23
+[30234.757604] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30234.981721] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30234.983253] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30234.983262] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30235.115055] rkisp rkisp-vir0: first params buf queue
+[30235.116677] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30235.116710] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30235.116717] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30235.116723] imx415 1-001a: write reg array error
+[30235.204314] imx415 1-001a: write reg array, sleep 30ms
+[30235.205769] imx415 1-001a: set vblank 0x3a vts 2250
+[30235.207092] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30235.207943] imx415 1-001a: set analog gain 0x23
+[30235.357680] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30235.582302] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30235.585167] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30235.585193] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30235.727150] rkisp rkisp-vir0: first params buf queue
+[30235.728737] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30235.728773] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30235.728781] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30235.728787] imx415 1-001a: write reg array error
+[30235.819048] imx415 1-001a: write reg array, sleep 30ms
+[30235.820341] imx415 1-001a: set vblank 0x3a vts 2250
+[30235.821738] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30235.822597] imx415 1-001a: set analog gain 0x23
+[30235.972059] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30236.195729] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30236.197350] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30236.197360] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30236.336263] rkisp rkisp-vir0: first params buf queue
+[30236.337883] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30236.337917] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30236.337924] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30236.337929] imx415 1-001a: write reg array error
+[30236.426800] imx415 1-001a: write reg array, sleep 30ms
+[30236.428184] imx415 1-001a: set vblank 0x3a vts 2250
+[30236.429586] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30236.430447] imx415 1-001a: set analog gain 0x23
+[30236.580055] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30236.804153] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30236.805750] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30236.805760] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30236.933358] rkisp rkisp-vir0: first params buf queue
+[30236.934828] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30236.934868] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30236.934878] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30236.934886] imx415 1-001a: write reg array error
+[30237.022143] imx415 1-001a: write reg array, sleep 30ms
+[30237.023585] imx415 1-001a: set vblank 0x3a vts 2250
+[30237.025160] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30237.026139] imx415 1-001a: set analog gain 0x23
+[30237.175868] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30237.404342] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30237.406042] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30237.406052] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30237.544860] rkisp rkisp-vir0: first params buf queue
+[30237.546477] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30237.546510] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30237.546517] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30237.546523] imx415 1-001a: write reg array error
+[30237.636833] imx415 1-001a: write reg array, sleep 30ms
+[30237.638370] imx415 1-001a: set vblank 0x3a vts 2250
+[30237.639826] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30237.640705] imx415 1-001a: set analog gain 0x23
+[30237.790480] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30238.014182] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30238.015965] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30238.015975] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30238.160359] rkisp rkisp-vir0: first params buf queue
+[30238.162010] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30238.162044] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30238.162051] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30238.162057] imx415 1-001a: write reg array error
+[30238.247693] imx415 1-001a: write reg array, sleep 30ms
+[30238.249290] imx415 1-001a: set vblank 0x3a vts 2250
+[30238.250668] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30238.251559] imx415 1-001a: set analog gain 0x23
+[30238.401218] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30238.626775] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30238.630175] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30238.630184] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30238.798714] rkisp rkisp-vir0: first params buf queue
+[30238.800348] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30238.800381] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30238.800388] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30238.800394] imx415 1-001a: write reg array error
+[30238.887714] imx415 1-001a: write reg array, sleep 30ms
+[30238.889494] imx415 1-001a: set vblank 0x3a vts 2250
+[30238.890997] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30238.892605] imx415 1-001a: set analog gain 0x23
+[30239.042817] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30239.267794] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30239.269380] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30239.269389] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30239.437049] rkisp rkisp-vir0: first params buf queue
+[30239.438672] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30239.438707] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30239.438715] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30239.438721] imx415 1-001a: write reg array error
+[30239.524948] imx415 1-001a: write reg array, sleep 30ms
+[30239.526258] imx415 1-001a: set vblank 0x3a vts 2250
+[30239.527527] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30239.528434] imx415 1-001a: set analog gain 0x23
+[30239.678069] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30239.901656] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30239.903253] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30239.903263] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30240.047343] rkisp rkisp-vir0: first params buf queue
+[30240.048933] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30240.048968] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30240.048974] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30240.048981] imx415 1-001a: write reg array error
+[30240.134861] imx415 1-001a: write reg array, sleep 30ms
+[30240.136307] imx415 1-001a: set vblank 0x3a vts 2250
+[30240.137574] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30240.138455] imx415 1-001a: set analog gain 0x23
+[30240.287926] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30240.511583] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30240.513543] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30240.513561] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30240.666665] rkisp rkisp-vir0: first params buf queue
+[30240.668177] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30240.668223] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30240.668232] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30240.668239] imx415 1-001a: write reg array error
+[30240.753738] imx415 1-001a: write reg array, sleep 30ms
+[30240.755115] imx415 1-001a: set vblank 0x3a vts 2250
+[30240.756479] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30240.757335] imx415 1-001a: set analog gain 0x23
+[30240.907035] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30241.131229] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30241.133811] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30241.133820] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30241.268263] rkisp rkisp-vir0: first params buf queue
+[30241.269863] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30241.269897] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30241.269903] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30241.269910] imx415 1-001a: write reg array error
+[30241.356451] imx415 1-001a: write reg array, sleep 30ms
+[30241.357751] imx415 1-001a: set vblank 0x3a vts 2250
+[30241.359300] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30241.360140] imx415 1-001a: set analog gain 0x23
+[30241.509683] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30241.734246] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30241.735758] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30241.735767] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30241.881218] rkisp rkisp-vir0: first params buf queue
+[30241.882958] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30241.882997] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30241.883004] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30241.883010] imx415 1-001a: write reg array error
+[30241.969575] imx415 1-001a: write reg array, sleep 30ms
+[30241.970908] imx415 1-001a: set vblank 0x3a vts 2250
+[30241.972360] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30241.973346] imx415 1-001a: set analog gain 0x23
+[30242.123006] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30242.346726] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30242.348564] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30242.348574] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30242.500062] rkisp rkisp-vir0: first params buf queue
+[30242.501715] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30242.501755] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30242.501762] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30242.501769] imx415 1-001a: write reg array error
+[30242.587816] imx415 1-001a: write reg array, sleep 30ms
+[30242.589415] imx415 1-001a: set vblank 0x3a vts 2250
+[30242.590855] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30242.591787] imx415 1-001a: set analog gain 0x23
+[30242.741386] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30242.965870] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30242.967384] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30242.967394] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30243.096983] rkisp rkisp-vir0: first params buf queue
+[30243.098608] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30243.098642] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30243.098648] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30243.098655] imx415 1-001a: write reg array error
+[30243.186702] imx415 1-001a: write reg array, sleep 30ms
+[30243.188029] imx415 1-001a: set vblank 0x3a vts 2250
+[30243.189434] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30243.190333] imx415 1-001a: set analog gain 0x23
+[30243.339939] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30243.564029] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30243.565593] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30243.565603] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30243.690826] rkisp rkisp-vir0: first params buf queue
+[30243.692465] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30243.692499] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30243.692506] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30243.692512] imx415 1-001a: write reg array error
+[30243.778181] imx415 1-001a: write reg array, sleep 30ms
+[30243.780047] imx415 1-001a: set vblank 0x3a vts 2250
+[30243.781589] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30243.782926] imx415 1-001a: set analog gain 0x23
+[30243.932616] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30244.156263] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30244.157825] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30244.157834] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30244.286476] rkisp rkisp-vir0: first params buf queue
+[30244.288127] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30244.288164] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30244.288171] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30244.288289] imx415 1-001a: write reg array error
+[30244.373964] imx415 1-001a: write reg array, sleep 30ms
+[30244.375643] imx415 1-001a: set vblank 0x3a vts 2250
+[30244.377085] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30244.377986] imx415 1-001a: set analog gain 0x23
+[30244.527786] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30244.750909] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30244.754528] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30244.754555] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30244.910345] rkisp rkisp-vir0: first params buf queue
+[30244.911973] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30244.912008] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30244.912015] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30244.912021] imx415 1-001a: write reg array error
+[30244.999880] imx415 1-001a: write reg array, sleep 30ms
+[30245.001215] imx415 1-001a: set vblank 0x3a vts 2250
+[30245.002861] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30245.003750] imx415 1-001a: set analog gain 0x23
+[30245.153428] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30245.377565] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30245.379486] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30245.379496] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30245.528191] rkisp rkisp-vir0: first params buf queue
+[30245.529811] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30245.529845] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30245.529852] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30245.529858] imx415 1-001a: write reg array error
+[30245.614799] imx415 1-001a: write reg array, sleep 30ms
+[30245.616269] imx415 1-001a: set vblank 0x3a vts 2250
+[30245.617534] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30245.618439] imx415 1-001a: set analog gain 0x23
+[30245.767953] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30245.992129] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30245.993759] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30245.993769] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30246.147553] rkisp rkisp-vir0: first params buf queue
+[30246.149191] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30246.149227] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30246.149234] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30246.149240] imx415 1-001a: write reg array error
+[30246.236476] imx415 1-001a: write reg array, sleep 30ms
+[30246.238475] imx415 1-001a: set vblank 0x3a vts 2250
+[30246.240213] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30246.241188] imx415 1-001a: set analog gain 0x23
+[30246.391062] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30246.616158] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30246.617685] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30246.617695] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30246.780645] rkisp rkisp-vir0: first params buf queue
+[30246.782243] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30246.782278] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30246.782285] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30246.782291] imx415 1-001a: write reg array error
+[30246.870253] imx415 1-001a: write reg array, sleep 30ms
+[30246.871690] imx415 1-001a: set vblank 0x3a vts 2250
+[30246.873144] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30246.874021] imx415 1-001a: set analog gain 0x23
+[30247.023780] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30247.247570] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30247.249166] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30247.249175] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30247.415329] rkisp rkisp-vir0: first params buf queue
+[30247.417041] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30247.417075] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30247.417083] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30247.417090] imx415 1-001a: write reg array error
+[30247.502363] imx415 1-001a: write reg array, sleep 30ms
+[30247.503762] imx415 1-001a: set vblank 0x3a vts 2250
+[30247.505107] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30247.505966] imx415 1-001a: set analog gain 0x23
+[30247.655430] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30247.879552] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30247.881078] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30247.881087] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30248.021758] rkisp rkisp-vir0: first params buf queue
+[30248.023385] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30248.023418] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30248.023425] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30248.023431] imx415 1-001a: write reg array error
+[30248.110230] imx415 1-001a: write reg array, sleep 30ms
+[30248.111960] imx415 1-001a: set vblank 0x3a vts 2250
+[30248.113671] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30248.114742] imx415 1-001a: set analog gain 0x23
+[30248.264727] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30248.490177] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30248.492245] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30248.492255] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[30248.613773] rkisp rkisp-vir0: first params buf queue
+[30248.615406] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[30248.615441] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[30248.615449] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[30248.615456] imx415 1-001a: write reg array error
+[30248.707788] imx415 1-001a: write reg array, sleep 30ms
+[30248.709324] imx415 1-001a: set vblank 0x3a vts 2250
+[30248.710777] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[30248.711701] imx415 1-001a: set analog gain 0x23
+[30248.861174] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:3
+[30249.085313] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[30249.086976] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[30249.086985] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1

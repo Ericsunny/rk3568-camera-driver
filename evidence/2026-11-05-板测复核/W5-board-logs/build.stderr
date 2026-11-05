@@ -1,0 +1,4 @@
+st_burn.c: In function ‘main’:
+st_burn.c:275:5: warning: suggest braces around empty body in an ‘if’ statement [-Wempty-body]
+  275 |     ; /* interval 累积 */
+      |     ^

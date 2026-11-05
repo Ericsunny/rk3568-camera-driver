@@ -1,0 +1,11 @@
+Source: W5-board-logs/W5.stdout, 100 CYCLE_INDEX lines.
+Metric: each one-cycle invocation's printed ff_avg, milliseconds.
+Method: sort the 100 printed values; arithmetic mean; median is average of sorted positions 50 and 51.
+count=100
+minimum_ms=430.8
+mean_ms=436.747
+median_ms=436.35
+maximum_ms=447.8
+The source tool does not check successful STREAMOFF return; see docs/43.
+Board/PC W5-logs.tar.gz MD5: 466cf5e07b6b2cfa1c0a831fe52516d7
+The 310 files listed in W5-board-logs/W5-logs.md5 matched after extraction on PC.

@@ -1,0 +1,7 @@
+2026-11-05: source scp operations and binary return scp exit 0; PC and board MD5 match.
+Name           PC MD5                            Board MD5
+evrec.c        737cb371702663e60b2ee28435bba4dd 737cb371702663e60b2ee28435bba4dd
+rtsp_hub.c     eef05f61f289d56c8f0acedca7dedd5d eef05f61f289d56c8f0acedca7dedd5d
+rtsp_hub.h     cd55f30314fb79e01d6fe23706c5fe5c cd55f30314fb79e01d6fe23706c5fe5c
+evrec-review   d1a436bfcb0c3080465ec4bcb9b0d1c5 d1a436bfcb0c3080465ec4bcb9b0d1c5
+Source baseline: b275564. Binary built in an isolated board directory; it has not been run.

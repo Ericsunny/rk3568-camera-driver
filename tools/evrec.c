@@ -426,7 +426,7 @@ static void rga_init(void)
 }
 
 /* 用 mmap 虚拟地址做源, 不需要 EXPBUF(第①步先证明缩放可用) */
-static void rga_scale(const void *src_va, unsigned sw, unsigned sh)
+static int rga_scale(const void *src_va, unsigned sw, unsigned sh)
 {
 	IM_STATUS st;
 
@@ -435,11 +435,15 @@ static void rga_scale(const void *src_va, unsigned sw, unsigned sh)
 	st = imresize_t(g_rga_src, g_rga_dst, 0, 0, 0, 1);
 	if (st != IM_STATUS_SUCCESS) {
 		fprintf(stderr, "RGA 失败: %s\n", imStrError(st));
-		return;
+		return -1;
 	}
 	{	/* 采样均值: 与 camd 同口径(Y 平面每 16 像素取 1) */
 		unsigned long sum = 0, n = 0;
+#ifdef HAVE_RKNN
 		unsigned char *y = g_rgb;
+#else
+		unsigned char *y = g_rga_buf;
+#endif
 
 		for (int i = 0; i < g_rga_w * g_rga_h; i += 16) {
 			sum += y[i];
@@ -448,6 +452,7 @@ static void rga_scale(const void *src_va, unsigned sw, unsigned sh)
 		g_rga_sum += sum;
 		g_rga_n += n;
 	}
+	return 0;
 }
 #endif
 
@@ -1167,8 +1172,14 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 		}
 	}
 	j = fopen(jpath, "w");
-	if (j) {
-		fprintf(j,
+	if (!j) {
+		fprintf(stderr, ">>> fopen %s 失败: %s\n", jpath, strerror(errno));
+		return -1;
+	}
+	{
+		int failed = 0;
+
+		if (fprintf(j,
 			"{\"file\":\"%s.h264\",\"trigger_seq\":%u,"
 			"\"trigger_ts_ms\":%.1f,\"close_reason\":\"%s\","
 			"\"bytes\":%lu,\"duration_ms\":%.1f,"
@@ -1182,8 +1193,16 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 			g_ev_event_id, g_ev_segment,
 			g_ev_coalesced, g_ev_cdskip, disk_free_mb(),
 			g_ev_first_ts, g_ev_last_ts,
-			g_ev_werr ? "true" : "false");
-		fclose(j);
+			g_ev_werr ? "true" : "false") < 0) {
+			fprintf(stderr, ">>> 写入 %s 失败: %s\n", jpath, strerror(errno));
+			failed = 1;
+		}
+		if (fclose(j) != 0) {
+			fprintf(stderr, ">>> 关闭 %s 失败: %s\n", jpath, strerror(errno));
+			failed = 1;
+		}
+		if (failed)
+			return -1;
 	}
 	return 0;
 }
@@ -1826,10 +1845,11 @@ int main(int argc, char **argv)
 #ifdef HAVE_RGA
 #ifdef HAVE_RKNN
 		if (g_detect) {
-			rga_scale(cap.map[b.index], w, h);
+			int rga_rc = rga_scale(cap.map[b.index], w, h);
 			t_rga = now_ms(CLOCK_MONOTONIC) - t_stage;
 			t_stage += t_rga;
-			npu_run(g_rgb);
+			if (rga_rc == 0)
+				npu_run(g_rgb);
 			t_npu = now_ms(CLOCK_MONOTONIC) - t_stage;
 			t_stage += t_npu;
 		}
@@ -1850,7 +1870,12 @@ int main(int argc, char **argv)
 			g_osd_ms = cap_ms;
 			draw_osd(mpp_buffer_get_ptr(g_fbuf), (int)cap.stride, w, h);
 		}
-		xioctl(cap.fd, VIDIOC_QBUF, &b);
+		if (xioctl(cap.fd, VIDIOC_QBUF, &b) < 0) {
+			if (g_stop)
+				break;
+			perror("QBUF");
+			goto link_fault;
+		}
 
 		mpp_frame_init(&frame);
 		mpp_frame_set_width(frame, w);
@@ -2135,6 +2160,7 @@ link_fault:
 			fflush(stdout);
 		} else {
 			fprintf(stderr, ">>> SIGTERM: 事件落盘失败\n");
+			rc = 1;
 		}
 	}
 	/* 信号 handler 只置 g_stop: 这里在锁内把它同步成 sender 的停止条件,

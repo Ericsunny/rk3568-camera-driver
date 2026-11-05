@@ -1331,131 +1331,6 @@ static int link_recover(const char *dev, int w, int h, int used)
  *     pkb_push / pkb_set_stop / rtsp_ring_report / rtsp_stats_report
  *     (签名与原 static 版本一致, 由 rtsp_hub.c 提供)。 */
 
-/* P6: fps 在 dump 内部按"文件内帧数 / (末包 ts - 首包 ts)"计算 ——
- * 三个调用点不再各算一遍(旧代码用 trig_ts + post 当分母, 触发晚时虚低)。 */
-static int dump(const char *out, unsigned trig_seq, double trig_ts, int pre_i,
-		int end_i, unsigned w, unsigned h)
-{
-	char path[512], jpath[512];
-	FILE *f, *j;
-	int i, n = 0;
-	int nf = 0;		/* 源帧数(按 seq 去重; 一帧多包时 n > nf) */
-	int trig_idx = -1;	/* 触发帧在文件内的 0 基帧序号 */
-	int have_prev = 0, last_i;
-	unsigned prev_seq = 0;
-	double first_ts, span, fps;
-
-	snprintf(path, sizeof(path), "%s.h264", out);
-	snprintf(jpath, sizeof(jpath), "%s.json", out);
-	f = fopen(path, "wb");
-	if (!f) {
-		fprintf(stderr, ">>> fopen %s 失败: %s (errno=%d)\n",
-			path, strerror(errno), errno);
-		return -1;
-	}
-	/* 防御: EACH_IDR 下每个 IDR 都自带 SPS/PPS, 正常不会进这里; 若流首
-	 * IDR 仍缺参数集(旧固件/异常), 用已缓存参数集在文件最前面补一次。
-	 * 只检查首个包且只补一次, 多 IDR 文件不会重复。 */
-	if (pre_i >= 0 && pre_i <= end_i && pre_i < ring_cnt &&
-	    ring_at(pre_i)->key &&
-	    !rtsp_has_nal(ring_at(pre_i)->data, ring_at(pre_i)->len, 7)) {
-		uint8_t sps[128], pps[128];
-		static const uint8_t sc[4] = { 0, 0, 0, 1 };
-		int sl = 0, pl = 0;
-
-		rtsp_hub_get_ps(sps, sizeof(sps), pps, sizeof(pps), &sl, &pl);
-		if (sl > 0 && pl > 0) {
-			fwrite(sc, 1, sizeof(sc), f);
-			fwrite(sps, 1, (size_t)sl, f);
-			fwrite(sc, 1, sizeof(sc), f);
-			fwrite(pps, 1, (size_t)pl, f);
-		}
-	}
-	for (i = pre_i; i <= end_i && i < ring_cnt; i++) {
-		struct rec *r = ring_at(i);
-
-		if (fwrite(r->data, 1, (size_t)r->len, f) != (size_t)r->len) {
-			fprintf(stderr, ">>> 写 %s 失败(seq=%u len=%d): %s (errno=%d)\n",
-				path, r->seq, r->len, strerror(errno), errno);
-			fclose(f);
-			return -1;
-		}
-		/* 帧数按源帧去重(同一帧的多个包 seq 相同) */
-		if (!have_prev || r->seq != prev_seq) {
-			have_prev = 1;
-			prev_seq = r->seq;
-			nf++;
-		}
-		/* 触发帧(首个包)在文件内的帧序号: 0 基, 与 list[] 的帧顺序一致 */
-		if (trig_idx < 0 && r->seq == trig_seq)
-			trig_idx = nf - 1;
-		n++;
-	}
-	if (fclose(f) != 0) {
-		fprintf(stderr, ">>> fclose %s 失败: %s (errno=%d)\n",
-			path, strerror(errno), errno);
-		return -1;
-	}
-
-	j = fopen(jpath, "w");
-	if (!j) {
-		fprintf(stderr, ">>> fopen %s 失败: %s (errno=%d)\n",
-			jpath, strerror(errno), errno);
-		return -1;
-	}
-	/* fps 分母 = 文件内实际时间跨度(末包 ts - 首包 ts); 单帧文件 span=0,
-	 * 兜底 1 ms 防 0 除, 此时 fps 无物理意义但不会写出 inf。 */
-	last_i = (end_i < ring_cnt) ? end_i : ring_cnt - 1;
-	first_ts = ring_at(pre_i)->ts_ms;
-	span = ring_at(last_i)->ts_ms - first_ts;
-	if (span < 1)
-		span = 1;
-	fps = (double)nf * 1000.0 / span;
-	fprintf(j, "{\"file\":\"%s.h264\",\"trigger_seq\":%u,"
-		"\"trigger_frame_index\":%d,\"trigger_ts_ms\":%.1f,"
-		"\"first_idr_seq\":%u,\"first_idr_ts_ms\":%.1f,"
-		"\"frames\":%d,\"frame_count\":%d,\"span_ms\":%.1f,"
-		"\"width\":%u,\"height\":%u,\"fps\":%.2f,\"list\":[",
-		out, trig_seq, trig_idx, trig_ts, ring_at(pre_i)->seq,
-		ring_at(pre_i)->ts_ms, n, nf, span, w, h, fps);
-	for (i = pre_i; i <= end_i && i < ring_cnt; i++) {
-		struct rec *r = ring_at(i);
-
-		/* list 是"每包一条"; seq 与 frame_seq 都是源帧序号(多包时重复),
-		 * pkt 是该帧内第几个包。保留 seq 是为了兼容既有解析脚本。 */
-		fprintf(j, "%s{\"seq\":%u,\"frame_seq\":%u,\"pkt\":%u,\"ts_ms\":%.1f,"
-			"\"cap_ms\":%.1f,\"dq_lag_ms\":%.1f,"
-			"\"abs_ms\":%.1f,\"bytes\":%d,\"key\":%d}",
-			(i == pre_i) ? "" : ",", r->seq, r->seq, r->pkt, r->ts_ms,
-			r->cap_ms, r->ts_ms - r->cap_ms,
-			r->abs_ms, r->len, r->key);
-	}
-	fprintf(j, "]}\n");
-	if (ferror(j)) {
-		fprintf(stderr, ">>> 写 %s 失败: %s (errno=%d)\n",
-			jpath, strerror(errno), errno);
-		fclose(j);
-		return -1;
-	}
-	if (fclose(j) != 0) {
-		fprintf(stderr, ">>> fclose %s 失败: %s (errno=%d)\n",
-			jpath, strerror(errno), errno);
-		return -1;
-	}
-	printf(">>> NPU det_total=%u det_max=%u score_max=%.3f\n",
-	       g_det_total, g_det_max, (double)g_score_max);
-	if (g_rga_n)
-		printf(">>> RGA 缩放均值 Y=%.1f (%ux%u, 采样 %lu)\n",
-		       (double)g_rga_sum / g_rga_n, g_rga_w, g_rga_h, g_rga_n);
-	if (nf == n)
-		printf(">>> 写出 %s.h264 (%d 帧, 触发帧 #%d) + %s.json\n",
-		       out, n, trig_idx, out);
-	else
-		printf(">>> 写出 %s.h264 (%d 包/%d 帧, 触发帧 #%d) + %s.json\n",
-		       out, n, nf, trig_idx, out);
-	return 0;
-}
-
 /* ---------------- 阶段耗时(P9 观察项的证据) ----------------
  * 只统计 --detect 的帧, 三段严格串行在同一采集线程内:
  *   RGA 缩放 -> RKNN 推理 -> 编码(拷入编码缓冲 + OSD + 送帧到取包)
@@ -1585,7 +1460,7 @@ int main(int argc, char **argv)
 {
 	const char *dev = "/dev/video5", *out = "/root/ev/ev";
 	int w = 1920, h = 1080, pre_sec = 3, post_sec = 2, kbps = 8000, gop;
-	int i, pre_i = -1, end_i = -1;
+	int i, pre_i = -1;
 	int rc = 0;		/* 进程退出码: 0=正常, 1=真错误, 2=链路恢复失败 */
 	int reached_max = 0;	/* 因 --max-events 正常结束 */
 	int got_term;		/* 主循环退出时是否已收到 SIGTERM */
@@ -1914,7 +1789,7 @@ int main(int argc, char **argv)
 				memcpy(copy, pos, len);
 				isk = is_key(copy, (int)len);
 				/* 首个 IDR 到达即缓存参数集: DESCRIBE 的有界等待和
-				 * dump 兜底都依赖它, 不要求开 --rtsp */
+				 * RTSP 参数集缓存依赖它, 不要求开 --rtsp */
 				if (isk)
 					rtsp_scan_nals(copy, (int)len);
 				/* seq 只读: 同一帧的所有包共用 frame_seq */
@@ -2080,7 +1955,7 @@ int main(int argc, char **argv)
 				/* 触发已消费(成功或失败): 事件延长由
 				 * last_detect_ms 判定, 与触发状态无关 */
 				g_trigger = 0;
-				pre_i = end_i = -1;
+				pre_i = -1;
 				g_pre_seq = 0;
 			}
 		}
@@ -2145,8 +2020,7 @@ link_fault:
 	got_term = g_stop;
 	/* SIGTERM 且流式事件进行中: 先收尾当前事件(flush+close+rename+JSON,
 	 * close_reason=sigterm), 再停 RTSP/线程/采集。S2 后这是唯一的
-	 * 在途事件通道 —— 旧 dump 路径已死代码化(S1 移除 ring_clear 后
-	 * 只有 g_ev_fp 代表"事件在录")。 */
+	 * 在途事件通道(只有 g_ev_fp 代表"事件在录")。 */
 	if (got_term && g_ev_fp != NULL && !rc) {
 		if (evw_close("sigterm", trig_seq, trig_ts) == 0 && !g_ev_werr) {
 			printf(">>> SIGTERM: 进行中的事件已落盘 %s\n", g_ev_path);
@@ -2166,7 +2040,7 @@ link_fault:
 
 		xioctl(cap.fd, VIDIOC_STREAMOFF, &t);
 	}
-	/* SIGTERM: 优雅退出; 进行中的事件已在上面的 dump 落盘。
+	/* SIGTERM: 优雅退出; 进行中的事件已在上面收尾落盘。
 	 * 若同时已有真错误(rc!=0), 以错误码为准, 不掩盖失败。 */
 	if (got_term && !rc) {
 		printf(">>> 收到 SIGTERM, 已停止\n");
@@ -2175,21 +2049,7 @@ link_fault:
 	/* 达到 --max-events 属正常结束(事件已在循环内落盘); 落盘失败已打印过 */
 	if (reached_max || rc)
 		return rc;
-	/* 触发到 dump 之间环形可能已前移, 下标会失效 -> 用绝对 seq 重新定位 */
-	if (end_i >= 0 && g_pre_seq) {
-		for (i = 0; i < ring_cnt; i++)
-			if (ring_at(i)->seq == g_pre_seq) {
-				pre_i = i;
-				break;
-			}
-	}
-	if (pre_i < 0 || end_i < 0) {
-		fprintf(stderr, "未触发或无数据, 不落盘\n");
-		return 1;
-	}
-	if (dump(out, trig_seq, trig_ts, pre_i, end_i, w, h) < 0) {
-		fprintf(stderr, ">>> 事件落盘失败\n");
-		return 1;
-	}
-	return 0;
+	/* 触发到 dump 的旧兜底路径已删除; 保留原无数据退出行为。 */
+	fprintf(stderr, "未触发或无数据, 不落盘\n");
+	return 1;
 }

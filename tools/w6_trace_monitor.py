@@ -4,6 +4,7 @@ import argparse
 import os
 from pathlib import Path
 import re
+import secrets
 import signal
 import subprocess
 import sys
@@ -25,10 +26,9 @@ class TraceCheck:
         self.active = None
         self.hits = 0
         self.completed = 0
-        self.first_begin_epoch = None
-        self.first_end_epoch = None
-        self.version_query_epoch = None
-        self.compat_query_epoch = None
+        self.first_pid = None
+        self.version_query_failed = False
+        self.compat_query_ok = False
 
     def line(self, line):
         opened = re.search(r'openat\(.*"/dev/rga".*\)\s*=\s*(\d+)(?:</dev/rga>)?', line)
@@ -39,18 +39,17 @@ class TraceCheck:
             self.fds.discard(int(closed.group(1)))
         begin = re.search(r'write\([^\n]*"W6_BEGIN:(\d+)\\n"', line)
         end = re.search(r'write\([^\n]*"W6_END:(\d+):(\d+)\\n"', line)
-        timestamp = re.match(r'^\s*(?:\d+\s+)?(\d{9,}\.\d+)\s+', line)
-        if self.active == 0 and timestamp:
+        if self.active == 0:
             version = re.search(r'ioctl\((0x[0-9a-fA-F]+|\d+),\s*0x801c7201,.*\)\s*=\s*-1 EINVAL', line)
             compat = re.search(r'ioctl\((0x[0-9a-fA-F]+|\d+),\s*0x601b,.*\)\s*=\s*(?:0x0|0)(?:\s|$)', line)
             if version and int(version.group(1), 0) in self.fds:
-                self.version_query_epoch = float(timestamp.group(1))
+                self.version_query_failed = True
             if compat and int(compat.group(1), 0) in self.fds:
-                self.compat_query_epoch = float(timestamp.group(1))
-        if begin and int(begin.group(1)) == 0 and timestamp:
-            self.first_begin_epoch = float(timestamp.group(1))
-        if end and int(end.group(1)) == 0 and timestamp:
-            self.first_end_epoch = float(timestamp.group(1))
+                self.compat_query_ok = True
+        if begin and int(begin.group(1)) == 0:
+            pid = re.match(r'^\s*(\d+)\s+', line)
+            if pid:
+                self.first_pid = int(pid.group(1))
         if begin:
             if self.active is not None or int(begin.group(1)) != self.completed:
                 raise ValueError('unexpected RGA begin marker')
@@ -83,36 +82,67 @@ def kernel_problem(line, since):
 
 
 class KernelWatch:
-    """Allow at most one exact RGA init message, correlated to first traced frame."""
-    def __init__(self, since, epoch_at_boot):
-        self.since = since
-        self.epoch_at_boot = epoch_at_boot
-        self.rga_time = None
+    """Use token/PID-tagged kernel records, never compare different clocks."""
+    def __init__(self, token):
+        self.token = token
+        self.started = False
+        self.init_state = 'before'
+        self.init_pid = None
+        self.rga_count = 0
 
     def line(self, line):
         stamp = STAMP.search(line)
-        if stamp and float(stamp.group(1)) < self.since:
+        message = line[stamp.end():].strip() if stamp else ''
+        if message == 'W6_TRIAL:%s:START' % self.token:
+            if self.started:
+                return 'repeated W6 trial marker'
+            self.started = True
             return None
+        if not self.started:
+            return None
+        marker = re.fullmatch(r'W6_INIT:([0-9a-f]{32}):(\d+):(BEGIN|END)', message)
+        if marker and marker.group(1) == self.token:
+            pid = int(marker.group(2))
+            if marker.group(3) == 'BEGIN' and self.init_state == 'before' and pid > 0:
+                self.init_pid = pid
+                self.init_state = 'inside'
+            elif marker.group(3) == 'END' and self.init_state == 'inside' and pid == self.init_pid:
+                self.init_state = 'after'
+            else:
+                return 'invalid or repeated W6 initialization marker'
+            return None
+        if self.token in message and ('W6_INIT:' in message or 'W6_TRIAL:' in message):
+            return 'malformed W6 kernel marker'
         exact = re.fullmatch(r'\s*kern\s*:\s*err\s*:\s*\[\s*(\d+(?:\.\d+)?)\]\s*rga2: unknown ioctl cmd!\s*', line)
         if exact:
-            if self.rga_time is not None:
+            self.rga_count += 1
+            if self.rga_count > 1:
                 return 'repeated RGA unknown ioctl kernel error'
-            self.rga_time = float(exact.group(1)) + self.epoch_at_boot
+            if self.init_state != 'inside':
+                return 'RGA unknown ioctl outside initialization markers'
             return None
-        return kernel_problem(line, self.since)
+        return kernel_problem(line, float('-inf'))
 
     def validate(self, check, final=False):
-        if self.rga_time is None:
-            return
-        if check.first_begin_epoch is None or check.first_end_epoch is None:
-            if final:
-                raise ValueError('RGA init error cannot be correlated to first frame')
-            return
-        if not check.first_begin_epoch <= self.rga_time <= check.first_end_epoch:
-            raise ValueError('RGA unknown ioctl outside first-frame initialization')
-        if (check.version_query_epoch is None or check.compat_query_epoch is None or
-                not check.version_query_epoch <= self.rga_time <= check.compat_query_epoch):
-            raise ValueError('RGA unknown ioctl not correlated to version probe')
+        if final and (not self.started or self.init_state != 'after'):
+            raise ValueError('missing W6 kernel initialization markers')
+        if check.completed:
+            if self.init_pid is not None and check.first_pid != self.init_pid:
+                raise ValueError('kernel marker PID differs from traced process')
+            if self.rga_count and not (check.version_query_failed and check.compat_query_ok):
+                raise ValueError('RGA initialization lacks traced version/compatibility queries')
+        elif final:
+            raise ValueError('first frame did not complete')
+
+
+def write_kmsg(message):
+    data = ('<6>' + message + '\n').encode('ascii')
+    fd = os.open('/dev/kmsg', os.O_WRONLY | os.O_CLOEXEC)
+    try:
+        if os.write(fd, data) != len(data):
+            raise OSError('short W6 kernel marker write')
+    finally:
+        os.close(fd)
 
 
 def app_problem(line):
@@ -178,8 +208,8 @@ def run(mode, root, binary, expected_boot, service_pid, duration, temperature, m
     kern = out / 'kernel.log'; kernerr = out / 'kernel.stderr'
     service_start = proc_start(service_pid)
     since = time.clock_gettime(time.CLOCK_BOOTTIME)
-    epoch_at_boot = time.time() - time.clock_gettime(time.CLOCK_BOOTTIME)
-    watch = KernelWatch(since, epoch_at_boot)
+    token = secrets.token_hex(16)
+    watch = KernelWatch(token)
     check = TraceCheck()
     tails = {p: Tail(p) for p in (trace, appout, apperr, kern)}
     reason = 'internal error'
@@ -189,15 +219,16 @@ def run(mode, root, binary, expected_boot, service_pid, duration, temperature, m
         try:
             check_resources(root, temperature, max_temp, reserve_bytes, reserve_inodes)
             if find_d_state(): raise ValueError('D-state process before trial')
+            env = os.environ.copy(); env['RUNS'] = '1'; env['W6_TOKEN'] = token
             logger = subprocess.Popen(['stdbuf', '-oL', 'dmesg', '-x', '-w'],
-                                      stdout=kl, stderr=ke, stdin=subprocess.DEVNULL)
+                                      stdout=kl, stderr=ke, stdin=subprocess.DEVNULL, env=env)
             time.sleep(.2)
             if logger.poll() is not None:
                 raise ValueError('kernel log monitor could not start')
+            write_kmsg('W6_TRIAL:%s:START' % token)
             cmd = ['strace', '-f', '-ttt', '-yy', '-s', '160', '-e', 'trace=write,ioctl,openat,close',
                    '-e', 'raw=ioctl', '-o', str(trace), 'stdbuf', '-oL', '-eL', str(binary),
                    mode, '30', '/dev/video5']
-            env = os.environ.copy(); env['RUNS'] = '1'
             target = subprocess.Popen(cmd, cwd=str(out), env=env, stdout=ao, stderr=ae,
                                       stdin=subprocess.DEVNULL, start_new_session=True)
             deadline = time.monotonic() + duration
@@ -239,7 +270,7 @@ def run(mode, root, binary, expected_boot, service_pid, duration, temperature, m
                             if problem: raise ValueError('application error: ' + problem)
                     if target.returncode != 0: raise ValueError('test process exit %d' % target.returncode)
                     check.finish(30)
-                    watch.validate(check, final=True)
+                    watch.validate(check)
                     reason = 'complete; hardware submissions observed, hidden CPU work not excluded'
                     break
                 if time.monotonic() >= deadline: raise ValueError('trial timeout')
@@ -262,11 +293,29 @@ def run(mode, root, binary, expected_boot, service_pid, duration, temperature, m
             if problem and reason.startswith('complete;'):
                 reason = 'new kernel error: ' + problem
         if reason.startswith('complete;'):
-            try: watch.validate(check, final=True)
+            try: watch.validate(check)
             except ValueError as exc: reason = str(exc)
+    # A fresh snapshot catches records not drained by the follower at process exit.
+    with (out / 'kernel-final.log').open('xb') as final_log:
+        snapshot = subprocess.run(['dmesg', '-x'], stdout=final_log, stderr=subprocess.PIPE)
+    if reason.startswith('complete;'):
+        final_watch = KernelWatch(token)
+        try:
+            if snapshot.returncode:
+                raise ValueError('final kernel snapshot failed')
+            for line in (out / 'kernel-final.log').read_text(errors='replace').splitlines():
+                problem = final_watch.line(line)
+                if problem:
+                    raise ValueError('new kernel error: ' + problem)
+            final_watch.validate(check, final=True)
+            watch = final_watch
+        except ValueError as exc:
+            reason = str(exc)
     with (out / 'monitor.txt').open('x') as f:
-        f.write('mode=%s\nboot_time_start=%.6f\nobserved_rga_frames=%d\nreason=%s\n' %
-                (mode, since, check.completed, reason))
+        f.write('mode=%s\nboot_time_start=%.6f\ntoken=%s\nobserved_rga_frames=%d\n'
+                'init_pid=%s\ninit_state=%s\nrga_init_errors=%d\nreason=%s\n' %
+                (mode, since, token, check.completed, watch.init_pid, watch.init_state,
+                 watch.rga_count, reason))
     return 0 if reason.startswith('complete;') else 2
 
 

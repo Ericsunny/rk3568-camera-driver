@@ -1,0 +1,5 @@
+Capture commands: v4l2-ctl -d /dev/video0 --stream-mmap=4 --stream-count=30; same with --stream-count=2 --stream-to=two.raw
+Both command return codes observed: 0
+two.raw bytes: 5013504
+frame0 bytes=2506752 sha256=f7269b2b0ffcf0223e5421431ff76819232d44dd4a9145c78af6098b3498450d unique_bytes=256 nonzero=2476952
+frame1 bytes=2506752 sha256=74a8896940284ae32628593d7706b438fd0da224429f712bf89b9567d57ac887 unique_bytes=256 nonzero=2477037

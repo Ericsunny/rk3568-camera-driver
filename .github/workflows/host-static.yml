@@ -57,6 +57,9 @@ jobs:
       - name: evrec 故障注入夹具主机集成测试(不访问设备)
         run: python3 tools/tests/test_evrec_preload.py
 
+      - name: evrec QBUF/RGA 链接包装主机测试(不访问设备)
+        run: python3 tools/tests/test_evrec_device_fault.py
+
       - name: 补丁 unified diff 语法检查(不验证可应用性)
         run: |
           for p in driver/patches/*.patch; do

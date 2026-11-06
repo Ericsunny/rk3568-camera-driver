@@ -1,0 +1,17 @@
+>>> 采集 /dev/video5 3840x2160,pre=1s post=2s ring=64MB gop=22
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=13
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=13
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=13
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=13
+rtsp-ring: in=69 evict=39 depth=30 bytes=0.54/8MB tags=[39,69)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=13
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=13
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=13
+[evw] open event_id=1 last_pkts=113 pushed=113
+>>> 触发 seq=112 ts=8003.7ms -> pre_i=88 pre_seq=88 (ring_cnt=113 head=0 pushed=113)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=144 evict=114 depth=30 bytes=0.43/8MB tags=[114,144)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=14
+>>> 事件 1 完成(1 段, target_left)

@@ -27,6 +27,7 @@ flowchart LR
 
 - **相机驱动与采集：** OV8858 V4L2 subdev 驱动包含 I²C 寄存器访问、上电时序、格式和开关流等路径。调试时曾因实际物理口与假设的 I²C 总线不一致而走弯路；核对接线和设备拓扑后再定位问题。[驱动源码](driver/ov8858_sm/ov8858_sm.c) · [I²C 排障记录](docs/bringup/i2c-debug.md) · [寄存器与厂商驱动对照](docs/bringup/driver-comparison.md)
 - **事件录像与流媒体：** `evrec` 将编码数据写入有界环形缓冲，按事件保存前后片段；`rtsp_hub` 为客户端维护独立游标，并处理慢客户端。[事件录像](tools/evrec.c) · [RTSP 实现](tools/rtsp_hub.c) · [录像设计与验证](docs/pipeline/event-recording.md)
+- **录像示例：** [观看 MP4](evidence/2026-11-06-event-demo/event.mp4) · [板端录像与封装记录](evidence/2026-11-06-event-demo/README.md)。示例为手动触发；MP4 使用近似帧率封装。
 - **线程与缓冲区：** `camd` 使用有界队列将采集帧交给消费者，并通过引用计数管理 V4L2 buffer 的归还。采集、检测和事件处理的容量与失败恢复是独立问题。[采集与队列源码](tools/camd.c) · [可靠性记录](docs/stability/reliability.md)
 - **内核问题定位：** 基于启动日志与调用链，定位并修复了传感器格式协商触发的内核空指针异常；记录还覆盖运行时电源管理和错误路径。[启动 panic 复盘](docs/runbook/boot-recovery.md) · [内核问题记录](docs/stability/kernel-issues.md)
 

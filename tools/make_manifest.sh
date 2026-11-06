@@ -1,6 +1,6 @@
 #!/bin/sh
 # make_manifest.sh —— 生成"版本清单"manifest(可复现性的单一事实来源)
-# 用法: sh tools/make_manifest.sh > docs/manifest.md   (或直接提交生成结果)
+# 用法: sh tools/make_manifest.sh > docs/acceptance/manifest.md   (或直接提交生成结果)
 # 作用: 把仓库内所有非源码资产(模型/固件引用/二进制证据)与关键源文件的
 #       md5 固化成清单; 板端对应用 tools/verify_manifest.sh 逐项核对。
 set -e

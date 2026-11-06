@@ -1,5 +1,7 @@
 # zerocopy —— V4L2 零拷贝:EXPBUF → dmabuf → RGA → NPU
 
+> 下文是历史实验，不等同于当前 `camd` 或 `evrec` 的数据路径。`0 B` 指实验统计的指定 CPU 拷贝点，不代表设备没有读写内存。输出 native 后续字节对照出现差异并回退，参见 [输出对照](../evidence/2026-10-25-质量保障线/fv_ab2.json)；当前 `camd --npu-native` 仅输入为 native，输出仍通过 `rknn_outputs_get`。
+
 把相机帧从"采集 → memcpy → CPU 缩放 → 喂 NPU"改成"**VB2 缓冲直接导出 dmabuf → RGA 硬件缩放 → NPU 直接消费**",并用可复现的数字量化收益。
 
 载体:**IMX415 的 NV12 流**(`/dev/video5`,rkisp mainpath,3840×2160);消费端:yolov8n RKNN(输入 640×640 int8)。

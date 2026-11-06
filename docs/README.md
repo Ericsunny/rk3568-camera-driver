@@ -1,20 +1,28 @@
-# 文档入口
+# 文档索引
 
-建议先看仓库首页，再按需要阅读以下记录。每份报告对应产生时的源码、设备和环境；历史数字不能自动当成当前版本结果。
+从 [项目首页](../README.md)了解双摄链路与能力边界；下面按阅读目的查找。历史实验对应记录中的版本和环境，不自动代表当前板端状态。
 
-## 驱动与采集
+## 了解系统
 
-- [I²C 物理口与总线映射排障](09-L1A-I2C调试复盘-物理口与总线映射.md)
-- [OV8858 驱动与厂商寄存器对照](17-L1-B对照报告-自写驱动vs厂商.md)
-- [异构双摄采集](19-L3异构双摄报告.md)
-- [内核问题定位与修复记录](28-内核问题闭环.md)
+- [相机采集与软件链路](overview/architecture.md)：两路传感器、采集、录像与推流之间的关系。
+- [双摄采集记录](pipeline/dual-camera.md)：两路格式、采集实验及结果边界。
+- [历史结果与验证范围](acceptance/summary.md)：重要验收记录及尚未覆盖的内容。
 
-## 应用、流媒体与验证
+## 驱动开发与问题定位
 
-- [事件录像设计和实测](32-事件录像.md)
-- [RTSP 多客户端设计](38-多客户端RTSP入口统一设计.md) · [历史板测](../evidence/2026-10-29-H5板测/README.md)
-- [采集线程、队列与可靠性](29-可靠性工程.md)
-- [版本、3A 与复现环境](35-验收环境与复现命令.md)
-- [源码体检及验证边界](40-全仓体检报告.md)
+- [I²C 物理口和总线排查](bringup/i2c-debug.md) · [获取第一帧](bringup/first-frame.md)
+- [OV8858 驱动与厂商驱动对照](bringup/driver-comparison.md) · [开发环境与操作记录](bringup/hardware-guide.md)
+- [内核问题记录](stability/kernel-issues.md) · [启动故障与恢复](runbook/boot-recovery.md)
 
-其他文件包含早期实验笔记和环境记录，部分内容已被后续实验修正。[历史首页](https://github.com/Ericsunny/rk3568-camera-driver/blob/b2755646941c2cc3aa1fab1aa3f4d1fa273fa42c/README.md)保留原来的文档索引。
+## 录像、推流与图像
+
+- [事件录像实现](pipeline/event-recording.md) · [事件治理](pipeline/event-governance.md) · [RTSP 多客户端](pipeline/rtsp-multiclient.md)
+- [白平衡实验](image/awb.md) · [图像质量](image/image-quality.md) · [高光与动态范围](image/dynamic-range.md) · [HDR 实验](image/hdr-research.md)
+- [启动与服务](deployment/service.md) · [稳定性与可靠性](stability/README.md)
+
+## 复现与历史材料
+
+- [验收环境和历史命令](acceptance/reproduction.md)：运行前重新核对设备和版本，不直接照抄旧命令。
+- [事件录像演示与待执行的板测计划](acceptance/recording-demo-plan.md)。
+- [当前源码与验证范围](acceptance/source-status.md)：区分已做的主机检查和待板测内容。
+- [旧编号对照](overview/document-history.md)：查找历史记录中提到的文档编号。

@@ -1,6 +1,6 @@
 # 2026-10-28 事件治理 S1+S2 板上验证
 
-分支 `feature/event-governance`(@8034d9c),设计见 `docs/37-事件治理设计.md`。
+分支 `feature/event-governance`(@8034d9c),设计见 [事件治理设计](../../docs/pipeline/event-governance.md)。
 
 ## S1(last_detect_ms 延长判定)+ S2(流式写入)实现摘要
 

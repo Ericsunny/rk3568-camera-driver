@@ -17,6 +17,18 @@ prepare_spec.loader.exec_module(prepare_module)
 
 
 class TraceTest(unittest.TestCase):
+    def test_source_generator_handles_c_format_placeholders(self):
+        source = 'int main() {\n' + '\n'.join(
+            'fprintf(stderr, "W6_BEGIN:%d\\n", f);\n'
+            'fprintf(stderr, "W6_END:%d:%d\\n", f, (int)' + status + ');'
+            for status in ('w6_status', 'w6_status', 'st')) + '\n}\n'
+        generated = prepare_module.prepare(source)
+        self.assertEqual(generated.count('w6_init_marker("BEGIN")'), 3)
+        self.assertEqual(generated.count('w6_init_marker("END")'), 3)
+        self.assertIn('W6_END:%d:%d\\n', generated)
+        with self.assertRaisesRegex(ValueError, 'already instrumented'):
+            prepare_module.prepare(generated)
+
     def test_successful_ioctl_between_each_marker(self):
         check = w6.TraceCheck()
         check.line('123 openat(AT_FDCWD, "/dev/rga", O_RDWR) = 7</dev/rga>')

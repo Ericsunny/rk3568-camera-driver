@@ -1,44 +1,26 @@
-# AGENTS.md — rk3568-camera-driver 工作约定(给 Codex / 任何 AI 编码代理)
+# 项目维护与学习约定
 
-> 本仓库 = RK3568 相机子系统工程:自写 OV8858 V4L2 subdev 驱动 + 采集/检测/事件录像应用 evrec + 全部实测证据(evidence/)。
-> **文档是唯一事实源**:代理的个人记忆不随仓库迁移,一切以 docs/ 与 git log 为准;本文件只做入口与纪律。
+目标是帮助项目维护者应聘嵌入式 Linux / Camera 实习：仓库要让读者理解真实系统、关键问题和验证边界；学习与练习要提高本人解释、编程和排障的能力。
 
-## 铁律(任何一条冲突即停手问用户)
+## 工作重点
 
-1. **不 force-push、不改写已推送历史**;打 tag / 发 Release / 合并 PR 必须用户明确批准。
-2. **刷写类操作逐次请批**:覆盖 /boot、分区、bootloader、整片 eMMC 都算;/boot 历史上只允许过"覆盖 Image 文件"这一种。
-3. **代码改动**走 `feature/*`、`fix/*` 分支 + PR 进 main;**docs/ 编号文档的新增/修订、README 数字同步、只读体检的报告文件,按仓库惯例可直接提交 main**(历届会话如此);CI 红了先修 CI 再谈合并。
-4. 提交/推送前跑 `tools/check_secrets.sh`(本地脚本,.gitignore 已排除):evidence/ 历史日志曾混入出厂默认凭据,新增证据**必须先脱敏再入库**。
-5. 板子与 PC 是共享硬件:**串口独占**(COM7,用前确认 MobaXterm/putty 已断开);板上危险命令(rm -rf、dd、flash 写)逐条请批。
-6. 结论措辞克制:不写"永久""全部排除""必然";只写证据支撑得住的口径(用户 review 逐项核对数字,极严)。
+1. 优先帮助维护者掌握项目全貌，再围绕驱动、V4L2 buffer、C/C++ 与多线程、H.264/RTSP 和真实故障做短练习与追问。先参考已有学习记录，不把看过文档、AI 的回答或历史板测当作本人独立掌握。
+2. 先整理已有源码和证据，再决定是否需要一次小范围复现或改进。长期压力测试、零拷贝根因深挖、为数量而做的文档重排、重复核对非关键数字，不作为求职前置条件。
+3. README 以系统、关键实现、可核对的案例和已知边界为入口；详细实验留在文档和 evidence。旧的交接任务和验收清单是历史记录，不自动成为当前待办。
+4. AI 参与代码、分析和文档要如实说明；个人贡献以可核实的实际参与为准。尚未核实的经历标记待确认，不推测或代写成独立完成。
 
-## 环境地图(Windows 主机)
+## 基本安全与真实性
 
-| 项 | 值 |
-|---|---|
-| 真板 | `ssh rkboard`(192.168.10.2,Linux);串口 **COM7 @ 1500000**,工具 `D:\tools\serial-console\board.py`(子命令 ports/probe/run/send/listen) |
-| 编译 VM | `ssh rk3568`(192.168.10.3,x86 Ubuntu 20);内核树 `~/rk3568/RK_SDK/kernel` |
-| 内核产物 | sensor/rkcif 驱动**内建 =y,不可 insmod**:改驱动必须重编 Image 并覆盖 /boot/Image;板上时钟漂移会让 make 拒编,先 `date -s` 校钟 |
-| 板端 evrec | `gcc -DHAVE_RKNN -DHAVE_RGA -lm`;rknn_api.h 补到 /usr/include;librknnrt 2.3.2(与模型配套,勿动);板端后台常驻用 nohup+disown |
-| TFTP | PC `D:\vm\tftp_serverd.py`(计划任务常驻;PC 重启后 bind 失败→重拉即愈) |
-| ffmpeg | `D:\vm\rk_recovery\ffbin\`(ffprobe/拉流/解码测试用) |
-| gh CLI | `C:\Users\Administrator\AppData\Local\Programs\gh\bin\gh.exe`(已登录 keyring,HTTPS 走代理;**不在默认 PATH**,沙箱里用全路径或先 export) |
-| 板约束 | 板无公网(apt 不可用,GitHub 慢→主机 curl 下载再 scp);/tmp 是 tmpfs 重启清空;**scp 后必须 md5 双端核对**(scp 有静默失败前科) |
+- 不编造测试、指标、个人贡献或验证状态。区分现有代码、历史版本的实测、主机替身和当前板端结果；保留失败记录与证据来源。
+- 保留其他人的未提交工作；不改写已推送历史、不 force-push。提交前检查变更和敏感信息，能运行时使用 `tools/check_secrets.sh`。
+- 共享板卡的服务、串口和现役数据先确认状态。刷写、覆盖启动文件、分区操作和可能破坏数据的命令逐项获得用户授权；不擅自停止 3A。使用独立路径测试，scp 后核对两端哈希。
+- 测试与文档投入应与风险和收益相称。板端异常按现场情况保留证据并停止有风险的后续操作，不为追求完美结果不断扩大实验范围。
 
-## 已知坑(前科实锤,别再踩)
+## 环境与入口
 
-- U-Boot autoboot 倒计时 **0 秒**:事后补发按键必然错过;拦截必须从 `reboot` 发出那一刻起持续灌键,现成脚本 `tools/uboot_catch.py`(灌 回车/Ctrl+C,见到 `=>` 立即收手)。
-- dash 不支持 `${var:0:8}`(整脚本 exit 2);`pgrep -x` 有 15 字符截断(comm 只保留前 15),查长名进程用 `pgrep -f`。
-- python `s.replace` 无 assert 静默失败——任何文本替换后必须验证产物含预期字符串。
-- 在线 API 查 commit 数可能拿到过期缓存;**commit 数以 `git rev-list --count HEAD` 为准**。
-- `ssh` 别名必须用别名本身(rkboard/rk3568);裸 IP 会撞 Host key verification failed。
-
-## 文档地图(docs/ 是事实源,按需读,不要通读)
-
-- **`docs/39` = 交接快照与任务队列,从这里开始**(现状、板子状态、T1-T5、挂起件清单)。
-- 编号 08–40(缺 00–07/11/13–15,31 两份——整理待批);入口推荐:39(交接)、34(终极验收)、16(动手手册,GPIO/上电时序/I2C)、29(V4L2 节点归属)、35(3A 运行口径)、36–38(启动故障根因、事件治理、多客户端)、40(全仓体检)。
-- `evidence/`:逐次实验原始日志,**只增不改**;README 首屏读数与仓库实况要同步(历史上 CI 核对过,改文档记得带 README)。
-
-## 当前任务队列
-
-→ `docs/39` §2。做完一件更新一件:代码/文档/证据同一批 commit;任务状态、板子状态、README 首屏读数三处同步。
+- 真板：`ssh rkboard`；编译 VM：`ssh rk3568`，VM 内核树为 `~/rk3568/RK_SDK/kernel`。串口 COM7 @ 1500000 使用前确认没有被其他程序占用，工具为 `D:\tools\serial-console\board.py`。
+- 板卡的 sensor/rkcif 驱动内建于内核；源码变更、构建、部署和实机验证是不同状态。不要仅凭源码推断当前板端版本。
+- 板端 `/tmp` 重启后清空，后台常驻程序使用 `nohup` 和 `disown`；`dash` 不支持 Bash 的 `${var:0:8}`，长进程名查询使用 `pgrep -f` 并确认 PID。编译前核对板钟，网络访问使用 `rkboard` / `rk3568` 别名。
+- 上次已记录的 W6 测试因观察到 D 状态而停止，见 [PR #20](https://github.com/Ericsunny/rk3568-camera-driver/pull/20)；这只是历史状态，不据此假定板卡现在仍处于同一状态。
+- `docs/README.md` 是阅读入口；`docs/39-交接快照与任务队列.md`、`docs/41-板测窗口实验设计.md` 保存过去的计划和实验约束，不能覆盖用户新目标。
+- 现有证据在 `evidence/`。新增记录检查敏感信息，既有记录不为美化叙述而改写。GitHub main、工作分支和未合并 PR 要分开描述。

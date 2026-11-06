@@ -1,8 +1,8 @@
 # ov8858_sm —— 从 datasheet 写的 OV8858 V4L2 subdev 驱动
 
-OmniVision **OV8858**(8MP,2-lane MIPI CSI-2,R2A 版本)的裸写 sensor 驱动,跑在 RK3568 + Linux 4.19.232 上,接 `rkcif`(V4L2 CIF)链路。
+OmniVision **OV8858**(8MP,2-lane MIPI CSI-2,R2A 版本)的 sensor 驱动，接 RK3568 + Linux 4.19 厂商 BSP 的 `rkcif` 链路。下方结果是历史板端测试，不能直接视为当前源码的部署或板测结果；近期改动见 [代码审查记录](../../docs/40-全仓体检报告.md)。
 
-- 驱动本体 **666 行**(`ov8858_sm.c`)+ 寄存器表 **449 行**(`ov8858_sm_regs.h`)
+- 驱动本体为 `ov8858_sm.c`，寄存器表为 `ov8858_sm_regs.h`；源码行数随版本变化。
 - **编进内核**(`CONFIG_VIDEO_OV8858_SM=y`),不是模块 —— 4.19 的 async 是自底向上链式,sensor 晚加载永远配不上已经 probe 完的桥
 - 支持两种模式:**1632×1224**(2×2 binning,厂商表)和 **1920×1080**(自推,全阵列读出+裁窗)
 
@@ -96,5 +96,5 @@ p = np.stack([(g[:,:,0]<<2)|(g[:,:,4]&3),  (g[:,:,1]<<2)|((g[:,:,4]>>2)&3),
 
 ## 已知问题
 
-- 1080p 下每帧打一条 `rockchip-mipi-csi2: ERR1: error matching frame start with frame end`。来自 Synopsys DW CSI-2 主控的 `err_bndry_match` 字段;该 SDK 在 CSI-2 路径上 `MSK1=0`(全开),只有 DSI-RX 才屏蔽这一位。CIF 侧 `all err count: 0`、`frame dma end` 满帧,数据通路无影响。
+- 历史 1080p 测试中每帧打一条 `rockchip-mipi-csi2: ERR1: error matching frame start with frame end`。当时 CIF 侧 `all err count: 0`、`frame dma end` 满帧；这不能证明该告警在所有场景下都无影响。
 - 只验证 R2A + 2-lane 这一种组合。

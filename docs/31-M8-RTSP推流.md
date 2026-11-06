@@ -16,7 +16,7 @@
 | MPP 运行库 | `/usr/lib/aarch64-linux-gnu/librockchip_mpp.so`(有 `.so.0`/`.so.1`) |
 | 头文件 | `/usr/include/rockchip/rk_mpi.h`、`mpp_frame.h`、`mpp_packet.h`、`mpp_buffer.h` |
 | 内核节点 | `/dev/mpp_service`;编码器 `mpp_rkvenc fdf40000.rkvenc` 已 probe |
-| ffmpeg / gstreamer | **都没有**(板上无 ffmpeg、无 gst-launch) |
+| ffmpeg / gstreamer | M8 实验时记录为没有；2026-11-06 板端只读检查已找到 `/usr/bin/ffmpeg`，当前可用功能需运行前另行检查。gst-launch 现状未核验 |
 | RTSP 服务端 | **没有** mediamtx / live555 / vlc |
 
 结论:编码库有、播放器生态没有。所以 RTSP 服务端必须自己实现,不能依赖现成组件。

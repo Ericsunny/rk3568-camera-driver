@@ -1,5 +1,11 @@
 # tools
 
+> 本文含历史实验命令及当时的设备状态；执行前请核对当前代码和现场环境。覆盖 `/boot`、重启或替换现役库会影响共享设备，需事先获得授权。历史数字与验证不自动适用于当前版本。
+
+## `h264_to_mp4.py` —— 离线封装
+
+`python tools/h264_to_mp4.py input.h264 output.mp4 --fps 15` 使用 FFmpeg 复制裸 H.264 码流到 MP4，并用 FFprobe 比较解码帧数。必须自行提供近似恒定帧率；无法恢复原始采集时间戳，帧数一致也不能证明时间或画面完全正确。工具拒绝覆盖已有文件；封装失败或帧数不匹配时输出不可用。输入和输出的验证范围及演示计划见 [事件录像演示计划](../docs/42-事件录像演示与板测计划.md)。
+
 ## `iq_patch_smartrun.py`
 
 给 Rockchip RK AIQ 的 IQ json 补上 AWB 的 `smartRun` 校准块。
@@ -183,7 +189,7 @@ gcc -O2 -pthread -DHAVE_RGA -DHAVE_RKNN \
 
 两个必须知道的约束:
 
-- 输入/输出**都要用 `RKNN_QUERY_NATIVE_*_ATTR` + `pass_through=1`**;混用 native 输入与普通输出属性会 SIGBUS。
+- 历史全 native 实验涉及输入和输出的 native 属性；当前 `--npu-native` 只针对输入，输出通过 `rknn_outputs_get`。不要把历史全 native 的约束直接套成当前程序所有模式的要求。
 - 停采集只能 `kill -TERM`。`kill -9` 打正在出流的进程会让 ISP 卡死(`rkisp_stream_stop timeout`),只能断电重启。
 - 卡死后看 `/root/camd_stage.log`(`cap seq=` / `rga in` / `rga out st=` / `npu run in|out`),能定位死在哪一步。
 

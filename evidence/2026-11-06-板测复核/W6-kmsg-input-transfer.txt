@@ -1,0 +1,4 @@
+PC / board MD5 matched; scp exit 0.
+c33e8e67894c049f30fed0231985029d  zc_npu_kmsg
+3501b747aee5d5ccd02855ee163b325e  zc_npu_kmsg.cpp
+e29582ab22abdd54fccec6bebffd5eed  source.patch

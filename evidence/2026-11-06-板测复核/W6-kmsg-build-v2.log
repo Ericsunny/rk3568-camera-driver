@@ -1,0 +1,59 @@
+host_utc=2026-11-06T01:36:11.650629+00:00
+command:
+set -eu
+cd /root/camera-window/review-20261106-w6-kmsg-d1d6238
+printf 'INPUT_MD5\n'; md5sum w6_trace_monitor.py w6_kmsg_prepare.py zc_npu_w6.cpp
+python3 w6_kmsg_prepare.py zc_npu_w6.cpp zc_npu_kmsg.cpp
+diff -u zc_npu_w6.cpp zc_npu_kmsg.cpp > source.patch || test "$?" = 1
+printf 'COMMAND\n%s\n' 'g++ -O2 -Wall -I/usr/include/rga -I/root/npu/3rdparty/rknpu2/include -o zc_npu_kmsg zc_npu_kmsg.cpp -lrga -lrknnrt -lpthread'
+g++ -O2 -Wall -I/usr/include/rga -I/root/npu/3rdparty/rknpu2/include -o zc_npu_kmsg zc_npu_kmsg.cpp -lrga -lrknnrt -lpthread
+printf 'BUILD_MD5\n'; md5sum zc_npu_kmsg.cpp zc_npu_kmsg source.patch
+printf 'LINKS\n'; ldd zc_npu_kmsg
+printf 'DATE\n'; date -Ins
+
+stdout:
+INPUT_MD5
+d015edae37e7f158a21346fc680a2f1c  w6_trace_monitor.py
+05cec7b4061cdd7d193552595927c53d  w6_kmsg_prepare.py
+dbecf7d37e33f0be0ef992f77e1ebe76  zc_npu_w6.cpp
+created isolated kernel-marker W6 source: zc_npu_kmsg.cpp
+COMMAND
+g++ -O2 -Wall -I/usr/include/rga -I/root/npu/3rdparty/rknpu2/include -o zc_npu_kmsg zc_npu_kmsg.cpp -lrga -lrknnrt -lpthread
+BUILD_MD5
+3501b747aee5d5ccd02855ee163b325e  zc_npu_kmsg.cpp
+c33e8e67894c049f30fed0231985029d  zc_npu_kmsg
+e29582ab22abdd54fccec6bebffd5eed  source.patch
+LINKS
+	linux-vdso.so.1 (0x0000007fbd8b3000)
+	librga.so.2 => /lib/aarch64-linux-gnu/librga.so.2 (0x0000007fbd816000)
+	librknnrt.so => /lib/librknnrt.so (0x0000007fbd0a6000)
+	libpthread.so.0 => /lib/aarch64-linux-gnu/libpthread.so.0 (0x0000007fbd075000)
+	libstdc++.so.6 => /lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000007fbce90000)
+	libm.so.6 => /lib/aarch64-linux-gnu/libm.so.6 (0x0000007fbcde5000)
+	libgcc_s.so.1 => /lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000007fbcdc1000)
+	libc.so.6 => /lib/aarch64-linux-gnu/libc.so.6 (0x0000007fbcc4e000)
+	/lib/ld-linux-aarch64.so.1 (0x0000007fbd883000)
+	libdl.so.2 => /lib/aarch64-linux-gnu/libdl.so.2 (0x0000007fbcc3a000)
+DATE
+2026-11-06T09:36:09,359716956+08:00
+
+stderr:
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+zc_npu_kmsg.cpp: In function ‘int decode_yolov8(rknn_tensor_attr*, int8_t**, std::vector<box>&)’:
+zc_npu_kmsg.cpp:98:20: warning: comparison of integer expressions of different signedness: ‘uint32_t’ {aka ‘unsigned int’} and ‘int’ [-Wsign-compare]
+   98 |   if (acls.dims[2] != gh || ascr.dims[2] != gh) continue;
+      |       ~~~~~~~~~~~~~^~~~~
+zc_npu_kmsg.cpp:98:42: warning: comparison of integer expressions of different signedness: ‘uint32_t’ {aka ‘unsigned int’} and ‘int’ [-Wsign-compare]
+   98 |   if (acls.dims[2] != gh || ascr.dims[2] != gh) continue;
+      |                             ~~~~~~~~~~~~~^~~~~
+zc_npu_kmsg.cpp:92:6: warning: variable ‘n’ set but not used [-Wunused-but-set-variable]
+   92 |  int n = 0;
+      |      ^
+zc_npu_kmsg.cpp: In function ‘int main(int, char**)’:
+zc_npu_kmsg.cpp:307:25: warning: variable ‘last_boxes’ set but not used [-Wunused-but-set-variable]
+  307 |   int total = 0; size_t last_boxes = 0;
+      |                         ^~~~~~~~~~
+
+exit=0

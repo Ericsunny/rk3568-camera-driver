@@ -1,0 +1,8 @@
+mode=a
+boot_time_start=1576.905923
+token=7a05704d6d6baadb5f2bc02237ffc585
+observed_rga_frames=0
+init_pid=92541
+init_state=after
+rga_init_errors=1
+reason=D-state process detected: 92541

@@ -1,0 +1,390 @@
+static	Set up job	﻿2026-11-06T01:35:30.1674159Z Current runner version: '2.338.2'
+static	Set up job	2026-11-06T01:35:30.1700047Z ##[group]Runner Image Provisioner
+static	Set up job	2026-11-06T01:35:30.1700986Z Hosted Compute Agent
+static	Set up job	2026-11-06T01:35:30.1701779Z Version: 20261028.624
+static	Set up job	2026-11-06T01:35:30.1702492Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+static	Set up job	2026-11-06T01:35:30.1703402Z Build Date: 2026-10-28T21:51:42Z
+static	Set up job	2026-11-06T01:35:30.1704194Z Worker ID: {2157b00a-145e-46ae-9025-2549a3d8f3c3}
+static	Set up job	2026-11-06T01:35:30.1704939Z Region: westus3
+static	Set up job	2026-11-06T01:35:30.1705829Z Cloud: Azure
+static	Set up job	2026-11-06T01:35:30.1706436Z ##[endgroup]
+static	Set up job	2026-11-06T01:35:30.1707847Z ##[group]Operating System
+static	Set up job	2026-11-06T01:35:30.1708665Z Ubuntu
+static	Set up job	2026-11-06T01:35:30.1709253Z 24.04.5
+static	Set up job	2026-11-06T01:35:30.1709866Z LTS
+static	Set up job	2026-11-06T01:35:30.1710452Z ##[endgroup]
+static	Set up job	2026-11-06T01:35:30.1711142Z ##[group]Runner Image
+static	Set up job	2026-11-06T01:35:30.1711863Z Image: ubuntu-24.04
+static	Set up job	2026-11-06T01:35:30.1712492Z Version: 20261101.360.1
+static	Set up job	2026-11-06T01:35:30.1713679Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+static	Set up job	2026-11-06T01:35:30.1715692Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+static	Set up job	2026-11-06T01:35:30.1716807Z ##[endgroup]
+static	Set up job	2026-11-06T01:35:30.1718405Z ##[group]GITHUB_TOKEN Permissions
+static	Set up job	2026-11-06T01:35:30.1720470Z Contents: read
+static	Set up job	2026-11-06T01:35:30.1721136Z Metadata: read
+static	Set up job	2026-11-06T01:35:30.1721882Z Packages: read
+static	Set up job	2026-11-06T01:35:30.1722498Z ##[endgroup]
+static	Set up job	2026-11-06T01:35:30.1724512Z Secret source: Actions
+static	Set up job	2026-11-06T01:35:30.1726029Z Cache mode: write
+static	Set up job	2026-11-06T01:35:30.1726762Z Prepare workflow directory
+static	Set up job	2026-11-06T01:35:30.2107298Z Prepare all required actions
+static	Set up job	2026-11-06T01:35:30.2154778Z Getting action download info
+static	Set up job	2026-11-06T01:35:30.5008576Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+static	Set up job	2026-11-06T01:35:30.7086058Z Complete job name: static
+static	Run actions/checkout@v4	﻿2026-11-06T01:35:30.7977904Z ##[group]Run actions/checkout@v4
+static	Run actions/checkout@v4	2026-11-06T01:35:30.7979133Z with:
+static	Run actions/checkout@v4	2026-11-06T01:35:30.7979648Z   repository: Ericsunny/rk3568-camera-driver
+static	Run actions/checkout@v4	2026-11-06T01:35:30.7983500Z   token: ***
+static	Run actions/checkout@v4	2026-11-06T01:35:30.7984020Z   ssh-strict: true
+static	Run actions/checkout@v4	2026-11-06T01:35:30.7984485Z   ssh-user: git
+static	Run actions/checkout@v4	2026-11-06T01:35:30.7984958Z   persist-credentials: true
+static	Run actions/checkout@v4	2026-11-06T01:35:30.7985740Z   clean: true
+static	Run actions/checkout@v4	2026-11-06T01:35:30.7986219Z   sparse-checkout-cone-mode: true
+static	Run actions/checkout@v4	2026-11-06T01:35:30.7986757Z   fetch-depth: 1
+static	Run actions/checkout@v4	2026-11-06T01:35:30.7987215Z   fetch-tags: false
+static	Run actions/checkout@v4	2026-11-06T01:35:30.7987944Z   show-progress: true
+static	Run actions/checkout@v4	2026-11-06T01:35:30.7988426Z   lfs: false
+static	Run actions/checkout@v4	2026-11-06T01:35:30.7988857Z   submodules: false
+static	Run actions/checkout@v4	2026-11-06T01:35:30.7989330Z   set-safe-directory: true
+static	Run actions/checkout@v4	2026-11-06T01:35:30.7989877Z   allow-unsafe-pr-checkout: false
+static	Run actions/checkout@v4	2026-11-06T01:35:30.7990784Z ##[endgroup]
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3211752Z Syncing repository: Ericsunny/rk3568-camera-driver
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3213775Z ##[group]Getting Git version info
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3214727Z Working directory is '/home/runner/work/rk3568-camera-driver/rk3568-camera-driver'
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3216332Z [command]/usr/bin/git version
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3462909Z git version 2.56.0
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3487224Z ##[endgroup]
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3503582Z Temporarily overriding HOME='/home/runner/work/_temp/992ea1d3-70a3-4081-9dff-fe0a381035cc' before making global git config changes
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3506482Z Adding repository directory to the temporary git global config as a safe directory
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3509268Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/rk3568-camera-driver/rk3568-camera-driver
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3558075Z Deleting the contents of '/home/runner/work/rk3568-camera-driver/rk3568-camera-driver'
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3566097Z ##[group]Initializing the repository
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3580538Z [command]/usr/bin/git init /home/runner/work/rk3568-camera-driver/rk3568-camera-driver
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3901067Z hint: Using 'master' as the name for the initial branch. This default branch name
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3903242Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3905935Z hint: to use in all of your new repositories, which will suppress this warning,
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3907858Z hint: call:
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3908659Z hint:
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3909549Z hint: 	git config --global init.defaultBranch <name>
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3910656Z hint:
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3911715Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3913412Z hint: 'development'. The just-created branch can be renamed via this command:
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3914735Z hint:
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3927705Z hint: 	git branch -m <name>
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3928620Z hint:
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3929392Z hint: Disable this message with "git config set advice.defaultBranchName false"
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3930672Z Initialized empty Git repository in /home/runner/work/rk3568-camera-driver/rk3568-camera-driver/.git/
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3932917Z [command]/usr/bin/git remote add origin https://github.com/Ericsunny/rk3568-camera-driver
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3976678Z ##[endgroup]
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3978317Z ##[group]Disabling automatic garbage collection
+static	Run actions/checkout@v4	2026-11-06T01:35:31.3980393Z [command]/usr/bin/git config --local gc.auto 0
+static	Run actions/checkout@v4	2026-11-06T01:35:31.4021525Z ##[endgroup]
+static	Run actions/checkout@v4	2026-11-06T01:35:31.4022980Z ##[group]Setting up auth
+static	Run actions/checkout@v4	2026-11-06T01:35:31.4028331Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+static	Run actions/checkout@v4	2026-11-06T01:35:31.4107691Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+static	Run actions/checkout@v4	2026-11-06T01:35:31.4624045Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+static	Run actions/checkout@v4	2026-11-06T01:35:31.4670975Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+static	Run actions/checkout@v4	2026-11-06T01:35:31.4980314Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+static	Run actions/checkout@v4	2026-11-06T01:35:31.5028072Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+static	Run actions/checkout@v4	2026-11-06T01:35:31.5286054Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+static	Run actions/checkout@v4	2026-11-06T01:35:31.5443880Z ##[endgroup]
+static	Run actions/checkout@v4	2026-11-06T01:35:31.5445382Z ##[group]Fetching the repository
+static	Run actions/checkout@v4	2026-11-06T01:35:31.5456436Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +3710a2db4e31d5ffa0b676fa6db2c6c9c54df9b8:refs/remotes/origin/feature/board-review-w1
+static	Run actions/checkout@v4	2026-11-06T01:35:32.7184689Z From https://github.com/Ericsunny/rk3568-camera-driver
+static	Run actions/checkout@v4	2026-11-06T01:35:32.7187920Z  * [new ref]         3710a2db4e31d5ffa0b676fa6db2c6c9c54df9b8 -> origin/feature/board-review-w1
+static	Run actions/checkout@v4	2026-11-06T01:35:32.7197601Z ##[endgroup]
+static	Run actions/checkout@v4	2026-11-06T01:35:32.7199407Z ##[group]Determining the checkout info
+static	Run actions/checkout@v4	2026-11-06T01:35:32.7201486Z ##[endgroup]
+static	Run actions/checkout@v4	2026-11-06T01:35:32.7207464Z [command]/usr/bin/git sparse-checkout disable
+static	Run actions/checkout@v4	2026-11-06T01:35:32.7267528Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+static	Run actions/checkout@v4	2026-11-06T01:35:32.7309770Z ##[group]Checking out the ref
+static	Run actions/checkout@v4	2026-11-06T01:35:32.7313398Z [command]/usr/bin/git checkout --progress --force -B feature/board-review-w1 refs/remotes/origin/feature/board-review-w1
+static	Run actions/checkout@v4	2026-11-06T01:35:32.8513510Z Switched to a new branch 'feature/board-review-w1'
+static	Run actions/checkout@v4	2026-11-06T01:35:32.8517750Z branch 'feature/board-review-w1' set up to track 'origin/feature/board-review-w1'.
+static	Run actions/checkout@v4	2026-11-06T01:35:32.8532775Z ##[endgroup]
+static	Run actions/checkout@v4	2026-11-06T01:35:32.8586994Z [command]/usr/bin/git log -1 --format=%H
+static	Run actions/checkout@v4	2026-11-06T01:35:32.8623533Z 3710a2db4e31d5ffa0b676fa6db2c6c9c54df9b8
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	﻿2026-11-06T01:35:32.8919264Z ##[group]Run rc=0
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.8920705Z ^[[36;1mrc=0^[[0m
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.8921797Z ^[[36;1mwhile IFS= read -r -d '' f; do^[[0m
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.8923301Z ^[[36;1m  # 用脚本自己声明的解释器做语法检查: bash 脚本(如历史 bring-up 工具^[[0m
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.8925570Z ^[[36;1m  # cpu_ab.sh 的 <<< 与 step2_verify.sh 的 >(tee))用 dash 的 sh -n^[[0m
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.8927372Z ^[[36;1m  # 会假阳性 "redirection unexpected", 那不是语法错误^[[0m
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.8929286Z ^[[36;1m  if head -1 "$f" | grep -q '^#!.*bash'; then C="bash -n"; else C="sh -n"; fi^[[0m
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.8931499Z ^[[36;1m  if $C "$f"; then echo "OK  $f ($C)"; else echo "FAIL $f ($C)"; rc=1; fi^[[0m
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.8933337Z ^[[36;1mdone < <(git ls-files -z '*.sh')^[[0m
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.8934710Z ^[[36;1mexit $rc^[[0m
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.8961592Z shell: /usr/bin/bash -e {0}
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.8962863Z ##[endgroup]
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9088827Z OK  evidence/2026-11-05-板测复核/W1-twoframes.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9117239Z OK  evidence/2026-11-05-板测复核/W2-cif120.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9147214Z OK  evidence/2026-11-05-板测复核/W3-dual.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9174544Z OK  evidence/2026-11-05-板测复核/W4-modes.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9202537Z OK  evidence/2026-11-05-板测复核/W5-cycles-v2.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9230754Z OK  evidence/2026-11-05-板测复核/W5-cycles.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9266483Z OK  tools/ab/cpu_ab.sh (bash -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9301511Z OK  tools/ab/iq_cmp.sh (bash -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9336403Z OK  tools/ab/pair_ab.sh (bash -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9370720Z OK  tools/ab/run_a0.sh (bash -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9406280Z OK  tools/ab/run_ab.sh (bash -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9441846Z OK  tools/ab/run_b.sh (bash -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9470302Z OK  tools/camera_selfcheck.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9497723Z OK  tools/check_3a_lifecycle.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9524357Z OK  tools/check_claims.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9551791Z OK  tools/det_samples.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9579238Z OK  tools/gate_camera_boot.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9606680Z OK  tools/install_3a_autostart.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9642143Z OK  tools/install_rkaiq_2022.sh (bash -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9669151Z OK  tools/make_manifest.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9695930Z OK  tools/quickstart.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9723840Z OK  tools/regress.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9750938Z OK  tools/regression/run_all.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9778599Z OK  tools/regression/soak_test.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9806639Z OK  tools/regression/suspend_test.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9834523Z OK  tools/regression/switch_test.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9862941Z OK  tools/repro_tryfmt.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9892477Z OK  tools/run_3a_stack.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9919915Z OK  tools/score_stat.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9947502Z OK  tools/soak_monitor.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:32.9984669Z OK  tools/st_regress.sh (bash -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:33.0020023Z OK  tools/step1_install.sh (bash -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:33.0055997Z OK  tools/step2_verify.sh (bash -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:33.0083808Z OK  tools/stop_status_check.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:33.0111203Z OK  tools/sum_samples.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:33.0139347Z OK  tools/suspend_guard.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:33.0167228Z OK  tools/tryfmt_check.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:33.0194497Z OK  tools/v7mon.sh (sh -n)
+static	shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)	2026-11-06T01:35:33.0221528Z OK  tools/verify_manifest.sh (sh -n)
+static	shellcheck(有则报,不阻断)	﻿2026-11-06T01:35:33.0312660Z ##[group]Run sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck >/dev/null
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:33.0315524Z ^[[36;1msudo apt-get update -qq && sudo apt-get install -y -qq shellcheck >/dev/null^[[0m
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:33.0317479Z ^[[36;1mwhile IFS= read -r -d '' f; do^[[0m
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:33.0318865Z ^[[36;1m  shellcheck -S warning "$f" || true^[[0m
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:33.0320258Z ^[[36;1mdone < <(git ls-files -z '*.sh')^[[0m
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:33.0344119Z shell: /usr/bin/bash -e {0}
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:33.0345524Z ##[endgroup]
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.1799319Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.1801010Z In tools/ab/cpu_ab.sh line 12:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.1802270Z read u0 s0 <<< $(awk '{print $14, $15}' /proc/$PID/stat)
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.1802934Z                ^-- SC2046 (warning): Quote this to prevent word splitting.
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.1803827Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.1803954Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.1804108Z In tools/ab/cpu_ab.sh line 14:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.1804572Z read u1 s1 <<< $(awk '{print $14, $15}' /proc/$PID/stat)
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.1805387Z                ^-- SC2046 (warning): Quote this to prevent word splitting.
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.1889601Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.1889870Z For more information:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.1890496Z   https://www.shellcheck.net/wiki/SC2046 -- Quote this to prevent word splitt...
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.3160419Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.3161041Z In tools/ab/run_ab.sh line 11:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.3161475Z SCALE=$((W * H))
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.3162044Z ^---^ SC2034 (warning): SCALE appears unused. Verify use (or export if used externally).
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.3162585Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.3162597Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.3162740Z In tools/ab/run_ab.sh line 52:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.3163186Z     set -- $(cpu_ticks $PID); T0_U=$1; T0_S=$2
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.3163786Z            ^---------------^ SC2046 (warning): Quote this to prevent word splitting.
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.3164281Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.3164291Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.3164436Z In tools/ab/run_ab.sh line 59:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.3164829Z     set -- $(cpu_ticks $PID); T1_U=$1; T1_S=$2
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.3165600Z            ^---------------^ SC2046 (warning): Quote this to prevent word splitting.
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.3166037Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.3166179Z For more information:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.3166581Z   https://www.shellcheck.net/wiki/SC2034 -- SCALE appears unused. Verify use ...
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.3167218Z   https://www.shellcheck.net/wiki/SC2046 -- Quote this to prevent word splitt...
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.4342088Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.4342628Z In tools/camera_selfcheck.sh line 129:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.4343008Z     for d in /dev/video0; do
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.4343527Z              ^---------^ SC2043 (warning): This loop will only ever run once. Bad quoting or missing glob/expansion?
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.4343931Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.4344025Z For more information:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.4344468Z   https://www.shellcheck.net/wiki/SC2043 -- This loop will only ever run once...
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.7145826Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.7146446Z In tools/quickstart.sh line 12:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.7147088Z if ls -l /proc/[0-9]*/fd 2>/dev/null | grep -q video5; then
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.7148052Z    ^-- SC2010 (warning): Don't use ls | grep. Use a glob or a for loop with a condition to allow non-alphanumeric filenames.
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.7148773Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.7148922Z For more information:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.7149518Z   https://www.shellcheck.net/wiki/SC2010 -- Don't use ls | grep. Use a glob o...
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.8307627Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.8308368Z In tools/regression/run_all.sh line 15:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.8309061Z cd "$(dirname "$0")"
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.8309926Z ^------------------^ SC2164 (warning): Use 'cd ... || exit' or 'cd ... || return' in case cd fails.
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.8310629Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.8310856Z Did you mean: 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.8311258Z cd "$(dirname "$0")" || exit
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.8311517Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.8311650Z For more information:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.8312229Z   https://www.shellcheck.net/wiki/SC2164 -- Use 'cd ... || exit' or 'cd ... |...
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.8670000Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.8670500Z In tools/regression/soak_test.sh line 48:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.8671345Z echo "soak 完成: 实际=$total 理论=$exp_frames 掉帧率=${drop_pct}%" | tee -a "$LOG"
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.8671889Z                             ^---------^ SC2154 (warning): exp_frames is referenced but not assigned.
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.8672201Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.8672302Z For more information:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.8672702Z   https://www.shellcheck.net/wiki/SC2154 -- exp_frames is referenced but not ...
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.9431718Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.9432251Z In tools/regression/suspend_test.sh line 61:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.9432604Z     rc=$?
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.9433112Z        ^-- SC2320 (warning): This $? refers to echo/printf, not a previous command. Assign to variable to avoid it being overwritten.
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.9434011Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.9434108Z For more information:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:39.9434496Z   https://www.shellcheck.net/wiki/SC2320 -- This $? refers to echo/printf, no...
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.2189215Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.2189987Z In tools/st_regress.sh line 81:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.2190484Z F1=$(echo "$C1" | grep -c 'fail=0 fail_pct=0.00')
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.2191097Z ^-- SC2034 (warning): F1 appears unused. Verify use (or export if used externally).
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.2191541Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.2191661Z For more information:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.2192181Z   https://www.shellcheck.net/wiki/SC2034 -- F1 appears unused. Verify use (or...
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.3561467Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.3562059Z In tools/suspend_guard.sh line 17:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.3562611Z USERS=$(ls -l /proc/[0-9]*/fd/* 2>/dev/null |
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.3563518Z         ^-- SC2010 (warning): Don't use ls | grep. Use a glob or a for loop with a condition to allow non-alphanumeric filenames.
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.3564258Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.3564265Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.3564432Z In tools/suspend_guard.sh line 23:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.3565060Z 		echo "  $d: $(ls -l /proc/[0-9]*/fd/* 2>/dev/null |
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.3566137Z                               ^-- SC2010 (warning): Don't use ls | grep. Use a glob or a for loop with a condition to allow non-alphanumeric filenames.
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.3566873Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.3566881Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.3567025Z In tools/suspend_guard.sh line 39:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.3567749Z 	echo "pm_test=devices 干跑已返回 (rc=$?)"
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.3568710Z                                         ^-- SC2320 (warning): This $? refers to echo/printf, not a previous command. Assign to variable to avoid it being overwritten.
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.3569488Z 
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.3569637Z For more information:
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.3570235Z   https://www.shellcheck.net/wiki/SC2010 -- Don't use ls | grep. Use a glob o...
+static	shellcheck(有则报,不阻断)	2026-11-06T01:35:40.3571098Z   https://www.shellcheck.net/wiki/SC2320 -- This $? refers to echo/printf, no...
+static	python 语法检查(py_compile)	﻿2026-11-06T01:35:40.4338358Z ##[group]Run rc=0
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.4338641Z ^[[36;1mrc=0^[[0m
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.4338882Z ^[[36;1mwhile IFS= read -r -d '' f; do^[[0m
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.4339322Z ^[[36;1m  if python3 -m py_compile "$f"; then echo "OK  $f"; else echo "FAIL $f"; rc=1; fi^[[0m
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.4339773Z ^[[36;1mdone < <(git ls-files -z '*.py')^[[0m
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.4340051Z ^[[36;1mexit $rc^[[0m
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.4361926Z shell: /usr/bin/bash -e {0}
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.4362198Z ##[endgroup]
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.4767299Z OK  evidence/2026-11-05-板测复核/W2-analyze.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.5099288Z OK  evidence/2026-11-05-板测复核/W4-prepare.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.5432829Z OK  evidence/2026-11-05-板测复核/W6-prepare.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.5766299Z OK  mini3a/fix_mini3a.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.6109700Z OK  tools/ab_awb.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.6448205Z OK  tools/det_recount.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.6788018Z OK  tools/hdr_fuse.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.7129085Z OK  tools/iq_highlight_mode.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.7484407Z OK  tools/iq_patch_smartrun.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.7826311Z OK  tools/lat_probe.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.8162527Z OK  tools/make_focus_chart.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.8489237Z OK  tools/patch_imx415_hdr.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.8819180Z OK  tools/patch_imx415_hdr_hts.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.9165702Z OK  tools/raw10_stats.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.9510501Z OK  tools/regression/gen_report.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:40.9856887Z OK  tools/rtsp_check.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:41.0182552Z OK  tools/tests/ov8858_diag_test.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:41.0519236Z OK  tools/tests/test_evrec_host.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:41.0864398Z OK  tools/tests/test_evrec_preload.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:41.1211361Z OK  tools/tests/test_raw10_stats.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:41.1560420Z OK  tools/tests/test_w6_trace_monitor.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:41.1894415Z OK  tools/uboot_catch.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:41.2231765Z OK  tools/w6_kmsg_prepare.py
+static	python 语法检查(py_compile)	2026-11-06T01:35:41.2607960Z OK  tools/w6_trace_monitor.py
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	﻿2026-11-06T01:35:41.2642585Z ##[group]Run rc=0
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.2643101Z ^[[36;1mrc=0^[[0m
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.2643389Z ^[[36;1m# 仅纯 glibc 工具:不依赖板端 rockchip/MPP/RKNN 头(那些只能在板上编译)^[[0m
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.2643840Z ^[[36;1mfor f in tools/focus_score.c tools/hdr_demo.c tools/st_burn.c \^[[0m
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.2644335Z ^[[36;1m         tools/regression/reg_switch.c tools/fi_probe.c tools/fi_test.c \^[[0m
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.2644787Z ^[[36;1m         tools/streamoff_test.c tools/tryfmt_test.c; do^[[0m
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.2645464Z ^[[36;1m  [ -f "$f" ] || { echo "FAIL missing expected source: $f"; rc=1; continue; }^[[0m
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.2645944Z ^[[36;1m  if gcc -fsyntax-only -Wall "$f" 2>warn.txt; then^[[0m
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.2646321Z ^[[36;1m    echo "OK  $f ($(wc -l < warn.txt) warnings)"^[[0m
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.2646621Z ^[[36;1m  else^[[0m
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.2646865Z ^[[36;1m    echo "FAIL $f"; cat warn.txt; rc=1^[[0m
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.2647150Z ^[[36;1m  fi^[[0m
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.2647347Z ^[[36;1mdone^[[0m
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.2647539Z ^[[36;1mexit $rc^[[0m
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.2668680Z shell: /usr/bin/bash -e {0}
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.2668957Z ##[endgroup]
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.3992344Z OK  tools/focus_score.c (0 warnings)
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.4666845Z OK  tools/hdr_demo.c (0 warnings)
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.4967790Z OK  tools/st_burn.c (0 warnings)
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.5249263Z OK  tools/regression/reg_switch.c (0 warnings)
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.5421167Z OK  tools/fi_probe.c (0 warnings)
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.5594156Z OK  tools/fi_test.c (0 warnings)
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.5847891Z OK  tools/streamoff_test.c (0 warnings)
+static	C 纯 glibc 工具组语法检查(-fsyntax-only)	2026-11-06T01:35:41.6100477Z OK  tools/tryfmt_test.c (0 warnings)
+static	evrec 故障注入夹具主机集成测试(不访问设备)	﻿2026-11-06T01:35:41.6137105Z ##[group]Run python3 tools/tests/test_evrec_preload.py
+static	evrec 故障注入夹具主机集成测试(不访问设备)	2026-11-06T01:35:41.6137522Z ^[[36;1mpython3 tools/tests/test_evrec_preload.py^[[0m
+static	evrec 故障注入夹具主机集成测试(不访问设备)	2026-11-06T01:35:41.6158324Z shell: /usr/bin/bash -e {0}
+static	evrec 故障注入夹具主机集成测试(不访问设备)	2026-11-06T01:35:41.6158596Z ##[endgroup]
+static	evrec 故障注入夹具主机集成测试(不访问设备)	2026-11-06T01:35:42.1098874Z ordinary sigterm: control and five failures PASS
+static	evrec 故障注入夹具主机集成测试(不访问设备)	2026-11-06T01:35:42.1099531Z ordinary target-left: control and five failures PASS
+static	evrec 故障注入夹具主机集成测试(不访问设备)	2026-11-06T01:35:42.1099943Z ordinary unrelated event paths are unaffected: PASS
+static	evrec 故障注入夹具主机集成测试(不访问设备)	2026-11-06T01:35:42.1100287Z fortified sigterm: control and five failures PASS
+static	evrec 故障注入夹具主机集成测试(不访问设备)	2026-11-06T01:35:42.1100635Z fortified target-left: control and five failures PASS
+static	evrec 故障注入夹具主机集成测试(不访问设备)	2026-11-06T01:35:42.1100983Z fortified unrelated event paths are unaffected: PASS
+static	evrec 故障注入夹具主机集成测试(不访问设备)	2026-11-06T01:35:42.1101302Z scope, symlink and unhit occurrence: PASS
+static	evrec 故障注入夹具主机集成测试(不访问设备)	2026-11-06T01:35:42.1101610Z selected occurrence injects only once: PASS
+static	evrec 故障注入夹具主机集成测试(不访问设备)	2026-11-06T01:35:42.1101915Z invalid configuration fails closed: PASS
+static	补丁 unified diff 语法检查(不验证可应用性)	﻿2026-11-06T01:35:42.1193120Z ##[group]Run for p in driver/patches/*.patch; do
+static	补丁 unified diff 语法检查(不验证可应用性)	2026-11-06T01:35:42.1193576Z ^[[36;1mfor p in driver/patches/*.patch; do^[[0m
+static	补丁 unified diff 语法检查(不验证可应用性)	2026-11-06T01:35:42.1193958Z ^[[36;1m  [ -f "$p" ] || { echo "FAIL no patch found: $p"; exit 1; }^[[0m
+static	补丁 unified diff 语法检查(不验证可应用性)	2026-11-06T01:35:42.1194372Z ^[[36;1m  # 解析 hunk 行数及 diff 语法；目标源码不在 CI，不能验证适用性。^[[0m
+static	补丁 unified diff 语法检查(不验证可应用性)	2026-11-06T01:35:42.1194819Z ^[[36;1m  git apply --numstat "$p" || { echo "FAIL patch format: $p"; exit 1; }^[[0m
+static	补丁 unified diff 语法检查(不验证可应用性)	2026-11-06T01:35:42.1195534Z ^[[36;1m  echo "OK  $p (syntax only)"^[[0m
+static	补丁 unified diff 语法检查(不验证可应用性)	2026-11-06T01:35:42.1195828Z ^[[36;1mdone^[[0m
+static	补丁 unified diff 语法检查(不验证可应用性)	2026-11-06T01:35:42.1216869Z shell: /usr/bin/bash -e {0}
+static	补丁 unified diff 语法检查(不验证可应用性)	2026-11-06T01:35:42.1217145Z ##[endgroup]
+static	补丁 unified diff 语法检查(不验证可应用性)	2026-11-06T01:35:42.1274113Z 11	0	drivers/media/platform/rockchip/cif/capture.c
+static	补丁 unified diff 语法检查(不验证可应用性)	2026-11-06T01:35:42.1277092Z OK  driver/patches/rkcif-null-check.patch (syntax only)
+static	RAW10 统计合成数据测试(不访问设备)	﻿2026-11-06T01:35:42.1306385Z ##[group]Run python3 tools/tests/test_raw10_stats.py
+static	RAW10 统计合成数据测试(不访问设备)	2026-11-06T01:35:42.1306775Z ^[[36;1mpython3 tools/tests/test_raw10_stats.py^[[0m
+static	RAW10 统计合成数据测试(不访问设备)	2026-11-06T01:35:42.1326069Z shell: /usr/bin/bash -e {0}
+static	RAW10 统计合成数据测试(不访问设备)	2026-11-06T01:35:42.1326332Z ##[endgroup]
+static	RAW10 统计合成数据测试(不访问设备)	2026-11-06T01:35:42.3460657Z test_all_bayer_orders (__main__.RawStatsTest.test_all_bayer_orders) ... ok
+static	RAW10 统计合成数据测试(不访问设备)	2026-11-06T01:35:42.5772959Z test_bad_size_stride_roi_and_duplicate (__main__.RawStatsTest.test_bad_size_stride_roi_and_duplicate) ... ok
+static	RAW10 统计合成数据测试(不访问设备)	2026-11-06T01:35:42.6162351Z test_known_byte_order (__main__.RawStatsTest.test_known_byte_order) ... ok
+static	RAW10 统计合成数据测试(不访问设备)	2026-11-06T01:35:42.6940725Z test_output_never_overwrites (__main__.RawStatsTest.test_output_never_overwrites) ... ok
+static	RAW10 统计合成数据测试(不访问设备)	2026-11-06T01:35:42.7337181Z test_padded_two_frames_and_temporal_statistics (__main__.RawStatsTest.test_padded_two_frames_and_temporal_statistics) ... ok
+static	RAW10 统计合成数据测试(不访问设备)	2026-11-06T01:35:42.7727086Z test_roi_uses_full_frame_bayer_phase (__main__.RawStatsTest.test_roi_uses_full_frame_bayer_phase) ... ok
+static	RAW10 统计合成数据测试(不访问设备)	2026-11-06T01:35:42.8516718Z test_u16_and_clipping (__main__.RawStatsTest.test_u16_and_clipping) ... ok
+static	RAW10 统计合成数据测试(不访问设备)	2026-11-06T01:35:42.8517216Z 
+static	RAW10 统计合成数据测试(不访问设备)	2026-11-06T01:35:42.8517389Z ----------------------------------------------------------------------
+static	RAW10 统计合成数据测试(不访问设备)	2026-11-06T01:35:42.8517765Z Ran 7 tests in 0.662s
+static	RAW10 统计合成数据测试(不访问设备)	2026-11-06T01:35:42.8517915Z 
+static	RAW10 统计合成数据测试(不访问设备)	2026-11-06T01:35:42.8517997Z OK
+static	W6 硬件提交与异常监测替身测试(不访问设备)	﻿2026-11-06T01:35:42.8648887Z ##[group]Run python3 tools/tests/test_w6_trace_monitor.py
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:42.8649329Z ^[[36;1mpython3 tools/tests/test_w6_trace_monitor.py^[[0m
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:42.8669908Z shell: /usr/bin/bash -e {0}
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:42.8670180Z ##[endgroup]
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:42.9514333Z test_app_whitelist_does_not_hide_cpu_fallback (__main__.TraceTest.test_app_whitelist_does_not_hide_cpu_fallback) ... ok
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:42.9523684Z test_closed_device_and_failed_rga_return (__main__.TraceTest.test_closed_device_and_failed_rga_return) ... ok
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:43.0637869Z test_compiled_marker_helper_propagates_open_write_close_failures (__main__.TraceTest.test_compiled_marker_helper_propagates_open_write_close_failures) ... ok
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:43.0643945Z test_kernel_markers_do_not_compare_clock_origins (__main__.TraceTest.test_kernel_markers_do_not_compare_clock_origins) ... ok
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:43.0645746Z test_kernel_rejects_missing_late_repeated_and_malformed_markers (__main__.TraceTest.test_kernel_rejects_missing_late_repeated_and_malformed_markers) ... ok
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:43.0647150Z test_kernel_whitelist_is_narrow_and_time_bounded (__main__.TraceTest.test_kernel_whitelist_is_narrow_and_time_bounded) ... ok
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:43.0648471Z test_missing_or_failed_hardware_submission_stops (__main__.TraceTest.test_missing_or_failed_hardware_submission_stops) ... ok
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:43.0657466Z test_preflight_rejects_hot_or_full (__main__.TraceTest.test_preflight_rejects_hot_or_full) ... ok
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:43.0659319Z test_source_generator_handles_c_format_placeholders (__main__.TraceTest.test_source_generator_handles_c_format_placeholders) ... ok
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:43.0664425Z test_successful_ioctl_between_each_marker (__main__.TraceTest.test_successful_ioctl_between_each_marker) ... ok
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:46.0031411Z test_supervisor_stops_without_weakening_safety_rules (__main__.TraceTest.test_supervisor_stops_without_weakening_safety_rules) ... ok
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:46.3493464Z test_supervisor_success_with_unrelated_clock_origins (__main__.TraceTest.test_supervisor_success_with_unrelated_clock_origins) ... ok
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:46.3494414Z 
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:46.3494642Z ----------------------------------------------------------------------
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:46.3495314Z Ran 12 tests in 3.398s
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:46.3495526Z 
+static	W6 硬件提交与异常监测替身测试(不访问设备)	2026-11-06T01:35:46.3495648Z OK
+static	Post Run actions/checkout@v4	﻿2026-11-06T01:35:46.3768128Z Post job cleanup.
+static	Post Run actions/checkout@v4	2026-11-06T01:35:46.4622957Z [command]/usr/bin/git version
+static	Post Run actions/checkout@v4	2026-11-06T01:35:46.4665710Z git version 2.56.0
+static	Post Run actions/checkout@v4	2026-11-06T01:35:46.4702699Z Temporarily overriding HOME='/home/runner/work/_temp/a245ca94-743f-4084-95bd-95b7fba52720' before making global git config changes
+static	Post Run actions/checkout@v4	2026-11-06T01:35:46.4704046Z Adding repository directory to the temporary git global config as a safe directory
+static	Post Run actions/checkout@v4	2026-11-06T01:35:46.4708975Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/rk3568-camera-driver/rk3568-camera-driver
+static	Post Run actions/checkout@v4	2026-11-06T01:35:46.4750823Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+static	Post Run actions/checkout@v4	2026-11-06T01:35:46.4789482Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+static	Post Run actions/checkout@v4	2026-11-06T01:35:46.5097084Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+static	Post Run actions/checkout@v4	2026-11-06T01:35:46.5128663Z http.https://github.com/.extraheader
+static	Post Run actions/checkout@v4	2026-11-06T01:35:46.5141683Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+static	Post Run actions/checkout@v4	2026-11-06T01:35:46.5184017Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+static	Post Run actions/checkout@v4	2026-11-06T01:35:46.5468180Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+static	Post Run actions/checkout@v4	2026-11-06T01:35:46.5516690Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+static	Complete job	﻿2026-11-06T01:35:46.5986025Z Cleaning up orphan processes
+static	Complete job	2026-11-06T01:35:46.6379811Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

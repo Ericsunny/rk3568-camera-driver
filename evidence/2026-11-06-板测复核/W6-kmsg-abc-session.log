@@ -1,0 +1,52 @@
+host_utc_before=2026-11-06T01:39:40.198473+00:00
+command:
+set -u
+base=/root/camera-window/review-20261106-w6-kmsg-d1d6238
+printf 'START\n'; date -Ins; cat /proc/uptime; cat /proc/sys/kernel/random/boot_id; pgrep -af '[r]kaiq_3A_server'
+printf 'INPUT_MD5\n'; md5sum "$base/w6_trace_monitor.py" "$base/zc_npu_kmsg" /lib/aarch64-linux-gnu/librga.so /lib/librknnrt.so /root/npu/examples/yolov8/model/yolov8n_rk3568_i8.rknn
+[ "$(md5sum "$base/w6_trace_monitor.py" | cut -d ' ' -f1)" = d015edae37e7f158a21346fc680a2f1c ] || exit 2
+[ "$(md5sum "$base/zc_npu_kmsg" | cut -d ' ' -f1)" = c33e8e67894c049f30fed0231985029d ] || exit 2
+mkdir "$base/abc" || exit 2
+python3 "$base/w6_trace_monitor.py" --run "$base/abc" --binary "$base/zc_npu_kmsg" --boot-id dc415963-ac0d-4795-9c26-39e910da173f --service-pid 566 --temperature /sys/class/thermal/thermal_zone0/temp --max-temp 70000 --reserve-mib 2048 --reserve-inodes 1000 --timeout 60
+rc=$?
+printf 'ABC_EXIT=%s\n' "$rc"; date -Ins; cat /proc/uptime; cat /proc/sys/kernel/random/boot_id; pgrep -af '[r]kaiq_3A_server'; ps -C zc_npu_kmsg -C strace -o pid,ppid,state,comm,args || true
+printf 'MONITORS\n'; for mode in a b c; do if [ -f "$base/abc/$mode/monitor.txt" ]; then cat "$base/abc/$mode/monitor.txt"; fi; done
+exit "$rc"
+
+stdout:
+START
+2026-11-06T09:39:39,338850970+08:00
+1576.54 5722.89
+dc415963-ac0d-4795-9c26-39e910da173f
+566 /usr/bin/rkaiq_3A_server
+INPUT_MD5
+d015edae37e7f158a21346fc680a2f1c  /root/camera-window/review-20261106-w6-kmsg-d1d6238/w6_trace_monitor.py
+c33e8e67894c049f30fed0231985029d  /root/camera-window/review-20261106-w6-kmsg-d1d6238/zc_npu_kmsg
+1d525d6302fe707ef1a4494f88773d17  /lib/aarch64-linux-gnu/librga.so
+a37ee1d5d664c79836bf6e35b7ef6289  /lib/librknnrt.so
+94fde17f2cde08b4f22c022b8674f116  /root/npu/examples/yolov8/model/yolov8n_rk3568_i8.rknn
+START a
+STOP a
+ABC_EXIT=2
+2026-11-06T09:39:40,959363091+08:00
+1578.16 5727.59
+dc415963-ac0d-4795-9c26-39e910da173f
+566 /usr/bin/rkaiq_3A_server
+    PID    PPID S COMMAND         COMMAND
+MONITORS
+mode=a
+boot_time_start=1576.905923
+token=7a05704d6d6baadb5f2bc02237ffc585
+observed_rga_frames=0
+init_pid=92541
+init_state=after
+rga_init_errors=1
+reason=D-state process detected: 92541
+
+stderr:
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+
+ssh_exit=2
+host_utc_after=2026-11-06T01:39:43.327643+00:00

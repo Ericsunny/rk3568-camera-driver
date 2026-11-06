@@ -30,6 +30,8 @@ OV8858 走 CIF RAW10，只有 mini3a 软件闭环；没有完整 ISP Tuning / IQ
 <details>
 <summary>探索性实验（学习性质，非主线交付）</summary>
 
+2026-11-06 零拷贝三模式复核因工装时间关联检查而中止，尚无完整三组结果，见[复核报告](docs/43-板测复核报告.md)。
+
 包含 HDR、双 lane DOL、RAW10 合成、mini3a、零拷贝三模式和 NPU 检测样张；其中部分结论未完成当前版本复核，历史缺失的原始附件不作为已复核依据。入口见[归档索引](docs/archive/README.md)与 [RAW10 合成工具说明](tools/raw10_stats.md)。
 
 </details>

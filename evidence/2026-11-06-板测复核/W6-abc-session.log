@@ -1,0 +1,47 @@
+host_utc_before=2026-11-06T01:18:48.920762+00:00
+command:
+set -u
+base=/root/camera-window/review-20261106-w6-final-c8a9694
+printf 'START\n'; date -Ins; cat /proc/uptime; cat /proc/sys/kernel/random/boot_id; pgrep -af '[r]kaiq_3A_server'
+printf 'INPUT_HASHES\n'; md5sum "$base/w6_trace_monitor_final.py" /root/camera-window/review-20261105-w6-board-rebuild-30f2594/zc_npu_w6 /lib/aarch64-linux-gnu/librga.so /lib/librknnrt.so /root/npu/examples/yolov8/model/yolov8n_rk3568_i8.rknn
+[ "$(md5sum "$base/w6_trace_monitor_final.py" | cut -d ' ' -f1)" = 252be632e72c55cf77099a2ab6fc1da3 ] || exit 2
+mkdir "$base/abc" || exit 2
+python3 "$base/w6_trace_monitor_final.py" --run "$base/abc" --binary /root/camera-window/review-20261105-w6-board-rebuild-30f2594/zc_npu_w6 --boot-id dc415963-ac0d-4795-9c26-39e910da173f --service-pid 566 --temperature /sys/class/thermal/thermal_zone0/temp --max-temp 70000 --reserve-mib 2048 --reserve-inodes 1000 --timeout 60
+rc=$?
+printf 'ABC_EXIT=%s\n' "$rc"; date -Ins; cat /proc/uptime; cat /proc/sys/kernel/random/boot_id; pgrep -af '[r]kaiq_3A_server'; ps -C zc_npu_w6 -C strace -o pid,ppid,state,comm,args || true
+printf 'MONITORS\n'; find "$base/abc" -name monitor.txt -exec cat {} \\;
+exit "$rc"
+
+stdout:
+START
+2026-11-06T09:18:48,093274083+08:00
+325.30 1135.82
+dc415963-ac0d-4795-9c26-39e910da173f
+566 /usr/bin/rkaiq_3A_server
+INPUT_HASHES
+252be632e72c55cf77099a2ab6fc1da3  /root/camera-window/review-20261106-w6-final-c8a9694/w6_trace_monitor_final.py
+8fdfe57cb827920acd182b6ab3c07dff  /root/camera-window/review-20261105-w6-board-rebuild-30f2594/zc_npu_w6
+1d525d6302fe707ef1a4494f88773d17  /lib/aarch64-linux-gnu/librga.so
+a37ee1d5d664c79836bf6e35b7ef6289  /lib/librknnrt.so
+94fde17f2cde08b4f22c022b8674f116  /root/npu/examples/yolov8/model/yolov8n_rk3568_i8.rknn
+START a
+STOP a
+ABC_EXIT=2
+2026-11-06T09:18:49,568085856+08:00
+326.77 1140.27
+dc415963-ac0d-4795-9c26-39e910da173f
+566 /usr/bin/rkaiq_3A_server
+    PID    PPID S COMMAND         COMMAND
+MONITORS
+mode=a
+boot_time_start=325.631111
+observed_rga_frames=2
+reason=RGA unknown ioctl not correlated to version probe
+
+stderr:
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+
+ssh_exit=2
+host_utc_after=2026-11-06T01:18:51.896715+00:00

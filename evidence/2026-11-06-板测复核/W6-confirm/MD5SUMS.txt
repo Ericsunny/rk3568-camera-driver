@@ -1,0 +1,6 @@
+c36bae793c06e743d59df0526d24c820  dmesg-before.txt
+0d46e66339c6942fdd4e71f894a630b3  dmesg-after.txt
+e1a70d7ce1f82ec437d94ba999432663  trace.log
+e087eccda19d6e907a5086aefbed6706  stdout
+5036be3b1681214763e47b3120325221  stderr
+4d7838174eb0f1993ef79974765dd42c  confirmation.tar.gz (board and PC)

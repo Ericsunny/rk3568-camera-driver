@@ -22,5 +22,5 @@
 - 板卡的 sensor/rkcif 驱动内建于内核；源码变更、构建、部署和实机验证是不同状态。不要仅凭源码推断当前板端版本。
 - 板端 `/tmp` 重启后清空，后台常驻程序使用 `nohup` 和 `disown`；`dash` 不支持 Bash 的 `${var:0:8}`，长进程名查询使用 `pgrep -f` 并确认 PID。编译前核对板钟，网络访问使用 `rkboard` / `rk3568` 别名。
 - 上次已记录的 W6 测试因观察到 D 状态而停止，见 [PR #20](https://github.com/Ericsunny/rk3568-camera-driver/pull/20)；这只是历史状态，不据此假定板卡现在仍处于同一状态。
-- `docs/README.md` 是阅读入口；`docs/39-交接快照与任务队列.md`、`docs/41-板测窗口实验设计.md` 保存过去的计划和实验约束，不能覆盖用户新目标。
+- `docs/README.md` 是阅读入口；维护者本地的 `docs/archive/` 可保存过去的过程资料，不作为公开文档或当前任务队列。
 - 现有证据在 `evidence/`。新增记录检查敏感信息，既有记录不为美化叙述而改写。GitHub main、工作分支和未合并 PR 要分开描述。

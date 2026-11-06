@@ -1,0 +1,96 @@
+# 启动故障与恢复记录
+
+> 本文由一次真实的板卡故障全程记录而成。它同时是三样东西：故障复盘、最坏情况恢复手册、
+> 以及"软件团队如何区分自己的 bug 和硬件的 bug"的判断框架。
+
+## 1. 事故时间线
+
+| 阶段 | 事件 | 佐证 |
+|---|---|---|
+| 触发前 | 合规测试挖出 `ov8858_sm_get_fmt` 内核 Oops（compliance `-m` 触发）→ 修复 → 重编 #48/#49 | dmesg Oops 栈在案（§4） |
+| 死亡×1 | #48 刷 /boot + `reboot` → 板不回（无 ARP/无串口） | VM+host 双向 ping 失败 |
+| 复活×1 | maskrom（RECOVERY+OTG）→ RKDevTool 刷出厂 update.img → 正常启动 | VID_2207:350A 枚举 |
+| 死亡×2 | 重装 #49 至 /boot + `reboot` → 又不回 | 同上形态 |
+| 复活×2 | 第二次 maskrom 重刷 → 启动 `yckt`（出厂 #21） | 串口 `yckt login:` |
+| 冷启动验证 | #49 写入 /boot + md5 校验 + **冷断电** → 启动的仍是 #21 | IPv6 链路本地 SSH 验证 `uname` |
+| 死亡×3 | 同一 /boot 内容再次冷断电 → 串口零输出 | 后台记录器全程 0 字节 |
+
+## 2. 关键逆向发现（2025 版出厂镜像的引导链）
+
+`update.img`（2025-05）连同 **2025-06-01 版 uboot** 一起刷入后，引导流程与旧镜像完全不同：
+
+1. uboot 嵌入 env：`bootcmd=run distro_bootcmd; boot_android; boot_fit; bootrkp;`
+2. `distro_bootcmd` 会扫 extlinux/boot.scr——extlinux.conf 指向 `/Image-4.19.232`，**我们的内核确实被尝试启动过**；
+3. 失败后逐级 fallback 到 `bootrkp`——从 eMMC 裸区（分区表外）的 resource 区加载出厂 #21 内核（raw 扫描证实 p2 之外无 #21 拷贝，p2 ext4 内部保留旧块）；
+4. **旧纪律"改 /boot 即换内核"在 2025 镜像上不完全成立**——/boot 路径只在 distro 流成功时有效。
+
+~~串口全程零输出（连 uboot 横幅都没有）说明死亡发生在 BootROM/loader 层，eMMC 引导区读取间歇性失败。~~
+
+> **2026-10-27 翻案（证据推翻以上推断）**：当时的"串口零输出"**不能作为"板子没输出"的证据**——
+> 板载 CH340 随板断电即从 USB 消失，旧版串口记录器在断电瞬间句柄失效且重连逻辑有缺陷
+> （`is_open` 仍为 True，永不触发重连），会漏掉 panic 输出；更换为带断电重连的监视器后，
+> 本次已能完整捕获（见 `evidence/2026-10-27-上电调试/boot3-camera-in-panic.log`）。真实死因见 §3。
+
+## 3. 定性（2026-10-27 已查清并修复验证）
+
+**根因**：#49/#51 的 `ov8858_sm` 把 `get_fmt/set_fmt` 的 **ACTIVE 路径**也做了 `pad != 0 → -EINVAL` 的防御，
+而本 BSP 的 rkcif 把 **流编号当 pad** 传入（`capture.c: get_input_fmt(sd, &input, stream->id, &vc)`，
+开机 `rkcif_set_default_fmt` 对每条流都会查一次，video0~3 → pad 0~3）。于是：
+
+1. 流 1/2/3 的 `get_fmt` 返回 `-EINVAL` → `get_input_fmt()` 打出 `sensor fmt invalid, set to default size` 并 **return NULL**；
+2. `rkcif_set_fmt()` 拿到 NULL 的 `cif_fmt_in` **未查空直接解引用** → `rkcif_set_fmt+0x2cc` NULL 解引用；
+3. PID 1 死于 Oops → `Kernel panic - Attempted to kill init` → 板子卡死（panic 后 CPU 忙等，主控持续发热）。
+
+**"时好时坏"的真相**：这是**条件确定性**，不是间歇性硬件——
+摄像头 probe 成功（FPC 接触良好）→ 必 panic；probe 失败（接触不良）→ 不进入该路径 → 干净引导。
+video0 = pad 0 被放行，所以此前所有只用 video0 的历史测试从未暴露。
+
+**修复**（#52，md5 `04672f71`）：ACTIVE 路径不再拒非 0 pad（对齐同 SDK `imx415` 的约定，仅 `dev_dbg` 留痕）；
+**TRY 路径的 `!cfg || pad != 0 → -EINVAL` 防御原样保留**（那是治 `ov8858_sm_get_fmt+0x5c ← csi2_dphy_get_set_fmt`
+原 Oops 的那一半，不能丢）；`enum_mbus_code/frame_size/frame_interval` 未动（rkcif 从不调用，用户态 pad 语义严格）。
+
+**验证**：无摄像头冷启动 PASS；带摄像头冷启动 **14 次全部 PASS**（`Detected OV8858 id 0x8858`、无 `sensor fmt invalid`、
+无 `rkcif_set_fmt`、无 panic、到 `login:`、media 拓扑 12 条 ENABLED）；`media-ctl -p` ×3 零 Oops。
+对照：#51 同条件下 3/3 确定性 panic。
+
+**结论口径**：**本次启动失败的根因是软件**；现有证据不支持 eMMC/供电为该故障主因。
+板级硬件健康仍需在后续长跑中观察——14 次冷启动只覆盖这一个故障模式，不等于"所有硬件问题都已排除"。
+
+**历史结论中仍然成立的部分**：BootROM/主控每次都活着（maskrom 两次均秒达）。
+**已撤回的部分**：eMMC 引导区读取不稳定**不是**本轮启动失败的解释；
+`fw_printenv` 缺 `/etc/fw_env.config`、ext_csd 未取到有效值，均属"未取证"，不能当作硬件故障证据。
+
+**遗留的厂商缺陷**：`rkcif_set_fmt()` 对 `get_input_fmt()` 返回 NULL 不查空（见 `driver/patches/rkcif-null-check.patch`）。
+**rkcif NULL guard 是独立的加固补丁，不属于已验证的 #52 启动修复**，本轮未部署。
+
+## 4. 恢复手册（实测有效，全程 ~25 分钟）
+
+1. **确认 maskrom**：断电 → 按住 RECOVERY → 通电保持 5 秒 → 松开 → 数据线接 OTG 口 →
+   Windows 设备管理器出现 `Rockusb Device VID_2207&PID_350A`；
+2. **驱动**：`DriverAssitant_v5.13/DriverInstall.exe` → 安装驱动（一次性）；
+3. **刷机**：`RKDevTool v2.86` → 升级固件 → 选 `update.img`（E:\RK3568-iTOP-迅为\02出厂镜像\ubuntu20.04桌面版\）→ 解析完成 → 升级 → 10~20 分钟；
+4. **串口接管**：数据线挪到 DEBUG 口 → `COM7@1500000` → `yckt login:` → `root/root`；
+5. **网络持久化**（每次刷机后必做）：
+   ```bash
+   mkdir -p /etc/network/interfaces.d
+   printf 'auto eth0\niface eth0 inet static\n    address 192.168.10.2/24\n' > /etc/network/interfaces.d/eth0
+   printf 'auto usb0\niface usb0 inet static\n    address 192.168.50.2/24\n' > /etc/network/interfaces.d/usb0
+   ip addr add 192.168.10.2/24 dev eth0; ip link set eth0 up
+   ```
+6. **公钥**：把工作机公钥追加到 `/root/.ssh/authorized_keys`。
+
+## 5. 通道拓扑（两根线 = 两个互不依赖的通道）
+
+| 线 | 口 | 得到 | 用途 |
+|---|---|---|---|
+| 数据线 A | DEBUG | CH340 串口 COM7@1500000 | 引导日志/救砖（任何时候都该插着） |
+| 数据线 B | OTG | RNDIS USB 网卡（host↔板直连） | SSH/文件传输；maskrom 刷机 |
+
+注意：出厂系统 root SSH 为 `prohibit-password`（密码登录被拒）——必须先注入公钥；
+单根线时代（本记录的现实）只能串口/网络二选一，两根线才能双通道并行。
+
+## 6. 未决问题
+
+- #49 内核在 distro_bootcmd 流下启动失败的确切原因（串口日志未捕获到失败现场）——嫌疑：extlinux 无 initrd 行 vs 旧流程带 initrd；
+- eth0 RJ45 链路 IPv4 ARP 间歇不通（IPv6 链路本地正常）——host 侧 Windows ARP 怪癖或硬件，未定位；
+- 板卡本体返修/量轨后，以 §4 手册 5 分钟回血，再以 docs/29 §10 矩阵 + compliance 流程恢复全部验证状态。

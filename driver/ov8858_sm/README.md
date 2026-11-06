@@ -1,6 +1,6 @@
 # ov8858_sm —— 从 datasheet 写的 OV8858 V4L2 subdev 驱动
 
-OmniVision **OV8858**(8MP,2-lane MIPI CSI-2,R2A 版本)的 sensor 驱动，接 RK3568 + Linux 4.19 厂商 BSP 的 `rkcif` 链路。下方结果是历史板端测试，不能直接视为当前源码的部署或板测结果；近期改动见 [代码审查记录](../../docs/40-全仓体检报告.md)。
+OmniVision **OV8858**(8MP,2-lane MIPI CSI-2,R2A 版本)的 sensor 驱动，接 RK3568 + Linux 4.19 厂商 BSP 的 `rkcif` 链路。下方结果是历史板端测试，不能直接视为当前源码的部署或板测结果；近期验证边界见 [源码状态](../../docs/acceptance/source-status.md)。
 
 - 驱动本体为 `ov8858_sm.c`，寄存器表为 `ov8858_sm_regs.h`；源码行数随版本变化。
 - **编进内核**(`CONFIG_VIDEO_OV8858_SM=y`),不是模块 —— 4.19 的 async 是自底向上链式,sensor 晚加载永远配不上已经 probe 完的桥
@@ -23,7 +23,7 @@ OmniVision **OV8858**(8MP,2-lane MIPI CSI-2,R2A 版本)的 sensor 驱动，接 R
 | 1632×1224 mode | 30 条 | 30 条 | **0** |
 | 1920×1080 | 厂商无此档 | 43 条 | 厂商全分辨率表骨架 + **13 改值 + 13 新增** |
 
-完整对照见 [docs/17-L1-B对照报告-自写驱动vs厂商.md](../../docs/17-L1-B对照报告-自写驱动vs厂商.md)。
+完整对照见 [docs/bringup/driver-comparison.md](../../docs/bringup/driver-comparison.md)。
 
 ## 编译
 

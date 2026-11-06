@@ -1,0 +1,202 @@
+# 相机出流稳定性回归
+
+> 文中早期“能 suspend”不应理解为真实 suspend/唤醒通过：§8 已更正，当时使用 `pm_test=devices` 模拟，真实硬件唤醒未验证。
+
+## 1. 为什么需要这一层
+
+到 L4 阶段结束,我们验证过的东西都是"单点证明":能出流、能双路、能零拷贝、能 suspend。但从产品角度还缺一个问题——**连续跑一千次还会不会坏**。相机子系统最典型的失效模式不是"一开始就不工作",而是:
+
+- 反复开关流若干次后 ISP 卡在 stream 未停状态,此后任何 `VIDIOC_DQBUF` 都阻塞;
+- 长时间采集累积 DMA 队列不匹配,出现偶发丢帧;
+- 停流后休眠、唤醒后流起不来;
+- 失败本身不报错,只是"没数据",难定位。
+
+所以本节做的是**可重复的压测 + 自动取证 + 一条命令出报告**。
+
+## 2. 工具
+
+### 2.1 `tools/st_burn.c`(板端 C,压测执行器)
+
+两种模式,输出机器可读的单行:
+
+| 模式 | 命令 | 输出 |
+|---|---|---|
+| 开关流循环 | `st_burn -d /dev/video5 -w 1920 -h 1080 -c 300` | `CYCLE cycles= ok= fail= fail_pct= ff_min/avg/p50/max` |
+| 连续采集 | `st_burn -d /dev/video5 -w 1920 -h 1080 -t 180` | `LONG frames= fps= gaps= loss_pct= min_ms/med_ms/max_ms rc=` |
+
+要点:
+
+- 每轮循环完整走 `open → VIDIOC_S_FMT → REQBUFS(4) → QBUF×4 → STREAMON → 等首帧 → STREAMOFF → close`,**首帧时延**取 `STREAMON` 返回到第一次 `DQBUF` 成功之间的墙钟时间——这是用户按下"拍照"后真正的等待时间。
+- `loss_pct` 的掉帧定义:**帧间隔超过中位数 2 倍的格数 + poll 超时次数**,再除以总格数。不用"理论帧率"当分母,因为 3A 调曝光会让帧率本身浮动,按理论值算会把正常工作判成丢帧。
+- `st_burn` 只用 mmap,不写文件,避免 IO 干扰。
+
+### 2.2 `tools/st_regress.sh`(编排 + 取证 + 报告)
+
+```
+sh /root/st_regress.sh --cycles 300 --long 180 [--with-suspend]
+```
+
+四阶段:预检 → 开关流 → 连续采集 → (可选)停流后 suspend/resume → 汇总。任一阶段失败会自动:
+
+1. `dump_fault`:落 `dmesg` 末 80 行、`media-ctl -p` 的 media0/media1 拓扑、`/dev/video*` 与 `/dev/v4l-subdev*` 节点清单到 `/root/st_logs/<时间戳>/`;
+2. `try_recover`:清残留采集进程、重试 3 轮,并**记录恢复耗时**;
+3. 报告判定为 FAIL。
+
+报告落在 `/root/st_report.txt`,一条命令即生成。
+
+## 3. 实测结果(内核 `#40`,`2026-10-22`)
+
+### 3.1 开关流 300 轮
+
+```
+CYCLE cycles=300 ok=300 fail=0 fail_pct=0.00
+      ff_min=435.2 ff_avg=445.6 ff_p50=445.3 ff_max=459.6
+```
+
+- **失败率 0.00%**(300/300)
+- 首帧时延 435–460 ms,分布极窄(极差 24 ms,占均值 5.4%)→ 没有"偶尔慢一下"的抖动
+- 这个 445 ms 的量级是合理的:传感器 `power_on` + 1080p 初始化表写入 + ISP 首次参数下发 + 第一帧积分时间
+
+### 3.2 连续采集 180 s
+
+```
+LONG secs=180 frames=2694 fps=14.96 gaps=0 loss_pct=0.000
+     min_ms=62.0 med_ms=66.7 max_ms=70.5 rc=0
+```
+
+- 2694 帧 / 180 s = 14.96 fps,与 4K 模式 14.1 fps、1080p 29.3 fps 的历史数据不冲突(此处 `-w 1920 -h 1080` 走 rkisp 输出,但传感器仍是 4K 模式出流,所以帧率上限由传感器 4K 决定)
+- **掉帧率 0.000%**,`gaps=0`
+- 帧间隔 62.0 / 66.7 / 70.5 ms(最小/中位/最大),抖动 ±6%,没有长尾
+
+### 3.3 判定
+
+**PASS**。
+
+## 4. 踩到的坑(重要)
+
+### 4.1 停 `rkaiq_3A` 会把 ISP 卡死
+
+第一版脚本在预检里 `systemctl stop rkaiq_3A`,结果 300 轮 **全部失败**(`fail=200/250` 持续到 100%),`dmesg` 每轮都是:
+
+```
+rkisp-vir0: rkisp_stream_stop id:0 timeout
+```
+
+而"3A 保持运行"时同一命令 3/3、300/300 全过。原因与 docs/26 §7.6 记录的一致:**daemon 被停掉时 ISP 若处于半启动状态,后续流永远起不来**,只有重启(甚至断电)能恢复。
+
+**修正**:压测时**不停 3A**,让它保持运行。这也更接近真实使用场景——产品里 3A 本来就是常驻的。
+
+> 注:报告 §0 的"处置:停 3A"文案是改动前的措辞,实际行为是保持 3A 运行(`procs=1`),待下一版修文案。
+
+### 4.2 脚本里 `pkill -f st_regress` 会杀掉自己
+
+`pkill -f` 按整条命令行匹配,而 ssh 远程执行的命令行里就含 `st_regress`,于是清理残留进程时把当前 shell 也杀了(表现为 ssh 无输出、exit 1)。改成 `pidof st_burn | xargs -r kill`。
+
+### 4.3 达 600 s 的 ssh 会转后台
+
+300 轮 × 约 1 s + 180 s 采集 ≈ 8 min,超过执行器单次 10 min 的阈值会转后台作业。用后台作业 + 轮询板端日志的方式观察进度更稳。
+
+## 5. 复现
+
+```bash
+# 板上
+gcc -O2 -o /root/st_burn /root/st_burn.c
+sh /root/st_regress.sh --cycles 300 --long 180
+sed -n '1,30p' /root/st_report.txt
+```
+
+## 6. 结论与边界
+
+- **开关流 300 次失败率 0、连续 180 s 掉帧 0、首帧时延稳定在 445±12 ms** —— 这条链路的稳定性达到可交付水平。
+- 边界:①`--with-suspend` 已单独查过一轮,结论是**本硬件无可用唤醒源、无法验证退出**(见 §7);②3A 必须常驻,停 3A 的路径本身就是坏的(这是已知缺陷,已记入 docs/26 §7.6);③循环次数 300 是单次成本与置信度的折中,更长跑(数千次)建议放到产线老化测试里做。
+
+## 7. 停流后 suspend/resume:本硬件不具备远程验证条件(实测三次,结论为否)
+
+这一节记录一个**失败的验证**。写下来不是为了"留个坑",而是因为它的结论是硬件级的:换谁来写代码都过不去,除非换硬件或改接线。
+
+### 7.1 协议
+
+停流 → 确认 3A 退出、`rkisp` 已 runtime-suspend → `echo mem > /sys/power/state` → 唤醒 → 检查 `PM: resume` 与恢复出流。
+判据:①能进去;②能被唤醒;③唤醒后 `st_burn -c 5` 能正常出流。
+
+### 7.2 三次尝试与现象
+
+| 次数 | 唤醒源设置 | 现象 |
+|---|---|---|
+| 1 | `echo "+10" > /sys/class/rtc/rtc0/wakealarm` | 进入 suspend 后失联,永久不醒,只能断电 |
+| 2 | 无(直接 `echo freeze`) | 同上 |
+| 3 | 先探测 RTC,再走带校验的 `susp_core.sh` | **在写入唤醒源之前就 `ABORT`**,板子没睡——正是这次探出了根因 |
+
+第 3 次的日志(实测):
+
+```
+wakealarm=[cat: /sys/class/rtc/rtc0/wakealarm: No such file or directory]
+=== arm wakealarm ===
+cannot create /sys/class/rtc/rtc0/wakealarm: Directory nonexistent
+RESULT=ABORT rtc wakealarm 不可写/不可读回,拒绝 suspend(否则无法唤醒)
+```
+
+### 7.3 根因:没有任何"人能触发"的唤醒源
+
+```
+$ ls /dev/rtc*
+ls: cannot access '/dev/rtc*': No such file or directory
+$ ls /sys/class/rtc
+（目录不存在）
+
+$ ls /sys/class/wakeup/*/name
+fdea0400.vdpu    fdee0000.vepu    fdef0000.iep     fded0000.jpegd
+0-0020           rk805-pwrkey     fdf40000.rkvenc  fdf80200.rkvdec
+```
+
+- **没有 RTC 设备**:板上未加载/未实例化 RTC(PMIC 虽有 RTC 能力,但无对应设备节点),所以 `wakealarm` 这条路根本不存在。
+- 唤醒源里唯一可能由人触发的是 **`rk805-pwrkey`**,但这块底板把它直接接成了**硬开关**——只有开/关两态,没有"按一下"的按键,开关一掰就是整机断电,不是唤醒事件。
+- 其余 6 个(vdpu/vepu/iep/jpegd/rkvenc/rkvdec)是多媒体模块的工作状态唤醒能力,人不参与,无法用来唤醒。
+
+因此 `echo mem` 之后**唯一的退出方式是断电重上电**。前两次"挂死"不是内核崩溃,而是系统正常地睡死在一个没有唤醒事件的状态里——进去前的状态本身是干净的:
+
+```
+=== before ===
+#40 SMP Thu Oct 22 10:41:25 UTC 2026
+freeze mem
+3A=inactive procs=0
+rkisp: suspended
+```
+
+注意这里 `3A=inactive`、`procs=0`、`rkisp` 已 `suspended`,即**"停流后休眠"这个被测场景本身是成立的**:停流后 ISP 确实进了 runtime-suspend,3A 也确实退出了。卡住的只是"唤醒"这一步,而它与驱动代码无关。
+
+### 7.4 结论
+
+- 判据①**通过**:能进入 `mem`/`freeze`,且进入前状态干净(无残留进程、ISP 已 runtime-suspend)。
+- 判据②**无法验证**:本硬件没有可用唤醒源,退出只能断电,因此"唤醒"这一步在任何软件实现下都无法远程复现。
+- 判据③**无法验证**(依赖②)。
+- **不能写"suspend 不可用"**:进入路径是正常的,`pm_runtime` 的空闲休眠(docs/20 已实测 probe→suspended、出流→active、停流 2 s→suspended)才是量产形态下真正的省电机制;系统级 suspend 只是附加能力。
+- 写"**不具备远程验证条件**"才是准确表述。同时**回溯更正了 docs/20 §3**:那里此前记的"系统 suspend/resume 通过"用的是 `pm_test=devices`(内核自测模式,5 秒后由内核自己恢复),**属于模拟,不是真实 suspend**;README 的结果 #9 与 L4 里程碑也一并降级为 ⚠️。
+
+### 7.5 若日后确需验证
+
+按成本从低到高:
+
+1. **接串口 COM7**,进入 suspend 后用串口无法唤醒(串口不是唤醒源),但可以在上电后立刻看 `dmesg` 里上一次的 `PM: suspend entry/exit` 记录,至少能证明"是否进入"。
+2. **给板子加一个可触发的唤醒源**:USB 键盘/鼠标(`echo enabled > /sys/class/wakeup/.../power/wakeup` 后插拔)、或把 `rk805-pwrkey` 从硬开关改回按键。
+3. **启用 PMIC RTC**:`rk805` 本身带 RTC,若 DTS 里补上 `rtc` 节点并启用对应驱动,`wakealarm` 这条路就能恢复,这是最干净的方案(也是量产板通常的做法)。
+
+> 教训:做 suspend 验证前,**先确认唤醒源可用并读回校验**,再执行 `echo mem`。没有校验的 suspend 测试,失败时无法区分"板子坏了"和"没人叫醒它"——本项目为此多断了两次电。
+>
+> 已加固的两个工具(不会再睡死板子):
+> - `tools/st_regress.sh --with-suspend`:先读回校验 `wakealarm`,装不上就打印 `RESULT=SKIPPED_NO_WAKEUP_SOURCE` 并跳过整个 P3 阶段;
+> - `tools/regression/suspend_test.sh`:装不上就**自动降级** `pm_test=devices` 模拟模式,并在日志与 `suspend.mode` 文件里标注 `sim`,避免把模拟耗时当成真实恢复时间。
+
+### §7.1 带流 suspend 保护(2026-10-25,#47 内核)
+
+**定位是"保护",不是"修复"**——真实唤醒仍无验证手段(docs/27 §7 的结论不变)。两层:
+
+1. **驱动层**:`ov8858_sm_system_suspend` 在 `streaming` 时返回 `-EBUSY`,PM core 在该回调处中止整个挂起。
+   板端证据(`pm_test=devices` + 带流 `echo mem`):`echo mem` 返回 I/O error(MEM_RC=1),
+   dmesg `Abort: Callback failed on 5-0036 in ov8858_sm_system_suspend+0x0/0x6c returned -16`
+   (=-EBUSY)+ `PM: Some devices failed to suspend`,板子存活。
+2. **应用层**:`tools/suspend_guard.sh`——`/dev/video*` 仍被占用时拒绝执行挂起;`mem|devices`
+   子命令先检查后动手。
+
+空闲路径(不带流)的 `pm_test=devices` 干跑通过(rc=0);测试期间网络设备随 devices 挂起会断开
+SSH,属预期副作用,需脱离 SSH 跑(noHup + 日志轮询)。

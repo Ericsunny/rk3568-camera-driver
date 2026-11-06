@@ -4,7 +4,7 @@
 
 ## `h264_to_mp4.py` —— 离线封装
 
-`python tools/h264_to_mp4.py input.h264 output.mp4 --fps 15` 使用 FFmpeg 复制裸 H.264 码流到 MP4，并用 FFprobe 比较解码帧数。必须自行提供近似恒定帧率；无法恢复原始采集时间戳，帧数一致也不能证明时间或画面完全正确。工具拒绝覆盖已有文件；封装失败或帧数不匹配时输出不可用。输入和输出的验证范围及演示计划见 [事件录像演示计划](../docs/42-事件录像演示与板测计划.md)。
+`python tools/h264_to_mp4.py input.h264 output.mp4 --fps 15` 使用 FFmpeg 复制裸 H.264 码流到 MP4，并用 FFprobe 比较解码帧数。必须自行提供近似恒定帧率；无法恢复原始采集时间戳，帧数一致也不能证明时间或画面完全正确。工具拒绝覆盖已有文件；封装失败或帧数不匹配时输出不可用。输入和输出的验证范围及演示计划见 [事件录像演示计划](../docs/acceptance/recording-demo-plan.md)。
 
 ## `iq_patch_smartrun.py`
 
@@ -25,7 +25,7 @@ Thread 9 "xc:GrpMsgThrd" received signal SIGSEGV
 补上这 13 行 JSON 后,同一块板、同一个库:**600 帧 / 40.1 s 不崩**,AE 收敛到 Y≈47,
 AWB 收敛到 U−1.5 / V−2.7。
 
-> ⚠️ 这组数只是"单次能跑",**不代表 3A 可用**:后面的配对 A/B(`docs/21-L2-AWB.md` §8)显示
+> ⚠️ 这组数只是"单次能跑",**不代表 3A 可用**:后面的配对 A/B(`docs/image/awb.md` §8)显示
 > rkaiq 三轮末态 Y = 181 / 51 / 75,AE 根本不可重复,日志里 `invalid main scene len`、
 > `Can not get isp params buffer` 每帧都报。补丁的功劳只有一个:**不再崩**。
 
@@ -137,7 +137,7 @@ bash /root/pair_ab.sh
 
 数据落点:`/root/ab/{A.nv12,B.final.nv12,A_grab.log,B_mini3a.log,rkaiq.log}`。
 
-结果见 `docs/21-L2-AWB.md` §8:mini3a 两轮逐位可重复(U/V 精确 128、AE 稳定 Y≈113),
+结果见 `docs/image/awb.md` §8:mini3a 两轮逐位可重复(U/V 精确 128、AE 稳定 Y≈113),
 rkaiq 三轮末态 Y = 181 / 51 / 75(3.6 倍漂移),CPU 却只有 mini3a 的 1/13。
 
 **那个 1/13 是坏 daemon 的数字**——修好版本后见 §9 与下一节。

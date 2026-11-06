@@ -1,0 +1,6 @@
+2026-11-05: scp operations exit 0; PC and board MD5 values match.
+Name                PC MD5                            Board MD5
+st_burn.c           ae5c51e85c0ff75a2780a9a7f4886ecc ae5c51e85c0ff75a2780a9a7f4886ecc
+W5-cycles-v2.sh     12b0503ad38ef8605e5e9c24762ceebe 12b0503ad38ef8605e5e9c24762ceebe
+st_burn             f35e0ffb9c5a7925a7f9d87a640c81ac f35e0ffb9c5a7925a7f9d87a640c81ac
+Pre-registration: a4cc7dd; this v2 protocol was committed before starting W5.

@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "format": {
+    "packing": "raw10p",
+    "bayer_at_frame_origin": "BGGR",
+    "width": 1632,
+    "height": 1224,
+    "stride_bytes": 2048,
+    "roi": {
+      "x": 0,
+      "y": 0,
+      "width": 1632,
+      "height": 1224
+    }
+  },
+  "frames": [
+    {
+      "path": "cif-first.raw",
+      "sha256": "4c00c51c721ed29214446e1f2ab646fd55cc3ce3615ac0fb7ec6bb75c1eb1e16"
+    }
+  ],
+  "hot_threshold_dn_strictly_greater": null,
+  "channels": {
+    "R": {
+      "pixels_per_frame": 499392,
+      "sample_count": 499392,
+      "mean_dn": 467.0569071991542,
+      "pooled_std_dn": 296.1386202231854,
+      "temporal_rms_dn": null,
+      "clipped_samples_at_1023": 5591,
+      "above_threshold_pixels": null
+    },
+    "Gr": {
+      "pixels_per_frame": 499392,
+      "sample_count": 499392,
+      "mean_dn": 496.9869561386646,
+      "pooled_std_dn": 267.1197236021652,
+      "temporal_rms_dn": null,
+      "clipped_samples_at_1023": 5858,
+      "above_threshold_pixels": null
+    },
+    "Gb": {
+      "pixels_per_frame": 499392,
+      "sample_count": 499392,
+      "mean_dn": 457.25922321543,
+      "pooled_std_dn": 296.0388446099897,
+      "temporal_rms_dn": null,
+      "clipped_samples_at_1023": 6663,
+      "above_threshold_pixels": null
+    },
+    "B": {
+      "pixels_per_frame": 499392,
+      "sample_count": 499392,
+      "mean_dn": 445.27439166025886,
+      "pooled_std_dn": 251.67650471072358,
+      "temporal_rms_dn": null,
+      "clipped_samples_at_1023": 6562,
+      "above_threshold_pixels": null
+    }
+  },
+  "interpretation": "DN statistics only; dark fixed-scene and capture controls are not verified."
+}

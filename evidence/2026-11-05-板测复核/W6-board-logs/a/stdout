@@ -1,0 +1,7 @@
+=== zc_npu: mode=a frames=30 dev=/dev/video5 ===
+model: in 640x640x3 INT8, out 9
+native input attr: dims=[1,640,640,3] type=2 passthrough=0 size_with_stride=1228800
+capture 3840x2160 NV12
+librga fail to get driver version! Compatibility mode will be enabled.
+
+rga_api version 1.9.2_[1]

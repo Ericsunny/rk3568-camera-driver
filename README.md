@@ -169,7 +169,7 @@ driver/ov8858_sm/   从 datasheet 裸写的 OV8858 sensor 驱动(1227 行 .c + 4
 zerocopy/           V4L2 零拷贝链路:EXPBUF→dmabuf→RGA→NPU,三模式 perf 对比
 mini3a/             用户态 3A 闭环(采集线程 + AE/AWB 控制环)
 tools/              evrec(事件录像+RTSP)/ camd(双消费者)/ 自检/回归/IQ 补丁/对焦量化等全部工具
-docs/               32 份(31 份编号 08–41 + manifest):任务书、排障复盘、对照报告、验收与板测设计
+docs/               34 份(33 份编号 08–43 + manifest):任务书、排障复盘、对照报告、验收与板测设计
 evidence/           实测证据图与原始输出(第一帧/双路预览/anchor 修复前后/回归数据…)
 ```
 

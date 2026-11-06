@@ -1,0 +1,21 @@
+host_utc_before=2026-11-05T11:32:09.0054347Z
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+COMMAND
+python3 /tmp/w6-test-20261105-7d42/tools/tests/test_w6_trace_monitor.py
+test_app_whitelist_does_not_hide_cpu_fallback (__main__.TraceTest) ... ok
+test_closed_device_and_failed_rga_return (__main__.TraceTest) ... ok
+test_kernel_whitelist_is_narrow_and_time_bounded (__main__.TraceTest) ... ok
+test_missing_or_failed_hardware_submission_stops (__main__.TraceTest) ... ok
+test_preflight_rejects_hot_or_full (__main__.TraceTest) ... ok
+test_successful_ioctl_between_each_marker (__main__.TraceTest) ... ok
+test_supervisor_stops_on_missing_ioctl_and_new_kernel_error (__main__.TraceTest) ... ok
+test_supervisor_with_simulated_tracer_and_logger (__main__.TraceTest) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 1.562s
+
+OK
+ssh_exit=0
+host_utc_after=2026-11-05T11:32:11.1541923Z

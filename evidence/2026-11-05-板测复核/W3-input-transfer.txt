@@ -1,0 +1,6 @@
+2026-11-05 preflight: scp operations exit 0, MD5 values match.
+Name           PC MD5                            Board MD5
+capbench.c     7499f0a0adab3e72dce7589c6d7bf436 7499f0a0adab3e72dce7589c6d7bf436
+W3-dual.sh     ed2c26d1e4ea611aa6ad805979db6c18 ed2c26d1e4ea611aa6ad805979db6c18
+capbench       72baf7f999b953b247aff5a084e63f18 72baf7f999b953b247aff5a084e63f18
+Pre-registration: cdb46ed. Binary was built on the board in the private test directory; it is not a driver or service deployment.

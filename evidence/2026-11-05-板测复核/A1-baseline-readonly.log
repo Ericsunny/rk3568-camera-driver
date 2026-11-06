@@ -1,0 +1,84 @@
+host_utc_before=2026-11-05T10:12:17.0460418Z
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+BOARD_UTC
+2026-11-05T10:12:16Z
+ID
+用户id=0(root) 组id=0(root) 组=0(root)
+UNAME
+Linux yckt 4.19.232 #52 SMP Tue Oct 27 06:43:24 UTC 2026 aarch64 aarch64 aarch64 GNU/Linux
+BOOT_ID
+4075751c-4b87-493e-b932-ee0d1f2827ad
+CMDLINE
+storagemedia=emmc androidboot.storagemedia=emmc androidboot.mode=normal root=/dev/mmcblk0p3 earlyprintk console=ttyFIQ0 console=tty1 consoleblank=0 loglevel=7 rootwait rw rootfstype=ext4 androidboot.fwver=ddr-v1.21-2d653b3476,spl-v1.14,bl31-v1.44,bl32-v2.12,uboot-root-06/01/2025
+SERVICE
+active
+    557       1 Sl   /usr/bin/rkaiq_3A_server
+    558       1 S    logger -t rkaiq
+1572484 1572155 Ss   bash -c echo BOARD_UTC; date -u +%Y-%m-%dT%H:%M:%SZ; echo ID; id; echo UNAME; uname -a; echo BOOT_ID; cat /proc/sys/kernel/random/boot_id; echo CMDLINE; cat /proc/cmdline; echo SERVICE; systemctl is-active rkaiq_3A; ps -eo pid,ppid,stat,args | grep -E "[e]vrec|[c]amd|[r]kaiq|[m]ini3a|[r]tsp"; echo FILESYSTEM; df -h /; df -i /; echo BINARIES; for f in /usr/bin/v4l2-ctl /usr/bin/media-ctl /usr/bin/ffmpeg /usr/bin/ffprobe /usr/bin/rkaiq_3A_server /boot/Image-4.19.232; do ls -l "$f"; md5sum "$f"; sha256sum "$f"; done; echo TOOLS; gcc --version | head -1; ffmpeg -version | head -1; ffprobe -version | head -1; python3 --version; echo FORMAT_CIF; v4l2-ctl -d /dev/video0 --get-fmt-video; echo FORMAT_ISP; v4l2-ctl -d /dev/video5 --get-fmt-video; echo BOOT_CONFIG; cat /boot/extlinux/extlinux.conf; echo CANDIDATES; find /root -maxdepth 3 -type f \( -name evrec -o -name camd -o -name zc_dual \) -print
+FILESYSTEM
+文件系统        容量  已用  可用 已用% 挂载点
+/dev/mmcblk0p3   15G  6.7G  6.9G   50% /
+文件系统       Inodes 已用(I) 可用(I) 已用(I)% 挂载点
+/dev/mmcblk0p3 946560  162294  784266      18% /
+BINARIES
+-rwxr-xr-x 1 root root 457152 3月  24  2020 /usr/bin/v4l2-ctl
+cf1162e616ce94dfafa9ae48d30d3606  /usr/bin/v4l2-ctl
+c144dd2d0d0b82c18fcab12f19c9cb7384984562da0ad05dc9f718899c7df969  /usr/bin/v4l2-ctl
+-rwxr-xr-x 1 root root 55912 3月  24  2020 /usr/bin/media-ctl
+f51261c451e81e5ea89224f58fef2859  /usr/bin/media-ctl
+808e9b3497c081b253acddaf36e54fa0cacf031ef4d686e86561c1f98a659261  /usr/bin/media-ctl
+-rwxr-xr-x 1 root root 264416 7月  16  2020 /usr/bin/ffmpeg
+988188a7ffe2c27916b4300fd71c601c  /usr/bin/ffmpeg
+6271f1be9f618713dbd4b4804731c02ef82e575bab752be4269807850d6ae178  /usr/bin/ffmpeg
+-rwxr-xr-x 1 root root 170376 7月  16  2020 /usr/bin/ffprobe
+719d07adebb564888388bc11be68a0d1  /usr/bin/ffprobe
+618303c38fa0f3a86fcd35762eb911cc5269203402e6082fa94770765227a17f  /usr/bin/ffprobe
+-rwxr-xr-x 1 yckj yckj 14664 4月   8  2022 /usr/bin/rkaiq_3A_server
+bc67a0fc6ca1221923132c65c3381aed  /usr/bin/rkaiq_3A_server
+4240e76c22bb979507def7d27d149dcad08ca064daf73e8569ccf58077a1cd7d  /usr/bin/rkaiq_3A_server
+-rwxr-xr-x 1 root root 25868296 6月  18  2024 /boot/Image-4.19.232
+04672f71fffb580fe7c9b48a61b81e2d  /boot/Image-4.19.232
+46a4dab391a9980de22a628ceae4f8d7838fd5215e1b7e1e3f7cd1845e48a5b7  /boot/Image-4.19.232
+TOOLS
+gcc (Ubuntu 9.4.0-1ubuntu1~20.04.3) 9.4.0
+ffmpeg version 4.2.4-1ubuntu0.1 Copyright (c) 2000-2020 the FFmpeg developers
+ffprobe version 4.2.4-1ubuntu0.1 Copyright (c) 2007-2020 the FFmpeg developers
+Python 3.8.10
+FORMAT_CIF
+Format Video Capture Multiplanar:
+	Width/Height      : 1632/1224
+	Pixel Format      : 'BG10' (10-bit Bayer BGBG/GRGR)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : Default
+	Transfer Function : Default
+	YCbCr/HSV Encoding: Default
+	Quantization      : Default
+	Plane 0           :
+	   Bytes per Line : 2048
+	   Size Image     : 2506752
+FORMAT_ISP
+Format Video Capture Multiplanar:
+	Width/Height      : 3840/2160
+	Pixel Format      : 'NV12' (Y/CbCr 4:2:0)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : Default
+	Transfer Function : Default
+	YCbCr/HSV Encoding: Default
+	Quantization      : Full Range
+	Plane 0           :
+	   Bytes per Line : 3840
+	   Size Image     : 12441600
+BOOT_CONFIG
+label kernel-4.19.232
+	kernel /Image-4.19.232
+	devicetreedir /
+	append  root=/dev/mmcblk0p3 earlyprintk console=ttyFIQ0 console=tty1 consoleblank=0 loglevel=7 rootwait rw rootfstype=ext4 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1 switolb=1 coherent_pool=1m
+CANDIDATES
+ssh_exit=0
+host_utc_after=2026-11-05T10:12:21.0029475Z

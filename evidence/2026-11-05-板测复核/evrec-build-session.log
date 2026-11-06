@@ -1,0 +1,14 @@
+host_utc_before=2026-11-05T10:51:09.0568867Z
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+COMMAND
+gcc -O2 -Wall -pthread -DHAVE_RGA -DHAVE_RKNN -I/usr/include/rga -I/root/npu/3rdparty/rknpu2/include -o evrec-review evrec.c rtsp_hub.c -lrockchip_mpp -lrga -lrknnrt -lm
+STDOUT
+STDERR
+EXIT=0
+evrec-review: ELF 64-bit LSB shared object, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=44df769001bcbb10ead24a928fe051cec514c345, for GNU/Linux 3.7.0, not stripped
+d1a436bfcb0c3080465ec4bcb9b0d1c5  evrec-review
+031b97122c77b9957c1fd9cdb3c705b7c40503e1448d6a92511e746206b1da42  evrec-review
+ssh_exit=0
+host_utc_after=2026-11-05T10:51:19.4492099Z

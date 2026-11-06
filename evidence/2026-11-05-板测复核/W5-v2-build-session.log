@@ -1,0 +1,18 @@
+host_utc_before=2026-11-05T10:40:53.1816759Z
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+COMMAND
+gcc -O2 -Wall -Wextra -o st_burn st_burn.c
+2026-11-05T10:40:51Z
+STDOUT
+STDERR
+st_burn.c: In function ‘main’:
+st_burn.c:275:5: warning: suggest braces around empty body in an ‘if’ statement [-Wempty-body]
+  275 |     ; /* interval 累积 */
+      |     ^
+EXIT=0
+st_burn: ELF 64-bit LSB shared object, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=aba38b5b650d088fc0afb557d461ac0489f98039, for GNU/Linux 3.7.0, not stripped
+f35e0ffb9c5a7925a7f9d87a640c81ac  st_burn
+ssh_exit=0
+host_utc_after=2026-11-05T10:40:55.7421025Z

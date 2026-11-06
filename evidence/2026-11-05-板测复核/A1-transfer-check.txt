@@ -1,0 +1,6 @@
+2026-11-05: scp -p rkboard:/usr/bin/v4l2-ctl to a unique PC temporary path; scp exit 0.
+PC Get-FileHash MD5: cf1162e616ce94dfafa9ae48d30d3606
+PC Get-FileHash SHA256: c144dd2d0d0b82c18fcab12f19c9cb7384984562da0ad05dc9f718899c7df969
+Board md5sum /usr/bin/v4l2-ctl: cf1162e616ce94dfafa9ae48d30d3606
+Board sha256sum /usr/bin/v4l2-ctl: c144dd2d0d0b82c18fcab12f19c9cb7384984562da0ad05dc9f718899c7df969
+Transfer check only; does not establish correspondence with a particular source commit.

@@ -1,0 +1,97 @@
+--- zc_npu.cpp	2026-11-05 18:33:45.000133128 +0800
++++ zc_npu_review.cpp	2026-11-05 18:33:44.990133127 +0800
+@@ -51,6 +51,7 @@
+ {
+ 	int r;
+ 	do { r = ioctl(fd, req, arg); } while (r < 0 && errno == EINTR);
++	if (r < 0) { perror("W4 ioctl"); exit(1); }
+ 	return r;
+ }
+ static double now_ms(void)
+@@ -327,6 +328,7 @@
+ 		xioctl(fd, VIDIOC_QUERYBUF, &b);
+ 		len[i] = p[0].length;
+ 		mem[i] = mmap(NULL, len[i], PROT_READ | PROT_WRITE, MAP_SHARED, fd, p[0].m.mem_offset);
++		if (mem[i] == MAP_FAILED) { perror("W4 mmap"); return 1; }
+ 	}
+ 	/* 一次性导出所有 buffer 的 dmabuf fd(模式 C 用):
+ 	 * 原来每帧都 VIDIOC_EXPBUF + close,内核要做 dma-buf attach/detach,
+@@ -365,6 +367,7 @@
+ 	double wall0 = now_ms();
+ 	double t_cap = 0, t_pre = 0, t_run = 0, t_post = 0;
+ 	int total_boxes = 0;
++	int completed = 0;
+ 
+ 	for (int f = 0; f < frames; f++) {
+ 		struct v4l2_buffer b; struct v4l2_plane p[VIDEO_MAX_PLANES];
+@@ -389,7 +392,7 @@
+ 			rga_buffer_t d; memset(&d, 0, sizeof d);
+ 			d.vir_addr = host_rgb; d.width = OUT_W; d.height = OUT_H;
+ 			d.wstride = OUT_W; d.hstride = OUT_H; d.format = RK_FORMAT_RGB_888;
+-			imresize(s, d);
++			if (imresize(s, d) != IM_STATUS_SUCCESS) { fprintf(stderr, "W4 RGA failed\n"); break; }
+ 		} else if (mode == 'b') {
+ 			rga_buffer_t s; memset(&s, 0, sizeof s);
+ 			s.vir_addr = (void *)src_va; s.width = sw; s.height = sh;
+@@ -397,7 +400,7 @@
+ 			rga_buffer_t d; memset(&d, 0, sizeof d);
+ 			d.vir_addr = host_rgb; d.width = OUT_W; d.height = OUT_H;
+ 			d.wstride = OUT_W; d.hstride = OUT_H; d.format = RK_FORMAT_RGB_888;
+-			imresize(s, d);
++			if (imresize(s, d) != IM_STATUS_SUCCESS) { fprintf(stderr, "W4 RGA failed\n"); break; }
+ 		} else {
+ 			/* C:用 setup 阶段导出的 dmabuf fd,RGA 直接写进 rknn 输入 tensor */
+ 			if (exp_fds[idx] >= 0) {
+@@ -410,6 +413,7 @@
+ 				d.wstride = OUT_W; d.hstride = OUT_H; d.format = RK_FORMAT_RGB_888;
+ 				double q0 = now_ms();
+ 				IM_STATUS st = imresize(s, d);
++				if (st != IM_STATUS_SUCCESS) { fprintf(stderr, "W4 RGA failed\n"); break; }
+ 				double q1 = now_ms();
+ 				/* uint8 -> int8(zp=-128):RGA2 没有 NN 单元,只能做一遍偏置。
+ 				 * 关键优化:"减 128" 在字节上等价于 "xor 0x80",
+@@ -450,6 +454,7 @@
+ 				if (ret < 0) { printf("rknn_run fail %d\n", ret); break; }
+ 			}
+ 		}
++		if (ret < 0) break;
+ 		double t4 = now_ms();
+ 		t_run += t4 - t3;
+ 
+@@ -484,21 +489,25 @@
+ 					canvas[i] = (uint8_t)(src[i] + 128);
+ 			}
+ 			draw_boxes(canvas, OUT_W, OUT_H, boxes);
+-			FILE *pf = fopen("/root/s4_det.ppm", "wb");
++			FILE *pf = fopen("s4_det.ppm", "wb");
+ 			fprintf(pf, "P6\n%d %d\n255\n", OUT_W, OUT_H);
+ 			fwrite(canvas, 1, (size_t)OUT_W * OUT_H * 3, pf);
+ 			fclose(pf);
+-			printf("最后一帧画出 %zu 个框 -> /root/s4_det.ppm\n", boxes.size());
++			printf("最后一帧画出 %zu 个框 -> s4_det.ppm\n", boxes.size());
+ 			if (mode == 'c') free(canvas);
+ 		}
+ 
+ 		xioctl(fd, VIDIOC_QBUF, &b);
++		completed++;
+ 	}
+ 
+ 	xioctl(fd, VIDIOC_STREAMOFF, &btype);
+ 
+ 	getrusage(RUSAGE_SELF, &ru1);
+ 	double wall1 = now_ms();
++	printf("W4 completed=%d requested=%d wall_ms=%.2f throughput_fps=%.2f\n",
++	       completed, frames, wall1-wall0, completed*1000.0/(wall1-wall0));
++	if (completed != frames) return 1;
+ 	double n = frames;
+ 	double cpu_ms = (ru1.ru_utime.tv_sec - ru0.ru_utime.tv_sec) * 1000.0
+ 	              + (ru1.ru_utime.tv_usec - ru0.ru_utime.tv_usec) / 1000.0
+@@ -514,7 +523,7 @@
+ 	       g_copied / (unsigned long long)frames,
+ 	       g_copied / (double)frames / 1048576.0,
+ 	       g_copy_calls / (unsigned long long)frames);
+-	printf("检测框总数 %d (最后一帧见 /root/s4_det.ppm)\n", total_boxes);
++	printf("检测框总数 %d (最后一帧见 s4_det.ppm)\n", total_boxes);
+ 
+ 	return 0;
+ }

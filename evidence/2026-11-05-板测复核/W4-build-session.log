@@ -1,0 +1,38 @@
+host_utc_before=2026-11-05T10:34:06.9286625Z
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+PREPARE
+created isolated source: zc_npu_review.regen.cpp
+a226d7ed7ee46ea28c030e9bf4c12fa8  zc_npu.cpp
+e57dc5d61e1c56ed2fd05b48c2fef144  zc_npu_review.cpp
+e57dc5d61e1c56ed2fd05b48c2fef144  zc_npu_review.regen.cpp
+3fa41d0cdeecbc72528488b8ba29391e  W4-prepare.py
+8511a0814dac572fbd233c9c17d9fc60  W4-modes.sh
+MODEL
+94fde17f2cde08b4f22c022b8674f116  /root/npu/examples/yolov8/model/yolov8n_rk3568_i8.rknn
+COMMAND
+g++ -O2 -Wall -I/usr/include/rga -I/root/npu/3rdparty/rknpu2/include -o zc_npu_review zc_npu_review.cpp -lrga -lrknnrt -lpthread
+2026-11-05T10:34:05Z
+STDOUT
+STDERR
+zc_npu_review.cpp: In function ‘int decode_yolov8(rknn_tensor_attr*, int8_t**, std::vector<box>&)’:
+zc_npu_review.cpp:98:20: warning: comparison of integer expressions of different signedness: ‘uint32_t’ {aka ‘unsigned int’} and ‘int’ [-Wsign-compare]
+   98 |   if (acls.dims[2] != gh || ascr.dims[2] != gh) continue;
+      |       ~~~~~~~~~~~~~^~~~~
+zc_npu_review.cpp:98:42: warning: comparison of integer expressions of different signedness: ‘uint32_t’ {aka ‘unsigned int’} and ‘int’ [-Wsign-compare]
+   98 |   if (acls.dims[2] != gh || ascr.dims[2] != gh) continue;
+      |                             ~~~~~~~~~~~~~^~~~~
+zc_npu_review.cpp:92:6: warning: variable ‘n’ set but not used [-Wunused-but-set-variable]
+   92 |  int n = 0;
+      |      ^
+zc_npu_review.cpp: In function ‘int main(int, char**)’:
+zc_npu_review.cpp:278:25: warning: variable ‘last_boxes’ set but not used [-Wunused-but-set-variable]
+  278 |   int total = 0; size_t last_boxes = 0;
+      |                         ^~~~~~~~~~
+EXIT=0
+zc_npu_review: ELF 64-bit LSB shared object, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=64f1fe31f2023ae9724fd4514b0be949e0ccfd9f, for GNU/Linux 3.7.0, not stripped
+5c1abb5687b0389a2dab54fc8e8ea7c2  zc_npu_review
+cd08dbf6cb5c4e0e496665e6e5e60e15  W4-source.patch
+ssh_exit=0
+host_utc_after=2026-11-05T10:34:14.0544338Z

@@ -1,0 +1,39 @@
+host_utc_before=2026-11-05T11:33:55.6031438Z
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+PREPARE
+created isolated source: w4_regen.cpp
+created isolated W6 source: w6_regen.cpp
+MODEL_AND_LIBS
+94fde17f2cde08b4f22c022b8674f116  /root/npu/examples/yolov8/model/yolov8n_rk3568_i8.rknn
+a37ee1d5d664c79836bf6e35b7ef6289  /lib/librknnrt.so
+1d525d6302fe707ef1a4494f88773d17  /lib/aarch64-linux-gnu/librga.so
+TOOL_VERSIONS
+gcc (Ubuntu 9.4.0-1ubuntu1~20.04.3) 9.4.0
+strace -- version 5.5
+Python 3.8.10
+COMMAND
+g++ -O2 -Wall -I/usr/include/rga -I/root/npu/3rdparty/rknpu2/include -o zc_npu_w6 zc_npu_w6.cpp -lrga -lrknnrt -lpthread
+STDOUT
+STDERR
+zc_npu_w6.cpp: In function ‘int decode_yolov8(rknn_tensor_attr*, int8_t**, std::vector<box>&)’:
+zc_npu_w6.cpp:98:20: warning: comparison of integer expressions of different signedness: ‘uint32_t’ {aka ‘unsigned int’} and ‘int’ [-Wsign-compare]
+   98 |   if (acls.dims[2] != gh || ascr.dims[2] != gh) continue;
+      |       ~~~~~~~~~~~~~^~~~~
+zc_npu_w6.cpp:98:42: warning: comparison of integer expressions of different signedness: ‘uint32_t’ {aka ‘unsigned int’} and ‘int’ [-Wsign-compare]
+   98 |   if (acls.dims[2] != gh || ascr.dims[2] != gh) continue;
+      |                             ~~~~~~~~~~~~~^~~~~
+zc_npu_w6.cpp:92:6: warning: variable ‘n’ set but not used [-Wunused-but-set-variable]
+   92 |  int n = 0;
+      |      ^
+zc_npu_w6.cpp: In function ‘int main(int, char**)’:
+zc_npu_w6.cpp:278:25: warning: variable ‘last_boxes’ set but not used [-Wunused-but-set-variable]
+  278 |   int total = 0; size_t last_boxes = 0;
+      |                         ^~~~~~~~~~
+EXIT=0
+zc_npu_w6: ELF 64-bit LSB shared object, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=4bec9d291aaba0f06898b9900b0c04be4d0e8bf7, for GNU/Linux 3.7.0, not stripped
+8fdfe57cb827920acd182b6ab3c07dff  zc_npu_w6
+6285bb095be05685c30735f4ef510a4e  W6-source.patch
+ssh_exit=0
+host_utc_after=2026-11-05T11:34:02.6076355Z

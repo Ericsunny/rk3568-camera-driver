@@ -1,0 +1,4 @@
+2026-11-05: scp W2-cif120.sh to its pre-registered private board directory; scp exit 0.
+PC Get-FileHash MD5: 0459f62a80aa521d1d52924f5660a23c
+Board md5sum: 0459f62a80aa521d1d52924f5660a23c
+Pre-registration commit: e9c7a20 (protocol and script).

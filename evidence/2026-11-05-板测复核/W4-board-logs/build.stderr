@@ -1,0 +1,14 @@
+zc_npu_review.cpp: In function ‘int decode_yolov8(rknn_tensor_attr*, int8_t**, std::vector<box>&)’:
+zc_npu_review.cpp:98:20: warning: comparison of integer expressions of different signedness: ‘uint32_t’ {aka ‘unsigned int’} and ‘int’ [-Wsign-compare]
+   98 |   if (acls.dims[2] != gh || ascr.dims[2] != gh) continue;
+      |       ~~~~~~~~~~~~~^~~~~
+zc_npu_review.cpp:98:42: warning: comparison of integer expressions of different signedness: ‘uint32_t’ {aka ‘unsigned int’} and ‘int’ [-Wsign-compare]
+   98 |   if (acls.dims[2] != gh || ascr.dims[2] != gh) continue;
+      |                             ~~~~~~~~~~~~~^~~~~
+zc_npu_review.cpp:92:6: warning: variable ‘n’ set but not used [-Wunused-but-set-variable]
+   92 |  int n = 0;
+      |      ^
+zc_npu_review.cpp: In function ‘int main(int, char**)’:
+zc_npu_review.cpp:278:25: warning: variable ‘last_boxes’ set but not used [-Wunused-but-set-variable]
+  278 |   int total = 0; size_t last_boxes = 0;
+      |                         ^~~~~~~~~~

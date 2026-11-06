@@ -1,0 +1,68 @@
+host_utc_before=2026-11-05T10:23:47.6752860Z
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+COMMAND
+python3 W2-analyze.py raw10_stats.py cif-first.raw out
+2026-11-05T10:23:46Z
+{
+  "input_size": 2506752,
+  "input_sha256": "4c00c51c721ed29214446e1f2ab646fd55cc3ce3615ac0fb7ec6bb75c1eb1e16",
+  "assumption_for_active_bytes": "2040 bytes per row, 8 bytes padding",
+  "zero_active_byte_rows": 0,
+  "first_non_u10_u16le": {
+    "row": 0,
+    "word": 0,
+    "value": 6191
+  },
+  "packed": {
+    "command": [
+      "/usr/bin/python3",
+      "raw10_stats.py",
+      "--packing",
+      "raw10p",
+      "--bayer",
+      "BGGR",
+      "--width",
+      "1632",
+      "--height",
+      "1224",
+      "--stride",
+      "2048",
+      "cif-first.raw"
+    ],
+    "exit": 0
+  },
+  "u16_probe": {
+    "command": [
+      "/usr/bin/python3",
+      "raw10_stats.py",
+      "--packing",
+      "u16le-lsb",
+      "--bayer",
+      "BGGR",
+      "--width",
+      "1024",
+      "--height",
+      "1224",
+      "--stride",
+      "2048",
+      "cif-first.raw"
+    ],
+    "exit": 2
+  }
+}
+STDERR
+EXIT=0
+OUTPUT_MD5
+9b789c9ba50b5a3bea6cbb9fa74f6fe6  out/analysis.json
+c523913b480d8cee40782db15869e66f  out/packed.stdout
+d41d8cd98f00b204e9800998ecf8427e  out/packed.stderr
+d41d8cd98f00b204e9800998ecf8427e  out/u16_probe.stdout
+b19f2b02316df0a9ce541d07e0376cb1  out/u16_probe.stderr
+9b789c9ba50b5a3bea6cbb9fa74f6fe6  out/command.stdout
+d41d8cd98f00b204e9800998ecf8427e  out/command.stderr
+897316929176464ebc9ad085f31e7284  out/command.exit
+2026-11-05T10:23:50Z
+ssh_exit=0
+host_utc_after=2026-11-05T10:23:51.7510106Z

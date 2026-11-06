@@ -1,0 +1,4 @@
+mode=a
+boot_time_start=33442.067311
+observed_rga_frames=0
+reason=new kernel error: kern  :err   : [33442.939815] rga2: unknown ioctl cmd!

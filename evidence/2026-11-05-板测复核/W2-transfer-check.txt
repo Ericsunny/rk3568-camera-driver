@@ -1,0 +1,25 @@
+2026-11-05: scp board files to a unique PC temporary directory; all scp commands exit 0.
+Name                 PC MD5                            Board MD5
+cif-first.raw        24bd2849c4369c864f1fc0da33540e2c 24bd2849c4369c864f1fc0da33540e2c
+W2.stdout            96fb6df088f36098548a1daacca3f6c5 96fb6df088f36098548a1daacca3f6c5
+W2.stderr            d41d8cd98f00b204e9800998ecf8427e d41d8cd98f00b204e9800998ecf8427e
+W2.exit              897316929176464ebc9ad085f31e7284 897316929176464ebc9ad085f31e7284
+W2.capture.stdout    d41d8cd98f00b204e9800998ecf8427e d41d8cd98f00b204e9800998ecf8427e
+W2.capture.stderr    0138f85b58abe39491c9dd7766a4de19 0138f85b58abe39491c9dd7766a4de19
+
+PC to VM input checks:
+cif-first.raw        24bd2849c4369c864f1fc0da33540e2c 24bd2849c4369c864f1fc0da33540e2c
+raw10_stats.py       4acb8eb3ba75995c96470d5e49869736 4acb8eb3ba75995c96470d5e49869736
+W2-analyze.py        f9f5d4d83761bb123955f7196f8420ef f9f5d4d83761bb123955f7196f8420ef
+
+VM to PC output checks (VM MD5 is also recorded in W2-vm-analysis-session.log):
+analysis.json        9b789c9ba50b5a3bea6cbb9fa74f6fe6 9b789c9ba50b5a3bea6cbb9fa74f6fe6
+command.exit         897316929176464ebc9ad085f31e7284 897316929176464ebc9ad085f31e7284
+command.stderr       d41d8cd98f00b204e9800998ecf8427e d41d8cd98f00b204e9800998ecf8427e
+command.stdout       9b789c9ba50b5a3bea6cbb9fa74f6fe6 9b789c9ba50b5a3bea6cbb9fa74f6fe6
+packed.stderr        d41d8cd98f00b204e9800998ecf8427e d41d8cd98f00b204e9800998ecf8427e
+packed.stdout        c523913b480d8cee40782db15869e66f c523913b480d8cee40782db15869e66f
+u16_probe.stderr     b19f2b02316df0a9ce541d07e0376cb1 b19f2b02316df0a9ce541d07e0376cb1
+u16_probe.stdout     d41d8cd98f00b204e9800998ecf8427e d41d8cd98f00b204e9800998ecf8427e
+
+The 120-frame raw file remains on the board; its first frame also remains in PC and VM temporary storage. Neither is in git.

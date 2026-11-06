@@ -1,0 +1,170 @@
+COMMANDS: capbench /dev/video0 8 1632 1224 BG10; capbench /dev/video5 8 3840 2160 NV12; then both concurrently; each timeout 20s
+DUAL_EXITS=0,0
+=== cif-single timing ===
+START_UTC
+2026-11-05T10:27:50Z
+START_UPTIME
+29359.92 108148.19
+FORMAT_BEFORE
+Format Video Capture Multiplanar:
+	Width/Height      : 1632/1224
+	Pixel Format      : 'BG10' (10-bit Bayer BGBG/GRGR)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : Default
+	Transfer Function : Default
+	YCbCr/HSV Encoding: Default
+	Quantization      : Default
+	Plane 0           :
+	   Bytes per Line : 2048
+	   Size Image     : 2506752
+END_UTC
+2026-11-05T10:27:58Z
+END_UPTIME
+29368.21 108179.43
+FORMAT_AFTER
+Format Video Capture Multiplanar:
+	Width/Height      : 1632/1224
+	Pixel Format      : 'BG10' (10-bit Bayer BGBG/GRGR)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : Default
+	Transfer Function : Default
+	YCbCr/HSV Encoding: Default
+	Quantization      : Default
+	Plane 0           :
+	   Bytes per Line : 2048
+	   Size Image     : 2506752
+=== cif-single stdout ===
+/dev/video0   1632x1224 BG10  237 帧   30.02 fps   33.31 ms/帧  CPU    0.4 ms/帧( 1.1%)  每帧   2.39 MB  ->   71.8 MB/s
+=== cif-single stderr ===
+=== cif-single exit ===
+0
+=== isp-single timing ===
+START_UTC
+2026-11-05T10:27:58Z
+START_UPTIME
+29368.23 108179.50
+FORMAT_BEFORE
+Format Video Capture Multiplanar:
+	Width/Height      : 3840/2160
+	Pixel Format      : 'NV12' (Y/CbCr 4:2:0)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : Default
+	Transfer Function : Default
+	YCbCr/HSV Encoding: Default
+	Quantization      : Full Range
+	Plane 0           :
+	   Bytes per Line : 3840
+	   Size Image     : 12441600
+END_UTC
+2026-11-05T10:28:07Z
+END_UPTIME
+29376.57 108210.00
+FORMAT_AFTER
+Format Video Capture Multiplanar:
+	Width/Height      : 3840/2160
+	Pixel Format      : 'NV12' (Y/CbCr 4:2:0)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : Default
+	Transfer Function : Default
+	YCbCr/HSV Encoding: Default
+	Quantization      : Full Range
+	Plane 0           :
+	   Bytes per Line : 3840
+	   Size Image     : 12441600
+=== isp-single stdout ===
+/dev/video5   3840x2160 NV12  114 帧   15.00 fps   66.67 ms/帧  CPU    1.4 ms/帧( 2.0%)  每帧  11.87 MB  ->  178.0 MB/s
+=== isp-single stderr ===
+=== isp-single exit ===
+0
+=== cif-dual timing ===
+START_UTC
+2026-11-05T10:28:07Z
+START_UPTIME
+29376.59 108210.05
+FORMAT_BEFORE
+Format Video Capture Multiplanar:
+	Width/Height      : 1632/1224
+	Pixel Format      : 'BG10' (10-bit Bayer BGBG/GRGR)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : Default
+	Transfer Function : Default
+	YCbCr/HSV Encoding: Default
+	Quantization      : Default
+	Plane 0           :
+	   Bytes per Line : 2048
+	   Size Image     : 2506752
+END_UTC
+2026-11-05T10:28:15Z
+END_UPTIME
+29384.85 108240.14
+FORMAT_AFTER
+Format Video Capture Multiplanar:
+	Width/Height      : 1632/1224
+	Pixel Format      : 'BG10' (10-bit Bayer BGBG/GRGR)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : Default
+	Transfer Function : Default
+	YCbCr/HSV Encoding: Default
+	Quantization      : Default
+	Plane 0           :
+	   Bytes per Line : 2048
+	   Size Image     : 2506752
+=== cif-dual stdout ===
+/dev/video0   1632x1224 BG10  237 帧   30.02 fps   33.31 ms/帧  CPU    0.4 ms/帧( 1.1%)  每帧   2.39 MB  ->   71.8 MB/s
+=== cif-dual stderr ===
+=== cif-dual exit ===
+0
+=== isp-dual timing ===
+START_UTC
+2026-11-05T10:28:07Z
+START_UPTIME
+29376.59 108210.05
+FORMAT_BEFORE
+Format Video Capture Multiplanar:
+	Width/Height      : 3840/2160
+	Pixel Format      : 'NV12' (Y/CbCr 4:2:0)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : Default
+	Transfer Function : Default
+	YCbCr/HSV Encoding: Default
+	Quantization      : Full Range
+	Plane 0           :
+	   Bytes per Line : 3840
+	   Size Image     : 12441600
+END_UTC
+2026-11-05T10:28:15Z
+END_UPTIME
+29384.90 108240.23
+FORMAT_AFTER
+Format Video Capture Multiplanar:
+	Width/Height      : 3840/2160
+	Pixel Format      : 'NV12' (Y/CbCr 4:2:0)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : Default
+	Transfer Function : Default
+	YCbCr/HSV Encoding: Default
+	Quantization      : Full Range
+	Plane 0           :
+	   Bytes per Line : 3840
+	   Size Image     : 12441600
+=== isp-dual stdout ===
+/dev/video5   3840x2160 NV12  114 帧   15.00 fps   66.67 ms/帧  CPU    1.4 ms/帧( 1.9%)  每帧  11.87 MB  ->  178.0 MB/s
+=== isp-dual stderr ===
+=== isp-dual exit ===
+0

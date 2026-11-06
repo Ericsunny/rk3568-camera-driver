@@ -1,0 +1,42 @@
+host_utc_before=2026-11-05T11:35:53.7307529Z
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+PREFLIGHT
+2026-11-05T11:35:52Z
+33441.57 123075.00
+FORMAT
+Format Video Capture Multiplanar:
+	Width/Height      : 3840/2160
+	Pixel Format      : 'NV12' (Y/CbCr 4:2:0)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : Default
+	Transfer Function : Default
+	YCbCr/HSV Encoding: Default
+	Quantization      : Full Range
+	Plane 0           :
+	   Bytes per Line : 3840
+	   Size Image     : 12441600
+TEMPERATURE
+46111
+COMMAND
+python3 /root/camera-window/review-20261105-w6-9a2f31/w6_trace_monitor.py --run /root/camera-window/review-20261105-w6-9a2f31/results --binary /root/camera-window/review-20261105-w6-9a2f31/zc_npu_w6 --boot-id 4075751c-4b87-493e-b932-ee0d1f2827ad --service-pid 557 --temperature /sys/class/thermal/thermal_zone0/temp --max-temp 70000 --reserve-mib 2048 --reserve-inodes 1000 --timeout 60
+W6_STDOUT
+START a
+STOP a
+W6_STDERR
+MONITOR_RESULTS
+mode=a
+boot_time_start=33442.067311
+observed_rga_frames=0
+reason=new kernel error: kern  :err   : [33442.939815] rga2: unknown ioctl cmd!
+W6_EXIT=2
+AFTER
+2026-11-05T11:35:53Z
+33443.09 123079.42
+4075751c-4b87-493e-b932-ee0d1f2827ad
+active
+ssh_exit=2
+host_utc_after=2026-11-05T11:35:56.9026262Z

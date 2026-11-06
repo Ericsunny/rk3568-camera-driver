@@ -1,0 +1,155 @@
+host_utc_before=2026-11-05T10:41:38.5348473Z
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+PREFLIGHT
+2026-11-05T10:41:36Z
+30186.42 111141.45
+FORMAT
+Format Video Capture Multiplanar:
+	Width/Height      : 3840/2160
+	Pixel Format      : 'NV12' (Y/CbCr 4:2:0)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : Default
+	Transfer Function : Default
+	YCbCr/HSV Encoding: Default
+	Quantization      : Full Range
+	Plane 0           :
+	   Bytes per Line : 3840
+	   Size Image     : 12441600
+W5_STDOUT
+KERNEL_FOLLOW_NEW_OFFSET=84946
+COMMAND: 100 times timeout 8s <run>/st_burn -d /dev/video5 -w 3840 -h 2160 -c 1; stop on first failure
+START_UTC
+2026-11-05T10:41:38Z
+START_UPTIME
+30187.61 111145.60
+CYCLE_INDEX=1 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=435.2 ff_avg=435.2 ff_p50=435.2 ff_max=435.2
+CYCLE_INDEX=2 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=444.1 ff_avg=444.1 ff_p50=444.1 ff_max=444.1
+CYCLE_INDEX=3 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=430.8 ff_avg=430.8 ff_p50=430.8 ff_max=430.8
+CYCLE_INDEX=4 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=443.0 ff_avg=443.0 ff_p50=443.0 ff_max=443.0
+CYCLE_INDEX=5 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=439.5 ff_avg=439.5 ff_p50=439.5 ff_max=439.5
+CYCLE_INDEX=6 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=433.2 ff_avg=433.2 ff_p50=433.2 ff_max=433.2
+CYCLE_INDEX=7 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=442.1 ff_avg=442.1 ff_p50=442.1 ff_max=442.1
+CYCLE_INDEX=8 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=434.1 ff_avg=434.1 ff_p50=434.1 ff_max=434.1
+CYCLE_INDEX=9 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=433.1 ff_avg=433.1 ff_p50=433.1 ff_max=433.1
+CYCLE_INDEX=10 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=434.3 ff_avg=434.3 ff_p50=434.3 ff_max=434.3
+CYCLE_INDEX=11 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=433.4 ff_avg=433.4 ff_p50=433.4 ff_max=433.4
+CYCLE_INDEX=12 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=439.6 ff_avg=439.6 ff_p50=439.6 ff_max=439.6
+CYCLE_INDEX=13 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=439.7 ff_avg=439.7 ff_p50=439.7 ff_max=439.7
+CYCLE_INDEX=14 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=431.4 ff_avg=431.4 ff_p50=431.4 ff_max=431.4
+CYCLE_INDEX=15 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=437.8 ff_avg=437.8 ff_p50=437.8 ff_max=437.8
+CYCLE_INDEX=16 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=445.9 ff_avg=445.9 ff_p50=445.9 ff_max=445.9
+CYCLE_INDEX=17 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=437.1 ff_avg=437.1 ff_p50=437.1 ff_max=437.1
+CYCLE_INDEX=18 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=439.1 ff_avg=439.1 ff_p50=439.1 ff_max=439.1
+CYCLE_INDEX=19 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=432.3 ff_avg=432.3 ff_p50=432.3 ff_max=432.3
+CYCLE_INDEX=20 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=435.9 ff_avg=435.9 ff_p50=435.9 ff_max=435.9
+CYCLE_INDEX=21 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=432.4 ff_avg=432.4 ff_p50=432.4 ff_max=432.4
+CYCLE_INDEX=22 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=434.2 ff_avg=434.2 ff_p50=434.2 ff_max=434.2
+CYCLE_INDEX=23 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=437.1 ff_avg=437.1 ff_p50=437.1 ff_max=437.1
+CYCLE_INDEX=24 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=437.0 ff_avg=437.0 ff_p50=437.0 ff_max=437.0
+CYCLE_INDEX=25 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=432.4 ff_avg=432.4 ff_p50=432.4 ff_max=432.4
+CYCLE_INDEX=26 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=433.4 ff_avg=433.4 ff_p50=433.4 ff_max=433.4
+CYCLE_INDEX=27 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=433.5 ff_avg=433.5 ff_p50=433.5 ff_max=433.5
+CYCLE_INDEX=28 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=433.9 ff_avg=433.9 ff_p50=433.9 ff_max=433.9
+CYCLE_INDEX=29 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=432.9 ff_avg=432.9 ff_p50=432.9 ff_max=432.9
+CYCLE_INDEX=30 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=435.1 ff_avg=435.1 ff_p50=435.1 ff_max=435.1
+CYCLE_INDEX=31 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=437.7 ff_avg=437.7 ff_p50=437.7 ff_max=437.7
+CYCLE_INDEX=32 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=434.5 ff_avg=434.5 ff_p50=434.5 ff_max=434.5
+CYCLE_INDEX=33 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=434.4 ff_avg=434.4 ff_p50=434.4 ff_max=434.4
+CYCLE_INDEX=34 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=437.6 ff_avg=437.6 ff_p50=437.6 ff_max=437.6
+CYCLE_INDEX=35 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=435.3 ff_avg=435.3 ff_p50=435.3 ff_max=435.3
+CYCLE_INDEX=36 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=437.3 ff_avg=437.3 ff_p50=437.3 ff_max=437.3
+CYCLE_INDEX=37 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=432.2 ff_avg=432.2 ff_p50=432.2 ff_max=432.2
+CYCLE_INDEX=38 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=442.7 ff_avg=442.7 ff_p50=442.7 ff_max=442.7
+CYCLE_INDEX=39 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=431.4 ff_avg=431.4 ff_p50=431.4 ff_max=431.4
+CYCLE_INDEX=40 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=437.2 ff_avg=437.2 ff_p50=437.2 ff_max=437.2
+CYCLE_INDEX=41 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=439.0 ff_avg=439.0 ff_p50=439.0 ff_max=439.0
+CYCLE_INDEX=42 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=437.1 ff_avg=437.1 ff_p50=437.1 ff_max=437.1
+CYCLE_INDEX=43 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=435.0 ff_avg=435.0 ff_p50=435.0 ff_max=435.0
+CYCLE_INDEX=44 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=436.4 ff_avg=436.4 ff_p50=436.4 ff_max=436.4
+CYCLE_INDEX=45 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=433.6 ff_avg=433.6 ff_p50=433.6 ff_max=433.6
+CYCLE_INDEX=46 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=432.2 ff_avg=432.2 ff_p50=432.2 ff_max=432.2
+CYCLE_INDEX=47 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=437.1 ff_avg=437.1 ff_p50=437.1 ff_max=437.1
+CYCLE_INDEX=48 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=439.2 ff_avg=439.2 ff_p50=439.2 ff_max=439.2
+CYCLE_INDEX=49 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=433.6 ff_avg=433.6 ff_p50=433.6 ff_max=433.6
+CYCLE_INDEX=50 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=435.9 ff_avg=435.9 ff_p50=435.9 ff_max=435.9
+CYCLE_INDEX=51 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=438.0 ff_avg=438.0 ff_p50=438.0 ff_max=438.0
+CYCLE_INDEX=52 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=436.0 ff_avg=436.0 ff_p50=436.0 ff_max=436.0
+CYCLE_INDEX=53 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=435.6 ff_avg=435.6 ff_p50=435.6 ff_max=435.6
+CYCLE_INDEX=54 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=436.0 ff_avg=436.0 ff_p50=436.0 ff_max=436.0
+CYCLE_INDEX=55 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=447.8 ff_avg=447.8 ff_p50=447.8 ff_max=447.8
+CYCLE_INDEX=56 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=439.6 ff_avg=439.6 ff_p50=439.6 ff_max=439.6
+CYCLE_INDEX=57 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=447.1 ff_avg=447.1 ff_p50=447.1 ff_max=447.1
+CYCLE_INDEX=58 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=437.3 ff_avg=437.3 ff_p50=437.3 ff_max=437.3
+CYCLE_INDEX=59 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=437.8 ff_avg=437.8 ff_p50=437.8 ff_max=437.8
+CYCLE_INDEX=60 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=440.2 ff_avg=440.2 ff_p50=440.2 ff_max=440.2
+CYCLE_INDEX=61 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=437.0 ff_avg=437.0 ff_p50=437.0 ff_max=437.0
+CYCLE_INDEX=62 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=435.1 ff_avg=435.1 ff_p50=435.1 ff_max=435.1
+CYCLE_INDEX=63 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=433.4 ff_avg=433.4 ff_p50=433.4 ff_max=433.4
+CYCLE_INDEX=64 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=436.7 ff_avg=436.7 ff_p50=436.7 ff_max=436.7
+CYCLE_INDEX=65 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=431.9 ff_avg=431.9 ff_p50=431.9 ff_max=431.9
+CYCLE_INDEX=66 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=439.0 ff_avg=439.0 ff_p50=439.0 ff_max=439.0
+CYCLE_INDEX=67 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=439.8 ff_avg=439.8 ff_p50=439.8 ff_max=439.8
+CYCLE_INDEX=68 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=436.2 ff_avg=436.2 ff_p50=436.2 ff_max=436.2
+CYCLE_INDEX=69 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=439.9 ff_avg=439.9 ff_p50=439.9 ff_max=439.9
+CYCLE_INDEX=70 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=435.6 ff_avg=435.6 ff_p50=435.6 ff_max=435.6
+CYCLE_INDEX=71 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=439.3 ff_avg=439.3 ff_p50=439.3 ff_max=439.3
+CYCLE_INDEX=72 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=438.4 ff_avg=438.4 ff_p50=438.4 ff_max=438.4
+CYCLE_INDEX=73 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=433.9 ff_avg=433.9 ff_p50=433.9 ff_max=433.9
+CYCLE_INDEX=74 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=439.0 ff_avg=439.0 ff_p50=439.0 ff_max=439.0
+CYCLE_INDEX=75 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=432.2 ff_avg=432.2 ff_p50=432.2 ff_max=432.2
+CYCLE_INDEX=76 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=438.9 ff_avg=438.9 ff_p50=438.9 ff_max=438.9
+CYCLE_INDEX=77 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=437.4 ff_avg=437.4 ff_p50=437.4 ff_max=437.4
+CYCLE_INDEX=78 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=436.6 ff_avg=436.6 ff_p50=436.6 ff_max=436.6
+CYCLE_INDEX=79 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=447.1 ff_avg=447.1 ff_p50=447.1 ff_max=447.1
+CYCLE_INDEX=80 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=439.5 ff_avg=439.5 ff_p50=439.5 ff_max=439.5
+CYCLE_INDEX=81 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=435.6 ff_avg=435.6 ff_p50=435.6 ff_max=435.6
+CYCLE_INDEX=82 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=439.5 ff_avg=439.5 ff_p50=439.5 ff_max=439.5
+CYCLE_INDEX=83 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=434.4 ff_avg=434.4 ff_p50=434.4 ff_max=434.4
+CYCLE_INDEX=84 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=436.4 ff_avg=436.4 ff_p50=436.4 ff_max=436.4
+CYCLE_INDEX=85 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=436.3 ff_avg=436.3 ff_p50=436.3 ff_max=436.3
+CYCLE_INDEX=86 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=433.3 ff_avg=433.3 ff_p50=433.3 ff_max=433.3
+CYCLE_INDEX=87 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=433.7 ff_avg=433.7 ff_p50=433.7 ff_max=433.7
+CYCLE_INDEX=88 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=434.0 ff_avg=434.0 ff_p50=434.0 ff_max=434.0
+CYCLE_INDEX=89 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=440.0 ff_avg=440.0 ff_p50=440.0 ff_max=440.0
+CYCLE_INDEX=90 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=434.0 ff_avg=434.0 ff_p50=434.0 ff_max=434.0
+CYCLE_INDEX=91 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=440.1 ff_avg=440.1 ff_p50=440.1 ff_max=440.1
+CYCLE_INDEX=92 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=433.2 ff_avg=433.2 ff_p50=433.2 ff_max=433.2
+CYCLE_INDEX=93 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=437.0 ff_avg=437.0 ff_p50=437.0 ff_max=437.0
+CYCLE_INDEX=94 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=439.1 ff_avg=439.1 ff_p50=439.1 ff_max=439.1
+CYCLE_INDEX=95 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=433.4 ff_avg=433.4 ff_p50=433.4 ff_max=433.4
+CYCLE_INDEX=96 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=436.2 ff_avg=436.2 ff_p50=436.2 ff_max=436.2
+CYCLE_INDEX=97 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=439.5 ff_avg=439.5 ff_p50=439.5 ff_max=439.5
+CYCLE_INDEX=98 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=435.9 ff_avg=435.9 ff_p50=435.9 ff_max=435.9
+CYCLE_INDEX=99 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=434.4 ff_avg=434.4 ff_p50=434.4 ff_max=434.4
+CYCLE_INDEX=100 EXIT=0 CYCLE cycles=1 ok=1 fail=0 fail_pct=0.00 ff_min=443.5 ff_avg=443.5 ff_p50=443.5 ff_max=443.5
+END_UTC
+2026-11-05T10:42:39Z
+END_UPTIME
+30249.14 111355.77
+RESULT=100_FIRST_FRAMES_RECEIVED
+W5_STDERR
+W5_EXIT=0
+AFTER
+2026-11-05T10:42:39Z
+30249.16 111355.81
+4075751c-4b87-493e-b932-ee0d1f2827ad
+active
+Format Video Capture Multiplanar:
+	Width/Height      : 3840/2160
+	Pixel Format      : 'NV12' (Y/CbCr 4:2:0)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : Default
+	Transfer Function : Default
+	YCbCr/HSV Encoding: Default
+	Quantization      : Full Range
+	Plane 0           :
+	   Bytes per Line : 3840
+	   Size Image     : 12441600
+ssh_exit=0
+host_utc_after=2026-11-05T10:42:42.9325964Z

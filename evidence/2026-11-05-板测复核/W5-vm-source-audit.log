@@ -1,0 +1,73 @@
+host_utc_before=2026-11-05T10:45:21.9574250Z
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+VM_KERNEL_TREE
+caaf385a7f9f3d456a91c00cbfddb22f76a45df8
+ M drivers/media/i2c/imx415.c
+85732da5753587d9dd04cb66baad0bd9385403b04d18753b9e881690f3f3de56  drivers/media/i2c/imx415.c
+MODE_2LANE
+static const struct imx415_mode supported_modes_2lane[] = {
+	/*
+	* frame rate = 1 / (Vtt * 1H) = 1 / (VMAX * 1H)
+	* VMAX >= (PIX_VWIDTH / 2) + 46 = height + 46
+	*/
+	{
+		.bus_fmt = MEDIA_BUS_FMT_SGBRG10_1X10,
+		.width = 3864,
+		.height = 2192,
+		.max_fps = {
+			.numerator = 10000,
+			.denominator = 150000,
+		},
+		.exp_def = 0x08ca - 0x08,
+		.hts_def = 0x0898 * IMX415_2LANES * 2,
+		.vts_def = 0x08ca,
+		.global_reg_list = NULL,
+		.reg_list = imx415_linear_10bit_3864x2192_891M_regs_2lane,
+		.hdr_mode = NO_HDR,
+		.mipi_freq_idx = 1,
+		.bpp = 10,
+		.vc[PAD0] = V4L2_MBUS_CSI2_CHANNEL_0,
+		.xvclk = IMX415_XVCLK_FREQ_37M,
+	},
+	{
+WRITE_ARRAY
+static int imx415_write_array(struct i2c_client *client,
+			      const struct regval *regs)
+{
+	u32 i;
+	int ret = 0;
+	if (!regs) {
+		dev_err(&client->dev, "write reg array error\n");
+		return ret;
+	}
+	for (i = 0; ret == 0 && regs[i].addr != REG_NULL; i++) {
+		if (regs[i].addr == REG_DELAY) {
+			usleep_range(regs[i].val * 1000, regs[i].val * 1000 + 500);
+			dev_info(&client->dev, "write reg array, sleep %dms\n", regs[i].val);
+		} else {
+			ret = imx415_write_reg(client, regs[i].addr,
+				IMX415_REG_VALUE_08BIT, regs[i].val);
+		}
+	}
+	return ret;
+}
+
+START_STREAM
+static int __imx415_start_stream(struct imx415 *imx415)
+{
+	int ret;
+
+	if (!imx415->is_thunderboot) {
+		ret = imx415_write_array(imx415->client, imx415->cur_mode->global_reg_list);
+		if (ret)
+			return ret;
+		ret = imx415_write_array(imx415->client, imx415->cur_mode->reg_list);
+		if (ret)
+			return ret;
+	}
+
+	/* In case these controls are set before streaming */
+ssh_exit=0
+host_utc_after=2026-11-05T10:45:22.8152806Z

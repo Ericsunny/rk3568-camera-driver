@@ -1,0 +1,4 @@
+2026-11-05: scp W1-twoframes.sh to the pre-registered private board directory; scp exit 0.
+PC Get-FileHash MD5: 2f215c1f9c90f352c08d06ebf591d7ab
+Board md5sum: 2f215c1f9c90f352c08d06ebf591d7ab
+Pre-registration commit: 1150aaa (protocol and script).

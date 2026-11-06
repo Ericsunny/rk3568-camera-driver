@@ -48,7 +48,7 @@ make apps
 ## 验证与边界
 
 - 历史 RTSP 测试记录包含双客户端并发、慢客户端隔离和事件录像并存场景；测试对应当时的程序版本和环境，不能自动视为当前版本的复测结果。[2026-10-29 板测记录](evidence/2026-10-29-H5板测/README.md)
-- 驱动近期修改有 VM 对象编译记录；没有找到对应当前源码的部署与板测证据。历史出图和回归结果对应当时的内核版本。[编译记录](evidence/2026-11-05-无板夹具与编译/README.md) · [历史验收记录](docs/acceptance/event-recording-2026-10.md)
+- 当前 OV8858 驱动源码已在 VM 隔离副本完成内核增量构建；板上仍运行历史内核。[构建记录](evidence/2026-11-06-ov8858-image-build/README.md) · [历史验收记录](docs/acceptance/event-recording-2026-10.md)
 - 零拷贝是单独的实验链路。`camd --npu-native` 只对输入使用 native 内存，输出仍经 `rknn_outputs_get`；输出 native 的字节对照出现过差异并已回退。[实验说明](zerocopy/README.md) · [输出对照](evidence/2026-10-25-质量保障线/fv_ab2.json)
 - OV8858 走 CIF RAW10；部分历史性能数据的原始附件未完整入库，适用范围见对应记录。
 - 板上 3A 与采集有生命周期约束；运行中的服务和现役环境需要先核实，不能把历史命令直接套用到当前状态。[复现与环境说明](docs/acceptance/reproduction.md)

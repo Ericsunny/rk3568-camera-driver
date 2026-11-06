@@ -1,0 +1,19 @@
+skipping non-regular file "debian/hdrtmp/usr/src/linux-headers-4.19.232/include/dt-bindings/input/linux-event-codes.h"
+>fcsT...... drivers/media/i2c/imx415.c
+>fcsT...... drivers/media/i2c/ov8858_sm.c
+skipping non-regular file "include/dt-bindings/input/linux-event-codes.h"
+>fcsT...... include/generated/compile.h
+skipping non-regular file "tools/testing/selftests/powerpc/copyloops/copyuser_64.S"
+skipping non-regular file "tools/testing/selftests/powerpc/copyloops/copyuser_power7.S"
+skipping non-regular file "tools/testing/selftests/powerpc/copyloops/memcpy_64.S"
+skipping non-regular file "tools/testing/selftests/powerpc/copyloops/memcpy_power7.S"
+skipping non-regular file "tools/testing/selftests/powerpc/primitives/word-at-a-time.h"
+skipping non-regular file "tools/testing/selftests/powerpc/primitives/asm/asm-compat.h"
+skipping non-regular file "tools/testing/selftests/powerpc/primitives/asm/asm-const.h"
+skipping non-regular file "tools/testing/selftests/powerpc/primitives/asm/feature-fixups.h"
+skipping non-regular file "tools/testing/selftests/powerpc/primitives/asm/ppc_asm.h"
+skipping non-regular file "tools/testing/selftests/powerpc/stringloops/memcmp_32.S"
+skipping non-regular file "tools/testing/selftests/powerpc/stringloops/memcmp_64.S"
+skipping non-regular file "tools/testing/selftests/powerpc/stringloops/strlen_32.S"
+skipping non-regular file "tools/testing/selftests/powerpc/vphn/vphn.c"
+skipping non-regular file "tools/testing/selftests/powerpc/vphn/vphn.h"

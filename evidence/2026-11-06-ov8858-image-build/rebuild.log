@@ -1,0 +1,20 @@
+  CALL    scripts/checksyscalls.sh
+  CHK     include/generated/compile.h
+  CC      drivers/media/i2c/imx415.o
+  AR      drivers/media/i2c/built-in.a
+  AR      drivers/media/built-in.a
+fatal: not a git repository (or any of the parent directories): .git
+  AR      drivers/built-in.a
+  GEN     .version
+  CHK     include/generated/compile.h
+  UPD     include/generated/compile.h
+  CC      init/version.o
+  AR      init/built-in.a
+  AR      built-in.a
+  MODPOST vmlinux.o
+  KSYM    .tmp_kallsyms1.o
+  KSYM    .tmp_kallsyms2.o
+  LD      vmlinux
+  SORTEX  vmlinux
+  SYSMAP  System.map
+  OBJCOPY arch/arm64/boot/Image

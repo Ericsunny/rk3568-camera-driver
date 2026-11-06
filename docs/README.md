@@ -17,4 +17,4 @@
 - [版本、3A 与复现环境](35-验收环境与复现命令.md)
 - [源码体检及验证边界](40-全仓体检报告.md)
 
-`docs/` 中其他任务书、探索与交接材料保留其历史上下文；[原首页](https://github.com/Ericsunny/rk3568-camera-driver/blob/b2755646941c2cc3aa1fab1aa3f4d1fa273fa42c/README.md)保留更完整的旧索引。后续任务以当前目标和维护者的实际需求为准，不以历史任务队列或文件数量为完成标准。
+其他文件包含早期实验笔记和环境记录，部分内容已被后续实验修正。[历史首页](https://github.com/Ericsunny/rk3568-camera-driver/blob/b2755646941c2cc3aa1fab1aa3f4d1fa273fa42c/README.md)保留原来的文档索引。

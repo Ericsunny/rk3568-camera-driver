@@ -1,0 +1,15 @@
+host_utc_before=2026-11-06T01:15:58.277136+00:00
+command:date -Ins; date -s '2026-11-06 01:15:56 UTC'; date -Ins; cat /proc/uptime; cat /proc/sys/kernel/random/boot_id
+stdout:
+2024-06-18T04:32:09,343161147+08:00
+2026年 11月 06日 星期五 09:15:56 CST
+2026-11-06T09:15:56,003923792+08:00
+153.21 527.23
+dc415963-ac0d-4795-9c26-39e910da173f
+
+stderr:
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+
+exit=0

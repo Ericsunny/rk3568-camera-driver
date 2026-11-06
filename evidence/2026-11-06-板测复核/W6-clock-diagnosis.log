@@ -1,0 +1,58 @@
+host_utc=2026-11-06T01:21:36.398761+00:00
+board
+command:python3 -c 'import time; print("realtime",time.time()); print("boottime",time.clock_gettime(time.CLOCK_BOOTTIME)); print("monotonic",time.monotonic()); print("raw",time.clock_gettime(time.CLOCK_MONOTONIC_RAW)); print("epoch_at_boot",time.time()-time.clock_gettime(time.CLOCK_BOOTTIME))'; cat /sys/devices/system/clocksource/clocksource0/current_clocksource; cat /proc/sys/kernel/random/boot_id; pgrep -af "[r]kaiq_3A_server"; ps -C zc_npu_w6 -C strace -o pid,ppid,state,comm,args || true
+stdout:
+realtime 1793928095.6351244
+boottime 492.83920138
+monotonic 492.83921363
+raw 492.839173973
+epoch_at_boot 1793927602.7960021
+arch_sys_counter
+dc415963-ac0d-4795-9c26-39e910da173f
+566 /usr/bin/rkaiq_3A_server
+    PID    PPID S COMMAND         COMMAND
+
+stderr:
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+
+exit=0
+vm-source
+command:sed -n '61,78p' "$HOME/rk3568/RK_SDK/kernel/kernel/printk/printk.c"; grep -n 'CONFIG_PRINTK_TIME' "$HOME/rk3568/RK_SDK/kernel/.config"
+stdout:
+#ifdef CONFIG_PRINTK_TIME_FROM_ARM_ARCH_TIMER
+#include <clocksource/arm_arch_timer.h>
+static u64 get_local_clock(void)
+{
+	u64 ns;
+
+	ns = arch_timer_read_counter() * 1000;
+	do_div(ns, 24);
+
+	return ns;
+}
+#else
+static inline u64 get_local_clock(void)
+{
+	return local_clock();
+}
+#endif
+
+6158:CONFIG_PRINTK_TIME=y
+6159:# CONFIG_PRINTK_TIME_FROM_ARM_ARCH_TIMER is not set
+
+stderr:
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+
+exit=0
+Offline parser replay:
+completed=2
+first_begin_epoch=1793927929.265573
+version_query_epoch=1793927929.266613
+compat_query_epoch=1793927929.266877
+first_end_epoch=1793927929.287615
+query_to_compat_us=263.9293670654297
+The monitor did not record its epoch_at_boot value; a later clock sample cannot reconstruct the exact value at trial start. Kernel printk and CLOCK_BOOTTIME are not proven to have identical origins. No additional capture was started.

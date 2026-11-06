@@ -1,0 +1,75 @@
+--- zc_npu_w6.cpp	2026-11-06 09:33:36.493439888 +0800
++++ zc_npu_kmsg.cpp	2026-11-06 09:36:03.600121335 +0800
+@@ -162,6 +162,35 @@
+ 	}
+ }
+ 
++
++/* Test-only markers: these are instrumentation, not driver-generated records. */
++#include <unistd.h>
++#include <errno.h>
++#include <string.h>
++static int w6_init_marker(const char *phase)
++{
++    const char *token = getenv("W6_TOKEN");
++    char message[160];
++    if (!token || strlen(token) != 32 || strspn(token, "0123456789abcdef") != 32) {
++        fprintf(stderr, "W6 marker failed: invalid token\n");
++        return -1;
++    }
++    int n = snprintf(message, sizeof(message), "<6>W6_INIT:%s:%ld:%s\n",
++                     token, (long)getpid(), phase);
++    int fd = open("/dev/kmsg", O_WRONLY | O_CLOEXEC);
++    if (fd < 0) {
++        perror("W6 marker open failed");
++        return -1;
++    }
++    ssize_t written = write(fd, message, (size_t)n);
++    int close_rc = close(fd);
++    if (written != n || close_rc != 0) {
++        fprintf(stderr, "W6 marker write/close failed\n");
++        return -1;
++    }
++    return 0;
++}
++
+ int main(int argc, char **argv)
+ {
+ 	char mode = (argc > 1) ? argv[1][0] : 'a';
+@@ -392,9 +421,11 @@
+ 			rga_buffer_t d; memset(&d, 0, sizeof d);
+ 			d.vir_addr = host_rgb; d.width = OUT_W; d.height = OUT_H;
+ 			d.wstride = OUT_W; d.hstride = OUT_H; d.format = RK_FORMAT_RGB_888;
++			if (f == 0 && w6_init_marker("BEGIN")) break;
+ 			fprintf(stderr, "W6_BEGIN:%d\n", f);
+ 			IM_STATUS w6_status = imresize(s, d);
+ 			fprintf(stderr, "W6_END:%d:%d\n", f, (int)w6_status);
++			if (f == 0 && w6_init_marker("END")) break;
+ 			if (w6_status != IM_STATUS_SUCCESS) { fprintf(stderr, "W4 RGA failed\n"); break; }
+ 		} else if (mode == 'b') {
+ 			rga_buffer_t s; memset(&s, 0, sizeof s);
+@@ -403,9 +434,11 @@
+ 			rga_buffer_t d; memset(&d, 0, sizeof d);
+ 			d.vir_addr = host_rgb; d.width = OUT_W; d.height = OUT_H;
+ 			d.wstride = OUT_W; d.hstride = OUT_H; d.format = RK_FORMAT_RGB_888;
++			if (f == 0 && w6_init_marker("BEGIN")) break;
+ 			fprintf(stderr, "W6_BEGIN:%d\n", f);
+ 			IM_STATUS w6_status = imresize(s, d);
+ 			fprintf(stderr, "W6_END:%d:%d\n", f, (int)w6_status);
++			if (f == 0 && w6_init_marker("END")) break;
+ 			if (w6_status != IM_STATUS_SUCCESS) { fprintf(stderr, "W4 RGA failed\n"); break; }
+ 		} else {
+ 			/* C:用 setup 阶段导出的 dmabuf fd,RGA 直接写进 rknn 输入 tensor */
+@@ -418,9 +451,11 @@
+ 				d.fd = in_mem->fd; d.width = OUT_W; d.height = OUT_H;
+ 				d.wstride = OUT_W; d.hstride = OUT_H; d.format = RK_FORMAT_RGB_888;
+ 				double q0 = now_ms();
+-				fprintf(stderr, "W6_BEGIN:%d\n", f);
++				if (f == 0 && w6_init_marker("BEGIN")) break;
++			fprintf(stderr, "W6_BEGIN:%d\n", f);
+ 				IM_STATUS st = imresize(s, d);
+ 				fprintf(stderr, "W6_END:%d:%d\n", f, (int)st);
++			if (f == 0 && w6_init_marker("END")) break;
+ 				if (st != IM_STATUS_SUCCESS) { fprintf(stderr, "W4 RGA failed\n"); break; }
+ 				double q1 = now_ms();
+ 				/* uint8 -> int8(zp=-128):RGA2 没有 NN 单元,只能做一遍偏置。

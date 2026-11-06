@@ -1,0 +1,53 @@
+host_utc_before=2026-11-05T12:21:11.155957+00:00
+command:
+set -u
+run=/root/camera-window/review-20261105-w6-final-297760c
+bin=/root/camera-window/review-20261105-w6-board-rebuild-30f2594/zc_npu_w6
+mkdir "$run" || exit 2
+cd "$run" || exit 2
+printf 'START\n'; date -Ins; cat /proc/uptime; cat /proc/sys/kernel/random/boot_id; pgrep -af '[r]kaiq_3A_server'; md5sum "$bin" /lib/aarch64-linux-gnu/librga.so /lib/librknnrt.so /root/npu/examples/yolov8/model/yolov8n_rk3568_i8.rknn
+printf 'PRE_SNAPSHOT\n'; dmesg -x >dmesg-before.txt || exit 2
+printf 'RUN\n'; date -Ins; cat /proc/uptime
+RUNS=1 timeout -s TERM 8s strace -f -ttt -yy -s 160 -e trace=write,ioctl,openat,close -e raw=ioctl -o trace.log stdbuf -oL -eL "$bin" a 3 /dev/video5 >stdout 2>stderr
+rc=$?
+printf 'RUN_EXIT=%s\n' "$rc"; printf 'POST_SNAPSHOT\n'; date -Ins; cat /proc/uptime; dmesg -x >dmesg-after.txt
+printf 'AFTER\n'; cat /proc/sys/kernel/random/boot_id; pgrep -af '[r]kaiq_3A_server'; ps -C zc_npu_w6 -C strace -o pid,ppid,state,comm,args || true
+printf 'FILES_MD5\n'; md5sum dmesg-before.txt dmesg-after.txt trace.log stdout stderr
+exit "$rc"
+
+stdout:
+START
+2026-11-05T20:21:09,342967218+08:00
+36158.77 133060.96
+4075751c-4b87-493e-b932-ee0d1f2827ad
+557 /usr/bin/rkaiq_3A_server
+8fdfe57cb827920acd182b6ab3c07dff  /root/camera-window/review-20261105-w6-board-rebuild-30f2594/zc_npu_w6
+1d525d6302fe707ef1a4494f88773d17  /lib/aarch64-linux-gnu/librga.so
+a37ee1d5d664c79836bf6e35b7ef6289  /lib/librknnrt.so
+94fde17f2cde08b4f22c022b8674f116  /root/npu/examples/yolov8/model/yolov8n_rk3568_i8.rknn
+PRE_SNAPSHOT
+RUN
+2026-11-05T20:21:09,510905401+08:00
+36158.94 133061.42
+RUN_EXIT=0
+POST_SNAPSHOT
+2026-11-05T20:21:10,563960882+08:00
+36159.99 133064.98
+AFTER
+4075751c-4b87-493e-b932-ee0d1f2827ad
+557 /usr/bin/rkaiq_3A_server
+    PID    PPID S COMMAND         COMMAND
+FILES_MD5
+d9c539c3f0cc2249be49c715b87a2a21  dmesg-before.txt
+caf1437ac7d435c5ab60dc72a93f6c1f  dmesg-after.txt
+90456d79171637863005c2574ee13fe4  trace.log
+7a82ecf6b59deae422818337bc9a796b  stdout
+5036be3b1681214763e47b3120325221  stderr
+
+stderr:
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+
+ssh_exit=0
+host_utc_after=2026-11-05T12:21:13.992903+00:00

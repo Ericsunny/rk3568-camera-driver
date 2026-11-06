@@ -1,0 +1,40 @@
+host_utc_before=2026-11-05T12:08:03.848940+00:00
+remote_command:
+set -u
+run=/root/camera-window/review-20261105-w6-board-rebuild-30f2594
+cd "$run" || exit 2
+printf 'START\n'; date -Is; cat /proc/sys/kernel/random/boot_id; pgrep -af '[r]kaiq_3A_server'; md5sum zc_npu_w6 w6_trace_monitor.py
+mkdir smoke || exit 2
+python3 -c 'import sys; from pathlib import Path; import w6_trace_monitor as m; sys.exit(m.run("a", Path("/root/camera-window/review-20261105-w6-board-rebuild-30f2594/smoke"), Path("/root/camera-window/review-20261105-w6-board-rebuild-30f2594/zc_npu_w6"), "4075751c-4b87-493e-b932-ee0d1f2827ad", 557, 60, Path("/sys/class/thermal/thermal_zone0/temp"), 70000, 2048*1048576, 1000))'
+rc=$?
+printf 'SMOKE_EXIT=%s\n' "$rc"
+printf 'MONITOR\n'; cat smoke/a/monitor.txt
+printf 'END\n'; date -Is; cat /proc/sys/kernel/random/boot_id; pgrep -af '[r]kaiq_3A_server'; pgrep -af '[z]c_npu_w6|[s]trace.*zc_npu_w6' || true
+exit "$rc"
+
+stdout:
+START
+2026-11-05T20:08:02+08:00
+4075751c-4b87-493e-b932-ee0d1f2827ad
+557 /usr/bin/rkaiq_3A_server
+8fdfe57cb827920acd182b6ab3c07dff  zc_npu_w6
+a76494264b88e34d9ed138f596183b1d  w6_trace_monitor.py
+SMOKE_EXIT=2
+MONITOR
+mode=a
+boot_time_start=35371.697722
+observed_rga_frames=0
+reason=new kernel error: kern  :err   : [35372.554839] rga2: unknown ioctl cmd!
+END
+2026-11-05T20:08:03+08:00
+4075751c-4b87-493e-b932-ee0d1f2827ad
+557 /usr/bin/rkaiq_3A_server
+1974510 bash -c set -u run=/root/camera-window/review-20261105-w6-board-rebuild-30f2594 cd "$run" || exit 2 printf 'START\n'; date -Is; cat /proc/sys/kernel/random/boot_id; pgrep -af '[r]kaiq_3A_server'; md5sum zc_npu_w6 w6_trace_monitor.py mkdir smoke || exit 2 python3 -c 'import sys; from pathlib import Path; import w6_trace_monitor as m; sys.exit(m.run("a", Path("/root/camera-window/review-20261105-w6-board-rebuild-30f2594/smoke"), Path("/root/camera-window/review-20261105-w6-board-rebuild-30f2594/zc_npu_w6"), "4075751c-4b87-493e-b932-ee0d1f2827ad", 557, 60, Path("/sys/class/thermal/thermal_zone0/temp"), 70000, 2048*1048576, 1000))' rc=$? printf 'SMOKE_EXIT=%s\n' "$rc" printf 'MONITOR\n'; cat smoke/a/monitor.txt printf 'END\n'; date -Is; cat /proc/sys/kernel/random/boot_id; pgrep -af '[r]kaiq_3A_server'; pgrep -af '[z]c_npu_w6|[s]trace.*zc_npu_w6' || true exit "$rc" 
+
+stderr:
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+
+ssh_exit=2
+host_utc_after=2026-11-05T12:08:06.669789+00:00

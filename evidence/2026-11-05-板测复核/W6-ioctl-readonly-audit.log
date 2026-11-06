@@ -1,0 +1,90 @@
+host_utc=2026-11-05T12:12:57.763682+00:00
+[VM]
+command: f="$HOME/rk3568/RK_SDK/linux_app/beifen/librga-rockchip/core/hardware/rga_ioctl.h"; printf "HEADER %s\n" "$f"; sha256sum "$f"; sed -n "34,62p;365,377p" "$f"; printf "KERNEL_LEGACY\n"; grep -n -E "RGA_(BLIT_SYNC|GET_VERSION)" "$HOME/rk3568/RK_SDK/kernel/drivers/video/rockchip/rga/rga.h"; printf "SYSROOT_MATCHES\n"; find "$HOME/rk3568/RK_SDK" -path "*sysroot*" -name rga_ioctl.h -print
+stdout:
+HEADER /home/rk3568/rk3568/RK_SDK/linux_app/beifen/librga-rockchip/core/hardware/rga_ioctl.h
+a13389dbadea47e14046b6ec4ceae56b3368cd329711911480f6fc0e1a48f145  /home/rk3568/rk3568/RK_SDK/linux_app/beifen/librga-rockchip/core/hardware/rga_ioctl.h
+#endif
+
+/* Use 'r' as magic number */
+#define RGA_IOC_MAGIC       'r'
+#define RGA_IOW(nr, type)   _IOW(RGA_IOC_MAGIC, nr, type)
+#define RGA_IOR(nr, type)   _IOR(RGA_IOC_MAGIC, nr, type)
+#define RGA_IOWR(nr, type)  _IOWR(RGA_IOC_MAGIC, nr, type)
+
+#define RGA_IOC_GET_DRVIER_VERSION  RGA_IOR(0x1, struct rga_version_t)
+#define RGA_IOC_GET_HW_VERSION      RGA_IOR(0x2, struct rga_hw_versions_t)
+#define RGA_IOC_IMPORT_BUFFER       RGA_IOWR(0x3, struct rga_buffer_pool)
+#define RGA_IOC_RELEASE_BUFFER      RGA_IOW(0x4, struct rga_buffer_pool)
+#define RGA_IOC_REQUEST_CREATE      RGA_IOR(0x5, uint32_t)
+#define RGA_IOC_REQUEST_SUBMIT      RGA_IOWR(0x6, struct rga_user_request)
+#define RGA_IOC_REQUEST_CONFIG      RGA_IOWR(0x7, struct rga_user_request)
+#define RGA_IOC_REQUEST_CANCEL      RGA_IOWR(0x8, uint32_t)
+
+#define RGA_BLIT_SYNC   0x5017
+#define RGA_BLIT_ASYNC  0x5018
+#define RGA_FLUSH       0x5019
+#define RGA_GET_RESULT  0x501a
+#define RGA_GET_VERSION 0x501b
+
+#define RGA2_BLIT_SYNC   0x6017
+#define RGA2_BLIT_ASYNC  0x6018
+#define RGA2_FLUSH       0x6019
+#define RGA2_GET_RESULT  0x601a
+#define RGA2_GET_VERSION 0x601b
+
+#define RGA_VERSION_SIZE    16
+#define RGA_HW_SIZE            5
+
+struct rga_version_t {
+    uint32_t major;
+    uint32_t minor;
+    uint32_t revision;
+    uint8_t str[RGA_VERSION_SIZE];
+};
+
+struct rga_hw_versions_t {
+    struct rga_version_t version[RGA_HW_SIZE];
+    uint32_t size;
+KERNEL_LEGACY
+9:#define RGA_BLIT_SYNC	0x5017
+13:#define RGA_GET_VERSION 0x501b
+SYSROOT_MATCHES
+
+stderr:
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+
+exit=0
+[BOARD]
+command: printf "BOARD_HEADERS\n"; sha256sum /usr/include/rga/rga.h /usr/include/rga/im2d_version.h; grep -n -E "RGA_API_(MAJOR|MINOR|REVISION)_VERSION" /usr/include/rga/im2d_version.h; printf "BOARD_LIB\n"; readlink -f /lib/aarch64-linux-gnu/librga.so; md5sum /lib/aarch64-linux-gnu/librga.so; strings /lib/aarch64-linux-gnu/librga.so | grep -F "librga fail to get driver version! Compatibility mode will be enabled."; printf "BOARD_STATE\n"; date -Is; cat /proc/sys/kernel/random/boot_id; pgrep -af "[r]kaiq_3A_server"; ps -C zc_npu_w6 -C strace -o pid,ppid,state,comm,args || true
+stdout:
+BOARD_HEADERS
+dfec716334dd86595a225767010b9eb821753b12724b3b8fcd8afe3cbf52edc3  /usr/include/rga/rga.h
+e62771ac426339d2f41f0b7bbc77a62c3a32c432d61a15f29e9af96662f3302c  /usr/include/rga/im2d_version.h
+26:#define RGA_API_MAJOR_VERSION       1
+27:#define RGA_API_MINOR_VERSION       10
+28:#define RGA_API_REVISION_VERSION    1
+34:    RGA_VERSION_STR(RGA_API_MAJOR_VERSION) "." \
+35:    RGA_VERSION_STR(RGA_API_MINOR_VERSION) "." \
+36:    RGA_VERSION_STR(RGA_API_REVISION_VERSION) "_[" \
+42:    (RGA_API_MAJOR_VERSION & 0xff) << 24 | \
+43:    (RGA_API_MINOR_VERSION & 0xff) << 16 | \
+44:    (RGA_API_REVISION_VERSION & 0xff) << 8 | \
+BOARD_LIB
+/usr/lib/aarch64-linux-gnu/librga.so.2.1.0
+1d525d6302fe707ef1a4494f88773d17  /lib/aarch64-linux-gnu/librga.so
+librga fail to get driver version! Compatibility mode will be enabled.
+BOARD_STATE
+2026-11-05T20:12:54+08:00
+4075751c-4b87-493e-b932-ee0d1f2827ad
+557 /usr/bin/rkaiq_3A_server
+    PID    PPID S COMMAND         COMMAND
+
+stderr:
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+
+exit=0

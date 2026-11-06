@@ -1,0 +1,7 @@
+8c2b95686862dae11b4fe8a6d7682859  monitor.txt
+572aa0da0b3eed9990eda81bd34baf72  trace.log
+c45b910681ecc22285cc7f1c2a60b455  stdout
+e6068f25244afeaa7d7d9c00c589065b  stderr
+d41d8cd98f00b204e9800998ecf8427e  kernel.stderr
+d9c539c3f0cc2249be49c715b87a2a21  kernel.log
+1fabfb481bb59ff55fcb40bbd740c8ac  source smoke-logs.tar.gz (board and PC)

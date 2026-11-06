@@ -1,0 +1,7 @@
+f3be54b5fed25d6d682d9d5f4ddb1c9e  monitor.txt
+a538e8c53727182f254b774e5db0d797  trace.log
+c45b910681ecc22285cc7f1c2a60b455  stdout
+c98e53fe2f60b63400c908cc68287a8e  stderr
+d41d8cd98f00b204e9800998ecf8427e  kernel.stderr
+11d86277719d66418de901d86d93845c  kernel.log
+977b7824383652cfe399dd871985a02e  abc-stop.tar.gz (board and PC)

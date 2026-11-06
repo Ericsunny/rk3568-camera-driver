@@ -1,0 +1,55 @@
+host_utc_before=2026-11-06T01:17:24.195927+00:00
+command:
+set -u
+base=/root/camera-window/review-20261106-w6-final-c8a9694
+bin=/root/camera-window/review-20261105-w6-board-rebuild-30f2594/zc_npu_w6
+[ "$(cat /proc/sys/kernel/random/boot_id)" = dc415963-ac0d-4795-9c26-39e910da173f ] || exit 2
+[ "$(pgrep -f '^/usr/bin/rkaiq_3A_server$')" = 566 ] || exit 2
+mkdir "$base/confirmation" || exit 2
+cd "$base/confirmation" || exit 2
+printf 'START\n'; date -Ins; cat /proc/uptime; cat /proc/sys/kernel/random/boot_id; md5sum "$bin"; cat /sys/class/thermal/thermal_zone0/temp; df -Pm .; df -Pi .
+dmesg -x >dmesg-before.txt || exit 2
+printf 'RUN\n'; date -Ins; cat /proc/uptime
+RUNS=1 timeout -s TERM 8s strace -f -ttt -yy -s 160 -e trace=write,ioctl,openat,close -e raw=ioctl -o trace.log stdbuf -oL -eL "$bin" a 3 /dev/video5 >stdout 2>stderr
+rc=$?
+printf 'RUN_EXIT=%s\n' "$rc"; date -Ins; cat /proc/uptime; dmesg -x >dmesg-after.txt
+printf 'AFTER\n'; cat /proc/sys/kernel/random/boot_id; pgrep -af '[r]kaiq_3A_server'; ps -C zc_npu_w6 -C strace -o pid,ppid,state,comm,args || true
+md5sum dmesg-before.txt dmesg-after.txt trace.log stdout stderr s4_det.ppm
+exit "$rc"
+
+stdout:
+START
+2026-11-06T09:17:23,436430701+08:00
+240.64 833.63
+dc415963-ac0d-4795-9c26-39e910da173f
+8fdfe57cb827920acd182b6ab3c07dff  /root/camera-window/review-20261105-w6-board-rebuild-30f2594/zc_npu_w6
+38333
+文件系统       1048576-块  已用  可用 配额 挂载点
+/dev/mmcblk0p3      14500  7152  6685  52% /
+文件系统       Inodes 已用(I) 可用(I) 已用(I)% 挂载点
+/dev/mmcblk0p3 946560  162774  783786      18% /
+RUN
+2026-11-06T09:17:23,494670124+08:00
+240.70 833.79
+RUN_EXIT=0
+2026-11-06T09:17:24,531742312+08:00
+241.74 837.29
+AFTER
+dc415963-ac0d-4795-9c26-39e910da173f
+566 /usr/bin/rkaiq_3A_server
+15585 bash -c set -u base=/root/camera-window/review-20261106-w6-final-c8a9694 bin=/root/camera-window/review-20261105-w6-board-rebuild-30f2594/zc_npu_w6 [ "$(cat /proc/sys/kernel/random/boot_id)" = dc415963-ac0d-4795-9c26-39e910da173f ] || exit 2 [ "$(pgrep -f '^/usr/bin/rkaiq_3A_server$')" = 566 ] || exit 2 mkdir "$base/confirmation" || exit 2 cd "$base/confirmation" || exit 2 printf 'START\n'; date -Ins; cat /proc/uptime; cat /proc/sys/kernel/random/boot_id; md5sum "$bin"; cat /sys/class/thermal/thermal_zone0/temp; df -Pm .; df -Pi . dmesg -x >dmesg-before.txt || exit 2 printf 'RUN\n'; date -Ins; cat /proc/uptime RUNS=1 timeout -s TERM 8s strace -f -ttt -yy -s 160 -e trace=write,ioctl,openat,close -e raw=ioctl -o trace.log stdbuf -oL -eL "$bin" a 3 /dev/video5 >stdout 2>stderr rc=$? printf 'RUN_EXIT=%s\n' "$rc"; date -Ins; cat /proc/uptime; dmesg -x >dmesg-after.txt printf 'AFTER\n'; cat /proc/sys/kernel/random/boot_id; pgrep -af '[r]kaiq_3A_server'; ps -C zc_npu_w6 -C strace -o pid,ppid,state,comm,args || true md5sum dmesg-before.txt dmesg-after.txt trace.log stdout stderr s4_det.ppm exit "$rc" 
+    PID    PPID S COMMAND         COMMAND
+c36bae793c06e743d59df0526d24c820  dmesg-before.txt
+0d46e66339c6942fdd4e71f894a630b3  dmesg-after.txt
+e1a70d7ce1f82ec437d94ba999432663  trace.log
+e087eccda19d6e907a5086aefbed6706  stdout
+5036be3b1681214763e47b3120325221  stderr
+
+stderr:
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+md5sum: s4_det.ppm: 没有那个文件或目录
+
+ssh_exit=0
+host_utc_after=2026-11-06T01:17:26.924776+00:00

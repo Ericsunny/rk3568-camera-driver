@@ -1,0 +1,35 @@
+host_utc=2026-11-06T01:33:42.546902+00:00
+command:
+set -eu
+cd /root/camera-window/review-20261106-w6-kmsg-d1d6238
+printf 'INPUT_MD5\n'; md5sum w6_trace_monitor.py w6_kmsg_prepare.py zc_npu_w6.cpp /lib/aarch64-linux-gnu/librga.so /lib/librknnrt.so
+python3 w6_kmsg_prepare.py zc_npu_w6.cpp zc_npu_kmsg.cpp
+diff -u zc_npu_w6.cpp zc_npu_kmsg.cpp > source.patch || test "$?" = 1
+printf 'COMMAND\n%s\n' 'g++ -O2 -Wall -I/usr/include/rga -I/root/npu/3rdparty/rknpu2/include -o zc_npu_kmsg zc_npu_kmsg.cpp -lrga -lrknnrt -lpthread'
+g++ -O2 -Wall -I/usr/include/rga -I/root/npu/3rdparty/rknpu2/include -o zc_npu_kmsg zc_npu_kmsg.cpp -lrga -lrknnrt -lpthread
+printf 'BUILD_MD5\n'; md5sum zc_npu_kmsg.cpp zc_npu_kmsg source.patch
+printf 'LINKS\n'; ldd zc_npu_kmsg
+printf 'DATE\n'; date -Ins
+
+stdout:
+INPUT_MD5
+d015edae37e7f158a21346fc680a2f1c  w6_trace_monitor.py
+842ff3d7cb1611935bee3588ac63b4a6  w6_kmsg_prepare.py
+dbecf7d37e33f0be0ef992f77e1ebe76  zc_npu_w6.cpp
+1d525d6302fe707ef1a4494f88773d17  /lib/aarch64-linux-gnu/librga.so
+a37ee1d5d664c79836bf6e35b7ef6289  /lib/librknnrt.so
+
+stderr:
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+Traceback (most recent call last):
+  File "w6_kmsg_prepare.py", line 68, in <module>
+    main()
+  File "w6_kmsg_prepare.py", line 61, in main
+    text = prepare(Path(sys.argv[1]).read_text(encoding='utf-8'))
+  File "w6_kmsg_prepare.py", line 51, in prepare
+    end = 'fprintf(stderr, "W6_END:%d:%d\\n", f, (int)%s);' % value
+TypeError: %d format: a number is required, not str
+
+exit=1

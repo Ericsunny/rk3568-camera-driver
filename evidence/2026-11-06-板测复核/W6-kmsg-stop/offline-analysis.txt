@@ -1,0 +1,7 @@
+Derived offline from trace and kernel-final; not a performance pass.
+completed_RGA_frames=1
+active_RGA_frame=1
+kernel_init_pid=92541
+kernel_init_state=after
+rga_init_error_count=1
+Marker/PID/probe correlation passes. Full 30-frame run stopped on D-state safety rule; cannot call TraceCheck.finish(30). Live monitor stopped before parsing the accumulated trace, so its observed count is zero.

@@ -1,0 +1,8 @@
+8b1809b859961ac91476b0c05973059e  monitor.txt
+c26aa496bf81fcb974864a93e9d2bef2  trace.log
+aa7b44b0052522afc1c2b911185009c7  kernel-final.log
+c45b910681ecc22285cc7f1c2a60b455  stdout
+3ee99f723beefb25aa9dacd273962cb3  stderr
+d41d8cd98f00b204e9800998ecf8427e  kernel.stderr
+aa7b44b0052522afc1c2b911185009c7  kernel.log
+e33ed462171557d5fbd030584456cc65  kmsg-abc-stop.tar.gz (board and PC)

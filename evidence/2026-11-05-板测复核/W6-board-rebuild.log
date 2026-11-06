@@ -1,0 +1,73 @@
+host_utc_before=2026-11-05T12:07:29.079595+00:00
+remote_command:
+set -eu
+src=/root/camera-window/review-20261105-w6-9a2f31
+run=/root/camera-window/review-20261105-w6-board-rebuild-30f2594
+printf 'TIME_START\n'; date -Is
+printf 'BOARD\n'; uname -a; cat /proc/sys/kernel/random/boot_id; pgrep -af '[r]kaiq_3A_server'; cat /sys/class/thermal/thermal_zone0/temp
+mkdir "$run"
+cp "$src/zc_npu_w6.cpp" "$src/w6_trace_monitor.py" "$run/"
+cd "$run"
+printf 'INPUT_MD5\n'; md5sum zc_npu_w6.cpp w6_trace_monitor.py /usr/include/rga/rga.h /usr/include/rga/im2d_version.h /lib/aarch64-linux-gnu/librga.so /lib/librknnrt.so /root/npu/examples/yolov8/model/yolov8n_rk3568_i8.rknn
+printf 'COMMAND\n%s\n' 'g++ -O2 -Wall -I/usr/include/rga -I/root/npu/3rdparty/rknpu2/include -o zc_npu_w6 zc_npu_w6.cpp -lrga -lrknnrt -lpthread'
+g++ -O2 -Wall -I/usr/include/rga -I/root/npu/3rdparty/rknpu2/include -o zc_npu_w6 zc_npu_w6.cpp -lrga -lrknnrt -lpthread
+printf 'BINARY_MD5\n'; md5sum zc_npu_w6 "$src/zc_npu_w6"
+printf 'DYNAMIC_LINKS\n'; ldd ./zc_npu_w6
+printf 'TIME_END\n'; date -Is
+
+stdout:
+TIME_START
+2026-11-05T20:07:27+08:00
+BOARD
+Linux yckt 4.19.232 #52 SMP Tue Oct 27 06:43:24 UTC 2026 aarch64 aarch64 aarch64 GNU/Linux
+4075751c-4b87-493e-b932-ee0d1f2827ad
+557 /usr/bin/rkaiq_3A_server
+45555
+INPUT_MD5
+dbecf7d37e33f0be0ef992f77e1ebe76  zc_npu_w6.cpp
+a76494264b88e34d9ed138f596183b1d  w6_trace_monitor.py
+c2306070ff16b2a238491738959ffd41  /usr/include/rga/rga.h
+79ce98c8450e003ee13415ee9c00af02  /usr/include/rga/im2d_version.h
+1d525d6302fe707ef1a4494f88773d17  /lib/aarch64-linux-gnu/librga.so
+a37ee1d5d664c79836bf6e35b7ef6289  /lib/librknnrt.so
+94fde17f2cde08b4f22c022b8674f116  /root/npu/examples/yolov8/model/yolov8n_rk3568_i8.rknn
+COMMAND
+g++ -O2 -Wall -I/usr/include/rga -I/root/npu/3rdparty/rknpu2/include -o zc_npu_w6 zc_npu_w6.cpp -lrga -lrknnrt -lpthread
+BINARY_MD5
+8fdfe57cb827920acd182b6ab3c07dff  zc_npu_w6
+8fdfe57cb827920acd182b6ab3c07dff  /root/camera-window/review-20261105-w6-9a2f31/zc_npu_w6
+DYNAMIC_LINKS
+	linux-vdso.so.1 (0x0000007fa33a0000)
+	librga.so.2 => /lib/aarch64-linux-gnu/librga.so.2 (0x0000007fa3304000)
+	librknnrt.so => /lib/librknnrt.so (0x0000007fa2b94000)
+	libpthread.so.0 => /lib/aarch64-linux-gnu/libpthread.so.0 (0x0000007fa2b63000)
+	libstdc++.so.6 => /lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000007fa297e000)
+	libm.so.6 => /lib/aarch64-linux-gnu/libm.so.6 (0x0000007fa28d3000)
+	libgcc_s.so.1 => /lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000007fa28af000)
+	libc.so.6 => /lib/aarch64-linux-gnu/libc.so.6 (0x0000007fa273c000)
+	/lib/ld-linux-aarch64.so.1 (0x0000007fa3370000)
+	libdl.so.2 => /lib/aarch64-linux-gnu/libdl.so.2 (0x0000007fa2728000)
+TIME_END
+2026-11-05T20:07:33+08:00
+
+stderr:
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+zc_npu_w6.cpp: In function ‘int decode_yolov8(rknn_tensor_attr*, int8_t**, std::vector<box>&)’:
+zc_npu_w6.cpp:98:20: warning: comparison of integer expressions of different signedness: ‘uint32_t’ {aka ‘unsigned int’} and ‘int’ [-Wsign-compare]
+   98 |   if (acls.dims[2] != gh || ascr.dims[2] != gh) continue;
+      |       ~~~~~~~~~~~~~^~~~~
+zc_npu_w6.cpp:98:42: warning: comparison of integer expressions of different signedness: ‘uint32_t’ {aka ‘unsigned int’} and ‘int’ [-Wsign-compare]
+   98 |   if (acls.dims[2] != gh || ascr.dims[2] != gh) continue;
+      |                             ~~~~~~~~~~~~~^~~~~
+zc_npu_w6.cpp:92:6: warning: variable ‘n’ set but not used [-Wunused-but-set-variable]
+   92 |  int n = 0;
+      |      ^
+zc_npu_w6.cpp: In function ‘int main(int, char**)’:
+zc_npu_w6.cpp:278:25: warning: variable ‘last_boxes’ set but not used [-Wunused-but-set-variable]
+  278 |   int total = 0; size_t last_boxes = 0;
+      |                         ^~~~~~~~~~
+
+ssh_exit=0
+host_utc_after=2026-11-05T12:07:36.295960+00:00

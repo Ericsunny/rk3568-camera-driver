@@ -48,7 +48,7 @@ def prepare(text):
         raise ValueError('expected three W6 begin sites')
     text = text.replace(begin, 'if (f == 0 && w6_init_marker("BEGIN")) break;\n\t\t\t' + begin)
     for value, expected in (('w6_status', 2), ('st', 1)):
-        end = 'fprintf(stderr, "W6_END:%d:%d\\n", f, (int)%s);' % value
+        end = 'fprintf(stderr, "W6_END:%d:%d\\n", f, (int)' + value + ');'
         if text.count(end) != expected:
             raise ValueError('unexpected W6 end sites')
         text = text.replace(end, end + '\n\t\t\tif (f == 0 && w6_init_marker("END")) break;')

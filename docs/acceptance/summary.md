@@ -9,4 +9,4 @@
 | 采集与恢复 | [稳定性回归](../stability/regression.md) · [可靠性实验](../stability/reliability.md) | 历史内核、程序与配置不能直接代表当前镜像；真实 suspend 唤醒未验证 |
 | OV8858 驱动 | [厂商表对照](../bringup/driver-comparison.md) · [当前验证边界](source-status.md) | 近期源码修改的编译、部署、板测是不同状态，未部署不等于已在板上验证 |
 
-没有 24 小时连续稳定性、功耗实测或 Android Camera HAL3 实操的通过记录。[环境与复现命令](reproduction.md)包含历史步骤，运行前需核对版本、设备与共享服务状态。
+[环境与复现命令](reproduction.md)包含历史步骤，运行前需核对版本、设备与共享服务状态。

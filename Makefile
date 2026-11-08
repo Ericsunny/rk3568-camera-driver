@@ -5,7 +5,7 @@
 # 重编 Image 刷 /boot —— 交叉编译流程见 tools/README.md,不在本文件覆盖范围。
 #
 # 常用:
-#   make              # 全部板端目标(自动探测 RGA/RKNN,缺了会降级并提示)
+#   make              # 全部板端目标(apps 要求 RGA/RKNN 头与库齐全)
 #   make tools        # 只编纯 glibc 工具(任何 aarch64 板都能过)
 #   make apps         # evrec / camd(需 librockchip_mpp + RGA/RKNN;
 #                     #   cam_rtsp 已删除(docs/38 H6), 产品入口=evrec --rtsp)
@@ -22,7 +22,7 @@ CC      ?= gcc
 CFLAGS  ?= -O2 -Wall
 PTH     := -pthread
 
-# ---- 能力探测: 头文件在才定义宏, 源码 #ifdef 自动降级 ----
+# ---- 依赖探测: 缺头文件时提示；apps 固定使用 RGA+RKNN 组合 ----
 RGA_INC  ?= /usr/include/rga
 RKNN_INC ?= /root/npu/3rdparty/rknpu2/include
 

@@ -42,6 +42,7 @@ __pycache__/
 /evrec
 /camd
 /ioctlspy.so
+/mini3a/mini3a
 
 # push 前三查脚本:本地维护,不入库(含凭据匹配模式)
 tools/check_secrets.sh

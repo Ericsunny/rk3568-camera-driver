@@ -19,9 +19,14 @@ flowchart LR
     H264 --> RTSP[RTSP 多客户端]
     H264 --> REC[事件前后录像]
     NV --> CAMD[camd 采集与检测]
+    EV -.可选检测.-> RGA[RGA 预处理]
+    RGA --> NPU[NPU 推理]
+    NPU -.触发.-> REC
 ```
 
 `evrec` 与 `camd` 是不同程序，图中表示各自的数据路径，不表示它们可以同时独占同一采集节点。OV8858 经 CIF 输出 RAW10；IMX415 经 ISP 输出 NV12。
+
+`mini3a` 是 IMX415 上另一套简化 AE/AWB 实验，和 `rkaiq` 不应同时控制该链路；OV8858 RAW10 则可用于原始保存及离线分析。[AE/AWB 实验入口](mini3a/README.md) · [两路格式与处理](docs/pipeline/dual-camera.md)
 
 ## 主要实现与问题
 

@@ -1,0 +1,36 @@
+Sun Nov  8 11:12:04 UTC 2026
+745479e2f217500692a2d9846e3638144832faf7a777576c0f9f5407fb9f8ee2  mini3a/mini3a.c
+fe14af516432f7ff1f59c124cc76b1ba30a0a1ec359a75e09d08d420b27f461c  tools/tests/test_mini3a_host.py
+cc2de1552fbc75a6e4537f9ddaa15332f7d920c4a2bade2aa459a6a32f6cd7ef  tools/tests/mini3a_fake_device.c
+gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0
+make: Entering directory '/home/rk3568/mini3a-check-HSvqmm/mini3a'
+cc -idirafter /home/rk3568/rk3568/RK_SDK/kernel/include/uapi -std=gnu11 -Wall -Wextra -Werror -O2 -o mini3a mini3a.c  -pthread
+make: Leaving directory '/home/rk3568/mini3a-check-HSvqmm/mini3a'
+NATIVE_EXIT=0
+ARM_FLAGS=-std=gnu11 -Wall -Wextra -Werror -O2 -pthread -idirafter <kernel>/include/uapi
+ARM_EXIT=0
+mini3a-arm: ELF 64-bit LSB executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, for GNU/Linux 4.19.0, not stripped
+815dc04e47eb573c577dca9fc46d94a3e9459cdba2844157bf1d92fd5ce87b75  mini3a-arm
+COMMAND: BSP_UAPI=<kernel>/include/uapi MINI3A_SANITIZE=1 python3 tools/tests/test_mini3a_host.py
+ISP params ABI mismatch: driver=61 program=60
+frame.nv12: File exists
+missing-directory/frame.nv12: No such file or directory
+frame save failed; output may be partial: close-failed.nv12
+frame save failed; output may be partial: short-write.nv12
+DQBUF: Input/output error
+>>> AWB: params 下发失败,本步不生效
+>>> saved tightly-packed NV12: frame.nv12
+PASS mini3a: statistics, control/params/output failures, queue wakeup and producer exit
+PASS complete program: normal exit 0
+PASS complete program: limit exit 2
+PASS complete program: drift exit 2
+PASS complete program: format exit 1
+PASS complete program: params exit 1
+PASS complete program: mmap exit 1
+PASS complete program: thread exit 1
+PASS complete program: qbuf exit 1
+PASS complete program: dqbuf exit 1
+PASS complete program: fclose exit 1
+PASS complete program: streamoff exit 1
+PASS complete program: SIGTERM exit 143
+FULL_SANITIZER_EXIT=0

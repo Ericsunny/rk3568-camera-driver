@@ -18,6 +18,7 @@
 
 - [事件录像实现](pipeline/event-recording.md) · [事件治理](pipeline/event-governance.md) · [RTSP 多客户端](pipeline/rtsp-multiclient.md)
 - [白平衡实验](image/awb.md) · [图像质量](image/image-quality.md) · [高光与动态范围](image/dynamic-range.md) · [HDR 实验](image/hdr-research.md)
+- [mini3a AE/AWB 程序](../mini3a/README.md)：当前实现、构建、运行条件和验证范围。
 - [启动与服务](deployment/service.md) · [稳定性与可靠性](stability/README.md)
 
 ## 复现与历史材料

@@ -1,0 +1,27 @@
+Sun Nov  8 11:14:13 UTC 2026
+745479e2f217500692a2d9846e3638144832faf7a777576c0f9f5407fb9f8ee2  mini3a/mini3a.c
+a961b0e7c69124246bf09154874cece786bfaae109655be0af6d0997f3792dff  tools/tests/test_mini3a_host.py
+cc2de1552fbc75a6e4537f9ddaa15332f7d920c4a2bade2aa459a6a32f6cd7ef  tools/tests/mini3a_fake_device.c
+COMMAND: BSP_UAPI=<kernel>/include/uapi MINI3A_SANITIZE=1 python3 tools/tests/test_mini3a_host.py
+ISP params ABI mismatch: driver=61 program=60
+frame.nv12: File exists
+missing-directory/frame.nv12: No such file or directory
+frame save failed; output may be partial: close-failed.nv12
+frame save failed; output may be partial: short-write.nv12
+DQBUF: Input/output error
+>>> AWB: params 下发失败,本步不生效
+>>> saved tightly-packed NV12: frame.nv12
+PASS mini3a: statistics, control/params/output failures, queue wakeup and producer exit
+PASS complete program: normal exit 0
+PASS complete program: limit exit 2
+PASS complete program: drift exit 2
+PASS complete program: format exit 1
+PASS complete program: params exit 1
+PASS complete program: mmap exit 1
+PASS complete program: thread exit 1
+PASS complete program: qbuf exit 1
+PASS complete program: dqbuf exit 1
+PASS complete program: fclose exit 1
+PASS complete program: streamoff exit 1
+PASS complete program: SIGTERM exit 143
+FULL_SANITIZER_EXIT=0

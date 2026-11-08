@@ -1,5 +1,6 @@
 /*
- * realdetect.c — mini3a 采集线程 × yolov8 NPU 推理 = 实时检测(步 2 实时版骨架)
+ * realdetect.c — 历史教学骨架，转换/推理主循环尚未完成。
+ * 当前检测运行入口为 tools/evrec.c --detect；本文件不作为检测成果证据。
  *
  * 数据流:
  *   采集线程(V4L2 MPLANE,DQBUF)──索引──→ 主循环:

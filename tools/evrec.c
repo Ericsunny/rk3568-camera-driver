@@ -632,7 +632,6 @@ static float g_score_max;
 
 #ifdef HAVE_RKNN
 static rknn_context g_nctx;
-static rknn_tensor_mem *g_in_mem;
 static rknn_tensor_attr g_in_attr, g_out_attr[MAX_OUT];
 static unsigned g_nout;
 
@@ -659,12 +658,7 @@ static int npu_init(void)
 	g_npu_h = (int)g_in_attr.dims[1];
 	g_npu_w = (int)g_in_attr.dims[2];
 
-	g_in_mem = rknn_create_mem(g_nctx, g_in_attr.size_with_stride);
-	if (!g_in_mem) { fprintf(stderr, "create_mem 失败\n"); return -1; }
-	g_in_attr.pass_through = 1;
-	ret = RKNN_SUCC; /* 不绑 io_mem: 否则 rknn_inputs_set 的缓冲被忽略 */
-
-
+	/* 本入口使用 inputs_set/outputs_get 的拷贝路径，不分配未绑定的 native 内存。 */
 	sz = g_npu_w * g_npu_h * 3;
 	g_rgb  = malloc((size_t)sz);
 	g_int8 = malloc((size_t)sz);
@@ -1410,10 +1404,10 @@ static void usage(void)
 "  -w W              宽, 如 1920\n"
 "  -h H              高, 如 1080 (单独写 -h 则打印本帮助)\n"
 "  -o PREFIX         输出前缀, 生成 PREFIX-<时间>-<序号>.h264/.json\n"
-"  --pre SEC         事件前保留秒数 (默认 2)\n"
-"  --post SEC        事件后继续录秒数 (默认 1)\n"
+"  --pre SEC         事件前保留秒数 (默认 3)\n"
+"  --post SEC        事件后继续录秒数 (默认 2)\n"
 "  --ring-mb MB      环形缓冲上限(默认 24)\n"
-"  --kbps KBPS       编码码率 (默认 4000)\n"
+"  --kbps KBPS       编码码率 (默认 8000)\n"
 "\n"
 "触发:\n"
 "  --trigger FILE    监听文件 mtime 变化触发; 不给则等 SIGUSR1\n"

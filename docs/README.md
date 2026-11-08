@@ -4,6 +4,7 @@
 
 ## 了解系统
 
+- [最终系统设计与版本确定](overview/final-system.md)：本版的功能范围、模块用途、设计取舍和冻结状态。
 - [相机采集与软件链路](overview/architecture.md)：两路传感器、采集、录像与推流之间的关系。
 - [双摄采集记录](pipeline/dual-camera.md)：两路格式、采集实验及结果边界。
 - [历史结果与验证范围](acceptance/summary.md)：重要验收记录及尚未覆盖的内容。

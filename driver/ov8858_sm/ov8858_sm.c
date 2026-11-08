@@ -1111,9 +1111,10 @@ static int ov8858_sm_probe(struct i2c_client *client, const struct i2c_device_id
 		goto err_free_handler;
 
 	/* probe 已经断电，让 PM 状态与硬件资源状态一致。
-	 * probe 没有持有本设备的 PM 引用，不能在这里调用 put。
-	 * 注: pm_runtime_set_suspended() 返回 void, 不可判错。 */
-	pm_runtime_set_suspended(&client->dev);
+	 * probe 没有持有本设备的 PM 引用，不能在这里调用 put。 */
+	ret = pm_runtime_set_suspended(&client->dev);
+	if (ret)
+		goto err_entity;
 
 	pm_runtime_set_autosuspend_delay(&client->dev, 2000);
 	pm_runtime_use_autosuspend(&client->dev);
@@ -1129,6 +1130,7 @@ static int ov8858_sm_probe(struct i2c_client *client, const struct i2c_device_id
 
 err_disable_pm:
 	pm_runtime_disable(&client->dev);
+err_entity:
 	media_entity_cleanup(&ov8858->subdev.entity);
 err_free_handler:
 	v4l2_ctrl_handler_free(&ov8858->ctrl_handler);

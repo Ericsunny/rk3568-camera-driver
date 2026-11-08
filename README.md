@@ -1,8 +1,8 @@
-# RK3568 双摄采集与流媒体
+# RK3568 相机驱动与事件视频服务
 
 基于 RK3568 和 Linux 4.19 厂商 BSP 的相机实践项目：接入 IMX415 与 OV8858，探索 V4L2 采集、传感器驱动、H.264 事件录像和 RTSP 推流，并保留调试过程中的失败与验证记录。
 
-项目重点是**嵌入式 Linux 中相机数据怎么从驱动走到应用，以及出现问题时如何分层定位**。
+主应用使用 IMX415 完成人体事件录像与 RTSP；OV8858 是传感器驱动与 RAW 采集验证支路。项目重点是**相机数据从驱动到应用的实现，以及问题的分层定位**。各模块用途、取舍及待冻结版本见[最终系统设计](docs/overview/final-system.md)。
 
 [文档索引](docs/README.md) · [系统架构](docs/overview/architecture.md) · [启动故障与恢复](docs/runbook/boot-recovery.md) · [测试与验证范围](docs/acceptance/summary.md)
 

@@ -34,7 +34,9 @@ def recv_until(sock, marker):
     """读到包含 marker 为止,返回已读字节。"""
     buf = b""
     while marker not in buf:
-        chunk = sock.recv(4096)
+        # Handshake only: stop exactly at the header boundary. Over-reading
+        # PLAY may swallow the first interleaved RTP bytes into a discarded rest.
+        chunk = sock.recv(1)
         if not chunk:
             raise RuntimeError("connection closed while waiting for %r" % marker)
         buf += chunk
@@ -61,9 +63,9 @@ def read_response(sock):
     code, headers, rest = parse_response(raw)
     need = int(headers.get("content-length", "0") or 0)
     while len(rest) < need:
-        chunk = sock.recv(4096)
+        chunk = sock.recv(need - len(rest))
         if not chunk:
-            break
+            raise RuntimeError("connection closed in RTSP response body")
         rest += chunk
     return code, headers, rest[:need]
 
@@ -170,14 +172,14 @@ def main():
 
     # 6. 收流:TCP interleaved 帧
     sock.settimeout(1.0)
-    deadline = time.time() + seconds
+    deadline = time.monotonic() + seconds
     buf = b""
     pkts = nbytes = 0
     seqs = []
     markers = 0
     frames = 0
     ts_first = ts_last = None
-    while time.time() < deadline:
+    while time.monotonic() < deadline:
         try:
             chunk = sock.recv(65536)
             if not chunk:
@@ -198,9 +200,10 @@ def main():
             if len(buf) < 4 + plen:
                 break
             payload = buf[4:4 + plen]
+            channel = buf[1]
             buf = buf[4 + plen:]
             # RTP 头最小 12 字节
-            if len(payload) < 12 or (payload[0] >> 6) != 2:
+            if channel != 0 or len(payload) < 12 or (payload[0] >> 6) != 2 or payload[1] & 0x7f != 96:
                 continue
             pkts += 1
             nbytes += plen

@@ -1,0 +1,4 @@
+Sun Nov  8 11:39:36 UTC 2026
+a0c430b06eed7c9470e0da8cc143021941946687ce7ee5cef107516c084cb407  drivers/media/i2c/ov8858_sm.c
+93eb2b4d2d85d8295fcf1ebce2ef0aa6da75d8fad5f6be129e0637c84cd03492  drivers/media/i2c/ov8858_sm_regs.h
+3f54fd62c30da1d8d47aa31cf46b38ee0114a64cbcbb2a2d31a276180104f068  .config

@@ -1,0 +1,13 @@
+2026年 11月 08日 星期日 13:57:29 UTC
+Linux yckt 4.19.232 #57 SMP Sun Nov 8 13:05:30 UTC 2026 aarch64 aarch64 aarch64 GNU/Linux
+e94a08bf9dd701370a293dfffa75fbc70fb1af139c0211219060bceed5de2245  /boot/Image-4.19.232
+d0a6a2e4fd163f045dc520397849abb1c485a778a9e25816305c0dc563fc39a9  /boot/rk-kernel.dtb
+5c7a6b3de61f779d48439b16d0c8624f2fcae973fa18cefb8a3efeef3bd64abc  /root/camera-service-final/evrec
+537 /usr/bin/rkaiq_3A_server
+Type=forking
+MainPID=0
+ActiveState=active
+SubState=running
+CAPTURE_DEVICE_USERS
+D_STATE_TASKS
+RUNNING_TEST_PROGRAMS

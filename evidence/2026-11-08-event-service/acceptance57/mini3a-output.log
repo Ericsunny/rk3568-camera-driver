@@ -1,0 +1,17 @@
+>>> 采集 /dev/video5 (1920x1080), 传感器 ctrl /dev/v4l-subdev6, 上限 300 帧
+fmt: 1920x1080 fourcc=NV12 sizeimage=3110400
+采集线程已启动,3A 控制环开始(目标 Y∈[90,130])
+Warning: AE reached limit (exp: 2242, gain: 32)
+f=10 Y=29 U=128 V=128 AE=RUNNING AWB=RUNNING
+f=20 Y=55 U=128 V=128 AE=RUNNING AWB=RUNNING
+>>> AWB LOCKED at f=30 (u=128 v=128)
+f=30 Y=122 U=128 V=128 AE=RUNNING AWB=LOCKED
+f=40 Y=122 U=128 V=128 AE=RUNNING AWB=LOCKED
+f=50 Y=122 U=128 V=128 AE=RUNNING AWB=LOCKED
+f=60 Y=122 U=128 V=128 AE=RUNNING AWB=LOCKED
+f=70 Y=122 U=128 V=128 AE=RUNNING AWB=LOCKED
+>>> AE LOCKED at f=80 (y=122)
+f=80 Y=122 U=128 V=128 AE=LOCKED AWB=LOCKED
+>>> saved tightly-packed NV12: /root/camera-final-EYAU3G/acceptance57/mini3a-final.nv12
+>>> 最终: f=80 Y=122(dY=+12) U=128(dU=+0) V=128(dV=+0) AE=LOCKED AWB=LOCKED 增益 g_r=0x100 g_b=0x100
+AE/AWB 达到本程序判据,共 80 帧。

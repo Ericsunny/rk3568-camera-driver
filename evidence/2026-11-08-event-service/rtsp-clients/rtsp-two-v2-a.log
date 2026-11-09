@@ -1,0 +1,9 @@
+OPTIONS  : 200 OK
+DESCRIBE : 200 OK (sdp 276 �ֽ�)
+SDP_BODY : OK
+SDP_MEDIA: m=video=True rtpmap=True sprop=��
+SDP_PLI  : ����=641033 SPS���=641033 һ��
+SETUP    : 200 OK
+PLAY     : 200 OK
+RESULT pkts=2131 bytes=2866013 seq_first=0 seq_last=2130 gaps=0 markers=167 fps=14.91
+VERDICT  : PASS

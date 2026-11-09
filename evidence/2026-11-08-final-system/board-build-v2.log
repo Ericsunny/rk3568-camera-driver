@@ -1,0 +1,17 @@
+Source tree: 9861afb4fc43cbce2d97e1cb463648280bbbacf2
+Host-recorded date: 2026-11-08; board date below is incorrect
+2024年 06月 17日 星期一 20:51:03 UTC
+gcc (Ubuntu 9.4.0-1ubuntu1~20.04.3) 9.4.0
+EVREC: gcc -O2 -Wall -pthread -DHAVE_RGA -DHAVE_RKNN -I/usr/include/rga -I/root/npu/3rdparty/rknpu2/include tools/evrec.c tools/rtsp_hub.c -lrockchip_mpp -lrga -lrknnrt -lm -o evrec
+EVREC_EXIT=0
+CAMD: same flags with tools/camd.c
+CAMD_EXIT=0
+MINI3A: gcc -std=gnu11 -O2 -Wall -Wextra -Werror -pthread -idirafter <staged-BSP-UAPI> mini3a/mini3a.c -o mini3a/mini3a
+MINI3A_EXIT=0
+bc572636b570372670db924986d51e7b77bd239df2940111f4e4e8f2ab3ae381  evrec
+7d1a54c870c102b8c658ec24f2ac8cec8db0f80bc6acfbd0a31566cf5abd22fd  camd
+a11be77aa23467b29cef6da2007871f4c4596c27dc6bcf77f84e964b8a2823ec  mini3a/mini3a
+4803934676f8aa6f65ac11c68536f7c44518bade82809f0046c70fd5b46b3cbb  config/final-demo.env
+745e17b3427975495a8a48f2730f0194638c00e859e0fbcc930550800f04207a  tools/evrec.c
+637bf65eac0c70864d8d3d176d6d608dc44c5148ca6d28a516d89f9c03542252  tools/camd.c
+a0c430b06eed7c9470e0da8cc143021941946687ce7ee5cef107516c084cb407  driver/ov8858_sm/ov8858_sm.c

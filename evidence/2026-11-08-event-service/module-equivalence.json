@@ -1,0 +1,21 @@
+{
+  "writer_functions": {
+    "static void ev_flush(": {
+      "sha256": "094ca40309d2cc21c4fb336118fb71d65402ee2b6fb5a4d95d8c5adfcc84dc66",
+      "identical_to_board_fault_injection_input": true
+    },
+    "static void evw_write(": {
+      "sha256": "01cf3515d5ea67d309f368fa8e4616466dc8353bbc2bc6293b20ea10a0535b0a",
+      "identical_to_board_fault_injection_input": true
+    },
+    "static int evw_open_at(": {
+      "sha256": "967fdc11b9d6be0e463534393be6c04aba6be61c5de594d80d25132696e0d68a",
+      "identical_to_board_fault_injection_input": true
+    },
+    "static int evw_close(": {
+      "sha256": "ec3da2c9e16b28466ef94def62092303d4c6698a0d5cc022acecf85ec4328323",
+      "identical_to_board_fault_injection_input": true
+    }
+  },
+  "rtsp_hub_unchanged": true
+}

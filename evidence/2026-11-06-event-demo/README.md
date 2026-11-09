@@ -11,7 +11,7 @@
 
 ## 版本和环境
 
-- 录像时本地仓库 HEAD `7b6936cef23587cc0d008e2ae2fd5324630d1713`；`evrec.c` SHA-256 为 `eb3349ef1b952275fb5b7abc4dd385f3294b6f5cd3631338f77214a54f069661`，与 [准备方案](../../docs/acceptance/recording-demo-plan.md) 中的应用源码基线一致。
+- 录像时本地仓库 HEAD `7b6936cef23587cc0d008e2ae2fd5324630d1713`；`evrec.c` SHA-256 为 `eb3349ef1b952275fb5b7abc4dd385f3294b6f5cd3631338f77214a54f069661`，与[当时准备方案的历史版本](https://github.com/Ericsunny/rk3568-camera-driver/blob/6d0356341b9ff7e1204ae8236834bbe06c6f2c1d/docs/acceptance/recording-demo-plan.md)中的应用源码基线一致。
 - 板端内核 `4.19.232 #52`；`rkaiq_3A_server` 运行中。板端驱动镜像与当前仓库驱动源码没有做一一对应，不能把本次录像视为当前 OV8858 驱动板测。
 - 在独立临时目录传输 `evrec.c`、`rtsp_hub.c`、`rtsp_hub.h`，板端与本地 SHA-256 一致；使用板端 gcc 按准备方案双宏编译和链接，退出码 0、编译日志为空。独立二进制 SHA-256 `031b97122c77b9957c1fd9cdb3c705b7c40503e1448d6a92511e746206b1da42`，不覆盖现役程序。
 - `/dev/video5` 在录像前查询为 3840×2160 NV12，bytesperline 3840，sizeimage 12,441,600 字节；未停止 3A 或部署驱动。板端时钟与主机查询相差约 2 秒，未校钟。

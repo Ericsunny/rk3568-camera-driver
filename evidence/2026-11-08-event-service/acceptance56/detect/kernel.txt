@@ -1,0 +1,1 @@
+Linux yckt 4.19.232 #56 SMP Sun Nov 8 11:39:44 UTC 2026 aarch64 aarch64 aarch64 GNU/Linux

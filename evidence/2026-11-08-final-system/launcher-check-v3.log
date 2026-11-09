@@ -1,0 +1,6 @@
+Sun Nov  8 12:04:12 UTC 2026
+4803934676f8aa6f65ac11c68536f7c44518bade82809f0046c70fd5b46b3cbb  config/final-demo.env
+46e63b38249f1c357b73c23b818e6d9b276e13d4e9b6cccfb08d77f52f76dd8d  tools/run_camera_demo.sh
+e45c4f96f2f5d05ae2897c541716e41300e97d59e7b50210e661f7b1d950bcdc  tools/tests/test_camera_demo_profile.py
+PASS camera profile: modes, arguments, isolated outputs and startup rejection
+LAUNCHER_TEST_EXIT=0

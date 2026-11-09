@@ -1,0 +1,5 @@
+Linux yckt 4.19.232 #57 SMP Sun Nov 8 13:05:30 UTC 2026 aarch64 aarch64 aarch64 GNU/Linux
+storagemedia=emmc androidboot.storagemedia=emmc androidboot.mode=normal root=/dev/mmcblk0p3 earlyprintk console=ttyFIQ0 console=tty1 consoleblank=0 loglevel=7 rootwait rw rootfstype=ext4 systemd.mask=rkaiq_3A.service androidboot.fwver=ddr-v1.21-2d653b3476,spl-v1.14,bl31-v1.44,bl32-v2.12,uboot-root-06/01/2025
+2024年 06月 17日 星期一 20:30:17 UTC
+2026年 11月 08日 星期日 13:09:25 UTC
+RKAIQ_COUNT=0

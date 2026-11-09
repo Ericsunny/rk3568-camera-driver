@@ -1,0 +1,4 @@
+>>> 采集 /dev/video5 (1920x1080), 传感器 ctrl /dev/v4l-subdev6, 上限 300 帧
+fmt: 1920x1080 fourcc=NV12 sizeimage=3110400
+cannot establish AWB unity-gain baseline
+not converged or failed: rc=1, frames=0

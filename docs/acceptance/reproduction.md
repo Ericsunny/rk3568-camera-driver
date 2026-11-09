@@ -119,7 +119,7 @@ gcc -O2 -o mpp_dec_dump mpp_dec_dump.c -lrockchip_mpp
 
 ### 4.3 跑一次最小事件（文件触发）
 
-> 以下是历史命令，不要直接复制：当前程序使用 `--max-events 1`，不支持旧示例的 `-n 1`；文件路径、分辨率、设备状态也需现场确认。待执行的新版本方案见 [事件录像演示计划](recording-demo-plan.md)。
+> 以下是历史命令，不要直接复制：当前程序使用 `--max-events 1`，不支持旧示例的 `-n 1`；文件路径、分辨率、设备状态也需现场确认。当前运行入口见[事件录像与交付](../pipeline/event-recording.md)。
 
 ```bash
 rm -f /tmp/t /root/demo*

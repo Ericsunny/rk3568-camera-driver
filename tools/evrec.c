@@ -410,11 +410,40 @@ static int enc_init(int w, int h, int stride, int kbps, int gop)
 static int g_detect, g_rga_w = 640, g_rga_h = 360;
 static unsigned long g_rga_sum, g_rga_n;
 static unsigned char *g_rgb;
-static unsigned char *g_int8;
+static int g_npu_w = 640, g_npu_h = 640;
 
 #ifdef HAVE_RGA
 static rga_buffer_t g_rga_src, g_rga_dst;
 static unsigned char *g_rga_buf;
+
+/* Preserve aspect ratio for the pinned YOLOv8 model, then pad with RGB 114. */
+static void letterbox_size(unsigned sw, unsigned sh, int tw, int th, int *rw, int *rh)
+{
+	if ((unsigned long long)sw * (unsigned)th > (unsigned long long)sh * (unsigned)tw) {
+		*rw = tw;
+		*rh = (int)((unsigned long long)sh * (unsigned)tw / sw);
+	} else {
+		*rh = th;
+		*rw = (int)((unsigned long long)sw * (unsigned)th / sh);
+	}
+	*rw &= ~1;
+	*rh &= ~1;
+}
+
+static void pad_rgb(unsigned char *rgb, int tw, int th, int rw, int rh)
+{
+	int x = (tw - rw) / 2, y = (th - rh) / 2, row;
+	size_t stride = (size_t)tw * 3;
+
+	for (row = rh - 1; row >= 0; row--) {
+		unsigned char *dst = rgb + (size_t)(row + y) * stride;
+		memmove(dst + x * 3, rgb + (size_t)row * stride, (size_t)rw * 3);
+		memset(dst, 114, (size_t)x * 3);
+		memset(dst + (x + rw) * 3, 114, (size_t)(tw - x - rw) * 3);
+	}
+	memset(rgb, 114, (size_t)y * stride);
+	memset(rgb + (size_t)(y + rh) * stride, 114, (size_t)(th - y - rh) * stride);
+}
 
 static void rga_init(void)
 {
@@ -432,6 +461,14 @@ static void rga_init(void)
 static int rga_scale(const void *src_va, unsigned sw, unsigned sh)
 {
 	IM_STATUS st;
+#ifdef HAVE_RKNN
+	int rw, rh;
+	letterbox_size(sw, sh, g_npu_w, g_npu_h, &rw, &rh);
+	if (rw < 2 || rh < 2)
+		return -1;
+	g_rga_dst = wrapbuffer_virtualaddr_t(g_rgb, rw, rh, g_npu_w, g_npu_h,
+					     RK_FORMAT_RGB_888);
+#endif
 
 	g_rga_src = wrapbuffer_virtualaddr_t((void *)src_va, sw, sh, sw, sh,
 					     RK_FORMAT_YCbCr_420_SP);
@@ -440,6 +477,9 @@ static int rga_scale(const void *src_va, unsigned sw, unsigned sh)
 		fprintf(stderr, "RGA 失败: %s\n", imStrError(st));
 		return -1;
 	}
+#ifdef HAVE_RKNN
+	pad_rgb(g_rgb, g_npu_w, g_npu_h, rw, rh);
+#endif
 	{	/* 采样均值: 与 camd 同口径(Y 平面每 16 像素取 1) */
 		unsigned long sum = 0, n = 0;
 #ifdef HAVE_RKNN
@@ -464,7 +504,7 @@ static int rga_scale(const void *src_va, unsigned sw, unsigned sh)
 #define MAX_BOX 512
 static float g_obj_thresh = OBJ_THRESH;
 #define MAX_OUT 16
-static int g_no_obj_mul = 0;
+static int g_no_obj_mul = 1; /* YOLOv8 score_sum is not a second objectness probability. */
 static float g_det_score = 0.45f;   /* 触发所需分数 */
 static int g_det_frames = 3;        /* 连续命中帧数 */
 static int g_streak;
@@ -491,7 +531,6 @@ static double g_det_mean_sum;			/* 本统计窗内 NPU 输入均值之和 */
 static unsigned g_det_mean_n;			/* 本统计窗内均值采样帧数 */
 static double g_det_next_ms = 5000.0;		/* 下次统计打印(相对 t0_ms) */
 static double g_det_end_ms;			/* 上次"连击结束"打印时刻 */
-static int g_npu_w = 640, g_npu_h = 640;
 struct dbox {
 	float x1, y1, x2, y2, score;
 	int cls;
@@ -584,18 +623,11 @@ static int decode_yolov8(rknn_tensor_attr *oa, int8_t **od, struct dbox *res,
 				}
 				if (n < maxn) {
 					float cx = (x + 0.5f) * stride, cy = (y + 0.5f) * stride;
-					float bw, bh;
 
 					res[n].x1 = cx - d[0] * stride;
 					res[n].y1 = cy - d[1] * stride;
 					res[n].x2 = cx + d[2] * stride;
 					res[n].y2 = cy + d[3] * stride;
-					/* 退化框过滤:铺满整幅的巨大框是典型误检(实测整帧被判成 train),
-					 * 不滤掉会把真正的小目标挡在 NMS 之外。*/
-					bw = res[n].x2 - res[n].x1;
-					bh = res[n].y2 - res[n].y1;
-					if (bw > 0.80f * g_npu_w && bh > 0.80f * g_npu_h)
-						continue;
 					res[n].score = conf;
 					res[n].cls = best;
 					n++;
@@ -612,7 +644,7 @@ static int decode_yolov8(rknn_tensor_attr *oa, int8_t **od, struct dbox *res,
 			int drop = 0;
 
 			for (j = 0; j < keep; j++) {
-				if (box_iou(&res[i], &res[j]) > NMS_THRESH) {
+				if (res[i].cls == res[j].cls && box_iou(&res[i], &res[j]) > NMS_THRESH) {
 					drop = 1;
 					break;
 				}
@@ -632,7 +664,6 @@ static float g_score_max;
 
 #ifdef HAVE_RKNN
 static rknn_context g_nctx;
-static rknn_tensor_mem *g_in_mem;
 static rknn_tensor_attr g_in_attr, g_out_attr[MAX_OUT];
 static unsigned g_nout;
 
@@ -659,16 +690,10 @@ static int npu_init(void)
 	g_npu_h = (int)g_in_attr.dims[1];
 	g_npu_w = (int)g_in_attr.dims[2];
 
-	g_in_mem = rknn_create_mem(g_nctx, g_in_attr.size_with_stride);
-	if (!g_in_mem) { fprintf(stderr, "create_mem 失败\n"); return -1; }
-	g_in_attr.pass_through = 1;
-	ret = RKNN_SUCC; /* 不绑 io_mem: 否则 rknn_inputs_set 的缓冲被忽略 */
-
-
+	/* 本入口使用 inputs_set/outputs_get 的拷贝路径，不分配未绑定的 native 内存。 */
 	sz = g_npu_w * g_npu_h * 3;
 	g_rgb  = malloc((size_t)sz);
-	g_int8 = malloc((size_t)sz);
-	if (!g_rgb || !g_int8) return -1;
+	if (!g_rgb) return -1;
 
 	{	rknn_input_output_num io;
 		unsigned k;
@@ -676,6 +701,10 @@ static int npu_init(void)
 		memset(&io, 0, sizeof(io));
 		ret = rknn_query(g_nctx, RKNN_QUERY_IN_OUT_NUM, &io, sizeof(io));
 		if (ret != RKNN_SUCC) { fprintf(stderr, "query out num %d\n", ret); return -1; }
+		if (io.n_input != 1 || io.n_output != 9) {
+			fprintf(stderr, "expected pinned YOLOv8 model with 1 input / 9 outputs\n");
+			return -1;
+		}
 		g_nout = io.n_output > MAX_OUT ? MAX_OUT : io.n_output;
 		for (k = 0; k < g_nout; k++) {
 			memset(&g_out_attr[k], 0, sizeof(g_out_attr[k]));
@@ -691,6 +720,14 @@ static int npu_init(void)
 	return 0;
 }
 
+static void prepare_npu_outputs(rknn_output *outputs, unsigned count)
+{
+	unsigned i;
+	memset(outputs, 0, sizeof(*outputs) * count);
+	for (i = 0; i < count; i++)
+		outputs[i].index = i;
+}
+
 static void npu_run(const unsigned char *rgb)
 {
 	rknn_input in;
@@ -700,25 +737,14 @@ static void npu_run(const unsigned char *rgb)
 	float maxscore = 0.0f;
 	size_t i, sz = (size_t)g_npu_w * g_npu_h * 3;
 
-	for (i = 0; i < sz; i += 8) {      /* uint8 -> int8 零点偏置(zp=-128) */
-		g_int8[i + 0] = rgb[i + 0] ^ 0x80;
-		g_int8[i + 1] = rgb[i + 1] ^ 0x80;
-		g_int8[i + 2] = rgb[i + 2] ^ 0x80;
-		g_int8[i + 3] = rgb[i + 3] ^ 0x80;
-		g_int8[i + 4] = rgb[i + 4] ^ 0x80;
-		g_int8[i + 5] = rgb[i + 5] ^ 0x80;
-		g_int8[i + 6] = rgb[i + 6] ^ 0x80;
-		g_int8[i + 7] = rgb[i + 7] ^ 0x80;
-	}
-
 	memset(&in, 0, sizeof(in));
 	in.index = 0;
-	in.buf = g_int8;
+	in.buf = (void *)rgb;
 	in.size = (uint32_t)sz;
-	in.type = RKNN_TENSOR_INT8;
+	in.type = RKNN_TENSOR_UINT8;
 	in.fmt = RKNN_TENSOR_NHWC;
-	in.pass_through = 1;
-	{	/* 诊断 + 观测: g_int8 实际内容均值。
+	in.pass_through = 0; /* Runtime applies the model's own input conversion. */
+	{	/* 诊断 + 观测: RGB 模型输入字节的采样均值。
 		 * 前 3 帧打明细(定位"有没有数据"); 均值同时进 5 s 统计窗口 ——
 		 * 这是"检测输入是不是当帧"的唯一可观测判据: 遮住 J10 后均值
 		 * 必须骤降; 若不降, 说明 RGA/NPU 读到的是陈旧缓冲, 属代码缺陷
@@ -729,15 +755,15 @@ static void npu_run(const unsigned char *rgb)
 		double in_mean;
 
 		for (i = 0; i < sz; i += 64)
-			s += (unsigned char)g_int8[i];
+			s += rgb[i];
 		in_mean = sz >= 64 ? (double)s / (double)(sz / 64) : 0.0;
 		g_det_mean_sum += in_mean;
 		g_det_mean_n++;
 		if (dbg++ < 3)
 			fprintf(stderr,
-				"[npu] in: sz=%u mean=%.1f rgb0=%u/%u/%u int8_0=%d\n",
+				"[npu] in: sz=%u mean=%.1f rgb0=%u/%u/%u type=UINT8 pass_through=0\n",
 				(uint32_t)sz, in_mean,
-				rgb[0], rgb[1], rgb[2], (int)(signed char)g_int8[0]);
+				rgb[0], rgb[1], rgb[2]);
 	}
 
 	ret = rknn_inputs_set(g_nctx, 1, &in);
@@ -751,11 +777,19 @@ static void npu_run(const unsigned char *rgb)
 		return;
 	}
 
-	memset(outs, 0, sizeof(outs));
+	prepare_npu_outputs(outs, g_nout);
 	ret = rknn_outputs_get(g_nctx, g_nout, outs, NULL);
 	if (ret != RKNN_SUCC) {
 		fprintf(stderr, "[npu] outputs_get ret=%d nout=%u\n", ret, g_nout);
 		return;
+	}
+	for (i = 0; i < g_nout; i++) {
+		if (!outs[i].buf || outs[i].size < g_out_attr[i].size) {
+			fprintf(stderr, "[npu] output %zu too small: got=%u required=%u\n",
+				i, outs[i].size, g_out_attr[i].size);
+			rknn_outputs_release(g_nctx, g_nout, outs);
+			return;
+		}
 	}
 	{	static int dbg2;
 		if (dbg2++ < 2 && outs[0].buf)
@@ -1098,6 +1132,9 @@ static int evw_open_at(int pre_i, unsigned serial, unsigned segment,
 			break;
 		}
 		g_ev_bytes += (unsigned)r->len;
+		if (i == from)
+			g_ev_first_ts = r->ts_ms;
+		g_ev_last_ts = r->ts_ms;
 	}
 	/* 包级游标: pre-roll 写完后全局已推包数为界, 之后的新包才 append */
 	g_ev_last_pkts = g_pushed;
@@ -1167,7 +1204,9 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 		g_ev_werr = 1;
 	g_ev_fp = NULL;
 	snprintf(path, sizeof(path), "%s.part", g_ev_path);
-	snprintf(jpath, sizeof(jpath), "%s.json", g_ev_path);
+	/* Publish JSON only after its close succeeds. Consumers must never treat
+	 * a parseable but still-open metadata file as a completed event. */
+	snprintf(jpath, sizeof(jpath), "%s.pending.json", g_ev_path);
 	{
 		char final[560];
 		snprintf(final, sizeof(final), "%s.h264", g_ev_path);
@@ -1209,6 +1248,13 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 		}
 		if (failed)
 			return -1;
+	}
+	if (g_ev_werr)
+		return -1;
+	snprintf(path, sizeof(path), "%s.json", g_ev_path);
+	if (rename(jpath, path) != 0) {
+		fprintf(stderr, ">>> rename %s 失败: %s\n", jpath, strerror(errno));
+		return -1;
 	}
 	return 0;
 }
@@ -1410,10 +1456,10 @@ static void usage(void)
 "  -w W              宽, 如 1920\n"
 "  -h H              高, 如 1080 (单独写 -h 则打印本帮助)\n"
 "  -o PREFIX         输出前缀, 生成 PREFIX-<时间>-<序号>.h264/.json\n"
-"  --pre SEC         事件前保留秒数 (默认 2)\n"
-"  --post SEC        事件后继续录秒数 (默认 1)\n"
+"  --pre SEC         事件前保留秒数 (默认 3)\n"
+"  --post SEC        事件后继续录秒数 (默认 2)\n"
 "  --ring-mb MB      环形缓冲上限(默认 24)\n"
-"  --kbps KBPS       编码码率 (默认 4000)\n"
+"  --kbps KBPS       编码码率 (默认 8000)\n"
 "\n"
 "触发:\n"
 "  --trigger FILE    监听文件 mtime 变化触发; 不给则等 SIGUSR1\n"

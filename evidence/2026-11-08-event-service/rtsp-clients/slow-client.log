@@ -1,0 +1,6 @@
+OPTIONS 200
+DESCRIBE 200
+SETUP 200
+PLAY 200
+PLAY complete; intentionally not reading for 16s
+SLOW_CLIENT_EXIT=0

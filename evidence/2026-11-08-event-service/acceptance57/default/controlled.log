@@ -1,0 +1,1149 @@
+/root/npu/examples/yolov8/model/yolov8n_rk3568_i8.rknn: 成功
+>>> S_FMT 回填 1920x1080 stride=1920 sizeimage=3110400
+>>> NPU 就绪 640x640 nout=9
+>>> 采集 /dev/video5 1920x1080,pre=3s post=2s ring=64MB gop=37
+>>> OSD 开启: #<seq> + t mm:ss.mmm @左上角(4px, sc=2), stride=1920
+>>> RTSP 监听 :8554 (多客户端, 上限 2)
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+[npu] in: sz=1228800 mean=139.6 rgb0=21/18/28 int8_0=-107
+[npu] out0 size=409600 b0..b7=3 -28 -42 -34 -14 -32 -45 -58
+[npu] in: sz=1228800 mean=141.3 rgb0=25/21/19 int8_0=-103
+[npu] out0 size=409600 b0..b7=-3 -30 -39 -20 -12 -34 -48 -63
+[npu] in: sz=1228800 mean=141.4 rgb0=22/20/20 int8_0=-106
+librga fail to get driver version! Compatibility mode will be enabled.
+
+442 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+>>> 检测连击开始 streak=1 score=0.481 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.572 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.503
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.471 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.543 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.454 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.503 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.468 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.473 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.473 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.498 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.492 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+[evw] open event_id=1 last_pkts=50 pushed=50
+>>> 检测连击开始 streak=1 score=0.473 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.465
+>>> 触发 seq=49 ts=4488.8ms -> pre_i=0 pre_seq=0 (ring_cnt=50 head=0 pushed=50)
+>>> 检测连击开始 streak=1 score=0.473 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 5s: 命中 23/57 帧 (40%), 峰值 0.572, 输入均值 141.2, streak=0, 最近命中 0.2s 前
+>>> 阶段耗时(均值, 58 帧): RGA 5.25 + RKNN 60.67 + 编码 14.74 = 80.65 ms/帧 -> 12.4 fps
+rtsp-ring: in=58 evict=28 depth=30 bytes=0.47/8MB tags=[28,58)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.523 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.468 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.534 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.476 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.463 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.514 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.506 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测触发 streak=3 score=0.462
+>>> 检测连击结束 streak=5 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.505 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.473 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.509 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.490 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.528
+>>> 检测连击开始 streak=1 score=0.590 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.537 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.463 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 10s: 命中 26/62 帧 (42%), 峰值 0.590, 输入均值 141.2, streak=1, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 119 帧): RGA 5.23 + RKNN 60.85 + 编码 14.82 = 80.90 ms/帧 -> 12.4 fps
+rtsp-ring: in=119 evict=89 depth=30 bytes=0.53/8MB tags=[89,119)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.457 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.476
+>>> 检测连击开始 streak=1 score=0.537 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.492 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.514 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.452 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.514 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.543
+>>> 检测连击结束 streak=4 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.481 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.517 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.531 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.452 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.554 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.526 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.465 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+>>> 检测统计 15s: 命中 25/62 帧 (40%), 峰值 0.554, 输入均值 141.2, streak=0, 最近命中 0.2s 前
+>>> 阶段耗时(均值, 182 帧): RGA 5.24 + RKNN 60.67 + 编码 14.75 = 80.66 ms/帧 -> 12.4 fps
+rtsp-ring: in=182 evict=152 depth=30 bytes=0.36/8MB tags=[152,182)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.468 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.500 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.489 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.578 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.528
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.498 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.490
+>>> 检测连击结束 streak=3 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.520 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.543 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.457 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.512 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.528
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.572 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.534 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.481 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 20s: 命中 23/61 帧 (38%), 峰值 0.578, 输入均值 141.1, streak=0, 最近命中 0.2s 前
+>>> 阶段耗时(均值, 243 帧): RGA 5.25 + RKNN 60.96 + 编码 14.77 = 80.98 ms/帧 -> 12.3 fps
+rtsp-ring: in=243 evict=213 depth=30 bytes=0.52/8MB tags=[213,243)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.468 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.460
+>>> 检测连击结束 streak=5 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.497 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.520 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.465 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.487
+>>> 检测连击结束 streak=4 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.520 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.503 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.537 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.471
+>>> 检测连击开始 streak=1 score=0.462 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.540 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.490
+>>> 检测连击开始 streak=1 score=0.560 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.503
+>>> 检测统计 25s: 命中 28/62 帧 (45%), 峰值 0.596, 输入均值 141.1, streak=0, 最近命中 0.2s 前
+>>> 阶段耗时(均值, 304 帧): RGA 5.24 + RKNN 60.94 + 编码 14.84 = 81.02 ms/帧 -> 12.3 fps
+rtsp-ring: in=304 evict=274 depth=30 bytes=0.51/8MB tags=[274,304)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.460 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.471 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.551 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.506 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.452 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.526 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.495 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.487 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.468 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测触发 streak=3 score=0.517
+>>> 检测连击结束 streak=3 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.534 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 30s: 命中 19/62 帧 (31%), 峰值 0.581, 输入均值 141.2, streak=0, 最近命中 0.5s 前
+>>> 阶段耗时(均值, 367 帧): RGA 5.24 + RKNN 60.83 + 编码 14.80 = 80.87 ms/帧 -> 12.4 fps
+rtsp-ring: in=367 evict=337 depth=30 bytes=0.36/8MB tags=[337,367)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.548 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.481 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.540 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.452
+>>> 检测连击开始 streak=1 score=0.481 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.498 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.473 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.498 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.508 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.506 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.473
+>>> 分段 1 (event_id=1, IDR 边界)
+>>> 检测连击结束 streak=5 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.481 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.575 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.492 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.563 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.489 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.596 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.492 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 35s: 命中 27/61 帧 (44%), 峰值 0.596, 输入均值 141.2, streak=1, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 428 帧): RGA 5.31 + RKNN 60.92 + 编码 14.81 = 81.04 ms/帧 -> 12.3 fps
+rtsp-ring: in=428 evict=398 depth=30 bytes=0.52/8MB tags=[398,428)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.476 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.463 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.548 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.471
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击结束 streak=6 (最近命中 0.1s 前)
+Input #0, h264, from '/root/camera-final-EYAU3G/acceptance57/default/controlled/event_20261108-211901-01.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1920x1080, 30 fps, 30 tbr, 1200k tbn, 60 tbc
+Output #0, mp4, to '/root/camera-final-EYAU3G/acceptance57/default/controlled/event_20261108-211901-01.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, q=2-31, 30 fps, 30 tbr, 162800 tbn, 12.36 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x55b2b86860] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+[mp4 @ 0x55b2b86860] Starting second pass: moving the moov atom to the beginning of the file
+frame=  408 fps=0.0 q=-1.0 Lsize=    6751kB time=00:00:32.92 bitrate=1679.5kbits/s speed= 388x    
+video:6748kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.037641%
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.509 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.473 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.511
+>>> 检测连击结束 streak=3 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.517 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.581
+>>> 检测连击开始 streak=1 score=0.523 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.457 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.517 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 40s: 命中 27/57 帧 (47%), 峰值 0.581, 输入均值 141.3, streak=1, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 485 帧): RGA 5.54 + RKNN 61.43 + 编码 14.85 = 81.82 ms/帧 -> 12.2 fps
+rtsp-ring: in=485 evict=455 depth=30 bytes=0.51/8MB tags=[455,485)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.509 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.481
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击结束 streak=3 (最近命中 0.1s 前)
+[delivery] complete event_20261108-211901-01.json
+>>> 检测连击开始 streak=1 score=0.531 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.452 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.460
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.457 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.503 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.462 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.560 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.463 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测统计 45s: 命中 13/59 帧 (22%), 峰值 0.572, 输入均值 141.3, streak=0, 最近命中 0.2s 前
+>>> 阶段耗时(均值, 544 帧): RGA 5.56 + RKNN 61.58 + 编码 14.86 = 81.99 ms/帧 -> 12.2 fps
+rtsp-ring: in=544 evict=514 depth=30 bytes=0.50/8MB tags=[514,544)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.479 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.476 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.492 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.465 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.457
+>>> 检测连击结束 streak=3 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.452 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.525 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.489 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.463 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.452 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 50s: 命中 20/62 帧 (32%), 峰值 0.531, 输入均值 141.4, streak=0, 最近命中 0.6s 前
+>>> 阶段耗时(均值, 605 帧): RGA 5.52 + RKNN 61.60 + 编码 14.85 = 81.97 ms/帧 -> 12.2 fps
+rtsp-ring: in=605 evict=575 depth=30 bytes=0.53/8MB tags=[575,605)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.473 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.498 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.548
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.487 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.470 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.471 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.495 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.517
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击结束 streak=4 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.495 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.457 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.528
+>>> 检测连击开始 streak=1 score=0.476 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.473
+>>> 检测连击结束 streak=3 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.534 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.517 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 55s: 命中 24/61 帧 (39%), 峰值 0.548, 输入均值 141.3, streak=1, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 667 帧): RGA 5.50 + RKNN 61.51 + 编码 14.88 = 81.89 ms/帧 -> 12.2 fps
+rtsp-ring: in=667 evict=637 depth=30 bytes=0.50/8MB tags=[637,667)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.537 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.481 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.537
+>>> 检测连击结束 streak=3 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.465 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.476 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.476 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.572
+>>> 检测连击结束 streak=8 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.509 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.476 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.479
+>>> 检测连击结束 streak=5 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.454 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.481 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.460 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.473 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 60s: 命中 28/62 帧 (45%), 峰值 0.581, 输入均值 141.2, streak=0, 最近命中 0.5s 前
+>>> 阶段耗时(均值, 729 帧): RGA 5.47 + RKNN 61.46 + 编码 14.87 = 81.80 ms/帧 -> 12.2 fps
+rtsp-ring: in=729 evict=699 depth=30 bytes=0.49/8MB tags=[699,729)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.500 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.476
+>>> 检测连击结束 streak=3 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.509 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.489 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.470
+>>> 检测连击结束 streak=4 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.512 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.537
+>>> 检测连击开始 streak=1 score=0.457 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.463 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 分段 2 (event_id=1, IDR 边界)
+>>> 检测连击开始 streak=1 score=0.495 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.471 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 65s: 命中 20/62 帧 (32%), 峰值 0.543, 输入均值 141.2, streak=0, 最近命中 0.3s 前
+>>> 阶段耗时(均值, 791 帧): RGA 5.45 + RKNN 61.45 + 编码 14.86 = 81.75 ms/帧 -> 12.2 fps
+rtsp-ring: in=791 evict=761 depth=30 bytes=0.52/8MB tags=[761,791)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.489 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.509 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.517 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.457
+>>> 检测连击开始 streak=1 score=0.514 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+Input #0, h264, from '/root/camera-final-EYAU3G/acceptance57/default/controlled/event_20261108-211901-01-s1.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1920x1080, 30 fps, 30 tbr, 1200k tbn, 60 tbc
+Output #0, mp4, to '/root/camera-final-EYAU3G/acceptance57/default/controlled/event_20261108-211901-01-s1.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, q=2-31, 30 fps, 30 tbr, 988181.00 tbn, 12.06 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x558cfb3ff0] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+[mp4 @ 0x558cfb3ff0] Starting second pass: moving the moov atom to the beginning of the file
+frame=  371 fps=0.0 q=-1.0 Lsize=    6239kB time=00:00:30.67 bitrate=1666.2kbits/s speed= 406x    
+video:6236kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.038351%
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.489 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.473
+>>> 检测统计 70s: 命中 14/57 帧 (25%), 峰值 0.540, 输入均值 141.1, streak=0, 最近命中 0.1s 前
+>>> 阶段耗时(均值, 848 帧): RGA 5.55 + RKNN 61.67 + 编码 14.87 = 82.09 ms/帧 -> 12.2 fps
+rtsp-ring: in=848 evict=818 depth=30 bytes=0.36/8MB tags=[818,848)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.506 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.546 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+[delivery] complete event_20261108-211901-01-s1.json
+>>> 检测连击开始 streak=1 score=0.572 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.481 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.509 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.611 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.498 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.465 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.523 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.481 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 75s: 命中 15/60 帧 (25%), 峰值 0.611, 输入均值 141.1, streak=1, 最近命中 0.0s 前
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 阶段耗时(均值, 908 帧): RGA 5.56 + RKNN 61.72 + 编码 14.88 = 82.16 ms/帧 -> 12.2 fps
+rtsp-ring: in=908 evict=878 depth=30 bytes=0.51/8MB tags=[878,908)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.454 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测触发 streak=3 score=0.470
+>>> 检测连击开始 streak=1 score=0.476 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.460 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.489
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.514 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.487 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.473 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 80s: 命中 13/62 帧 (21%), 峰值 0.514, 输入均值 141.1, streak=0, 最近命中 0.1s 前
+>>> 阶段耗时(均值, 970 帧): RGA 5.53 + RKNN 61.66 + 编码 14.86 = 82.06 ms/帧 -> 12.2 fps
+rtsp-ring: in=970 evict=940 depth=30 bytes=0.50/8MB tags=[940,970)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.465 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.506 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.548 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.454 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.506 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.523 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.460 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.525 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.492 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 85s: 命中 12/61 帧 (20%), 峰值 0.548, 输入均值 141.2, streak=1, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 1031 帧): RGA 5.51 + RKNN 61.66 + 编码 14.85 = 82.03 ms/帧 -> 12.2 fps
+rtsp-ring: in=1031 evict=1001 depth=30 bytes=0.37/8MB tags=[1001,1031)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.506 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.523 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.460 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.489
+>>> 检测连击结束 streak=3 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.465 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.478 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.471 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.537 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.584 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.459 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.525 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.517
+>>> 检测统计 90s: 命中 18/62 帧 (29%), 峰值 0.584, 输入均值 141.4, streak=0, 最近命中 0.2s 前
+>>> 阶段耗时(均值, 1093 帧): RGA 5.50 + RKNN 61.60 + 编码 14.86 = 81.97 ms/帧 -> 12.2 fps
+rtsp-ring: in=1093 evict=1063 depth=30 bytes=0.50/8MB tags=[1063,1093)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.460 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.476 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.488 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.460 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.463 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.481 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.476 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.487 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.546 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测触发 streak=3 score=0.557
+>>> 检测连击结束 streak=3 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.481 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 分段 3 (event_id=1, IDR 边界)
+>>> 检测统计 95s: 命中 15/62 帧 (24%), 峰值 0.557, 输入均值 141.5, streak=0, 最近命中 1.0s 前
+>>> 阶段耗时(均值, 1155 帧): RGA 5.48 + RKNN 61.55 + 编码 14.85 = 81.89 ms/帧 -> 12.2 fps
+rtsp-ring: in=1155 evict=1125 depth=30 bytes=0.52/8MB tags=[1125,1155)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.454 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.452 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.468 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.481 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.500 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+Input #0, h264, from '/root/camera-final-EYAU3G/acceptance57/default/controlled/event_20261108-211901-01-s2.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1920x1080, 30 fps, 30 tbr, 1200k tbn, 60 tbc
+Output #0, mp4, to '/root/camera-final-EYAU3G/acceptance57/default/controlled/event_20261108-211901-01-s2.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, q=2-31, 30 fps, 30 tbr, 988859.00 tbn, 12.15 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x55c05ef720] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+[mp4 @ 0x55c05ef720] Starting second pass: moving the moov atom to the beginning of the file
+frame=  371 fps=0.0 q=-1.0 Lsize=    6246kB time=00:00:30.44 bitrate=1680.5kbits/s speed= 385x    
+video:6243kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.038306%
+>>> 检测连击开始 streak=1 score=0.492 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.500 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.495 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 100s: 命中 11/58 帧 (19%), 峰值 0.537, 输入均值 141.4, streak=2, 最近命中 0.0s 前
+>>> 检测触发 streak=3 score=0.523
+>>> 阶段耗时(均值, 1213 帧): RGA 5.56 + RKNN 61.69 + 编码 14.87 = 82.12 ms/帧 -> 12.2 fps
+rtsp-ring: in=1213 evict=1183 depth=30 bytes=0.51/8MB tags=[1183,1213)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.489 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.479 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.517 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.473 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+[delivery] complete event_20261108-211901-01-s2.json
+>>> 检测连击开始 streak=1 score=0.509 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.503 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.489 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.473 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.473 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.460 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.479 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 105s: 命中 17/59 帧 (29%), 峰值 0.523, 输入均值 141.5, streak=0, 最近命中 0.2s 前
+>>> 阶段耗时(均值, 1272 帧): RGA 5.57 + RKNN 61.76 + 编码 14.87 = 82.20 ms/帧 -> 12.2 fps
+rtsp-ring: in=1272 evict=1242 depth=30 bytes=0.52/8MB tags=[1242,1272)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.465 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.462 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.460 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.460
+>>> 检测连击开始 streak=1 score=0.476 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.487 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.509 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.526 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.463 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.492 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测触发 streak=3 score=0.517
+>>> 检测连击结束 streak=4 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.531 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.526 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.495 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.452 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.454
+>>> 检测统计 110s: 命中 24/62 帧 (39%), 峰值 0.531, 输入均值 141.5, streak=0, 最近命中 0.2s 前
+>>> 阶段耗时(均值, 1334 帧): RGA 5.56 + RKNN 61.71 + 编码 14.86 = 82.13 ms/帧 -> 12.2 fps
+rtsp-ring: in=1334 evict=1304 depth=30 bytes=0.51/8MB tags=[1304,1334)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.498 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.540 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.463 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.517
+>>> 检测连击开始 streak=1 score=0.563 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.509
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.575 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.548 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.478 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.470 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测触发 streak=3 score=0.451
+>>> 检测连击结束 streak=3 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.514 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.460
+>>> 检测连击开始 streak=1 score=0.593 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.492 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+>>> 检测统计 115s: 命中 22/62 帧 (35%), 峰值 0.593, 输入均值 141.4, streak=0, 最近命中 0.7s 前
+>>> 阶段耗时(均值, 1396 帧): RGA 5.54 + RKNN 61.65 + 编码 14.85 = 82.04 ms/帧 -> 12.2 fps
+rtsp-ring: in=1396 evict=1366 depth=30 bytes=0.50/8MB tags=[1366,1396)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.460 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 0)
+rtsp c0: 客户端开始播放(从 tag 1406 起)
+>>> 检测连击开始 streak=1 score=0.465 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+rtsp c0: sent=252/338974B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=252 epoch=0 rej453=0 fds=31
+>>> 检测连击开始 streak=1 score=0.479 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.463 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.476 (阈值 0.45, 需连续 3 帧)
+rtsp c0: sent=365/488542B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=365 epoch=0 rej453=0 fds=31
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.498 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.531 (阈值 0.45, 需连续 3 帧)
+rtsp c0: 发送判死(why=error errno=104), 断开
+rtsp c0: 连接关闭
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.452 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.468 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.478 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 120s: 命中 13/64 帧 (20%), 峰值 0.531, 输入均值 141.3, streak=1, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 1460 帧): RGA 5.52 + RKNN 61.50 + 编码 14.85 = 81.88 ms/帧 -> 12.2 fps
+rtsp-ring: in=1460 evict=1430 depth=30 bytes=0.52/8MB tags=[1430,1460)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.465 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.487 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.503 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.473 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.503 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.473 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.581 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.490 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.476 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 分段 4 (event_id=1, IDR 边界)
+>>> 检测连击开始 streak=1 score=0.471 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 125s: 命中 17/62 帧 (27%), 峰值 0.581, 输入均值 141.2, streak=0, 最近命中 0.1s 前
+>>> 阶段耗时(均值, 1521 帧): RGA 5.51 + RKNN 61.50 + 编码 14.85 = 81.86 ms/帧 -> 12.2 fps
+rtsp-ring: in=1521 evict=1491 depth=30 bytes=0.52/8MB tags=[1491,1521)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.463 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.512 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.517 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.531 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 事件 1 完成(5 段, target_left)
+>>> 检测连击开始 streak=1 score=0.481 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+Input #0, h264, from '/root/camera-final-EYAU3G/acceptance57/default/controlled/event_20261108-211901-01-s3.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1920x1080, 30 fps, 30 tbr, 1200k tbn, 60 tbc
+Output #0, mp4, to '/root/camera-final-EYAU3G/acceptance57/default/controlled/event_20261108-211901-01-s3.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, q=2-31, 30 fps, 30 tbr, 983811.00 tbn, 12.23 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x557407ed80] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+[mp4 @ 0x557407ed80] Starting second pass: moving the moov atom to the beginning of the file
+frame=  371 fps=0.0 q=-1.0 Lsize=    6277kB time=00:00:30.25 bitrate=1699.3kbits/s speed= 385x    
+video:6274kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.038117%
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.476 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.452 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测统计 130s: 命中 9/58 帧 (16%), 峰值 0.531, 输入均值 142.1, streak=0, 最近命中 0.3s 前
+>>> 阶段耗时(均值, 1580 帧): RGA 5.56 + RKNN 61.58 + 编码 14.86 = 82.00 ms/帧 -> 12.2 fps
+rtsp-ring: in=1580 evict=1550 depth=30 bytes=0.51/8MB tags=[1550,1580)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.457 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.457 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.492 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.517 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.475 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+[delivery] complete event_20261108-211901-01-s3.json
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.462 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.492 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+Input #0, h264, from '/root/camera-final-EYAU3G/acceptance57/default/controlled/event_20261108-211901-01-s4.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1920x1080, 30 fps, 30 tbr, 1200k tbn, 60 tbc
+Output #0, mp4, to '/root/camera-final-EYAU3G/acceptance57/default/controlled/event_20261108-211901-01-s4.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, q=2-31, 30 fps, 30 tbr, 390k tbn, 11.34 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x55881a8980] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+[mp4 @ 0x55881a8980] Starting second pass: moving the moov atom to the beginning of the file
+frame=   40 fps=0.0 q=-1.0 Lsize=     804kB time=00:00:03.43 bitrate=1915.2kbits/s speed= 451x    
+video:803kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.120791%
+>>> 检测连击开始 streak=1 score=0.452 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.489 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.476 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.471 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.509 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+[delivery] complete event_20261108-211901-01-s4.json
+>>> 检测连击开始 streak=1 score=0.487 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 135s: 命中 16/59 帧 (27%), 峰值 0.517, 输入均值 141.3, streak=0, 最近命中 0.2s 前
+>>> 阶段耗时(均值, 1639 帧): RGA 5.59 + RKNN 61.63 + 编码 14.87 = 82.10 ms/帧 -> 12.2 fps
+rtsp-ring: in=1639 evict=1609 depth=30 bytes=0.50/8MB tags=[1609,1639)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.506 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.545 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.531 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.473 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.506 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.503 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.492 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 140s: 命中 7/63 帧 (11%), 峰值 0.545, 输入均值 141.4, streak=0, 最近命中 0.1s 前
+>>> 阶段耗时(均值, 1701 帧): RGA 5.58 + RKNN 61.56 + 编码 14.86 = 82.00 ms/帧 -> 12.2 fps
+rtsp-ring: in=1701 evict=1671 depth=30 bytes=0.36/8MB tags=[1671,1701)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.463 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.468 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.498 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+[evw] open event_id=2 last_pkts=1731 pushed=1731
+>>> 检测连击开始 streak=1 score=0.470 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.540
+>>> 触发 seq=1730 ts=142504.9ms -> pre_i=1665 pre_seq=1665 (ring_cnt=1731 head=0 pushed=1731)
+>>> 检测连击结束 streak=3 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.465 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.545 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.481 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 145s: 命中 14/62 帧 (23%), 峰值 0.545, 输入均值 141.4, streak=0, 最近命中 0.6s 前
+>>> 阶段耗时(均值, 1763 帧): RGA 5.57 + RKNN 61.52 + 编码 14.85 = 81.95 ms/帧 -> 12.2 fps
+rtsp-ring: in=1763 evict=1733 depth=30 bytes=0.51/8MB tags=[1733,1763)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.512 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 事件 2 完成(1 段, target_left)
+>>> 检测连击开始 streak=1 score=0.471 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.528 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+Input #0, h264, from '/root/camera-final-EYAU3G/acceptance57/default/controlled/event_20261108-211901-02.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1920x1080, 30 fps, 30 tbr, 1200k tbn, 60 tbc
+Output #0, mp4, to '/root/camera-final-EYAU3G/acceptance57/default/controlled/event_20261108-211901-02.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, q=2-31, 30 fps, 30 tbr, 320k tbn, 12.36 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x559a32b8b0] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+[mp4 @ 0x559a32b8b0] Starting second pass: moving the moov atom to the beginning of the file
+frame=  129 fps=0.0 q=-1.0 Lsize=    2188kB time=00:00:10.35 bitrate=1731.0kbits/s speed= 502x    
+video:2186kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.062043%
+>>> 检测连击开始 streak=1 score=0.537 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 150s: 命中 7/61 帧 (11%), 峰值 0.537, 输入均值 141.3, streak=0, 最近命中 0.3s 前
+>>> 阶段耗时(均值, 1825 帧): RGA 5.57 + RKNN 61.50 + 编码 14.85 = 81.92 ms/帧 -> 12.2 fps
+rtsp-ring: in=1825 evict=1795 depth=30 bytes=0.51/8MB tags=[1795,1825)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.497 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+[delivery] complete event_20261108-211901-02.json
+>>> 检测连击开始 streak=1 score=0.487 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.506 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.498 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.495 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.512 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.460 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.473 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+[evw] open event_id=3 last_pkts=1881 pushed=1881
+>>> 检测连击开始 streak=1 score=0.471 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.520
+>>> 触发 seq=1880 ts=154721.3ms -> pre_i=1813 pre_seq=1813 (ring_cnt=1881 head=0 pushed=1881)
+>>> 检测连击结束 streak=4 (最近命中 0.1s 前)
+>>> 检测统计 155s: 命中 18/61 帧 (30%), 峰值 0.540, 输入均值 141.3, streak=0, 最近命中 0.2s 前
+>>> 阶段耗时(均值, 1886 帧): RGA 5.57 + RKNN 61.49 + 编码 14.85 = 81.92 ms/帧 -> 12.2 fps
+rtsp-ring: in=1886 evict=1856 depth=30 bytes=0.38/8MB tags=[1856,1886)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.481 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.511 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.476 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.465 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.495 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.520 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.503 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.452
+>>> 检测连击结束 streak=3 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.457 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.528 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测统计 160s: 命中 14/61 帧 (23%), 峰值 0.528, 输入均值 141.4, streak=0, 最近命中 0.5s 前
+>>> 阶段耗时(均值, 1947 帧): RGA 5.56 + RKNN 61.49 + 编码 14.85 = 81.90 ms/帧 -> 12.2 fps
+rtsp-ring: in=1947 evict=1917 depth=30 bytes=0.50/8MB tags=[1917,1947)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.463 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.468 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.514 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.463 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.473 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.537 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.520 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.471 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.452 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.476 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 165s: 命中 13/63 帧 (21%), 峰值 0.566, 输入均值 141.4, streak=0, 最近命中 0.6s 前
+>>> 检测连击开始 streak=1 score=0.551 (阈值 0.45, 需连续 3 帧)
+>>> 阶段耗时(均值, 2010 帧): RGA 5.55 + RKNN 61.46 + 编码 14.84 = 81.85 ms/帧 -> 12.2 fps
+rtsp-ring: in=2010 evict=1980 depth=30 bytes=0.52/8MB tags=[1980,2010)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.452 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.452 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.454 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.566 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.471 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测触发 streak=3 score=0.489
+>>> 检测连击开始 streak=1 score=0.511 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.495
+>>> 检测连击结束 streak=3 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.462 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.487 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.457 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.484
+>>> 检测连击结束 streak=3 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.509 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.525 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.503 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.460 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 170s: 命中 24/62 帧 (39%), 峰值 0.566, 输入均值 141.3, streak=1, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 2071 帧): RGA 5.54 + RKNN 61.45 + 编码 14.84 = 81.82 ms/帧 -> 12.2 fps
+rtsp-ring: in=2071 evict=2041 depth=30 bytes=0.37/8MB tags=[2041,2071)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.471 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.497 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.458
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.454 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.520 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.506 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.509 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.457 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.473
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.463 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.505 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.551
+>>> 检测统计 175s: 命中 17/60 帧 (28%), 峰值 0.551, 输入均值 141.2, streak=0, 最近命中 0.1s 前
+>>> 阶段耗时(均值, 2132 帧): RGA 5.53 + RKNN 61.47 + 编码 14.85 = 81.85 ms/帧 -> 12.2 fps
+rtsp-ring: in=2132 evict=2102 depth=30 bytes=0.51/8MB tags=[2102,2132)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.506 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.478 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.463 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.452 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.465 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.471 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.462 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 分段 1 (event_id=3, IDR 边界)
+>>> 检测连击开始 streak=1 score=0.492 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测统计 180s: 命中 13/62 帧 (21%), 峰值 0.512, 输入均值 141.2, streak=0, 最近命中 0.2s 前
+>>> 阶段耗时(均值, 2194 帧): RGA 5.52 + RKNN 61.44 + 编码 14.84 = 81.80 ms/帧 -> 12.2 fps
+rtsp-ring: in=2194 evict=2164 depth=30 bytes=0.52/8MB tags=[2164,2194)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.470 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.476 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.487 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.460 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.569 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+Input #0, h264, from '/root/camera-final-EYAU3G/acceptance57/default/controlled/event_20261108-211901-03.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1920x1080, 30 fps, 30 tbr, 1200k tbn, 60 tbc
+Output #0, mp4, to '/root/camera-final-EYAU3G/acceptance57/default/controlled/event_20261108-211901-03.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, q=2-31, 30 fps, 30 tbr, 356743 tbn, 12.32 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x556625eb10] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+[mp4 @ 0x556625eb10] Starting second pass: moving the moov atom to the beginning of the file
+frame=  371 fps=0.0 q=-1.0 Lsize=    6269kB time=00:00:30.03 bitrate=1709.6kbits/s speed= 388x    
+video:6267kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.038165%
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.479 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.512 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.465 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.492 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 185s: 命中 15/57 帧 (26%), 峰值 0.569, 输入均值 141.3, streak=0, 最近命中 0.4s 前
+>>> 阶段耗时(均值, 2251 帧): RGA 5.57 + RKNN 61.52 + 编码 14.85 = 81.94 ms/帧 -> 12.2 fps
+rtsp-ring: in=2251 evict=2221 depth=30 bytes=0.36/8MB tags=[2221,2251)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.487 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.531
+>>> 检测连击结束 streak=3 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+[delivery] complete event_20261108-211901-03.json
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.522 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.566 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.523
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.492 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.452 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.460 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 190s: 命中 11/60 帧 (18%), 峰值 0.566, 输入均值 141.3, streak=0, 最近命中 0.7s 前
+>>> 阶段耗时(均值, 2311 帧): RGA 5.58 + RKNN 61.56 + 编码 14.86 = 81.99 ms/帧 -> 12.2 fps
+rtsp-ring: in=2311 evict=2281 depth=30 bytes=0.51/8MB tags=[2281,2311)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.566 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.460 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.489 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.474 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.455 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.454 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击开始 streak=1 score=0.460 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.470 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 195s: 命中 9/62 帧 (15%), 峰值 0.566, 输入均值 141.3, streak=0, 最近命中 0.8s 前
+>>> 阶段耗时(均值, 2373 帧): RGA 5.57 + RKNN 61.54 + 编码 14.85 = 81.95 ms/帧 -> 12.2 fps
+rtsp-ring: in=2373 evict=2343 depth=30 bytes=0.52/8MB tags=[2343,2373)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=30
+>>> 阶段耗时(均值, 2374 帧): RGA 5.57 + RKNN 61.53 + 编码 14.85 = 81.95 ms/帧 -> 12.2 fps
+>>> SIGTERM: 进行中的事件已落盘 /root/camera-final-EYAU3G/acceptance57/default/controlled/event_20261108-211901-03-s1
+>>> 收到 SIGTERM, 已停止
+Input #0, h264, from '/root/camera-final-EYAU3G/acceptance57/default/controlled/event_20261108-211901-03-s1.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1920x1080, 30 fps, 30 tbr, 1200k tbn, 60 tbc
+Output #0, mp4, to '/root/camera-final-EYAU3G/acceptance57/default/controlled/event_20261108-211901-03-s1.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, q=2-31, 30 fps, 30 tbr, 317877 tbn, 11.96 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x55a7a49860] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+[mp4 @ 0x55a7a49860] Starting second pass: moving the moov atom to the beginning of the file
+frame=  191 fps=0.0 q=-1.0 Lsize=    3263kB time=00:00:15.88 bitrate=1683.0kbits/s speed= 467x    
+video:3261kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.049740%
+[delivery] complete event_20261108-211901-03-s1.json
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+323 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+150 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+316 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+159 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+314 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+315 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+149 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+165 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+313 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+150 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+332 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+178 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]

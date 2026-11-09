@@ -1,0 +1,50 @@
+5660  openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+5660  mmap(NULL, 92043, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7fb275a000
+5660  close(3)                          = 0
+5660  openat(AT_FDCWD, "/lib/aarch64-linux-gnu/libpthread.so.0", O_RDONLY|O_CLOEXEC) = 3
+5660  mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fb279e000
+5660  mmap(NULL, 197624, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7fb2729000
+5660  mmap(0x7fb2754000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1b000) = 0x7fb2754000
+5660  mmap(0x7fb2756000, 13304, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7fb2756000
+5660  close(3)                          = 0
+5660  openat(AT_FDCWD, "/lib/aarch64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+5660  mmap(NULL, 1519552, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7fb25b6000
+5660  mmap(0x7fb2720000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x15a000) = 0x7fb2720000
+5660  mmap(0x7fb2726000, 12224, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7fb2726000
+5660  close(3)                          = 0
+5660  mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fb279c000
+5660  munmap(0x7fb275a000, 92043)       = 0
+5660  openat(AT_FDCWD, "/dev/v4l-subdev6", O_RDWR) = 3
+5660  openat(AT_FDCWD, "/dev/video5", O_RDWR|O_NONBLOCK) = 4
+5660  ioctl(4, VIDIOC_S_FMT, {type=V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, fmt.pix_mp={width=1920, height=1080, pixelformat=v4l2_fourcc('N', 'V', '1', '2') /* V4L2_PIX_FMT_NV12 */, field=V4L2_FIELD_ANY, colorspace=V4L2_COLORSPACE_DEFAULT, plane_fmt=[], num_planes=0} => fmt.pix_mp={width=1920, height=1080, pixelformat=v4l2_fourcc('N', 'V', '1', '2') /* V4L2_PIX_FMT_NV12 */, field=V4L2_FIELD_NONE, colorspace=V4L2_COLORSPACE_DEFAULT, plane_fmt=[{sizeimage=3110400, bytesperline=1920}], num_planes=1}}) = 0
+5660  ioctl(4, VIDIOC_REQBUFS, {type=V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, memory=V4L2_MEMORY_MMAP, count=4 => 4}) = 0
+5660  ioctl(4, VIDIOC_QUERYBUF, {type=V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, index=0, memory=V4L2_MEMORY_MMAP, m.offset=0xf85ba150, length=1, bytesused=0, flags=V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC, ...}) = 0
+5660  mmap(NULL, 3133440, PROT_READ|PROT_WRITE, MAP_SHARED, 4, 0) = 0x7fb22b9000
+5660  ioctl(4, VIDIOC_QUERYBUF, {type=V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, index=1, memory=V4L2_MEMORY_MMAP, m.offset=0xf85ba150, length=1, bytesused=0, flags=V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC, ...}) = 0
+5660  mmap(NULL, 3133440, PROT_READ|PROT_WRITE, MAP_SHARED, 4, 0x2fd000) = 0x7fb1fbc000
+5660  ioctl(4, VIDIOC_QUERYBUF, {type=V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, index=2, memory=V4L2_MEMORY_MMAP, m.offset=0xf85ba150, length=1, bytesused=0, flags=V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC, ...}) = 0
+5660  mmap(NULL, 3133440, PROT_READ|PROT_WRITE, MAP_SHARED, 4, 0x5fa000) = 0x7fb1cbf000
+5660  ioctl(4, VIDIOC_QUERYBUF, {type=V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, index=3, memory=V4L2_MEMORY_MMAP, m.offset=0xf85ba150, length=1, bytesused=0, flags=V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC, ...}) = 0
+5660  mmap(NULL, 3133440, PROT_READ|PROT_WRITE, MAP_SHARED, 4, 0x8f7000) = 0x7fb19c2000
+5660  ioctl(4, VIDIOC_QBUF, {type=V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, index=0, memory=V4L2_MEMORY_MMAP, m.offset=0xf85ba150, length=1, bytesused=0, flags=V4L2_BUF_FLAG_MAPPED|V4L2_BUF_FLAG_QUEUED|V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC, ...}) = 0
+5660  ioctl(4, VIDIOC_QBUF, {type=V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, index=1, memory=V4L2_MEMORY_MMAP, m.offset=0xf85ba150, length=1, bytesused=0, flags=V4L2_BUF_FLAG_MAPPED|V4L2_BUF_FLAG_QUEUED|V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC, ...}) = 0
+5660  ioctl(4, VIDIOC_QBUF, {type=V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, index=2, memory=V4L2_MEMORY_MMAP, m.offset=0xf85ba150, length=1, bytesused=0, flags=V4L2_BUF_FLAG_MAPPED|V4L2_BUF_FLAG_QUEUED|V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC, ...}) = 0
+5660  ioctl(4, VIDIOC_QBUF, {type=V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, index=3, memory=V4L2_MEMORY_MMAP, m.offset=0xf85ba150, length=1, bytesused=0, flags=V4L2_BUF_FLAG_MAPPED|V4L2_BUF_FLAG_QUEUED|V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC, ...}) = 0
+5660  ioctl(4, VIDIOC_STREAMON, [V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE]) = 0
+5660  ioctl(3, VIDIOC_QUERYCTRL, {id=V4L2_CID_EXPOSURE, type=V4L2_CTRL_TYPE_INTEGER, name="Exposure", minimum=4, maximum=2242, step=1, default_value=2242, flags=0}) = 0
+5660  ioctl(3, VIDIOC_G_EXT_CTRLS, {ctrl_class=V4L2_CTRL_CLASS_USER, count=1, controls=[{id=V4L2_CID_EXPOSURE, size=0, value=2242, value64=2242}]}) = 0
+5660  ioctl(3, VIDIOC_QUERYCTRL, {id=V4L2_CID_ANALOGUE_GAIN, type=V4L2_CTRL_TYPE_INTEGER, name="Analogue Gain", minimum=0, maximum=240, step=1, default_value=0, flags=0}) = 0
+5660  ioctl(3, VIDIOC_G_EXT_CTRLS, {ctrl_class=V4L2_CTRL_CLASS_IMAGE_SOURCE, count=1, controls=[{id=V4L2_CID_ANALOGUE_GAIN, size=0, value=0, value64=0}]}) = 0
+5660  openat(AT_FDCWD, "/dev/video13", O_RDWR) = 5
+5660  ioctl(5, VIDIOC_G_FMT, {type=V4L2_BUF_TYPE_META_OUTPUT}) = 0
+5660  ioctl(5, VIDIOC_REQBUFS, {type=V4L2_BUF_TYPE_META_OUTPUT, memory=V4L2_MEMORY_MMAP, count=1 => 2}) = 0
+5660  ioctl(5, VIDIOC_QUERYBUF, {type=V4L2_BUF_TYPE_META_OUTPUT, index=0, memory=V4L2_MEMORY_MMAP, m.offset=0, length=10402, bytesused=0, flags=V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC, ...}) = 0
+5660  close(5)                          = 0
+5660  ioctl(4, VIDIOC_STREAMOFF, [V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE]) = 0
+5660  munmap(0x7fb22b9000, 3133440)     = 0
+5660  munmap(0x7fb1fbc000, 3133440)     = 0
+5660  munmap(0x7fb1cbf000, 3133440)     = 0
+5660  munmap(0x7fb19c2000, 3133440)     = 0
+5660  close(4)                          = 0
+5660  close(3)                          = 0
+5660  +++ exited with 1 +++

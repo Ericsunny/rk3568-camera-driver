@@ -1,9 +1,9 @@
 name: host-static-checks
 on:
   push:
-    paths: [ 'tools/**', 'mini3a/**', '.github/**' ]
+    paths: [ 'tools/**', 'mini3a/**', 'config/final-demo.env', '.github/**' ]
   pull_request:
-    paths: [ 'tools/**', 'mini3a/**', '.github/**' ]
+    paths: [ 'tools/**', 'mini3a/**', 'config/final-demo.env', '.github/**' ]
 
 jobs:
   static:
@@ -25,7 +25,7 @@ jobs:
 
       - name: shellcheck(有则报,不阻断)
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck >/dev/null
+          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck ffmpeg >/dev/null
           for f in $(git ls-files '*.sh'); do
             shellcheck -S warning "$f" || true
           done
@@ -68,3 +68,17 @@ jobs:
 
       - name: RAW10 统计合成数据测试(不访问设备)
         run: python3 tools/tests/test_raw10_stats.py
+
+      - name: mini3a 主机替身测试(不访问设备)
+        run: python3 tools/tests/test_mini3a_host.py
+
+      - name: 固定演示配置启动检查(不访问设备)
+        run: python3 tools/tests/test_camera_demo_profile.py
+
+      - name: 事件交付与协议读取测试(主机合成数据和替身)
+        run: |
+          python3 tools/tests/test_evrec_preroll.py
+          python3 tools/tests/test_evrec_model_contract.py
+          python3 tools/tests/test_rtsp_check.py
+          python3 tools/tests/test_h264_to_mp4.py
+          python3 tools/tests/test_camera_service.py

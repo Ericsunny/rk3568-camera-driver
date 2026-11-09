@@ -498,7 +498,7 @@ static int decode_yolov8(rknn_tensor_attr *oa, int8_t **od, struct dbox *res,
 static int rknn_consumer_init(void)
 {
 	rknn_input_output_num io;
-	rknn_tensor_attr in_attr, in_native, oattr;
+	rknn_tensor_attr in_attr, in_native;
 	FILE *f;
 	long sz;
 	void *model;

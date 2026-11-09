@@ -1,0 +1,81 @@
+PASS camera profile: modes, arguments, isolated outputs and startup rejection
+>>> SIGTERM: 进行中的事件已落盘 /tmp/evrec-host-780nrjrx/event0
+>>> fopen /tmp/evrec-host-780nrjrx/event1.json 失败: Permission denied
+>>> SIGTERM: 事件落盘失败
+>>> 写入 /tmp/evrec-host-780nrjrx/event2.json 失败: No space left on device
+>>> SIGTERM: 事件落盘失败
+>>> 关闭 /tmp/evrec-host-780nrjrx/event3.json 失败: Input/output error
+>>> SIGTERM: 事件落盘失败
+>>> SIGTERM: 事件落盘失败
+>>> rename /tmp/evrec-host-780nrjrx/event5.part 失败: Input/output error
+>>> SIGTERM: 事件落盘失败
+>>> fopen /tmp/evrec-host-780nrjrx/event11.json 失败: Permission denied
+>>> 事件落盘失败
+>>> 写入 /tmp/evrec-host-780nrjrx/event12.json 失败: No space left on device
+>>> 事件落盘失败
+>>> 关闭 /tmp/evrec-host-780nrjrx/event13.json 失败: Input/output error
+>>> 事件落盘失败
+>>> 收到 SIGTERM, 已停止
+SIGTERM fault=0 rc=0 event_id=7 segment=2 write_error=0
+SIGTERM fault=1 rc=1 event_id=7 segment=2 write_error=0
+SIGTERM fault=2 rc=1 event_id=7 segment=2 write_error=0
+SIGTERM fault=3 rc=1 event_id=7 segment=2 write_error=0
+SIGTERM fault=4 rc=1 event_id=7 segment=2 write_error=1
+SIGTERM fault=5 rc=1 event_id=7 segment=2 write_error=0
+target_left fault=0 rc=0 completed=1
+target_left fault=1 rc=1 completed=0
+target_left fault=2 rc=1 completed=0
+target_left fault=3 rc=1 completed=0
+event: PASS
+QBUF: Input/output error
+QBUF failure enters recovery; SIGTERM stops; success encodes
+qbuf: PASS
+/tmp/evrec-host-780nrjrx/rga-only.c:24:13: warning: ‘npu_run’ defined but not used [-Wunused-function]
+   24 | static void npu_run(const unsigned char *p) { (void)p; npu_calls++; }
+      |             ^~~~~~~
+/tmp/evrec-host-780nrjrx/rga-only.c:18:15: warning: ‘now_ms’ defined but not used [-Wunused-function]
+   18 | static double now_ms(int clock_id) { (void)clock_id; return 1.0; }
+      |               ^~~~~~
+/tmp/evrec-host-780nrjrx/rga-only.c:16:31: warning: ‘t_npu’ defined but not used [-Wunused-variable]
+   16 | static double t_stage, t_rga, t_npu;
+      |                               ^~~~~
+/tmp/evrec-host-780nrjrx/rga-only.c:16:24: warning: ‘t_rga’ defined but not used [-Wunused-variable]
+   16 | static double t_stage, t_rga, t_npu;
+      |                        ^~~~~
+/tmp/evrec-host-780nrjrx/rga-only.c:16:15: warning: ‘t_stage’ defined but not used [-Wunused-variable]
+   16 | static double t_stage, t_rga, t_npu;
+      |               ^~~~~~~
+/tmp/evrec-host-780nrjrx/rga-only.c:15:30: warning: ‘b’ defined but not used [-Wunused-variable]
+   15 | static struct { int index; } b;
+      |                              ^
+/tmp/evrec-host-780nrjrx/rga-only.c:13:33: warning: ‘h’ defined but not used [-Wunused-variable]
+   13 | static int g_detect = 1, w = 4, h = 4;
+      |                                 ^
+/tmp/evrec-host-780nrjrx/rga-only.c:13:26: warning: ‘w’ defined but not used [-Wunused-variable]
+   13 | static int g_detect = 1, w = 4, h = 4;
+      |                          ^
+/tmp/evrec-host-780nrjrx/rga-only.c:13:12: warning: ‘g_detect’ defined but not used [-Wunused-variable]
+   13 | static int g_detect = 1, w = 4, h = 4;
+      |            ^~~~~~~~
+/tmp/evrec-host-780nrjrx/rga-only.c:11:42: warning: ‘g_rgb’ defined but not used [-Wunused-variable]
+   11 | static unsigned char *g_rga_buf = data, *g_rgb = rgb;
+      |                                          ^~~~~
+RGA 失败: injected
+RGA failure skips inference; successful buffer sampled
+rga-only: PASS
+/tmp/evrec-host-780nrjrx/rga-rknn.c:11:23: warning: ‘g_rga_buf’ defined but not used [-Wunused-variable]
+   11 | static unsigned char *g_rga_buf = data, *g_rgb = rgb;
+      |                       ^~~~~~~~~
+RGA 失败: injected
+RGA 失败: injected
+RGA failure skips inference; successful buffer sampled
+rga-rknn: PASS
+ordinary sigterm: control and five failures PASS
+ordinary target-left: control and five failures PASS
+ordinary unrelated event paths are unaffected: PASS
+fortified sigterm: control and five failures PASS
+fortified target-left: control and five failures PASS
+fortified unrelated event paths are unaffected: PASS
+scope, symlink and unhit occurrence: PASS
+selected occurrence injects only once: PASS
+invalid configuration fails closed: PASS

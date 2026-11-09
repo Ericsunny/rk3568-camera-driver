@@ -1,0 +1,12 @@
+BEFORE
+0
+suspended
+DURING
+1
+active
+CAPTURE90_EXIT=0
+AFTER
+0
+suspended
+c133c83afa56be5d4b70567050280e65587a29e228efa32725959a7b6f84ff3d  /root/camera-final-EYAU3G/acceptance56/ov8858/two.raw
+5013504 /root/camera-final-EYAU3G/acceptance56/ov8858/two.raw

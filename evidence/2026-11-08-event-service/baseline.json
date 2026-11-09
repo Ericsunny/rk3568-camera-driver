@@ -1,0 +1,35 @@
+{
+  "baseline": "2026-11-08-event-service",
+  "source_base_commit": "6d0356341b9ff7e1204ae8236834bbe06c6f2c1d",
+  "working_tree_changes": true,
+  "recorded_utc": "2026-11-08T13:39:29.654342Z",
+  "kernel": "Linux yckt 4.19.232 #57 SMP Sun Nov 8 13:05:30 UTC 2026 aarch64 aarch64 aarch64 GNU/Linux",
+  "input_sha256": {
+    "evrec": "5c7a6b3de61f779d48439b16d0c8624f2fcae973fa18cefb8a3efeef3bd64abc",
+    "camd": "7d1a54c870c102b8c658ec24f2ac8cec8db0f80bc6acfbd0a31566cf5abd22fd",
+    "mini3a/mini3a": "df55dac8496752fc6762a489fd76dd1b8c3ada6bc90fe55df96eac5381a98e38",
+    "tools/evrec.c": "bfa9c6b75035fea023935b8cd0c7b86c95de9d31ad1727ded418dbd8bc54c94d",
+    "tools/camd.c": "637bf65eac0c70864d8d3d176d6d608dc44c5148ca6d28a516d89f9c03542252",
+    "mini3a/mini3a.c": "afcfab03c1d6833b76f263ed86e0cfd2797cd8d26ee523930f1fb9a62c4017c9",
+    "tools/rtsp_hub.c": "4f5d05afc019268baf7ebac56629997d4c4192348d3440073e70256748a49408",
+    "tools/rtsp_hub.h": "fe638f126656e9e5e3f8d82db3f40b30d2e284ee76712821869e7e321a749950",
+    "tools/camera_service.py": "04c5470226936d6927ab93ab7d742399117795b5899ca6b69119f14be25e6acc",
+    "tools/h264_to_mp4.py": "29c55a4d53c2b3923254b2344b3e4db8cc0a081aa4ae319500374b4669404e72",
+    "tools/run_camera_demo.sh": "8f43260e1bafe024b9a27e0d8c829db859eed717e6908438f5374134ea006a94",
+    "tools/rtsp_check.py": "8b5124f82ccfc746079b011d3af952f1a8f1e386ffb9c04c618d20d08e2bd81d",
+    "config/final-demo.env": "4803934676f8aa6f65ac11c68536f7c44518bade82809f0046c70fd5b46b3cbb",
+    "driver/ov8858_sm/ov8858_sm.c": "a0c430b06eed7c9470e0da8cc143021941946687ce7ee5cef107516c084cb407",
+    "driver/ov8858_sm/ov8858_sm_regs.h": "93eb2b4d2d85d8295fcf1ebce2ef0aa6da75d8fad5f6be129e0637c84cd03492"
+  },
+  "environment_sha256": {
+    "/boot/Image-4.19.232": "e94a08bf9dd701370a293dfffa75fbc70fb1af139c0211219060bceed5de2245",
+    "/boot/rk-kernel.dtb": "d0a6a2e4fd163f045dc520397849abb1c485a778a9e25816305c0dc563fc39a9",
+    "/lib/aarch64-linux-gnu/librga.so": "ac78cd73c12ce1d752574782264d51f2c35f92cdfa93c11ad71de847fa098cc9",
+    "/lib/librknnrt.so": "d31fc19c85b85f6091b2bd0f6af9d962d5264a4e410bfb536402ec92bac738e8",
+    "/lib/aarch64-linux-gnu/librockchip_mpp.so": "9db8192bf6d4bd927a9b48df5a4154af81fd72975a3ca180dab26ad1455d9323",
+    "/usr/bin/rkaiq_3A_server": "4240e76c22bb979507def7d27d149dcad08ca064daf73e8569ccf58077a1cd7d",
+    "/usr/lib/librkaiq.so": "1842c1b6096539d76b789b43d4fd7ab8f56677857a20b1f155fcf304b6a38839",
+    "/etc/iqfiles/imx415_CMK-OT1522-FG3_CS-P1150-IRC-8M-FAU.json": "6e1a525077efb220982e4c91ccbef02a56f0f6a70a1adc05691f2dceb33bf317",
+    "/root/npu/examples/yolov8/model/yolov8n_rk3568_i8.rknn": "722d3aca582872b1b9a22ccc7cb3fee48e4c97fe725fcd138655db5ff7d1210d"
+  }
+}

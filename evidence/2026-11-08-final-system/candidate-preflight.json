@@ -1,0 +1,36 @@
+{
+  "status": "candidate-not-accepted",
+  "host_date": "2026-11-08",
+  "source_archive_tree": "9861afb4fc43cbce2d97e1cb463648280bbbacf2",
+  "uname": "Linux yckt 4.19.232 #52 SMP Tue Oct 27 06:43:24 UTC 2026 aarch64 aarch64 aarch64 GNU/Linux",
+  "board_clock": "2024-06-17T21:02:36Z",
+  "boot_id": "2dec1aa3-91ff-45d6-8ee8-58216e3c7b03",
+  "sha256": {
+    "evrec": "bc572636b570372670db924986d51e7b77bd239df2940111f4e4e8f2ab3ae381",
+    "camd": "7d1a54c870c102b8c658ec24f2ac8cec8db0f80bc6acfbd0a31566cf5abd22fd",
+    "mini3a": "a11be77aa23467b29cef6da2007871f4c4596c27dc6bcf77f84e964b8a2823ec",
+    "profile": "4803934676f8aa6f65ac11c68536f7c44518bade82809f0046c70fd5b46b3cbb",
+    "driver_source": "a0c430b06eed7c9470e0da8cc143021941946687ce7ee5cef107516c084cb407",
+    "evrec_source": "745e17b3427975495a8a48f2730f0194638c00e859e0fbcc930550800f04207a",
+    "camd_source": "637bf65eac0c70864d8d3d176d6d608dc44c5148ca6d28a516d89f9c03542252",
+    "mini3a_source": "57346f90a5876906ec21cfe48521eb0624385edb10dd9e6bd7f128a4b4f343dd",
+    "candidate_kernel": "53f8f3aeab51a6ef1e7b029e46516fcbced49639c2000f9fbd78751710e58b36",
+    "current_boot_kernel": "46a4dab391a9980de22a628ceae4f8d7838fd5215e1b7e1e3f7cd1845e48a5b7",
+    "dtb": "d0a6a2e4fd163f045dc520397849abb1c485a778a9e25816305c0dc563fc39a9",
+    "rkaiq_server": "4240e76c22bb979507def7d27d149dcad08ca064daf73e8569ccf58077a1cd7d",
+    "librkaiq": "1842c1b6096539d76b789b43d4fd7ab8f56677857a20b1f155fcf304b6a38839",
+    "iq": "6e1a525077efb220982e4c91ccbef02a56f0f6a70a1adc05691f2dceb33bf317",
+    "model": "722d3aca582872b1b9a22ccc7cb3fee48e4c97fe725fcd138655db5ff7d1210d",
+    "librga": "ac78cd73c12ce1d752574782264d51f2c35f92cdfa93c11ad71de847fa098cc9",
+    "librknnrt": "d31fc19c85b85f6091b2bd0f6af9d962d5264a4e410bfb536402ec92bac738e8",
+    "libmpp": "9db8192bf6d4bd927a9b48df5a4154af81fd72975a3ca180dab26ad1455d9323"
+  },
+  "pending": [
+    "kernel deployment and boot verification",
+    "manual event and two-client RTSP",
+    "person detection positive/negative",
+    "OV8858 and dual capture",
+    "mini3a exclusive-control test",
+    "camd device smoke"
+  ]
+}

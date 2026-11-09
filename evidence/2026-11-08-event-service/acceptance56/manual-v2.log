@@ -1,0 +1,346 @@
+>>> S_FMT 回填 1920x1080 stride=1920 sizeimage=3110400
+>>> 采集 /dev/video5 1920x1080,pre=3s post=2s ring=64MB gop=37
+>>> OSD 开启: #<seq> + t mm:ss.mmm @左上角(4px, sc=2), stride=1920
+>>> RTSP 监听 :8554 (多客户端, 上限 2)
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=70 evict=40 depth=30 bytes=0.37/8MB tags=[40,70)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=145 evict=115 depth=30 bytes=0.39/8MB tags=[115,145)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=220 evict=190 depth=30 bytes=0.41/8MB tags=[190,220)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=295 evict=265 depth=30 bytes=0.37/8MB tags=[265,295)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=370 evict=340 depth=30 bytes=0.41/8MB tags=[340,370)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=445 evict=415 depth=30 bytes=0.50/8MB tags=[415,445)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=520 evict=490 depth=30 bytes=0.50/8MB tags=[490,520)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=595 evict=565 depth=30 bytes=0.49/8MB tags=[565,595)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 0)
+rtsp c0: 客户端开始播放(从 tag 629 起)
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 1)
+rtsp c1: 客户端开始播放(从 tag 629 起)
+rtsp c0: sent=337/449540B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=337/449540B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=674 epoch=0 rej453=0 fds=16
+[evw] open event_id=1 last_pkts=657 pushed=657
+>>> 触发 seq=656 ts=44186.1ms -> pre_i=592 pre_seq=592 (ring_cnt=657 head=0 pushed=657)
+rtsp-ring: in=670 evict=640 depth=30 bytes=0.50/8MB tags=[640,670)
+rtsp c0: sent=575/764502B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=575/764502B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=1150 epoch=0 rej453=0 fds=17
+rtsp c0: sent=736/976666B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=736/976666B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=1472 epoch=0 rej453=0 fds=17
+>>> 事件 1 完成(1 段, target_left)
+rtsp c0: sent=892/1185469B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=892/1185469B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=1784 epoch=0 rej453=0 fds=16
+rtsp c0: sent=1129/1497604B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=1129/1497604B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=2258 epoch=0 rej453=0 fds=16
+Input #0, h264, from '/root/camera-final-EYAU3G/acceptance56/manual-v2/event_20261108-204637-01.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1920x1080, 30 fps, 30 tbr, 1200k tbn, 60 tbc
+Output #0, mp4, to '/root/camera-final-EYAU3G/acceptance56/manual-v2/event_20261108-204637-01.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, q=2-31, 30 fps, 30 tbr, 950k tbn, 15.01 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x5584e4bb20] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+[mp4 @ 0x5584e4bb20] Starting second pass: moving the moov atom to the beginning of the file
+frame=   96 fps=0.0 q=-1.0 Lsize=    1612kB time=00:00:06.32 bitrate=2087.0kbits/s speed= 428x    
+video:1611kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.074983%
+rtsp c0: sent=1282/1703176B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=1282/1703176B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=2564 epoch=0 rej453=0 fds=16
+[delivery] complete event_20261108-204637-01.json
+rtsp-ring: in=745 evict=715 depth=30 bytes=0.49/8MB tags=[715,745)
+rtsp c0: sent=1512/2011650B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=1512/2011650B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=3024 epoch=0 rej453=0 fds=16
+rtsp c0: sent=1667/2220943B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=1667/2220943B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=3334 epoch=0 rej453=0 fds=16
+rtsp c0: sent=1823/2428976B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=1823/2428976B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=3646 epoch=0 rej453=0 fds=16
+rtsp c0: sent=2057/2739201B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=2057/2739201B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=4114 epoch=0 rej453=0 fds=16
+rtsp c0: 发送判死(why=error errno=104), 断开
+rtsp c0: 连接关闭
+rtsp c1: 发送判死(why=error errno=104), 断开
+rtsp c1: 连接关闭
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+[evw] open event_id=2 last_pkts=807 pushed=807
+>>> 触发 seq=806 ts=54185.7ms -> pre_i=740 pre_seq=740 (ring_cnt=807 head=0 pushed=807)
+rtsp-ring: in=820 evict=790 depth=30 bytes=0.49/8MB tags=[790,820)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=15
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=15
+>>> 事件 2 完成(1 段, target_left)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+Input #0, h264, from '/root/camera-final-EYAU3G/acceptance56/manual-v2/event_20261108-204637-02.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1920x1080, 30 fps, 30 tbr, 1200k tbn, 60 tbc
+Output #0, mp4, to '/root/camera-final-EYAU3G/acceptance56/manual-v2/event_20261108-204637-02.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, q=2-31, 30 fps, 30 tbr, 80k tbn, 15 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x55ac770810] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+[mp4 @ 0x55ac770810] Starting second pass: moving the moov atom to the beginning of the file
+frame=   97 fps=0.0 q=-1.0 Lsize=    1616kB time=00:00:06.39 bitrate=2069.0kbits/s speed= 441x    
+video:1615kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.075038%
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+[delivery] complete event_20261108-204637-02.json
+rtsp-ring: in=895 evict=865 depth=30 bytes=0.50/8MB tags=[865,895)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=970 evict=940 depth=30 bytes=0.50/8MB tags=[940,970)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1045 evict=1015 depth=30 bytes=0.50/8MB tags=[1015,1045)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1120 evict=1090 depth=30 bytes=0.50/8MB tags=[1090,1120)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1195 evict=1165 depth=30 bytes=0.50/8MB tags=[1165,1195)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1270 evict=1240 depth=30 bytes=0.50/8MB tags=[1240,1270)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1345 evict=1315 depth=30 bytes=0.50/8MB tags=[1315,1345)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1420 evict=1390 depth=30 bytes=0.49/8MB tags=[1390,1420)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1495 evict=1465 depth=30 bytes=0.50/8MB tags=[1465,1495)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1570 evict=1540 depth=30 bytes=0.50/8MB tags=[1540,1570)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1645 evict=1615 depth=30 bytes=0.50/8MB tags=[1615,1645)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1720 evict=1690 depth=30 bytes=0.50/8MB tags=[1690,1720)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1795 evict=1765 depth=30 bytes=0.50/8MB tags=[1765,1795)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1870 evict=1840 depth=30 bytes=0.50/8MB tags=[1840,1870)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=1945 evict=1915 depth=30 bytes=0.50/8MB tags=[1915,1945)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2020 evict=1990 depth=30 bytes=0.50/8MB tags=[1990,2020)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 0)
+rtsp c0: 客户端开始播放(从 tag 1998 起)
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 1)
+rtsp c1: 客户端开始播放(从 tag 1998 起)
+rtsp c0: sent=170/227873B skip=0 evict=0 dead=0 lag=1800ms idle=0.7s
+rtsp c1: sent=454/604005B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=624 epoch=0 rej453=0 fds=16
+rtsp c0: sent=170/227873B skip=0 evict=0 dead=0 lag=0ms idle=1.7s
+rtsp c1: sent=690/916773B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=860 epoch=0 rej453=0 fds=16
+rtsp c0: sent=170/227873B skip=0 evict=0 dead=0 lag=0ms idle=2.7s
+rtsp c1: sent=844/1123018B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=1014 epoch=0 rej453=0 fds=16
+rtsp c0: sent=170/227873B skip=0 evict=0 dead=0 lag=0ms idle=3.7s
+rtsp c1: sent=1083/1440296B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=1253 epoch=0 rej453=0 fds=16
+rtsp-ring: in=2095 evict=2065 depth=30 bytes=0.50/8MB tags=[2065,2095)
+rtsp c0: sent=170/227873B skip=0 evict=0 dead=0 lag=0ms idle=4.7s
+rtsp c1: sent=1239/1648582B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=1409 epoch=0 rej453=0 fds=16
+rtsp c0: 发送判死(why=stall errno=11), 断开
+rtsp c0: 连接关闭
+rtsp c1: sent=1397/1859001B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=1397 epoch=0 rej453=0 fds=15
+rtsp c1: sent=1630/2170195B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=1630 epoch=0 rej453=0 fds=15
+rtsp c1: sent=1781/2375142B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=1781 epoch=0 rej453=0 fds=15
+rtsp c1: sent=2020/2691436B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=2020 epoch=0 rej453=0 fds=15
+rtsp-ring: in=2170 evict=2140 depth=30 bytes=0.50/8MB tags=[2140,2170)
+rtsp c1: sent=2173/2898105B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=2173 epoch=0 rej453=0 fds=15
+rtsp c1: sent=2407/3212179B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=2407 epoch=0 rej453=0 fds=15
+rtsp c1: sent=2564/3421988B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=2564 epoch=0 rej453=0 fds=15
+rtsp c1: sent=2719/3631856B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=2719 epoch=0 rej453=0 fds=15
+rtsp c1: sent=2959/3948617B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=2959 epoch=0 rej453=0 fds=15
+rtsp c1: 发送判死(why=error errno=104), 断开
+rtsp c1: 连接关闭
+rtsp-ring: in=2245 evict=2215 depth=30 bytes=0.50/8MB tags=[2215,2245)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2320 evict=2290 depth=30 bytes=0.50/8MB tags=[2290,2320)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2395 evict=2365 depth=30 bytes=0.50/8MB tags=[2365,2395)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2470 evict=2440 depth=30 bytes=0.50/8MB tags=[2440,2470)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2545 evict=2515 depth=30 bytes=0.49/8MB tags=[2515,2545)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2620 evict=2590 depth=30 bytes=0.50/8MB tags=[2590,2620)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2695 evict=2665 depth=30 bytes=0.40/8MB tags=[2665,2695)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2770 evict=2740 depth=30 bytes=0.40/8MB tags=[2740,2770)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp-ring: in=2845 evict=2815 depth=30 bytes=0.40/8MB tags=[2815,2845)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+>>> 收到 SIGTERM, 已停止
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+285 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+141 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+297 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+148 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]

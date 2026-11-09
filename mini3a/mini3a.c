@@ -332,7 +332,12 @@ static int awb_apply_params(unsigned int gr, unsigned int gb)
 
     memset(&b, 0, sizeof(b));
     b.type = t; b.memory = V4L2_MEMORY_MMAP; b.index = 0;
-    if (xioctl(fd, VIDIOC_QUERYBUF, &b) < 0 || b.length < sizeof(*cfg)) goto out;
+    if (xioctl(fd, VIDIOC_QUERYBUF, &b) < 0) { perror("ISP params QUERYBUF"); goto out; }
+    if (b.length < sizeof(*cfg)) {
+        fprintf(stderr, "ISP params buffer too small: QUERYBUF=%u required=%zu (G_FMT=%u)\n",
+                b.length, sizeof(*cfg), fmt.fmt.meta.buffersize);
+        goto out;
+    }
     maplen = b.length;
     p = mmap(NULL, b.length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, b.m.offset);
     if (p == MAP_FAILED) goto out;

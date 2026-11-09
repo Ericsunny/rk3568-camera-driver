@@ -1,0 +1,23 @@
+ISP params QUERYBUF: Input/output error
+ISP params ABI mismatch: driver=61 program=60
+ISP params buffer too small: QUERYBUF=59 required=60 (G_FMT=60)
+frame.nv12: File exists
+missing-directory/frame.nv12: No such file or directory
+frame save failed; output may be partial: close-failed.nv12
+frame save failed; output may be partial: short-write.nv12
+DQBUF: Input/output error
+>>> AWB: params 下发失败,本步不生效
+>>> saved tightly-packed NV12: frame.nv12
+PASS mini3a: statistics, control/params/output failures, queue wakeup and producer exit
+PASS complete program: normal exit 0
+PASS complete program: limit exit 2
+PASS complete program: drift exit 2
+PASS complete program: format exit 1
+PASS complete program: params exit 1
+PASS complete program: mmap exit 1
+PASS complete program: thread exit 1
+PASS complete program: qbuf exit 1
+PASS complete program: dqbuf exit 1
+PASS complete program: fclose exit 1
+PASS complete program: streamoff exit 1
+PASS complete program: SIGTERM exit 143

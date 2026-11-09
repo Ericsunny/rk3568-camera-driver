@@ -1,0 +1,22 @@
+[
+  "/root/camera-final-EYAU3G/delivery-runtime-v2/evrec",
+  "-d",
+  "/dev/video5",
+  "-w",
+  "1920",
+  "-h",
+  "1080",
+  "--pre",
+  "1",
+  "--post",
+  "10",
+  "--ring-mb",
+  "64",
+  "--kbps",
+  "4000",
+  "--rtsp",
+  "0",
+  "--osd",
+  "-o",
+  "/root/camera-final-EYAU3G/acceptance56/file-errors/json-close/event"
+]

@@ -16,16 +16,48 @@ import sys
 def frame_count(probe: str, path: Path) -> int:
     result = subprocess.run(
         [probe, "-v", "error", "-count_frames", "-select_streams", "v:0",
-         "-show_entries", "stream=codec_name,nb_read_frames", "-of", "json", str(path)],
-        check=True, capture_output=True, text=True,
+         "-show_entries", "stream=codec_name,nb_read_frames", "-of", "compact=p=0:nk=0", str(path)],
+        check=True, capture_output=True, text=True, timeout=120,
     )
-    streams = json.loads(result.stdout)["streams"]
-    if len(streams) != 1 or streams[0]["codec_name"] != "h264":
+    if result.stderr.strip():
+        raise ValueError("decoder reported errors: " + result.stderr.strip())
+    # Some BSP libraries print initialization diagnostics to stdout, even in
+    # the middle of ffprobe's JSON object. Select the exact stream record and
+    # retain all other output as diagnostics rather than silently dropping it.
+    lines = result.stdout.splitlines()
+    streams = [line for line in lines if line.startswith("codec_name=")]
+    noise = [line for line in lines if line and line not in streams]
+    if noise:
+        print("ffprobe library output:\n" + "\n".join(noise), file=sys.stderr)
+    if len(streams) != 1:
         raise ValueError("expected one selected H.264 video stream")
-    count = int(streams[0]["nb_read_frames"])
+    fields = dict(item.split("=", 1) for item in streams[0].split("|"))
+    if fields.get("codec_name") != "h264":
+        raise ValueError("expected H.264 video")
+    count = int(fields["nb_read_frames"])
     if count <= 0:
         raise ValueError("no decoded frames")
     return count
+
+
+def remux(source, output, rate, ffmpeg="ffmpeg", ffprobe="ffprobe", input_count=None):
+    """Copy packets into a CFR container; return verified decoded frame count.
+
+    The caller owns output publication. A failure may leave a partial output.
+    """
+    rate = Fraction(rate)
+    if not 0 < rate <= 240:
+        raise ValueError("fps must be between 0 and 240")
+    if input_count is None:
+        input_count = frame_count(ffprobe, source)
+    command = [ffmpeg, "-nostdin", "-hide_banner", "-n", "-r", str(rate),
+               "-f", "h264", "-i", str(source), "-map", "0:v:0", "-c:v", "copy",
+               "-movflags", "+faststart", str(output)]
+    subprocess.run(command, check=True, timeout=120)
+    output_count = frame_count(ffprobe, output)
+    if input_count != output_count:
+        raise ValueError(f"frame count mismatch: input={input_count}, output={output_count}")
+    return output_count
 
 
 def main() -> int:
@@ -59,21 +91,11 @@ def main() -> int:
 
     print("Using an assumed constant frame rate; capture timing is not preserved.",
           file=sys.stderr, flush=True)
-    command = [args.ffmpeg, "-nostdin", "-hide_banner", "-n", "-r", str(rate),
-               "-f", "h264", "-i", str(args.input), "-map", "0:v:0", "-c:v", "copy",
-               "-movflags", "+faststart", str(args.output)]
-    rc = subprocess.run(command, check=False).returncode
-    if rc:
-        print("FFmpeg failed; any incomplete output must not be used.", file=sys.stderr)
-        return rc
     try:
-        output_count = frame_count(args.ffprobe, args.output)
-    except (subprocess.SubprocessError, ValueError, KeyError, IndexError, json.JSONDecodeError) as exc:
-        print(f"Cannot count output frames; do not use output: {exc}", file=sys.stderr)
-        return 1
-    if input_count != output_count:
-        print(f"Frame count mismatch: input={input_count}, output={output_count}; do not use output.",
-              file=sys.stderr)
+        remux(args.input, args.output, rate, args.ffmpeg, args.ffprobe, input_count)
+    except (subprocess.SubprocessError, ValueError, KeyError, IndexError,
+            json.JSONDecodeError, OSError) as exc:
+        print(f"MP4 conversion failed; do not use partial output: {exc}", file=sys.stderr)
         return 1
     print(f"Decoded frame counts match: {input_count}; timing remains approximate.")
     return 0

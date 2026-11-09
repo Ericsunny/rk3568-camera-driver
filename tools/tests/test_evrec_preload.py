@@ -183,7 +183,8 @@ def main():
                     if fault == 'json-open' or fault == 'video-rename':
                         require(not (run_dir / 'event-01.json').exists(), fault)
                     if fault == 'json-write':
-                        require((run_dir / 'event-01.json').read_bytes() == b'{', fault)
+                        require((run_dir / 'event-01.pending.json').read_bytes() == b'{', fault)
+                    require(not (run_dir / 'event-01.json').exists(), fault)
                     if fault == 'video-write':
                         require((run_dir / 'event-01.h264').read_bytes() == b'vide', fault)
                 # A non-matching occurrence is a normal, successful control.

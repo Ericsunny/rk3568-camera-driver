@@ -6,6 +6,10 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from h264_to_mp4 import frame_count
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "tools" / "h264_to_mp4.py"
@@ -14,6 +18,12 @@ FFPROBE = os.environ.get("CAMERA_TEST_FFPROBE", "ffprobe")
 
 
 class RemuxTest(unittest.TestCase):
+    def test_vendor_stdout_does_not_corrupt_stream_fields(self):
+        result = subprocess.CompletedProcess([], 0,
+            'librga initialization diagnostic\ncodec_name=h264|nb_read_frames=10\n', '')
+        with patch('h264_to_mp4.subprocess.run', return_value=result):
+            self.assertEqual(frame_count('ffprobe', Path('synthetic.h264')), 10)
+
     def test_round_trip_and_refusals(self):
         with tempfile.TemporaryDirectory(prefix="camera-remux-test-", dir=ROOT) as tmp:
             source = Path(tmp) / "input.h264"

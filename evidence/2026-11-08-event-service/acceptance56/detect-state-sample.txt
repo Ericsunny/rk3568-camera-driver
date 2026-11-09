@@ -1,0 +1,21 @@
+2026年 11月 08日 星期日 12:53:46 UTC
+    PID STAT WCHAN                                    COMMAND
+  46573 R<l  -                                        evrec
+[<0>] __switch_to+0xc4/0x128
+[<0>] rknpu_submit_ioctl+0x3dc/0x5a0
+[<0>] __rknpu_submit_ioctl+0x44/0x64
+[<0>] drm_ioctl_kernel+0xa0/0xf0
+[<0>] drm_ioctl+0x328/0x3c0
+[<0>] vfs_ioctl+0x58/0x68
+[<0>] do_vfs_ioctl+0xc4/0x9f8
+[<0>] ksys_ioctl+0x50/0x80
+[<0>] __arm64_sys_ioctl+0x28/0x38
+[<0>] el0_svc_common.constprop.0+0xec/0x16c
+[<0>] el0_svc_handler+0x70/0x8c
+[<0>] el0_svc+0x8/0xc
+[<0>] 0xffffffffffffffff
+TASK_STATES
+    PID    SPID STAT WCHAN                            COMMAND
+  46573   46573 D<l  rknpu_submit_ioctl               evrec
+  46573   46600 Sl   futex_wait_queue_me              mpp_h264e_4657
+  46573   46609 S<l  do_sys_poll                      evrec

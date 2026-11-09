@@ -92,7 +92,9 @@ static size_t inject_fwrite(const void *ptr, size_t size, size_t n, FILE *stream
 }
 static int inject_rename(const char *oldpath, const char *newpath)
 {
-    if (fault == 5) { errno = EIO; return -1; }
+    if (fault == 5 || (fault == 6 && strstr(newpath, ".json"))) {
+        errno = EIO; return -1;
+    }
     return rename(oldpath, newpath);
 }
 #define fopen inject_fopen
@@ -141,7 +143,7 @@ int main(int argc, char **argv)
     char path[600];
     struct stat st;
     if (argc != 2) return 2;
-    for (i = 0; i <= 5; i++) {
+    for (i = 0; i <= 6; i++) {
         int rc;
         fault = 0; prepare(argv[1], i);
         rc = signal_close(0, 12, 3.0);
@@ -152,7 +154,7 @@ int main(int argc, char **argv)
         snprintf(path, sizeof(path), "%s.h264", g_ev_path);
         check((stat(path, &st) == 0) == (i != 5), "video rename status");
         snprintf(path, sizeof(path), "%s.json", g_ev_path);
-        check((stat(path, &st) == 0) == (i != 1 && i != 5), "metadata presence");
+        check((stat(path, &st) == 0) == (i == 0), "only clean metadata is published");
         if (i == 5) {
             snprintf(path, sizeof(path), "%s.part", g_ev_path);
             check(stat(path, &st) == 0, "failed rename retains part");
@@ -181,12 +183,14 @@ typedef int IM_STATUS;
 typedef struct { unsigned char *ptr; } rga_buffer_t;
 #define IM_STATUS_SUCCESS 0
 #define RK_FORMAT_YCbCr_420_SP 1
+#define RK_FORMAT_RGB_888 2
 static int g_rga_w = 4, g_rga_h = 4, fail_resize, npu_calls;
 static unsigned long g_rga_sum, g_rga_n;
 static unsigned char data[64], rgb[64];
 static unsigned char *g_rga_buf = data, *g_rgb = rgb;
 static rga_buffer_t g_rga_src, g_rga_dst;
 static int g_detect = 1, w = 4, h = 4;
+static int g_npu_w = 4, g_npu_h = 4;
 static struct { unsigned char *map[1]; } cap;
 static struct { int index; } b;
 static double t_stage, t_rga, t_npu;
@@ -280,7 +284,8 @@ def main():
                        .replace('EXIT_BLOCK', exit_block)
                        .replace('NORMAL_CLOSE_BLOCK', normal_close))
     caller = block('if (g_detect) {\n\t\t\tint rga_rc = rga_scale(', '\n#else')
-    rga = (RGA_PRELUDE + function('static int rga_scale(') + '\n' +
+    rga = (RGA_PRELUDE + function('static void letterbox_size(') + '\n' +
+           function('static void pad_rgb(') + '\n' + function('static int rga_scale(') + '\n' +
            RGA_TEST.replace('RGA_CALLER_BLOCK', caller))
     qbuf = block('if (xioctl(cap.fd, VIDIOC_QBUF, &b) < 0) {\n\t\t\tif (g_stop)',
                  '\n\n\t\tmpp_frame_init')

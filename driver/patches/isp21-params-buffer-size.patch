@@ -1,0 +1,11 @@
+diff --git a/drivers/media/platform/rockchip/isp/isp_params_v21.c b/drivers/media/platform/rockchip/isp/isp_params_v21.c
+--- a/drivers/media/platform/rockchip/isp/isp_params_v21.c
++++ b/drivers/media/platform/rockchip/isp/isp_params_v21.c
+@@ -3937,6 +3937,6 @@
+ rkisp_get_param_size_v2x(struct rkisp_isp_params_vdev *params_vdev,
+ 			 unsigned int sizes[])
+ {
+-	sizes[0] = sizeof(struct isp2x_isp_params_cfg);
++	sizes[0] = sizeof(struct isp21_isp_params_cfg);
+ }
+ 

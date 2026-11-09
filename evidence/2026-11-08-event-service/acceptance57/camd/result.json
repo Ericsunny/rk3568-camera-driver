@@ -1,0 +1,22 @@
+{
+  "rc": 0,
+  "device": "/dev/video5",
+  "size": "1920x1080",
+  "frames": 60,
+  "frames_returned": 60,
+  "dq_timeouts": 0,
+  "rss_max_kb": 21116,
+  "rss_end_kb": 21116,
+  "cpu_pct": 1.33,
+  "stop_err_param": 0,
+  "qbuf_errors": 0,
+  "fatal": 0,
+  "fatal_msg": "",
+  "first_frame_ms": 298.06,
+  "elapsed_ms": 4230.60,
+  "fps": 15.26,
+  "ts": {"flags": "monotonic", "capture_ts_us": 1401465921, "dequeue_ts_us": 1401489837, "dequeue_lag_ms": 23.916},
+  "rt": {"processed": 60, "dropped": 0, "avg_us": 0.9, "max_us": 2, "p95_us": 0, "p99_us": 1},
+  "ev": {"processed": 60, "dropped": 0, "avg_us": 0.5, "max_us": 2, "p95_us": 0, "p99_us": 0},
+  "queue": {"rt_cap": 4, "ev_cap": 2}
+}

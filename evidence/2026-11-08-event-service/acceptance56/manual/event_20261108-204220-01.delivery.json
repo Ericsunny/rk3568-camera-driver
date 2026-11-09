@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "status": "failed",
+  "source_json": "event_20261108-204220-01.json",
+  "source_video": "event_20261108-204220-01.h264",
+  "output_video": "event_20261108-204220-01.mp4",
+  "error": "Expecting property name enclosed in double quotes: line 2 column 1 (char 2)"
+}

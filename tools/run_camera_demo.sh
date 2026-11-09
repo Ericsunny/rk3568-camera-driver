@@ -12,7 +12,7 @@ run_dir=$2
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 . "$root/config/final-demo.env"
 binary=${EVREC_BIN:-$root/evrec}
-for tool in pgrep fuser sha256sum ss; do
+for tool in pgrep fuser sha256sum ss python3 ffmpeg ffprobe; do
     command -v "$tool" >/dev/null 2>&1 || { echo "missing tool: $tool" >&2; exit 1; }
 done
 case "$run_dir" in /*) ;; *) echo 'RUN_DIRECTORY must be absolute' >&2; exit 2;; esac
@@ -52,4 +52,4 @@ else
     set -- "$@" --trigger "$run_dir/trigger"
 fi
 printf '%s\n' "$@" > "$run_dir/argv.txt"
-exec "$@"
+exec python3 "$root/tools/camera_service.py" "$run_dir" -- "$@"

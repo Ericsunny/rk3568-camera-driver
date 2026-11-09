@@ -35,6 +35,9 @@ def main():
             'pgrep':'[ "${MOCK_DAEMON:-1}" = 1 ] && echo 123\n',
             'fuser':'[ "${MOCK_BUSY:-0}" = 1 ]\n',
             'ss':'[ "${MOCK_PORT:-0}" = 1 ] && echo "LISTEN occupied"; exit 0\n',
+            'ffmpeg':'exit 0\n',
+            'ffprobe':'exit 0\n',
+            'python3':'shift 3; exec "$@"\n',  # service script, run directory, --
         }
         for tool,body in mocks.items():
             p=root/'mock-bin'/tool

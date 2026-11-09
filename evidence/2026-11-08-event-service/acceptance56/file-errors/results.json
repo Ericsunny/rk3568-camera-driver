@@ -1,0 +1,32 @@
+[
+  {
+    "mode": "control",
+    "exit": 0,
+    "hits": 0,
+    "published_json": [
+      "event_20261108-205041-01.json"
+    ],
+    "pass": true
+  },
+  {
+    "mode": "json-open",
+    "exit": 1,
+    "hits": 1,
+    "published_json": [],
+    "pass": true
+  },
+  {
+    "mode": "video-write",
+    "exit": 1,
+    "hits": 1,
+    "published_json": [],
+    "pass": true
+  },
+  {
+    "mode": "json-close",
+    "exit": 1,
+    "hits": 1,
+    "published_json": [],
+    "pass": true
+  }
+]

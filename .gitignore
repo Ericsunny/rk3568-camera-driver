@@ -49,3 +49,6 @@ tools/check_secrets.sh
 
 # 历史过程文件只保存在维护者本地
 /docs/archive/
+
+# 本地维护约定
+/AGENTS.md

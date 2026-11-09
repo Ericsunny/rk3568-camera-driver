@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "status": "complete",
+  "source_json": "event_20261108-211623-02-s1.json",
+  "source_video": "event_20261108-211623-02-s1.h264",
+  "output_video": "event_20261108-211623-02-s1.mp4",
+  "event_id": 2,
+  "segment_index": 1,
+  "close_reason": "sigterm",
+  "video_frames": 363,
+  "packet_time_span_ms": 30886.90000000001,
+  "playback_fps": "3620000/308869",
+  "timing": "average-rate approximation; individual capture timestamps not preserved",
+  "source_sha256": "8534f9b7cabb18901cc9ff5aa354ecfdc996c0168d5c00346f0d3ab63de4e7d8",
+  "metadata_sha256": "b7d0b8e7b751f30a76f54ef249e0147a82556f6b7574ae1aa31ae9d3e6c95d0c",
+  "output_sha256": "3aa072fe837f368fa4bb004d8e7d9ace28de43a5f6327a302685f9c95db90639"
+}

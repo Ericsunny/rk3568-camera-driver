@@ -10,4 +10,4 @@
 | 21–26 | [白平衡](../image/awb.md)、[图像质量](../image/image-quality.md)、[高光与动态范围](../image/dynamic-range.md)、[服务](../deployment/service.md)、[HDR 预研](../image/hdr-research.md)、[DOL 实验](../image/two-lane-dol.md) |
 | 27–29 | [稳定性与可靠性](../stability/README.md) |
 | 32、34–38 | [事件录像](../pipeline/event-recording.md)、[录像验收](../acceptance/event-recording-2026-10.md)、[复现命令](../acceptance/reproduction.md)、[启动恢复](../runbook/boot-recovery.md)、[事件治理](../pipeline/event-governance.md)、[RTSP 多客户端](../pipeline/rtsp-multiclient.md) |
-| 42 | [事件录像演示计划](../acceptance/recording-demo-plan.md) |
+| 42 | [事件录像旧方案（历史版本）](https://github.com/Ericsunny/rk3568-camera-driver/blob/6d0356341b9ff7e1204ae8236834bbe06c6f2c1d/docs/acceptance/recording-demo-plan.md) |

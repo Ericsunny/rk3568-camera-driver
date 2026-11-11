@@ -1,0 +1,2 @@
+active
+566 /usr/bin/rkaiq_3A_server

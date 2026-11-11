@@ -19,3 +19,15 @@ patch -p1 < /path/to/isp21-params-buffer-size.patch
 ## CIF 空指针检查
 
 `rkcif-null-check.patch` 是独立的 CIF 防御性补丁。其检查对象和适用范围以补丁上下文与[内核问题记录](../../docs/stability/kernel-issues.md)为准，不能因为另一个补丁已部署就推断它也已部署。
+
+## IMX415 可选全局表
+
+`imx415-optional-global-regs.patch` 区分两通道模式可省略的 global 表和不能缺失的模式表：跳过前者，后者为空时返回 `-EINVAL`，实际 I²C 写失败继续返回。原源码版本、构建及 #62 板测见[修复记录](../../evidence/2026-11-10-imx415-drc-review/README.md)。补丁面向该厂商 BSP；先对目标源码 `patch --dry-run -p1` 检查上下文。
+
+补丁应用后，可在 Linux 主机用真实 BSP 源码运行函数级替身测试：
+
+```sh
+python3 tools/tests/test_imx415_optional_global.py /path/to/kernel/drivers/media/i2c/imx415.c
+```
+
+此测试不访问真实相机，也不代替内核编译和板测。

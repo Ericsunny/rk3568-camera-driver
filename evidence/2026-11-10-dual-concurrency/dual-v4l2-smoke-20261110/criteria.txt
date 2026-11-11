@@ -1,0 +1,1 @@
+Concurrent independent V4L2 streams: IMX415 video5 1920x1080 NV12 and OV8858 video14 1280x960 NV12, 180 frames each to /dev/null, one live 3A. Separate logs/exit status, sample both ISP while concurrent. No guaranteed fps.

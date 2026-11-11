@@ -1,0 +1,1 @@
+manual; IMX415 1920x1080:8554; OV8858 1280x960:8555; simultaneous RTSP/TCP decode to null for 10s and manual event; clean shutdown; see local dual-encode-plan.md

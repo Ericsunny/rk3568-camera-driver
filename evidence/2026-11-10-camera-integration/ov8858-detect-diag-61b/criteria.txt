@@ -1,0 +1,1 @@
+OV8858 candidate: no person >=10 s after pre-roll-ready; person >=10 s; then leave; score 0.45 / 3 consecutive detections. Raw and MP4 must decode equally. No threshold changes.

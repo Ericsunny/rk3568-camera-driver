@@ -1,0 +1,19 @@
+[ 1648.785882] rkisp rkisp-vir1: first params buf queue
+[ 1648.786401] rkcif_mipi_lvds: stream[0] start streaming
+[ 1648.787341] rkcif_mipi_lvds: Allocate dummy buffer, size: 0x00264000
+[ 1648.787435] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream on, src_sd: 0000000087f307a6, sd_name:rockchip-csi2-dphy2
+[ 1648.787471] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream ON
+[ 1648.787507] rockchip-csi2-dphy2: dphy2, data_rate_mbps 720
+[ 1648.787536] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+[ 1648.787540] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+[ 1648.787546] ov8858-sm 5-0036: s_stream 1
+[ 1648.787552] ov8858-sm 5-0036: runtime_resume
+[ 1648.948581] ov8858-sm 5-0036: start_stream[1632x1224]: stream=0x01 0x3814=0x03 0x3821=0x67 size=1632x1224 hts=1928 vts=1244
+[ 1653.144692] rkcif_mipi_lvds: stream[0] start stopping
+[ 1653.169626] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream off, src_sd: 0000000087f307a6, sd_name:rockchip-csi2-dphy2
+[ 1653.169669] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream OFF
+[ 1653.170711] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream_stop stream stop, dphy2
+[ 1653.170722] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+[ 1653.170748] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+[ 1653.170755] ov8858-sm 5-0036: s_stream 0
+[ 1653.173961] rkcif_mipi_lvds: stream[0] stopping finished

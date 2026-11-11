@@ -1,0 +1,29 @@
+--- a/drivers/media/i2c/imx415.c
++++ b/drivers/media/i2c/imx415.c
+@@ -1814,8 +1814,8 @@
+ 	u32 i;
+ 	int ret = 0;
+ 	if (!regs) {
+-		dev_err(&client->dev, "write reg array error\n");
+-		return ret;
++		dev_err(&client->dev, "missing required register table\n");
++		return -EINVAL;
+ 	}
+ 	for (i = 0; ret == 0 && regs[i].addr != REG_NULL; i++) {
+ 		if (regs[i].addr == REG_DELAY) {
+@@ -2690,9 +2690,12 @@
+ 	int ret;
+ 
+ 	if (!imx415->is_thunderboot) {
+-		ret = imx415_write_array(imx415->client, imx415->cur_mode->global_reg_list);
+-		if (ret)
+-			return ret;
++		/* Two-lane modes have no separate global table. */
++		if (imx415->cur_mode->global_reg_list) {
++			ret = imx415_write_array(imx415->client, imx415->cur_mode->global_reg_list);
++			if (ret)
++				return ret;
++		}
+ 		ret = imx415_write_array(imx415->client, imx415->cur_mode->reg_list);
+ 		if (ret)
+ 			return ret;

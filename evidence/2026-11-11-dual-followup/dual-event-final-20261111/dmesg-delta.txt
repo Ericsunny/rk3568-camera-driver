@@ -1,0 +1,34 @@
+[ 7485.613807] rkisp rkisp-vir1: first params buf queue
+[ 7485.615095] rkcif_mipi_lvds: stream[0] start streaming
+[ 7485.616310] rkcif_mipi_lvds: Allocate dummy buffer, size: 0x00264000
+[ 7485.616419] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream on, src_sd: 00000000cfe66aed, sd_name:rockchip-csi2-dphy2
+[ 7485.616472] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream ON
+[ 7485.616584] rockchip-csi2-dphy2: dphy2, data_rate_mbps 720
+[ 7485.616616] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+[ 7485.616621] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+[ 7485.616627] ov8858-sm 5-0036: s_stream 1
+[ 7485.616635] ov8858-sm 5-0036: runtime_resume
+[ 7485.654309] rkisp rkisp-vir0: first params buf queue
+[ 7485.654482] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[ 7485.654527] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[ 7485.654537] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[ 7485.740027] imx415 1-001a: write reg array, sleep 30ms
+[ 7485.741363] imx415 1-001a: set vblank 0x3a vts 2250
+[ 7485.742651] imx415 1-001a: set exposure(shr0) 1912 = cur_vts(2250) - val(338)
+[ 7485.743486] imx415 1-001a: set analog gain 0x6
+[ 7485.778378] ov8858-sm 5-0036: start_stream[1632x1224]: stream=0x01 0x3814=0x03 0x3821=0x67 size=1632x1224 hts=1928 vts=1244
+[ 7485.840933] rga2: unknown ioctl cmd!
+[ 7485.893017] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:2685
+[ 7486.046750] rga2: unknown ioctl cmd!
+[ 7486.115625] imx415 1-001a: set analog gain 0x7
+[ 7664.840933] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[ 7664.841414] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[ 7664.841421] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[ 7664.893450] rkcif_mipi_lvds: stream[0] start stopping
+[ 7664.914100] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream off, src_sd: 00000000cfe66aed, sd_name:rockchip-csi2-dphy2
+[ 7664.914134] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream OFF
+[ 7664.915199] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream_stop stream stop, dphy2
+[ 7664.915207] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+[ 7664.915230] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+[ 7664.915236] ov8858-sm 5-0036: s_stream 0
+[ 7664.917112] rkcif_mipi_lvds: stream[0] stopping finished

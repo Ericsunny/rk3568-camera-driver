@@ -1,0 +1,4 @@
+Linux yckt 4.19.232 #62 SMP Tue Nov 10 11:59:43 UTC 2026 aarch64 aarch64 aarch64 GNU/Linux
+620f67a160df04d238e57cc8cd26e2bdf32328a611329f9848714a46b7b99509  /root/camera-integration-20261110-dual-app/evrec
+fb6f9d6acb7c0891b4b415f5934b33afdfdecab479193bf82939ebd17d99d0fc  /root/camera-integration-20261110-dual-app/tools/run_dual_camera.py
+30527d141e3d9257ea0e988db16cfd299bae3ff66c1c3b4f8ed30f4cb336f0db  /root/camera-integration-20261110-dual-app/tools/run_camera_demo.sh

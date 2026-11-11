@@ -1,0 +1,1 @@
+Default #62, installed OV8858 IQ Enable=1, original system 3A: 180 frames NV12 to /dev/null; sample /proc/rkisp-vir1 while streaming, require HDRDRC ON, exit 0 and no unexpected kernel errors.

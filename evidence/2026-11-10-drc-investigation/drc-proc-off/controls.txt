@@ -1,0 +1,2 @@
+exposure: 1120
+analogue_gain: 605

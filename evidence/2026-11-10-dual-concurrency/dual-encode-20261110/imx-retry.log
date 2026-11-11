@@ -1,0 +1,28 @@
+ffmpeg version 4.2.4-1ubuntu0.1 Copyright (c) 2000-2020 the FFmpeg developers
+  built with gcc 9 (Ubuntu 9.3.0-17ubuntu1~20.04)
+  configuration: --prefix=/usr --extra-version=1ubuntu0.1 --toolchain=hardened --libdir=/usr/lib/aarch64-linux-gnu --incdir=/usr/include/aarch64-linux-gnu --arch=arm64 --enable-gpl --disable-stripping --enable-avresample --disable-filter=resample --enable-avisynth --enable-gnutls --enable-ladspa --enable-libaom --enable-libass --enable-libbluray --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libcodec2 --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libgme --enable-libgsm --enable-libjack --enable-libmp3lame --enable-libmysofa --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-libpulse --enable-librsvg --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libssh --enable-libtheora --enable-libtwolame --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libwavpack --enable-libwebp --enable-libx265 --enable-libxml2 --enable-libxvid --enable-libzmq --enable-libzvbi --enable-lv2 --enable-omx --enable-openal --enable-opencl --enable-opengl --enable-sdl2 --enable-libdc1394 --enable-libdrm --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-libx264 --enable-libdrm --enable-librga --enable-rkmpp --enable-version3 --disable-libopenh264 --disable-vaapi --disable-vdpau --disable-decoder=h264_v4l2m2m --disable-decoder=vp8_v4l2m2m --disable-decoder=mpeg2_v4l2m2m --disable-decoder=mpeg4_v4l2m2m --enable-shared --disable-doc
+  libavutil      56. 31.100 / 56. 31.100
+  libavcodec     58. 54.100 / 58. 54.100
+  libavformat    58. 29.100 / 58. 29.100
+  libavdevice    58.  8.100 / 58.  8.100
+  libavfilter     7. 57.100 /  7. 57.100
+  libavresample   4.  0.  0 /  4.  0.  0
+  libswscale      5.  5.100 /  5.  5.100
+  libswresample   3.  5.100 /  3.  5.100
+  libpostproc    55.  5.100 / 55.  5.100
+Input #0, rtsp, from 'rtsp://127.0.0.1:8554/live':
+  Metadata:
+    title           : RK3568 Camera
+  Duration: N/A, start: 0.399978, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1920x1080, 15 fps, 15 tbr, 90k tbn, 30 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (h264 (native) -> wrapped_avframe (native))
+Output #0, null, to 'pipe:':
+  Metadata:
+    title           : RK3568 Camera
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: wrapped_avframe, yuv420p, 1920x1080, q=2-31, 200 kb/s, 15 fps, 15 tbn, 15 tbc
+    Metadata:
+      encoder         : Lavc58.54.100 wrapped_avframe
+frame=   27 fps=0.0 q=-0.0 size=N/A time=00:00:01.40 bitrate=N/A speed=2.76x    frame=   44 fps= 42 q=-0.0 size=N/A time=00:00:02.53 bitrate=N/A speed=2.39x    frame=   52 fps= 33 q=-0.0 size=N/A time=00:00:03.06 bitrate=N/A speed=1.92x    frame=   60 fps= 28 q=-0.0 size=N/A time=00:00:03.60 bitrate=N/A speed=1.69x    frame=   68 fps= 26 q=-0.0 size=N/A time=00:00:04.13 bitrate=N/A speed=1.55x    frame=   76 fps= 24 q=-0.0 size=N/A time=00:00:04.66 bitrate=N/A speed=1.46x    frame=   84 fps= 23 q=-0.0 size=N/A time=00:00:05.20 bitrate=N/A speed=1.39x    frame=   92 fps= 22 q=-0.0 size=N/A time=00:00:05.73 bitrate=N/A speed=1.35x    frame=  100 fps= 21 q=-0.0 size=N/A time=00:00:06.26 bitrate=N/A speed=1.31x    frame=  108 fps= 20 q=-0.0 size=N/A time=00:00:06.80 bitrate=N/A speed=1.28x    frame=  116 fps= 20 q=-0.0 size=N/A time=00:00:07.33 bitrate=N/A speed=1.25x    frame=  124 fps= 19 q=-0.0 size=N/A time=00:00:07.86 bitrate=N/A speed=1.23x    frame=  132 fps= 19 q=-0.0 size=N/A time=00:00:08.40 bitrate=N/A speed=1.21x    frame=  140 fps= 19 q=-0.0 size=N/A time=00:00:08.93 bitrate=N/A speed= 1.2x    frame=  148 fps= 19 q=-0.0 size=N/A time=00:00:09.46 bitrate=N/A speed=1.18x    frame=  150 fps= 18 q=-0.0 Lsize=N/A time=00:00:09.60 bitrate=N/A speed=1.16x    
+video:79kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: unknown

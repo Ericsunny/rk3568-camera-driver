@@ -1,0 +1,1 @@
+Observe QBUF metadata headers only, OV8858 Enable=1, 180 frames to /dev/null; no frame contents saved. Restore system 3A after capture is stopped.

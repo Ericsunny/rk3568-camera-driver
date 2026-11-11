@@ -5,8 +5,11 @@
 ## 了解系统
 
 - [系统设计与运行基线](overview/final-system.md)：功能范围、模块分工、设计取舍和验证状态。
+- [OV8858 ISP 接入与问题定位](bringup/ov8858-isp-integration.md)：驱动契约、接入障碍和候选验证。
 - [相机采集与软件链路](overview/architecture.md)：两路传感器、采集、录像与推流之间的关系。
 - [双摄采集记录](pipeline/dual-camera.md)：两路格式、采集实验及结果边界。
+- [双路并发短测](../evidence/2026-11-10-dual-concurrency/README.md)：采集、编码、RTSP、手动事件和双路检测观察。
+- [双路检测状态采样](../evidence/2026-11-11-dual-followup/README.md)：设备等待、帧进展和测试范围。
 - [历史结果与验证范围](acceptance/summary.md)：重要验收记录及尚未覆盖的内容。
 
 ## 驱动开发与问题定位
@@ -19,6 +22,7 @@
 
 - [事件录像实现](pipeline/event-recording.md) · [事件治理](pipeline/event-governance.md) · [RTSP 多客户端](pipeline/rtsp-multiclient.md)
 - [白平衡实验](image/awb.md) · [图像质量](image/image-quality.md) · [高光与动态范围](image/dynamic-range.md) · [HDR 实验](image/hdr-research.md)
+- [OV8858 DRC 参数与效果验证](image/drc-validation.md)：参数提交、固定场景对照和参考 IQ 限制。
 - [mini3a 控制诊断](../mini3a/README.md)：AE、参数通路与独立实验的验证范围。
 - [启动与服务](deployment/service.md) · [稳定性与可靠性](stability/README.md)
 

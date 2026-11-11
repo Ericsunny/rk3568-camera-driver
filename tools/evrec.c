@@ -33,6 +33,7 @@
 #include <signal.h>
 #include <time.h>
 #include <stdint.h>
+#include <limits.h>
 #include <pthread.h>
 #include <poll.h>
 #include <sys/ioctl.h>
@@ -192,10 +193,19 @@ static int cap_open(const char *dev, int w, int h, int nbufs)
 	}
 	cap.w = f.fmt.pix_mp.width;
 	cap.h = f.fmt.pix_mp.height;
+	if (f.fmt.pix_mp.pixelformat != V4L2_PIX_FMT_NV12 ||
+	    f.fmt.pix_mp.num_planes != 1 || !cap.w || !cap.h ||
+	    (cap.w & 1) || (cap.h & 1)) {
+		fprintf(stderr, "S_FMT 未返回可用的单平面 NV12\n");
+		goto fail;
+	}
 	/* 1920x1080 实测 stride 可能不等于 1920: 必须用回填值算 Y 平面步长 */
 	cap.stride = f.fmt.pix_mp.plane_fmt[0].bytesperline;
-	if (cap.stride < cap.w)
-		cap.stride = cap.w;
+	if (cap.stride < cap.w ||
+	    (size_t)f.fmt.pix_mp.plane_fmt[0].sizeimage < (size_t)cap.stride * cap.h * 3 / 2) {
+		fprintf(stderr, "S_FMT 返回的 stride/sizeimage 不足\n");
+		goto fail;
+	}
 	if (g_osd)
 		printf(">>> S_FMT 回填 %ux%u stride=%u sizeimage=%u\n", cap.w, cap.h,
 		       cap.stride, f.fmt.pix_mp.plane_fmt[0].sizeimage);
@@ -206,6 +216,10 @@ static int cap_open(const char *dev, int w, int h, int nbufs)
 	rb.memory = V4L2_MEMORY_MMAP;
 	if (xioctl(cap.fd, VIDIOC_REQBUFS, &rb) < 0) {
 		perror("REQBUFS");
+		goto fail;
+	}
+	if (!rb.count || rb.count > sizeof(cap.map) / sizeof(cap.map[0])) {
+		fprintf(stderr, "REQBUFS 返回不支持的数量 %u\n", rb.count);
 		goto fail;
 	}
 	cap.nbufs = rb.count;
@@ -226,6 +240,10 @@ static int cap_open(const char *dev, int w, int h, int nbufs)
 			goto fail;
 		}
 		cap.len[i] = pl.length;
+		if (cap.len[i] < (size_t)cap.stride * cap.h * 3 / 2) {
+			fprintf(stderr, "采集 buffer %d 长度不足\n", i);
+			goto fail;
+		}
 		cap.map[i] = mmap(NULL, pl.length, PROT_READ | PROT_WRITE,
 				  MAP_SHARED, cap.fd, pl.m.mem_offset);
 		if (cap.map[i] == MAP_FAILED) {
@@ -352,7 +370,7 @@ static MppBufferGroup g_grp;
 static MppBuffer g_fbuf;
 static size_t g_fsize;
 
-static int enc_init(int w, int h, int stride, int kbps, int gop)
+static int enc_init(int w, int h, int stride, int kbps, int fps, int gop)
 {
 	MppEncCfg cfg;
 
@@ -361,7 +379,20 @@ static int enc_init(int w, int h, int stride, int kbps, int gop)
 		fprintf(stderr, "mpp init 失败\n");
 		return -1;
 	}
-	mpp_enc_cfg_init(&cfg);
+	{
+		RK_S64 timeout_ms = 2000;
+
+		/* One input buffer is reused: wait for output completion before
+		 * overwriting it, with a finite failure bound. */
+		if (g_mpi->control(g_ctx, MPP_SET_OUTPUT_TIMEOUT, &timeout_ms) != MPP_OK) {
+			fprintf(stderr, "设置 MPP 输出超时失败\n");
+			return -1;
+		}
+	}
+	if (mpp_enc_cfg_init(&cfg) != MPP_OK) {
+		fprintf(stderr, "MPP 编码配置分配失败\n");
+		return -1;
+	}
 	mpp_enc_cfg_set_s32(cfg, "prep:width", w);
 	mpp_enc_cfg_set_s32(cfg, "prep:height", h);
 	mpp_enc_cfg_set_s32(cfg, "prep:hor_stride", stride);
@@ -372,10 +403,10 @@ static int enc_init(int w, int h, int stride, int kbps, int gop)
 	mpp_enc_cfg_set_s32(cfg, "rc:bps_max", kbps * 1000 * 17 / 16);
 	mpp_enc_cfg_set_s32(cfg, "rc:bps_min", kbps * 1000 * 15 / 16);
 	mpp_enc_cfg_set_s32(cfg, "rc:fps_in_flex", 0);
-	mpp_enc_cfg_set_s32(cfg, "rc:fps_in_num", 30);
+	mpp_enc_cfg_set_s32(cfg, "rc:fps_in_num", fps);
 	mpp_enc_cfg_set_s32(cfg, "rc:fps_in_denorm", 1);
 	mpp_enc_cfg_set_s32(cfg, "rc:fps_out_flex", 0);
-	mpp_enc_cfg_set_s32(cfg, "rc:fps_out_num", 30);
+	mpp_enc_cfg_set_s32(cfg, "rc:fps_out_num", fps);
 	mpp_enc_cfg_set_s32(cfg, "rc:fps_out_denorm", 1);
 	mpp_enc_cfg_set_s32(cfg, "rc:gop", gop);
 	mpp_enc_cfg_set_s32(cfg, "codec:type", MPP_VIDEO_CodingAVC);
@@ -383,8 +414,10 @@ static int enc_init(int w, int h, int stride, int kbps, int gop)
 	mpp_enc_cfg_set_s32(cfg, "h264:level", 51);
 	if (g_mpi->control(g_ctx, MPP_ENC_SET_CFG, cfg) != MPP_OK) {
 		fprintf(stderr, "SET_CFG 失败\n");
+		mpp_enc_cfg_deinit(cfg);
 		return -1;
 	}
+	mpp_enc_cfg_deinit(cfg);
 	{
 		MppEncHeaderMode hm = MPP_ENC_HEADER_MODE_EACH_IDR;
 
@@ -394,15 +427,37 @@ static int enc_init(int w, int h, int stride, int kbps, int gop)
 		 * 了, 要等第二个 IDR 才恢复(2026-10 板端实测)。
 		 * EACH_IDR 模式下让编码器自己在首个 IDR 里带头即可: 启动后
 		 * 第一帧(~70 ms)就能从码流扫描到参数集, 供 SDP/dump 使用。 */
-		g_mpi->control(g_ctx, MPP_ENC_SET_HEADER_MODE, &hm);
+		if (g_mpi->control(g_ctx, MPP_ENC_SET_HEADER_MODE, &hm) != MPP_OK) {
+			fprintf(stderr, "设置 IDR 参数集模式失败\n");
+			return -1;
+		}
 	}
-	mpp_buffer_group_get_internal(&g_grp, MPP_BUFFER_TYPE_ION);
+	if (mpp_buffer_group_get_internal(&g_grp, MPP_BUFFER_TYPE_ION) != MPP_OK) {
+		fprintf(stderr, "MPP buffer group 分配失败\n");
+		return -1;
+	}
 	g_fsize = (size_t)stride * h * 3 / 2;
 	if (mpp_buffer_get(g_grp, &g_fbuf, g_fsize) != MPP_OK) {
 		fprintf(stderr, "buffer_get 失败\n");
 		return -1;
 	}
 	return 0;
+}
+
+static void enc_release(void)
+{
+	if (g_ctx) {
+		mpp_destroy(g_ctx);
+		g_ctx = NULL;
+	}
+	if (g_fbuf) {
+		mpp_buffer_put(g_fbuf);
+		g_fbuf = NULL;
+	}
+	if (g_grp) {
+		mpp_buffer_group_put(g_grp);
+		g_grp = NULL;
+	}
 }
 
 
@@ -445,20 +500,21 @@ static void pad_rgb(unsigned char *rgb, int tw, int th, int rw, int rh)
 	memset(rgb + (size_t)(y + rh) * stride, 114, (size_t)(th - y - rh) * stride);
 }
 
-static void rga_init(void)
+static int rga_init(void)
 {
 	g_rga_buf = malloc((size_t)g_rga_w * g_rga_h * 3 / 2);
 	if (!g_rga_buf) {
 		fprintf(stderr, "RGA 缓冲分配失败\n");
-		exit(1);
+		return -1;
 	}
 	g_rga_dst = wrapbuffer_virtualaddr_t(g_rga_buf, g_rga_w, g_rga_h,
 					     g_rga_w, g_rga_h,
 					     RK_FORMAT_YCbCr_420_SP);
+	return 0;
 }
 
 /* 用 mmap 虚拟地址做源, 不需要 EXPBUF(第①步先证明缩放可用) */
-static int rga_scale(const void *src_va, unsigned sw, unsigned sh)
+static int rga_scale(const void *src_va, unsigned sw, unsigned sh, unsigned src_stride)
 {
 	IM_STATUS st;
 #ifdef HAVE_RKNN
@@ -470,7 +526,7 @@ static int rga_scale(const void *src_va, unsigned sw, unsigned sh)
 					     RK_FORMAT_RGB_888);
 #endif
 
-	g_rga_src = wrapbuffer_virtualaddr_t((void *)src_va, sw, sh, sw, sh,
+	g_rga_src = wrapbuffer_virtualaddr_t((void *)src_va, sw, sh, src_stride, sh,
 					     RK_FORMAT_YCbCr_420_SP);
 	st = imresize_t(g_rga_src, g_rga_dst, 0, 0, 0, 1);
 	if (st != IM_STATUS_SUCCESS) {
@@ -488,7 +544,13 @@ static int rga_scale(const void *src_va, unsigned sw, unsigned sh)
 		unsigned char *y = g_rga_buf;
 #endif
 
-		for (int i = 0; i < g_rga_w * g_rga_h; i += 16) {
+		for (int i = 0; i <
+#ifdef HAVE_RKNN
+		     g_npu_w * g_npu_h * 3
+#else
+		     g_rga_w * g_rga_h
+#endif
+		     ; i += 16) {
 			sum += y[i];
 			n++;
 		}
@@ -728,7 +790,7 @@ static void prepare_npu_outputs(rknn_output *outputs, unsigned count)
 		outputs[i].index = i;
 }
 
-static void npu_run(const unsigned char *rgb)
+static int npu_run(const unsigned char *rgb)
 {
 	rknn_input in;
 	rknn_output outs[MAX_OUT];
@@ -769,26 +831,26 @@ static void npu_run(const unsigned char *rgb)
 	ret = rknn_inputs_set(g_nctx, 1, &in);
 	if (ret != RKNN_SUCC) {
 		fprintf(stderr, "[npu] inputs_set ret=%d\n", ret);
-		return;
+		return -1;
 	}
 	ret = rknn_run(g_nctx, NULL);
 	if (ret != RKNN_SUCC) {
 		fprintf(stderr, "[npu] run ret=%d\n", ret);
-		return;
+		return -1;
 	}
 
 	prepare_npu_outputs(outs, g_nout);
 	ret = rknn_outputs_get(g_nctx, g_nout, outs, NULL);
 	if (ret != RKNN_SUCC) {
 		fprintf(stderr, "[npu] outputs_get ret=%d nout=%u\n", ret, g_nout);
-		return;
+		return -1;
 	}
 	for (i = 0; i < g_nout; i++) {
 		if (!outs[i].buf || outs[i].size < g_out_attr[i].size) {
 			fprintf(stderr, "[npu] output %zu too small: got=%u required=%u\n",
 				i, outs[i].size, g_out_attr[i].size);
 			rknn_outputs_release(g_nctx, g_nout, outs);
-			return;
+			return -1;
 		}
 	}
 	{	static int dbg2;
@@ -903,6 +965,7 @@ static void npu_run(const unsigned char *rgb)
 	g_det_total += (unsigned)nd;
 	if ((unsigned)nd > g_det_max) g_det_max = (unsigned)nd;
 	if (maxscore > g_score_max) g_score_max = maxscore;
+	return 0;
 }
 #endif
 
@@ -913,22 +976,31 @@ static void rga_to_rgb(void)
 }
 
 /* ---------------- 环形缓冲 ---------------- */
-static int is_key(const unsigned char *p, int len)
+/* A standalone event starts only where SPS and PPS precede an IDR in the
+ * same packet. Other packetization is rejected until explicitly supported. */
+static int h264_packet_flags(const unsigned char *p, int len)
 {
-	int i;
+	int i, flags = 0;
 
-	for (i = 0; i + 4 < len; i++) {
+	for (i = 0; i + 3 < len; i++) {
 		if (p[i] != 0 || p[i + 1] != 0)
 			continue;
 		if (p[i + 2] == 1) {
 			int t = p[i + 3] & 0x1f;
 
-			if (t == 5 || t == 7)
-				return 1;
+			if (t == 7)
+				flags |= 2;
+			else if (t == 8)
+				flags |= 4;
+			else if (t == 5) {
+				flags |= 1;
+				if ((flags & 6) == 6)
+					flags |= 8;
+			}
 			i += 2;
 		}
 	}
-	return 0;
+	return flags;
 }
 
 /* ---------------- S2: 流式事件写入(docs/37 §3.3) ----------------
@@ -939,6 +1011,7 @@ static int is_key(const unsigned char *p, int len)
  * 注意: ring_push 在主循环线程内调用, writer 写失败只置标志, 文件收尾
  * 延迟到主循环的事件状态机里做(避免 IO 在 push 路径上拖采集)。 */
 static FILE *g_ev_fp;			/* 当前事件 .part 文件 */
+static FILE *g_ev_packets;		/* 包时间记录，与视频一起关闭 */
 static char g_ev_path[512];		/* 最终名(不含 .part) */
 static unsigned long g_ev_bytes;	/* 当前事件已写字节 */
 static unsigned long g_ev_last_pkts;	/* 已写入的包游标(=g_pushed 快照) */
@@ -970,6 +1043,7 @@ static int ev_cooldown_active(void)
 static double g_ev_first_ts, g_ev_last_ts;	/* 媒体跨度: 首包/末包 ts_ms */
 #define EV_BUF_CAP (4u << 20) /* 4 MiB event write batch, not a per-packet fsync */
 static int g_ev_werr;			/* 写失败标志(主循环收尾时清) */
+static int g_pre_seconds, g_post_seconds;
 static char g_out_base[512];		/* 事件输出前缀(带运行时间戳, main 里赋值) */
 
 static unsigned char ev_buf[EV_BUF_CAP];	/* 用户态写缓冲(批量, 不逐包 fsync) */
@@ -985,7 +1059,8 @@ static void ev_flush(void)
 	ev_bn = 0;
 }
 
-static void evw_write(const unsigned char *d, int len, unsigned seq, unsigned pkt, double ts_ms)
+static void evw_write(const unsigned char *d, int len, unsigned seq, unsigned pkt,
+		      double ts_ms, double cap_ms, int start)
 {
 
 	/* 包级游标: g_pushed 是全局单调包计数; 事件开启时快照过 pre-roll 尾,
@@ -999,6 +1074,11 @@ static void evw_write(const unsigned char *d, int len, unsigned seq, unsigned pk
 	if (g_ev_first_ts == 0)
 		g_ev_first_ts = ts_ms;
 	g_ev_last_ts = ts_ms;
+	if (!g_ev_packets || fprintf(g_ev_packets, "%u,%u,%.3f,%.3f,%d,%d\n",
+				     seq, pkt, ts_ms, cap_ms, len, start) < 0) {
+		g_ev_werr = 1;
+		return;
+	}
 
 	if (ev_bn + (unsigned)len > EV_BUF_CAP)
 		ev_flush();
@@ -1031,7 +1111,7 @@ static int ring_last_idr(void)
 			return i;
 	/* 环内无 IDR(切段条件保证不会走到): 宁可只写尾包, 也不把整个环
 	 * 倒进新段 —— 后者正是旧实现"每段体积递增"的来源。 */
-	return ring_cnt > 0 ? ring_cnt - 1 : 0;
+	return -1;
 }
 
 /* S3(docs/37 §3.2): "事件是否仍在场" —— 切段续录与收尾共用同一判据:
@@ -1096,6 +1176,11 @@ static int evw_open_at(int pre_i, unsigned serial, unsigned segment,
 	char expanded[sizeof(g_out_base) + 32];
 	int i, from = pre_i >= 0 ? pre_i : ring_last_idr();
 
+	if (from < 0 || from >= ring_cnt || !ring_at(from)->key) {
+		fprintf(stderr, "[evw] open refused: no decodable start packet\n");
+		return -1;
+	}
+
 	/* 评审防御: 事件已在写时禁止重开 —— 重开等于 fopen("wb") 截断
 	 * 当前事件 + 泄漏旧 fd(板上实测 168 次/25s 的根因)。 */
 	if (g_ev_fp != NULL) {
@@ -1119,6 +1204,14 @@ static int evw_open_at(int pre_i, unsigned serial, unsigned segment,
 	}
 	g_ev_bytes = 0;
 	g_ev_werr = 0;
+	snprintf(path, sizeof(path), "%s.packets.part", g_ev_path);
+	g_ev_packets = fopen(path, "w");
+	if (!g_ev_packets ||
+	    fprintf(g_ev_packets, "frame_seq,packet_index,media_ms,capture_ms,bytes,decodable_start\n") < 0) {
+		fprintf(stderr, ">>> 包时间记录打开失败: %s\n", strerror(errno));
+		g_ev_werr = 1;
+		return -1;
+	}
 	g_ev_first_ts = g_ev_last_ts = 0;
 	g_ev_event_id = event_id;
 	g_ev_segment = segment;
@@ -1127,6 +1220,11 @@ static int evw_open_at(int pre_i, unsigned serial, unsigned segment,
 	 * 这是刻意的: 两段都从 IDR 起, 各自独立可解码。 */
 	for (i = from; g_ev_fp && i < ring_cnt; i++) {
 		struct rec *r = ring_at(i);
+		if (fprintf(g_ev_packets, "%u,%u,%.3f,%.3f,%d,%d\n", r->seq,
+			    r->pkt, r->ts_ms, r->cap_ms, r->len, r->key) < 0) {
+			g_ev_werr = 1;
+			break;
+		}
 		if (fwrite(r->data, 1, (size_t)r->len, g_ev_fp) != (size_t)r->len) {
 			g_ev_werr = 1;
 			break;
@@ -1138,7 +1236,7 @@ static int evw_open_at(int pre_i, unsigned serial, unsigned segment,
 	}
 	/* 包级游标: pre-roll 写完后全局已推包数为界, 之后的新包才 append */
 	g_ev_last_pkts = g_pushed;
-	return 0;
+	return g_ev_werr ? -1 : 0;
 }
 
 /* 新事件: 序号 +1, event_id = 序号, 段号从 0 起。
@@ -1198,12 +1296,20 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 {
 	char path[560], jpath[560];
 	FILE *j;
+	int had_packets = g_ev_packets != NULL;
 
 	ev_flush();
 	if (g_ev_fp && fclose(g_ev_fp) != 0)
 		g_ev_werr = 1;
 	g_ev_fp = NULL;
+	if (g_ev_packets && fclose(g_ev_packets) != 0)
+		g_ev_werr = 1;
+	g_ev_packets = NULL;
 	snprintf(path, sizeof(path), "%s.part", g_ev_path);
+	if (g_ev_werr) {
+		fprintf(stderr, ">>> 视频写入或关闭失败，保留 %s\n", path);
+		return -1;
+	}
 	/* Publish JSON only after its close succeeds. Consumers must never treat
 	 * a parseable but still-open metadata file as a completed event. */
 	snprintf(jpath, sizeof(jpath), "%s.pending.json", g_ev_path);
@@ -1215,6 +1321,14 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 				path, strerror(errno));
 			return -1;
 		}
+		if (had_packets) {
+			snprintf(path, sizeof(path), "%s.packets.part", g_ev_path);
+			snprintf(final, sizeof(final), "%s.packets.csv", g_ev_path);
+			if (rename(path, final) != 0) {
+				fprintf(stderr, ">>> rename %s 失败: %s\n", path, strerror(errno));
+				return -1;
+			}
+		}
 	}
 	j = fopen(jpath, "w");
 	if (!j) {
@@ -1225,19 +1339,24 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 		int failed = 0;
 
 		if (fprintf(j,
-			"{\"file\":\"%s.h264\",\"trigger_seq\":%u,"
+			"{\"schema\":2,\"file\":\"%s.h264\",\"trigger_seq\":%u,"
 			"\"trigger_ts_ms\":%.1f,\"close_reason\":\"%s\","
 			"\"bytes\":%lu,\"duration_ms\":%.1f,"
 			"\"event_id\":%u,\"segment_index\":%u,"
 			"\"coalesced\":%u,\"cooldown_skipped\":%u,"
 			"\"disk_free_mb\":%ld,"
 			"\"first_ts_ms\":%.1f,\"last_ts_ms\":%.1f,"
+			"\"requested_pre_sec\":%d,\"requested_post_sec\":%d,"
+			"\"actual_preroll_ms\":%.1f,\"timestamp_source\":\"%s\","
 			"\"write_error\":%s}\n",
 			g_ev_path, trig_seq, trig_ts, reason,
 			g_ev_bytes, g_ev_last_ts - g_ev_first_ts,
 			g_ev_event_id, g_ev_segment,
 			g_ev_coalesced, g_ev_cdskip, disk_free_mb(),
 			g_ev_first_ts, g_ev_last_ts,
+			g_pre_seconds, g_post_seconds,
+			g_ev_segment == 0 ? trig_ts - g_ev_first_ts : 0.0,
+			g_ts_flags == 1 ? "v4l2-monotonic" : "dqbuf-monotonic",
 			g_ev_werr ? "true" : "false") < 0) {
 			fprintf(stderr, ">>> 写入 %s 失败: %s\n", jpath, strerror(errno));
 			failed = 1;
@@ -1259,25 +1378,32 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 	return 0;
 }
 
-static void ring_push(unsigned char *d, int len, unsigned seq, unsigned pkt,
+/* Ownership transfers only on success. The caller retains d on failure. */
+static int ring_push(unsigned char *d, int len, unsigned seq, unsigned pkt,
 		      int key, double cap_ms)
 {
 	struct rec *r;
 
-	if (ring_cnt == MAX_FRAMES || ring_bytes + (size_t)len > ring_limit) {
+	if (!d || len <= 0 || (size_t)len > ring_limit)
+		return -1;
+	while (ring_cnt > 0 &&
+	       (ring_cnt == MAX_FRAMES || ring_bytes > ring_limit - (size_t)len)) {
 		r = &ring[ring_head];
 		ring_bytes -= (size_t)r->len;
 		free(r->data);
+		r->data = NULL;
 		ring_head = (ring_head + 1) % MAX_FRAMES;
 		ring_cnt--;
 	}
+	if (ring_cnt == MAX_FRAMES || ring_bytes > ring_limit - (size_t)len)
+		return -1;
 	r = &ring[(ring_head + ring_cnt) % MAX_FRAMES];
 	r->data = d;
 	r->len = len;
 	r->seq = seq;	/* 源帧序号(可能多包重复) */
 	r->pkt = pkt;
 	r->key = key;
-	r->ts_ms = now_ms(CLOCK_MONOTONIC) - t0_ms;
+	r->ts_ms = cap_ms;
 	r->abs_ms = now_ms(CLOCK_REALTIME);
 	r->cap_ms = cap_ms;	/* 采集时刻(自启动); proc = ts_ms - cap_ms */
 	ring_cnt++;
@@ -1286,7 +1412,8 @@ static void ring_push(unsigned char *d, int len, unsigned seq, unsigned pkt,
 	/* S2: 事件进行中, 新包实时 append 到当前事件(单点挂在 ring_push,
 	 * 包级游标过滤; 写失败只置 g_ev_werr, 由主循环收尾) */
 	if (g_ev_fp)
-		evw_write(d, len, seq, pkt, r->ts_ms);
+		evw_write(d, len, seq, pkt, r->ts_ms, r->cap_ms, r->key);
+	return 0;
 }
 
 static struct rec *ring_at(int i)
@@ -1294,13 +1421,14 @@ static struct rec *ring_at(int i)
 	return &ring[(ring_head + i) % MAX_FRAMES];
 }
 
-/* 找到 >= from 的第一个 IDR 的下标 */
-static int ring_first_idr_from(int from)
+/* Latest IDR at or before the requested beginning, measured in ring time. */
+static int ring_preroll_start(double trigger_ms, int pre_sec)
 {
 	int i;
+	double cutoff = trigger_ms - (double)pre_sec * 1000.0;
 
-	for (i = from; i < ring_cnt; i++)
-		if (ring_at(i)->key)
+	for (i = ring_cnt - 1; i >= 0; i--)
+		if (ring_at(i)->key && ring_at(i)->ts_ms <= cutoff)
 			return i;
 	return -1;
 }
@@ -1446,6 +1574,26 @@ static int fault_sim_dqbuf(void)
 	return 0;
 }
 
+static void app_release(void)
+{
+	cap_release();
+	while (ring_cnt > 0) {
+		free(ring[ring_head].data);
+		ring[ring_head].data = NULL;
+		ring_head = (ring_head + 1) % MAX_FRAMES;
+		ring_cnt--;
+	}
+	enc_release();
+#ifdef HAVE_RKNN
+	if (g_nctx)
+		rknn_destroy(g_nctx);
+#endif
+#ifdef HAVE_RGA
+	free(g_rga_buf);
+#endif
+	free(g_rgb);
+}
+
 static void usage(void)
 {
 	printf(
@@ -1460,6 +1608,8 @@ static void usage(void)
 "  --post SEC        事件后继续录秒数 (默认 2)\n"
 "  --ring-mb MB      环形缓冲上限(默认 24)\n"
 "  --kbps KBPS       编码码率 (默认 8000)\n"
+"  --fps FPS         编码标称帧率 (默认 30；应与相机配置一致)\n"
+"  --gop FRAMES      IDR 周期 (默认等于标称帧率)\n"
 "\n"
 "触发:\n"
 "  --trigger FILE    监听文件 mtime 变化触发; 不给则等 SIGUSR1\n"
@@ -1505,17 +1655,21 @@ static void usage(void)
 int main(int argc, char **argv)
 {
 	const char *dev = "/dev/video5", *out = "/root/ev/ev";
-	int w = 1920, h = 1080, pre_sec = 3, post_sec = 2, kbps = 8000, gop;
+	int w = 1920, h = 1080, pre_sec = 3, post_sec = 2, kbps = 8000;
+	int fps = 30, gop = 0;
 	int i, pre_i = -1;
 	int rc = 0;		/* 进程退出码: 0=正常, 1=真错误, 2=链路恢复失败 */
+	const char *end_reason = "runtime_error";
 	int reached_max = 0;	/* 因 --max-events 正常结束 */
+	int pre_ready = 0;
+	const double warmup_timeout_ms = 60000.0;
 	int got_term;		/* 主循环退出时是否已收到 SIGTERM */
 	int recover_used = 0;	/* 本轮故障链已用掉的恢复次数 */
 	int unstable = -1;	/* >=0: 恢复后已采到的帧数(-1=已判定稳定) */
 	unsigned seq = 0;	/* 源帧序号: 只有 DQBUF 成功才 +1, 编码包循环不碰 */
 	unsigned frame_seq = 0;	/* 当前帧的源帧序号(编码包循环内只读) */
 	unsigned trig_seq = 0;	/* P6: 触发帧的源帧序号(写进 json 的 trigger_seq) */
-	double trig_ts = 0, t_start;
+	double trig_ts = 0, t_start, preroll_unready_since, previous_cap_ms = -1;
 	struct stat st;
 	time_t trig_mtime = 0;
 
@@ -1525,7 +1679,7 @@ int main(int argc, char **argv)
 	{
 		static const char * const need_val[] = {
 			"-d", "-w", "--pre", "--post", "--ring-mb", "-o",
-			"--trigger", "--kbps", "--model", "--max-events",
+			"--trigger", "--kbps", "--fps", "--gop", "--model", "--max-events",
 			"--det-score", "--det-frames", "--obj-thresh",
 			"--rga-size", "--rtsp-ring", "--rtsp-ring-mb",
 			"--rtsp-clients", "--rtsp-deadline-s", "--ts-offset",
@@ -1568,6 +1722,8 @@ int main(int argc, char **argv)
 			out = argv[++i];
 		else if (!strcmp(argv[i], "--trigger")) g_trig_path = argv[++i];
 		else if (!strcmp(argv[i], "--kbps")) kbps = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "--fps")) fps = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "--gop")) gop = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--detect")) g_detect = 1;
 		else if (!strcmp(argv[i], "--model")) g_model = argv[++i];
 		else if (!strcmp(argv[i], "--max-events")) g_max_events = atoi(argv[++i]);
@@ -1611,9 +1767,14 @@ int main(int argc, char **argv)
 		fprintf(stderr, "--rtsp 取值 0..65535 (0=关闭)\n");
 		return 1;
 	}
-	gop = (pre_sec + post_sec) * 15 / 2;
-	if (gop < 8)
-		gop = 8;
+	if (pre_sec < 0 || post_sec < 0 || fps < 1 || fps > 120 || gop < 0) {
+		fprintf(stderr, "预录/后录必须非负，fps 取 1..120，gop 必须非负\n");
+		return 1;
+	}
+	if (!gop)
+		gop = fps;
+	g_pre_seconds = pre_sec;
+	g_post_seconds = post_sec;
 
 	signal(SIGUSR1, on_sig);
 	{	/* SIGTERM 用不带 SA_RESTART 的 sigaction:
@@ -1625,23 +1786,33 @@ int main(int argc, char **argv)
 		sigemptyset(&sa.sa_mask);
 		sa.sa_flags = 0;
 		sigaction(SIGTERM, &sa, NULL);
+		sigaction(SIGINT, &sa, NULL);
 	}
 	t0_ms = now_ms(CLOCK_MONOTONIC);
 	t_start = t0_ms;
+	preroll_unready_since = t_start;
 
 	if (cap_open(dev, w, h, 4) < 0)
 		return 1;
 	/* 分辨率以 S_FMT 回填为准(驱动可能改), stride 同理 */
 	w = (int)cap.w;
 	h = (int)cap.h;
-	if (enc_init(w, h, (int)cap.stride, kbps, gop) < 0)
+	if (enc_init(w, h, (int)cap.stride, kbps, fps, gop) < 0) {
+		cap_release();
+		enc_release();
 		return 1;
+	}
 #ifdef HAVE_RGA
 	if (g_detect) {
-		rga_init();
-#ifdef HAVE_RKNN
-		if (npu_init() < 0)
+		if (rga_init() < 0) {
+			app_release();
 			return 1;
+		}
+#ifdef HAVE_RKNN
+		if (npu_init() < 0) {
+			app_release();
+			return 1;
+		}
 		rga_to_rgb();
 #endif
 	}
@@ -1674,22 +1845,26 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	printf(">>> 采集 %s %dx%d,pre=%ds post=%ds ring=%zuMB gop=%d\n",
-	       dev, w, h, pre_sec, post_sec, ring_limit >> 20, gop);
+	printf(">>> 采集 %s %dx%d,pre=%ds post=%ds ring=%zuMB 编码标称fps=%d gop=%d\n",
+	       dev, w, h, pre_sec, post_sec, ring_limit >> 20, fps, gop);
 	if (g_osd)
 		printf(">>> OSD 开启: #<seq> + t mm:ss.mmm @左上角(4px, sc=2), stride=%u\n",
 		       cap.stride);
 
 	/* 采集/编码初始化都成功后再起线程: 失败路径直接 return, 不需要 join */
-	if (pkb_start(0) != 0)
+	if (pkb_start(0) != 0) {
+		app_release();
 		return 1;
-	/* RTSP 在编码头(SPS/PPS)就绪后启动; 启动失败只关推流, 录像照旧 */
+	}
+	/* RTSP is required when requested. */
 	if (g_rtsp_port > 0) {
 		signal(SIGPIPE, SIG_IGN);
 		if (rtsp_start(g_rtsp_port) < 0) {
-			fprintf(stderr, ">>> RTSP 启动失败(端口 %d 被占?), 继续纯录像\n",
+			fprintf(stderr, ">>> RTSP 启动失败(端口 %d 被占?)\n",
 				g_rtsp_port);
-			g_rtsp_port = 0;
+			pkb_stop();
+			app_release();
+			return 1;
 		}
 	}
 
@@ -1699,6 +1874,7 @@ int main(int argc, char **argv)
 		MppFrame frame = NULL;
 		MppPacket pkt = NULL;
 		double ts, cap_ms, t_stage = 0, t_rga = 0, t_npu = 0;
+		RK_S64 frame_pts;
 
 		if (g_stop)
 			break;
@@ -1717,6 +1893,12 @@ int main(int argc, char **argv)
 			perror("DQBUF");
 			goto link_fault;
 		}
+		if (b.index >= (unsigned)cap.nbufs || !cap.map[b.index]) {
+			fprintf(stderr, ">>> DQBUF 返回无效缓冲区索引 %u\n", b.index);
+			end_reason = "capture_buffer_error";
+			rc = 1;
+			break;
+		}
 		ts = now_ms(CLOCK_MONOTONIC);
 		{
 			/* vb2 采集时间戳: 帧在驱动里完成采集的时刻, 比 DQBUF
@@ -1728,20 +1910,35 @@ int main(int argc, char **argv)
 					(double)b.timestamp.tv_usec / 1000.0;
 			int flags = (int)(b.flags & V4L2_BUF_FLAG_TIMESTAMP_MASK);
 
+			int source = vb2_ms > 0 && flags == V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
+
 			if (g_ts_flags < 0) {
-				g_ts_flags = flags;
-				if (flags == V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC)
+				g_ts_flags = source;
+				if (source)
 					printf(">>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)\n");
 				else
 					printf(">>> vb2 ts flags=0x%x(非 MONOTONIC, cap 退化为 DQBUF 时刻)\n",
 					       flags);
 				fflush(stdout);
 			}
-			if (vb2_ms <= 0 || flags != V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC)
-				cap_ms = ts;
+			if (source != g_ts_flags) {
+				fprintf(stderr, ">>> 采集时间戳来源改变，停止本次运行\n");
+				end_reason = "timestamp_source_changed";
+				rc = 1;
+				break;
+			}
+			if (!source)
+				cap_ms = ts - t0_ms;
 			else
 				cap_ms = vb2_ms - t0_ms;
 		}
+		if (cap_ms < 0 || (previous_cap_ms >= 0 && cap_ms < previous_cap_ms)) {
+			fprintf(stderr, ">>> 采集时间戳不连续，停止本次运行\n");
+			end_reason = "timestamp_discontinuity";
+			rc = 1;
+			break;
+		}
+		previous_cap_ms = cap_ms;
 		/* 恢复后连采 30 帧才算链路稳定, 复位"同一故障链"的尝试计数 */
 		if (unstable >= 0 && ++unstable >= RECOVER_STABLE_FRAMES) {
 			unstable = -1;
@@ -1759,22 +1956,34 @@ int main(int argc, char **argv)
 #ifdef HAVE_RGA
 #ifdef HAVE_RKNN
 		if (g_detect) {
-			int rga_rc = rga_scale(cap.map[b.index], w, h);
+			int rga_rc = rga_scale(cap.map[b.index], w, h, cap.stride);
 			t_rga = now_ms(CLOCK_MONOTONIC) - t_stage;
 			t_stage += t_rga;
-			if (rga_rc == 0)
-				npu_run(g_rgb);
+			if (rga_rc != 0 || npu_run(g_rgb) != 0) {
+				g_streak = 0;
+				g_det_announced = 0;
+				g_trigger = 0;
+				end_reason = "detection_error";
+				rc = 1;
+				break;
+			}
 			t_npu = now_ms(CLOCK_MONOTONIC) - t_stage;
 			t_stage += t_npu;
 		}
 #else
 		if (g_detect) {
-			rga_scale(cap.map[b.index], w, h);
+			rga_scale(cap.map[b.index], w, h, cap.stride);
 			t_rga = now_ms(CLOCK_MONOTONIC) - t_stage;
 			t_stage += t_rga;
 		}
 #endif
 #endif
+		if (!mpp_buffer_get_ptr(g_fbuf)) {
+			fprintf(stderr, ">>> 编码输入缓冲映射失败\n");
+			end_reason = "encoding_buffer_error";
+			rc = 1;
+			break;
+		}
 		memcpy(mpp_buffer_get_ptr(g_fbuf), cap.map[b.index],
 		       (size_t)cap.stride * h * 3 / 2);
 		/* OSD 画在编码输入缓冲(最终被编码的那块内存)上, 必须在 encode_put_frame 之前 */
@@ -1791,30 +2000,40 @@ int main(int argc, char **argv)
 			goto link_fault;
 		}
 
-		mpp_frame_init(&frame);
+		if (mpp_frame_init(&frame) != MPP_OK || !frame) {
+			fprintf(stderr, ">>> 编码帧分配失败\n");
+			end_reason = "encoding_frame_error";
+			rc = 1;
+			break;
+		}
 		mpp_frame_set_width(frame, w);
 		mpp_frame_set_height(frame, h);
 		mpp_frame_set_hor_stride(frame, (int)cap.stride);
 		mpp_frame_set_ver_stride(frame, h);
 		mpp_frame_set_fmt(frame, MPP_FMT_YUV420SP);
 		mpp_frame_set_buffer(frame, g_fbuf);
+		frame_pts = (RK_S64)(cap_ms * 1000.0) + 1;
+		mpp_frame_set_pts(frame, frame_pts);
 		if (g_mpi->encode_put_frame(g_ctx, frame) != MPP_OK) {
 			mpp_frame_deinit(&frame);
 			fprintf(stderr, ">>> encode_put_frame 失败\n");
-			goto link_fault;
+			end_reason = "encoding_error";
+			rc = 1;
+			break;
 		}
 		mpp_frame_deinit(&frame);
 
 		{
 			unsigned pkn = 0;	/* 帧内包序号, 只用于 json 的 pkt */
 			int enc_fault = 0;
+			int frame_complete = 0;
 
 			for (;;) {
 				MPP_RET er = g_mpi->encode_get_packet(g_ctx, &pkt);
 				void *pos;
 				size_t len;
 				unsigned char *copy;
-				int isk;
+				int isk, nal_flags, last_packet;
 
 				if (er != MPP_OK) {
 					fprintf(stderr,
@@ -1823,33 +2042,72 @@ int main(int argc, char **argv)
 					enc_fault = 1;
 					break;
 				}
-				if (!pkt)
+				if (!pkt) {
+					fprintf(stderr, ">>> 编码帧未在超时内完成\n");
+					enc_fault = 1;
 					break;
+				}
+				last_packet = !mpp_packet_is_partition(pkt) || mpp_packet_is_eoi(pkt);
+				if (mpp_packet_get_pts(pkt) != frame_pts) {
+					fprintf(stderr, ">>> 编码包 PTS 与输入帧不匹配\n");
+					mpp_packet_deinit(&pkt);
+					enc_fault = 1;
+					break;
+				}
 				pos = mpp_packet_get_pos(pkt);
 				len = mpp_packet_get_length(pkt);
 				if (len == 0) {
 					mpp_packet_deinit(&pkt);
+					if (last_packet) {
+						enc_fault = 1;
+						break;
+					}
 					continue;
 				}
-				copy = malloc(len);
+				if (len > INT_MAX || !(copy = malloc(len))) {
+					fprintf(stderr, ">>> 编码包分配失败或过大: %zu\n", len);
+					mpp_packet_deinit(&pkt);
+					end_reason = "packet_memory_error";
+					rc = 1;
+					break;
+				}
 				memcpy(copy, pos, len);
-				isk = is_key(copy, (int)len);
-				/* 首个 IDR 到达即缓存参数集: DESCRIBE 的有界等待和
-				 * RTSP 参数集缓存依赖它, 不要求开 --rtsp */
-				if (isk)
-					rtsp_scan_nals(copy, (int)len);
+				nal_flags = h264_packet_flags(copy, (int)len);
+				isk = !!(nal_flags & 1);
+				/* SPS/PPS may also arrive in a packet without an IDR. */
+				rtsp_scan_nals(copy, (int)len);
 				/* seq 只读: 同一帧的所有包共用 frame_seq */
-				ring_push(copy, (int)len, frame_seq, pkn, isk,
-					  cap_ms);
+				if (ring_push(copy, (int)len, frame_seq, pkn, !!(nal_flags & 8),
+					      cap_ms) != 0) {
+					fprintf(stderr, ">>> 编码包无法放入录像环: %zu\n", len);
+					free(copy);
+					mpp_packet_deinit(&pkt);
+					end_reason = "ring_capacity_error";
+					rc = 1;
+					break;
+				}
 				/* 同一包的副本进投递环; malloc/memcpy 后立即返回,
 				 * 与录像环完全独立, 环满由 pkb_push 丢最旧 */
 				pkb_push(copy, (int)len, frame_seq, isk,
-					 ts - t_start);
+					 cap_ms);
 				pkn++;
 				mpp_packet_deinit(&pkt);
+				if (g_ev_werr) {
+					end_reason = "write_error";
+					rc = 1;
+					break;
+				}
+				if (last_packet) {
+					frame_complete = 1;
+					break;
+				}
 			}
-			if (enc_fault)
-				goto link_fault;
+			if (enc_fault || (!frame_complete && !rc)) {
+				end_reason = "encode_error";
+				rc = 1;
+			}
+			if (rc)
+				break;
 		}
 
 		/* 阶段耗时累计(仅 --detect): 编码段 = 拷入缓冲 + OSD + 送帧到取包 */
@@ -1866,6 +2124,27 @@ int main(int argc, char **argv)
 
 		/* S4/H1: 投递环收支与聚合日志移入 hub(自带节拍), 主循环只轮询 */
 		rtsp_hub_poll_reports(ts - t_start);
+
+		if (ring_cnt > 0 &&
+		    ring_preroll_start(ring_at(ring_cnt - 1)->ts_ms, pre_sec) >= 0) {
+			if (!pre_ready)
+				pre_ready = 1;
+			if (preroll_unready_since > 0) {
+				printf(">>> 预录就绪: 已覆盖 %d 秒并包含起始 IDR\n", pre_sec);
+				preroll_unready_since = 0;
+			}
+		} else {
+			if (pre_ready) {
+				pre_ready = 0;
+				preroll_unready_since = ts;
+			}
+			if (ts - preroll_unready_since >= warmup_timeout_ms) {
+				fprintf(stderr, ">>> 预录等待超时，检查 IDR、预录时长和环容量\n");
+				end_reason = "preroll_timeout";
+				rc = 1;
+				break;
+			}
+		}
 
 		/* ---------------- 事件状态机(docs/37 §3.1/§3.2) ----------------
 		 * 每帧顺序: ①分段 ②触发开新事件 ③目标离场收尾。
@@ -1899,7 +2178,9 @@ int main(int argc, char **argv)
 			}
 			if (keep && evw_open_next(-1) != 0) {
 				fprintf(stderr, ">>> 续段失败, 事件提前结束\n");
-				keep = 0;
+				end_reason = "event_open_error";
+				rc = 1;
+				break;
 			}
 			if (!keep) {
 				evw_event_end(reason);	/* 唯一出口, 只收口一次 */
@@ -1953,9 +2234,10 @@ int main(int argc, char **argv)
 				g_trigger = 0;
 				continue;	/* 低水位: 不开新事件, 检测统计照走 */
 			}
-			if (ring_cnt < (int)(pre_sec * 15)) {
-				/* 预热未满: 环里的帧数还不够 pre 秒前置内容, 忽略本次
-				 * 触发, 但不清 g_streak(攒够后会立刻重新触发) */
+			if (ring_cnt == 0 ||
+			    (pre_i = ring_preroll_start(ring_at(ring_cnt - 1)->ts_ms,
+							 pre_sec)) < 0) {
+				fprintf(stderr, ">>> 预录尚未覆盖请求时长，拒绝本次触发\n");
 				g_trigger = 0;
 			} else {
 				/* P6: 触发帧 = 本次循环 DQBUF 到的那一帧(检测/触发
@@ -1964,22 +2246,6 @@ int main(int argc, char **argv)
 				trig_seq = frame_seq;
 				trig_ts = ring_cnt > 0 ?
 					  ring_at(ring_cnt - 1)->ts_ms : ts - t_start;
-				/* pre: 从触发点往前按时间回退 pre_sec */
-				for (i = ring_cnt - 1; i >= 0; i--)
-					if (ring_at(i)->ts_ms <
-					    trig_ts - pre_sec * 1000.0)
-						break;
-				/* 从回退点往前找最近的 IDR(往前才能把 pre 窗口
-				 * 填满; 往后找会跳到下一个 GOP 的 IDR, 白丢一段) */
-				pre_i = -1;
-				for (i = ring_cnt - 1; i >= 0; i--)
-					if (ring_at(i)->ts_ms <
-					    trig_ts - pre_sec * 1000.0)
-						break;
-				for (; i >= 0; i--)
-					if (ring_at(i)->key) { pre_i = i; break; }
-				if (pre_i < 0)
-					pre_i = ring_first_idr_from(0);
 				g_pre_seq = ring_at(pre_i)->seq;
 				/* 触发即"目标在场"锚点: 手动触发模式没有检测命中
 				 * 刷新 g_last_detect_ms, 事件靠它 + post 窗口收尾 */
@@ -1997,6 +2263,9 @@ int main(int argc, char **argv)
 				} else {
 					fprintf(stderr,
 						">>> 事件写入器打开失败, 事件放弃\n");
+					end_reason = "event_open_error";
+					rc = 1;
+					break;
 				}
 				/* 触发已消费(成功或失败): 事件延长由
 				 * last_detect_ms 判定, 与触发状态无关 */
@@ -2067,13 +2336,15 @@ link_fault:
 	/* SIGTERM 且流式事件进行中: 先收尾当前事件(flush+close+rename+JSON,
 	 * close_reason=sigterm), 再停 RTSP/线程/采集。S2 后这是唯一的
 	 * 在途事件通道(只有 g_ev_fp 代表"事件在录")。 */
-	if (got_term && g_ev_fp != NULL && !rc) {
-		if (evw_close("sigterm", trig_seq, trig_ts) == 0 && !g_ev_werr) {
-			printf(">>> SIGTERM: 进行中的事件已落盘 %s\n", g_ev_path);
+	if (g_ev_fp != NULL) {
+		const char *reason = rc ? end_reason : got_term ? "sigterm" : "stopped";
+		if (evw_close(reason, trig_seq, trig_ts) == 0 && !g_ev_werr) {
+			printf(">>> %s: 进行中的事件已落盘 %s\n", reason, g_ev_path);
 			fflush(stdout);
 		} else {
-			fprintf(stderr, ">>> SIGTERM: 事件落盘失败\n");
-			rc = 1;
+			fprintf(stderr, ">>> %s: 事件落盘失败\n", reason);
+			if (!rc)
+				rc = 1;
 		}
 	}
 	/* 信号 handler 只置 g_stop: 这里在锁内把它同步成 sender 的停止条件,
@@ -2081,11 +2352,7 @@ link_fault:
 	pkb_set_stop();
 	rtsp_stop();
 	pkb_stop();
-	if (cap.fd >= 0) {
-		enum v4l2_buf_type t = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
-
-		xioctl(cap.fd, VIDIOC_STREAMOFF, &t);
-	}
+	app_release();
 	/* SIGTERM: 优雅退出; 进行中的事件已在上面收尾落盘。
 	 * 若同时已有真错误(rc!=0), 以错误码为准, 不掩盖失败。 */
 	if (got_term && !rc) {

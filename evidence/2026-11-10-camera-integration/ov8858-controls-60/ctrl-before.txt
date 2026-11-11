@@ -1,0 +1,3 @@
+exposure: 1120
+analogue_gain: 508
+vertical_blanking: 20

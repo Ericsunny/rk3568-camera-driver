@@ -1,0 +1,6 @@
+ffmpeg -nostdin -v error -xerror -threads 2 -c:v h264 -i /root/camera-integration-20261110-build/dual-event-noperson-20261111/run/imx415/event_20261111-121248-02.mp4 -f null -
+exit=0
+40d5c0e6aed7860521534fb889856d1193876cc3bd8761c173cbb33277caa469  /root/camera-integration-20261110-build/dual-event-noperson-20261111/run/imx415/event_20261111-121248-02.mp4
+ffmpeg -nostdin -v error -xerror -threads 2 -c:v h264 -i /root/camera-integration-20261110-build/dual-event-noperson-20261111/run/ov8858/event_20261111-121248-02.mp4 -f null -
+exit=0
+6d4b4d60cc92835f5c71e8cb243d353938eec381f1bc1d366ad07efff0666d7d  /root/camera-integration-20261110-build/dual-event-noperson-20261111/run/ov8858/event_20261111-121248-02.mp4

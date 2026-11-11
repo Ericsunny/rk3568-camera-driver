@@ -1,0 +1,111 @@
+-- Logs begin at Tue 2024-06-18 04:29:39 CST, end at Tue 2026-11-10 14:56:51 CST. --
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: stream_cif_dvp_id0 is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: stream_cif_dvp_id1 is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: stream_cif_dvp_id2 is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: stream_cif_dvp_id3 is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkcif-lvds-subdev is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkcif-lite-lvds-subdev is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rockchip-mipi-dphy-rx is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rockchip-csi2-dphy0 is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: stream_cif is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkcif-dvp-sof is null
+6月 18 04:29:42 yckt rkaiq[558]: [04:29:42.696230][CAMHW]:XCAM ERROR CamHwIsp20.cpp:176: @get_sensor_caps /dev/v4l-subdev2: Enum sensor frame interval failed
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkisp-mpfbc-subdev is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkisp_rawwr1 is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkisp_dmapath is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkisp_rawrd1_l is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkisp-mipi-luma is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rockchip-mipi-dphy-rx is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rockchip-csi2-dphy0 is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkcif_dvp is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkcif_mipi_lvds is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkcif_dvp is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkcif_lite_mipi_lvds is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkcif_mipi_lvds is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkisp-mpfbc-subdev is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkisp_rawwr1 is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkisp_dmapath is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkisp_rawrd1_l is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkisp-mipi-luma is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rockchip-mipi-dphy-rx is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rockchip-csi2-dphy0 is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkcif_dvp is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkcif_dvp is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkcif_lite_mipi_lvds is null
+6月 18 04:29:42 yckt rkaiq[558]: [04:29:42.699323][CAMHW]:XCAM ERROR CamHwIsp20.cpp:1075: No free isp&ispp needed by fake camera!
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkisp-isp-subdev is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkisp-input-params is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkisp-statistics is null
+6月 18 04:29:42 yckt rkaiq[558]: media get entity by name: rkisp_mainpath is null
+6月 18 04:29:42 yckt rkaiq[558]: Cound not find rkisp dev names, skipped /dev/media0
+6月 18 04:29:42 yckt rkaiq[558]: ERR: Bad media topology for: /dev/media0
+6月 18 04:29:42 yckt rkaiq[558]: DBG: get rkisp-isp-subdev devname: /dev/v4l-subdev6
+6月 18 04:29:42 yckt rkaiq[558]: DBG: get rkisp-input-params devname: /dev/video13
+6月 18 04:29:42 yckt rkaiq[558]: DBG: get rkisp-statistics devname: /dev/video12
+6月 18 04:29:42 yckt rkaiq[558]: DBG: get rkisp_mainpath devname: /dev/video5
+6月 18 04:29:42 yckt rkaiq[558]: DBG: get rkisp-isp-subdev devname: /dev/v4l-subdev3
+6月 18 04:29:42 yckt rkaiq[558]: DBG: get rkisp-input-params devname: /dev/video22
+6月 18 04:29:42 yckt rkaiq[558]: DBG: get rkisp-statistics devname: /dev/video21
+6月 18 04:29:42 yckt rkaiq[558]: DBG: get rkisp_mainpath devname: /dev/video14
+6月 18 04:29:42 yckt rkaiq[558]: ERR: Bad media topology for: /dev/media3
+6月 18 04:29:42 yckt rkaiq[558]: ERR: Bad media topology for: /dev/media4
+6月 18 04:29:42 yckt rkaiq[558]: DBG: subscribe events from /dev/video22 success !
+6月 18 04:29:42 yckt rkaiq[558]: DBG: subscribe events from /dev/video13 success !
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.463640][CAMHW]:XCAM ERROR SensorHw.cpp:813: failed to set hflip (val: 1)
+6月 18 04:29:43 yckt rkaiq[558]: media get entity by name: rkisp_rawrd1_l is null
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.466492][CAMHW]:XCAM ERROR SensorHw.cpp:793: failed to set hdr mode 0
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.470476][ADPCC]:XCAM ERROR rk_aiq_algo_adpcc_itf.cpp:75: prepare: (enter)
+6月 18 04:29:43 yckt rkaiq[558]: 
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.473708][AEC]:XCAM ERROR RkAiqAeHandle.cpp:86: the xcamvideobuffer of aec stats is null
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.475016][AEC]:XCAM ERROR rk_aiq_algo_awb_itf.cpp:172: awb stats is null
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.476509][XCORE]:XCAM ERROR RkAiqAfHandle.cpp:84: the xcamvideobuffer of af stats is null
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.477788][AEC]:XCAM ERROR RkAiqAeHandle.cpp:127: the xcamvideobuffer of aec stats is null
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.479033][ANALYZER]:XCAM ERROR RkAiqCore.cpp:4750: don't find the group shared params of group(0x0)
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.480313][AMERGE]:XCAM ERROR rk_aiq_algo_amerge_itf.cpp:160: AmergeProcess: Ae Proc result is null!!!
+6月 18 04:29:43 yckt rkaiq[558]: 
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.482036][AMERGE]:XCAM ERROR rk_aiq_algo_amerge_itf.cpp:176: AmergeProcess: ae Pre result is null!!!
+6月 18 04:29:43 yckt rkaiq[558]: 
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.491238][ADEHAZE]:XCAM ERROR rk_aiq_algo_adhaz_itf.cpp:187: processing:PreResBuf is NULL!
+6月 18 04:29:43 yckt rkaiq[558]: 
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.492898][ANR]:XCAM ERROR rk_aiq_abayernr_algo_v2.cpp:305: Abayernr_ConfigSettingParam_V2(305): not support snr mode:127!
+6月 18 04:29:43 yckt rkaiq[558]: 
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.494948][ANR]:XCAM ERROR rk_aiq_aynr_algo_v2.cpp:311: Aynr_ConfigSettingParam_V2(311): not support snr mode:127!
+6月 18 04:29:43 yckt rkaiq[558]: 
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.496927][ANR]:XCAM ERROR rk_aiq_acnr_algo_v1.cpp:311: Acnr_ConfigSettingParam_V1(311): not support snr mode:127!
+6月 18 04:29:43 yckt rkaiq[558]: 
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.498926][ASHARP]:XCAM ERROR rk_aiq_asharp_algo_v3.cpp:318: Asharp_ConfigSettingParam_V3(318): not support snr mode:127!
+6月 18 04:29:43 yckt rkaiq[558]: 
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.500683][ATMO]:XCAM ERROR rk_aiq_algo_adrc_itf.cpp:160: processing: Ae Proc result is null!!!
+6月 18 04:29:43 yckt rkaiq[558]: 
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.502684][ATMO]:XCAM ERROR rk_aiq_algo_adrc_itf.cpp:176: processing: ae Pre result is null!!!
+6月 18 04:29:43 yckt rkaiq[558]: 
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.504770][XCORE]:XCAM ERROR RkAiqHandleInt.cpp:3905: fail to get awb gain form AWB module,use default value
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.505970][XCORE]:XCAM ERROR RkAiqHandleInt.cpp:6514: fail to get awb gain form AWB module,use default value
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.507074][XCORE]:XCAM ERROR RkAiqHandleInt.cpp:4426: fail to get awb gain form AWB module,use default value
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.508420][XCORE]:XCAM ERROR RkAiqAfHandle.cpp:125: the xcamvideobuffer of af stats is null
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.509785][XCORE]:XCAM ERROR RkAiqAfHandle.cpp:167: the xcamvideobuffer of af stats is null
+6月 18 04:29:43 yckt rkaiq[558]: DBG: /dev/media2: wait stream start event...
+6月 18 04:29:43 yckt rkaiq[558]: media get entity by name: rkisp_rawrd1_l is null
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.682838][ADPCC]:XCAM ERROR rk_aiq_algo_adpcc_itf.cpp:75: prepare: (enter)
+6月 18 04:29:43 yckt rkaiq[558]: 
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.690764][AEC]:XCAM ERROR RkAiqAeHandle.cpp:86: the xcamvideobuffer of aec stats is null
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.692112][AEC]:XCAM ERROR rk_aiq_algo_awb_itf.cpp:172: awb stats is null
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.693631][XCORE]:XCAM ERROR RkAiqAfHandle.cpp:84: the xcamvideobuffer of af stats is null
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.694969][AEC]:XCAM ERROR RkAiqAeHandle.cpp:127: the xcamvideobuffer of aec stats is null
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.696295][ANALYZER]:XCAM ERROR RkAiqCore.cpp:4750: don't find the group shared params of group(0x0)
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.697778][AMERGE]:XCAM ERROR rk_aiq_algo_amerge_itf.cpp:160: AmergeProcess: Ae Proc result is null!!!
+6月 18 04:29:43 yckt rkaiq[558]: 
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.699730][AMERGE]:XCAM ERROR rk_aiq_algo_amerge_itf.cpp:176: AmergeProcess: ae Pre result is null!!!
+6月 18 04:29:43 yckt rkaiq[558]: 
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.701889][ADEHAZE]:XCAM ERROR rk_aiq_algo_adhaz_itf.cpp:187: processing:PreResBuf is NULL!
+6月 18 04:29:43 yckt rkaiq[558]: 
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.704087][ATMO]:XCAM ERROR rk_aiq_algo_adrc_itf.cpp:160: processing: Ae Proc result is null!!!
+6月 18 04:29:43 yckt rkaiq[558]: 
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.706062][ATMO]:XCAM ERROR rk_aiq_algo_adrc_itf.cpp:176: processing: ae Pre result is null!!!
+6月 18 04:29:43 yckt rkaiq[558]: 
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.708128][XCORE]:XCAM ERROR RkAiqHandleInt.cpp:3905: fail to get awb gain form AWB module,use default value
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.709174][XCORE]:XCAM ERROR RkAiqHandleInt.cpp:6514: fail to get awb gain form AWB module,use default value
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.710350][XCORE]:XCAM ERROR RkAiqHandleInt.cpp:4426: fail to get awb gain form AWB module,use default value
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.711563][XCORE]:XCAM ERROR RkAiqAfHandle.cpp:125: the xcamvideobuffer of af stats is null
+6月 18 04:29:43 yckt rkaiq[558]: [04:29:43.712960][XCORE]:XCAM ERROR RkAiqAfHandle.cpp:167: the xcamvideobuffer of af stats is null
+6月 18 04:29:43 yckt rkaiq[558]: DBG: /dev/media1: wait stream start event...

@@ -40,13 +40,14 @@ EVENT_PRELUDE = r'''
 #include <unistd.h>
 #include <sys/stat.h>
 
-static FILE *g_ev_fp, *json_fp;
+static FILE *g_ev_fp, *g_ev_packets, *json_fp;
 static char g_ev_path[512];
 static unsigned char ev_buf[4 << 20];
 static unsigned ev_bn, g_ev_event_id, g_ev_segment, g_ev_coalesced, g_ev_cdskip;
 static unsigned long g_ev_bytes;
 static double g_ev_first_ts, g_ev_last_ts, g_last_detect_ms = 1;
 static int g_ev_werr, fault, g_max_events = 1, g_events;
+static int g_pre_seconds, g_post_seconds, g_ts_flags;
 #define CLOCK_MONOTONIC 1
 static double now_ms(int clock_id) { (void)clock_id; return 2000.0; }
 static void evw_event_end(const char *reason) { (void)reason; g_events++; }
@@ -77,9 +78,11 @@ static int inject_fprintf(FILE *stream, const char *fmt, ...)
 static int inject_fclose(FILE *stream)
 {
     int is_json = stream == json_fp;
+    int is_packets = stream == g_ev_packets;
     int result = fclose(stream);
     if (is_json) json_fp = NULL;
     if (is_json && fault == 3) { errno = EIO; return EOF; }
+    if (is_packets && fault == 7) { errno = EIO; return EOF; }
     return result;
 }
 static size_t inject_fwrite(const void *ptr, size_t size, size_t n, FILE *stream)
@@ -108,6 +111,7 @@ EVENT_TEST = r'''
 static int signal_close(int initial_rc, unsigned trig_seq, double trig_ts)
 {
     int got_term = 1, rc = initial_rc, reached_max = 0;
+    const char *end_reason = "runtime_error";
 SIGNAL_BLOCK
 EXIT_BLOCK
     return -99;
@@ -129,6 +133,12 @@ static void prepare(const char *dir, int which)
     snprintf(path, sizeof(path), "%s.part", g_ev_path);
     g_ev_fp = fopen(path, "wb");
     if (!g_ev_fp) { perror("create .part"); exit(90); }
+    g_ev_packets = NULL;
+    if (which == 7) {
+        snprintf(path, sizeof(path), "%s.packets.part", g_ev_path);
+        g_ev_packets = fopen(path, "wb");
+        if (!g_ev_packets) exit(91);
+    }
     g_ev_event_id = 7; g_ev_segment = 2; g_ev_werr = 0;
     g_ev_bytes = 0; g_ev_first_ts = 1; g_ev_last_ts = 2;
     ev_bn = 1; ev_buf[0] = 42; fault = which; json_fp = NULL;
@@ -143,19 +153,19 @@ int main(int argc, char **argv)
     char path[600];
     struct stat st;
     if (argc != 2) return 2;
-    for (i = 0; i <= 6; i++) {
+    for (i = 0; i <= 7; i++) {
         int rc;
         fault = 0; prepare(argv[1], i);
         rc = signal_close(0, 12, 3.0);
         check(rc == (i ? 1 : 0), "SIGTERM exit status");
         check(g_ev_fp == NULL, "event stream closed");
         check(g_ev_event_id == 7 && g_ev_segment == 2, "event identity retained");
-        check(g_ev_werr == (i == 4), "video write-error state");
+        check(g_ev_werr == (i == 4 || i == 7), "video/sidecar write-error state");
         snprintf(path, sizeof(path), "%s.h264", g_ev_path);
-        check((stat(path, &st) == 0) == (i != 5), "video rename status");
+        check((stat(path, &st) == 0) == (i != 4 && i != 5 && i != 7), "video rename status");
         snprintf(path, sizeof(path), "%s.json", g_ev_path);
         check((stat(path, &st) == 0) == (i == 0), "only clean metadata is published");
-        if (i == 5) {
+        if (i == 4 || i == 5 || i == 7) {
             snprintf(path, sizeof(path), "%s.part", g_ev_path);
             check(stat(path, &st) == 0, "failed rename retains part");
         }
@@ -179,6 +189,7 @@ int main(int argc, char **argv)
 RGA_PRELUDE = r'''
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 typedef int IM_STATUS;
 typedef struct { unsigned char *ptr; } rga_buffer_t;
 #define IM_STATUS_SUCCESS 0
@@ -190,8 +201,10 @@ static unsigned char data[64], rgb[64];
 static unsigned char *g_rga_buf = data, *g_rgb = rgb;
 static rga_buffer_t g_rga_src, g_rga_dst;
 static int g_detect = 1, w = 4, h = 4;
+static int rc, g_streak, g_det_announced, g_trigger;
+static const char *end_reason;
 static int g_npu_w = 4, g_npu_h = 4;
-static struct { unsigned char *map[1]; } cap;
+static struct { unsigned char *map[1]; unsigned stride; } cap;
 static struct { int index; } b;
 static double t_stage, t_rga, t_npu;
 #define CLOCK_MONOTONIC 1
@@ -201,27 +214,32 @@ static rga_buffer_t wrapbuffer_virtualaddr_t(void *p, int a, int b, int c, int d
 static IM_STATUS imresize_t(rga_buffer_t a, rga_buffer_t b, int c, int d, int e, int f)
 { (void)a; (void)b; (void)c; (void)d; (void)e; (void)f; return fail_resize; }
 static const char *imStrError(int s) { (void)s; return "injected"; }
-static void npu_run(const unsigned char *p) { (void)p; npu_calls++; }
+static int npu_run(const unsigned char *p) { (void)p; npu_calls++; return 0; }
 '''
 
 RGA_TEST = r'''
 #ifdef HAVE_RKNN
 static void run_detection(void)
 {
+    for (;;) {
 RGA_CALLER_BLOCK
+        break;
+    }
 }
 #endif
 int main(void)
 {
-    int rc;
     data[0] = 9; rgb[0] = 13;
     cap.map[0] = data;
+    cap.stride = 4;
     fail_resize = 1;
 #ifdef HAVE_RKNN
+    g_streak = 2; g_det_announced = 1; g_trigger = 1;
     run_detection();
-    if (npu_calls || g_rga_n) return 1;
+    if (npu_calls || g_rga_n || g_streak || g_det_announced || g_trigger ||
+        rc != 1 || !end_reason) return 1;
 #endif
-    rc = rga_scale(data, 4, 4);
+    rc = rga_scale(data, 4, 4, 4);
     if (rc == 0 || npu_calls || g_rga_n) return 1;
     fail_resize = 0;
 #ifdef HAVE_RKNN
@@ -229,10 +247,14 @@ int main(void)
     rc = 0;
     if (npu_calls != 1 || g_rga_sum != 13) return 2;
 #else
-    rc = rga_scale(data, 4, 4);
+    rc = rga_scale(data, 4, 4, 4);
     if (g_rga_sum != 9) return 3;
 #endif
+#ifdef HAVE_RKNN
+    if (rc || g_rga_n != 3) return 4;
+#else
     if (rc || g_rga_n != 1) return 4;
+#endif
     puts("RGA failure skips inference; successful buffer sampled");
     return 0;
 }
@@ -273,7 +295,7 @@ int main(void)
 
 
 def main():
-    signal = block('if (got_term && g_ev_fp != NULL && !rc) {',
+    signal = block('if (g_ev_fp != NULL) {\n\t\tconst char *reason',
                    '\n\t/* 信号 handler 只置 g_stop')
     exit_block = block('if (got_term && !rc) {', '\n\t/* 触发到 dump')
     normal_close = block('if (g_ev_fp != NULL && g_last_detect_ms > 0 &&',
@@ -288,7 +310,7 @@ def main():
            function('static void pad_rgb(') + '\n' + function('static int rga_scale(') + '\n' +
            RGA_TEST.replace('RGA_CALLER_BLOCK', caller))
     qbuf = block('if (xioctl(cap.fd, VIDIOC_QBUF, &b) < 0) {\n\t\t\tif (g_stop)',
-                 '\n\n\t\tmpp_frame_init')
+                 '\n\n\t\tif (mpp_frame_init')
     qbuf = QBUF_PRELUDE.replace('QBUF_BLOCK', qbuf)
     with tempfile.TemporaryDirectory(prefix='evrec-host-') as tmp:
         tmp = Path(tmp)

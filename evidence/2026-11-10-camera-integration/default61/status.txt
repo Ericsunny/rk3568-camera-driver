@@ -1,0 +1,10 @@
+2026-11-10T15:51:16+08:00
+Linux yckt 4.19.232 #61 SMP Tue Nov 10 07:25:08 UTC 2026 aarch64 aarch64 aarch64 GNU/Linux
+b386f6d716538d3305efbc47d4b39da17697510647ca8d576c44910c7926c689  /boot/Image-4.19.232
+eb38789325c307867f0d9d5b9b09c81123c48bc113cbd74af6d505877ccc6ce0  /boot/rk-kernel.dtb
+e94a08bf9dd701370a293dfffa75fbc70fb1af139c0211219060bceed5de2245  /boot/Image-4.19.232-recovery57
+d0a6a2e4fd163f045dc520397849abb1c485a778a9e25816305c0dc563fc39a9  /boot/rk-kernel-recovery57.dtb
+620f67a160df04d238e57cc8cd26e2bdf32328a611329f9848714a46b7b99509  /root/camera-integration-20261110-app/evrec
+411f38d3b65b1e7c1d835645063ac91e45c40ee5ac314ffdcae92c9fc6a7a393  /root/camera-integration-20261110-app/tools/camera_service.py
+7e19e6f426cc3373aab2104911f2bb750d026fc678f8aabf9c27ad5d63101d41  /root/camera-integration-20261110-app/tools/h264_to_mp4.py
+active

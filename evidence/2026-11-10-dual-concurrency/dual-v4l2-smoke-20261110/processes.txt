@@ -1,0 +1,5 @@
+    566       1 Sl   /usr/bin/rkaiq_3A_server
+  53821   53815 S    timeout -s TERM -k 4 35 v4l2-ctl -d /dev/video5 --set-fmt-video=width=1920,height=1080,pixelformat=NV12 --stream-mmap=4 --stream-count=180 --stream-to=/dev/null
+  53822   53816 S    timeout -s TERM -k 4 35 v4l2-ctl -d /dev/video14 --set-fmt-video=width=1280,height=960,pixelformat=NV12 --stream-mmap=4 --stream-count=180 --stream-to=/dev/null
+  53824   53821 S    v4l2-ctl -d /dev/video5 --set-fmt-video=width=1920 height=1080 pixelformat=NV12 --stream-mmap=4 --stream-count=180 --stream-to=/dev/null
+  53825   53822 S    v4l2-ctl -d /dev/video14 --set-fmt-video=width=1280 height=960 pixelformat=NV12 --stream-mmap=4 --stream-count=180 --stream-to=/dev/null

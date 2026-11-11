@@ -1,0 +1,1 @@
+OV8858 #61: manual event; H.264/MP4 decode counts agree; read 0x3820/21 while streaming; no unlisted new kernel errors.

@@ -39,7 +39,7 @@ PRELUDE = r'''
 #include <string.h>
 #include <errno.h>
 #include <time.h>
-static FILE *g_ev_fp;
+static FILE *g_ev_fp, *g_ev_packets;
 static char g_ev_path[512];
 static unsigned char ev_buf[64];
 static unsigned ev_bn, g_ev_event_id = 7, g_ev_segment = 2;
@@ -47,6 +47,7 @@ static unsigned g_ev_coalesced, g_ev_cdskip;
 static unsigned long g_ev_bytes;
 static double g_ev_first_ts = 1, g_ev_last_ts = 2, g_last_detect_ms = 1;
 static int g_ev_werr, g_events, g_max_events = 1;
+static int g_pre_seconds, g_post_seconds, g_ts_flags;
 static double now_ms(int clock_id) { (void)clock_id; return 2000.0; }
 static long disk_free_mb(void) { return 1234; }
 static void evw_event_end(const char *reason) { (void)reason; g_events++; }
@@ -56,6 +57,7 @@ HARNESS = r'''
 static int signal_close(unsigned trig_seq, double trig_ts)
 {
     int got_term = 1, rc = 0, reached_max = 0;
+    const char *end_reason = "runtime_error";
 SIGNAL_BLOCK
 EXIT_BLOCK
     return 99;
@@ -132,7 +134,7 @@ def require(condition, message):
 
 
 def main():
-    signal = block('if (got_term && g_ev_fp != NULL && !rc) {',
+    signal = block('if (g_ev_fp != NULL) {\n\t\tconst char *reason',
                    '\n\t/* 信号 handler 只置 g_stop')
     exit_block = block('if (got_term && !rc) {', '\n\t/* 触发到 dump')
     normal = block('if (g_ev_fp != NULL && g_last_detect_ms > 0 &&',
@@ -178,15 +180,15 @@ def main():
                             (fault, close_kind, result.stderr))
                     require('RESULT rc=1 events=0 event_id=7 segment=2' in result.stdout,
                             (fault, close_kind, result.stdout))
-                    require((run_dir / 'event-01.part').exists() == (fault == 'video-rename'), fault)
-                    require((run_dir / 'event-01.h264').exists() == (fault != 'video-rename'), fault)
+                    require((run_dir / 'event-01.part').exists() == (fault in ('video-rename', 'video-write')), fault)
+                    require((run_dir / 'event-01.h264').exists() == (fault not in ('video-rename', 'video-write')), fault)
                     if fault == 'json-open' or fault == 'video-rename':
                         require(not (run_dir / 'event-01.json').exists(), fault)
                     if fault == 'json-write':
                         require((run_dir / 'event-01.pending.json').read_bytes() == b'{', fault)
                     require(not (run_dir / 'event-01.json').exists(), fault)
                     if fault == 'video-write':
-                        require((run_dir / 'event-01.h264').read_bytes() == b'vide', fault)
+                        require((run_dir / 'event-01.part').read_bytes() == b'vide', fault)
                 # A non-matching occurrence is a normal, successful control.
                 run_dir = tmp / (variant + '-' + close_kind + '-control')
                 run_dir.mkdir()

@@ -1,0 +1,1 @@
+IMX415 candidate via ISP; profile-resolved device; manual trigger after full pre-roll; one event; H.264 and MP4 decoded frame counts must agree; new failure or no frames stops test.

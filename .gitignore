@@ -52,3 +52,12 @@ tools/check_secrets.sh
 
 # 本地维护约定
 /AGENTS.md
+
+# 本地维护笔记和临时采集素材不作为项目交付物
+/.workbuddy/
+/evrec-demo-20261106-192151/
+/evrec-demo-preview.png
+/evrec-demo-preview2.png
+/preview-99-temp.png
+/preview-temp.png
+/remux-temp.mp4

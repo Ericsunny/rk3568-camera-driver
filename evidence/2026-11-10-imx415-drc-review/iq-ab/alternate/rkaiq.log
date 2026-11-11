@@ -1,0 +1,93 @@
+-- Logs begin at Tue 2024-06-18 04:29:39 CST, end at Tue 2026-11-10 20:07:20 CST. --
+11月 10 20:07:18 yckt rkaiq[17802]: DBG: /dev/media2: wait stream start event success ...
+11月 10 20:07:18 yckt rkaiq[17802]: DBG: device manager start
+11月 10 20:07:19 yckt rkaiq[17802]: DBG: rkisp_init engine succeed
+11月 10 20:07:19 yckt rkaiq[17802]: DBG: /dev/media2: wait stream stop event...
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.120608][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.121013][CAMHW]:XCAM ERROR CamHwIsp21.cpp:364: get drc params from 3a result failed!
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.121089][CAMHW]:XCAM ERROR CamHwIsp21.cpp:429: get drc params from 3a result failed!
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.148697][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.181851][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.215321][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.248316][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.282095][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.315278][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.348289][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.382021][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.415965][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.455647][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.496035][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.537174][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.576203][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.616442][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.655930][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.696178][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.736318][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.777788][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.816271][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.857794][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.896071][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.936861][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:19 yckt rkaiq[17802]: [20:07:19.976882][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:19 yckt rkaiq[17802]: 
+11月 10 20:07:20 yckt rkaiq[17802]: [20:07:20.016599][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:20 yckt rkaiq[17802]: 
+11月 10 20:07:20 yckt rkaiq[17802]: [20:07:20.057272][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:20 yckt rkaiq[17802]: 
+11月 10 20:07:20 yckt rkaiq[17802]: [20:07:20.096938][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:20 yckt rkaiq[17802]: 
+11月 10 20:07:20 yckt rkaiq[17802]: [20:07:20.138781][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:20 yckt rkaiq[17802]: 
+11月 10 20:07:20 yckt rkaiq[17802]: [20:07:20.177248][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:20 yckt rkaiq[17802]: 
+11月 10 20:07:20 yckt rkaiq[17802]: [20:07:20.217520][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:20 yckt rkaiq[17802]: 
+11月 10 20:07:20 yckt rkaiq[17802]: [20:07:20.259924][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:20 yckt rkaiq[17802]: 
+11月 10 20:07:20 yckt rkaiq[17802]: [20:07:20.297663][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:20 yckt rkaiq[17802]: 
+11月 10 20:07:20 yckt rkaiq[17802]: [20:07:20.337595][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:20 yckt rkaiq[17802]: 
+11月 10 20:07:20 yckt rkaiq[17802]: [20:07:20.377634][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:20 yckt rkaiq[17802]: 
+11月 10 20:07:20 yckt rkaiq[17802]: [20:07:20.418000][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:20 yckt rkaiq[17802]: 
+11月 10 20:07:20 yckt rkaiq[17802]: [20:07:20.458108][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:20 yckt rkaiq[17802]: 
+11月 10 20:07:20 yckt rkaiq[17802]: [20:07:20.500013][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:20 yckt rkaiq[17802]: 
+11月 10 20:07:20 yckt rkaiq[17802]: [20:07:20.538323][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:20 yckt rkaiq[17802]: 
+11月 10 20:07:20 yckt rkaiq[17802]: [20:07:20.578264][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:20 yckt rkaiq[17802]: 
+11月 10 20:07:20 yckt rkaiq[17802]: [20:07:20.618646][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:20 yckt rkaiq[17802]: 
+11月 10 20:07:20 yckt rkaiq[17802]: DBG: /dev/media2: wait stream stop event success ...
+11月 10 20:07:20 yckt rkaiq[17802]: [20:07:20.659687][ALSC]:XCAM ERROR rk_aiq_alsc_algo.cpp:314: can't find 1632x1224 in lscResName
+11月 10 20:07:20 yckt rkaiq[17802]: 
+11月 10 20:07:20 yckt rkaiq[17802]: DBG: /dev/media2: wait stream start event...

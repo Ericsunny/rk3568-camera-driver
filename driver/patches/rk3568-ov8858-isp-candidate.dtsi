@@ -1,0 +1,16 @@
+/* Candidate for rk356x-yckj-generic.dts.  Single-active-camera testing only.
+ * DC-21AF-58-1474V1 is the supplied module drawing identifier; the lens is
+ * not identified. An IQ file carrying this name is an uncalibrated test
+ * candidate until matched to the actual module and measured. */
+&cam1_ov8858 {
+	rockchip,camera-module-name = "DC-21AF-58-1474V1";
+	rockchip,camera-module-lens-name = "unknown";
+};
+
+&rkcif_mipi_lvds_sditf {
+	status = "okay";
+};
+
+&rkisp_vir1 {
+	status = "okay";
+};

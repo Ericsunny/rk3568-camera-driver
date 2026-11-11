@@ -1,0 +1,8 @@
+MMAP dev=22 fd=9 off=0 len=10475
+MMAP dev=22 fd=9 off=12288 len=10475
+MMAP dev=22 fd=9 off=24576 len=10475
+MMAP dev=22 fd=9 off=36864 len=10475
+MMAP dev=13 fd=30 off=0 len=10475
+MMAP dev=13 fd=30 off=12288 len=10475
+MMAP dev=13 fd=30 off=24576 len=10475
+MMAP dev=13 fd=30 off=36864 len=10475

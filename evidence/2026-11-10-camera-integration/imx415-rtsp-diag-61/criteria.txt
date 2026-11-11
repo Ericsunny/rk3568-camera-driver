@@ -1,0 +1,1 @@
+Two independent loopback RTSP clients for five seconds each; both must complete OPTIONS/DESCRIBE/SETUP/PLAY, receive RTP/IDR without sequence gaps. Trigger one manual event after clients finish; recorder and delivery must exit successfully.

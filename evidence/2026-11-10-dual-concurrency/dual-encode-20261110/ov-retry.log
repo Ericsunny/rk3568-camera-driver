@@ -1,0 +1,28 @@
+ffmpeg version 4.2.4-1ubuntu0.1 Copyright (c) 2000-2020 the FFmpeg developers
+  built with gcc 9 (Ubuntu 9.3.0-17ubuntu1~20.04)
+  configuration: --prefix=/usr --extra-version=1ubuntu0.1 --toolchain=hardened --libdir=/usr/lib/aarch64-linux-gnu --incdir=/usr/include/aarch64-linux-gnu --arch=arm64 --enable-gpl --disable-stripping --enable-avresample --disable-filter=resample --enable-avisynth --enable-gnutls --enable-ladspa --enable-libaom --enable-libass --enable-libbluray --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libcodec2 --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libgme --enable-libgsm --enable-libjack --enable-libmp3lame --enable-libmysofa --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-libpulse --enable-librsvg --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libssh --enable-libtheora --enable-libtwolame --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libwavpack --enable-libwebp --enable-libx265 --enable-libxml2 --enable-libxvid --enable-libzmq --enable-libzvbi --enable-lv2 --enable-omx --enable-openal --enable-opencl --enable-opengl --enable-sdl2 --enable-libdc1394 --enable-libdrm --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-libx264 --enable-libdrm --enable-librga --enable-rkmpp --enable-version3 --disable-libopenh264 --disable-vaapi --disable-vdpau --disable-decoder=h264_v4l2m2m --disable-decoder=vp8_v4l2m2m --disable-decoder=mpeg2_v4l2m2m --disable-decoder=mpeg4_v4l2m2m --enable-shared --disable-doc
+  libavutil      56. 31.100 / 56. 31.100
+  libavcodec     58. 54.100 / 58. 54.100
+  libavformat    58. 29.100 / 58. 29.100
+  libavdevice    58.  8.100 / 58.  8.100
+  libavfilter     7. 57.100 /  7. 57.100
+  libavresample   4.  0.  0 /  4.  0.  0
+  libswscale      5.  5.100 /  5.  5.100
+  libswresample   3.  5.100 /  3.  5.100
+  libpostproc    55.  5.100 / 55.  5.100
+Input #0, rtsp, from 'rtsp://127.0.0.1:8555/live':
+  Metadata:
+    title           : RK3568 Camera
+  Duration: N/A, start: 0.199800, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1280x960, 30 fps, 30 tbr, 90k tbn, 60 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (h264 (native) -> wrapped_avframe (native))
+Output #0, null, to 'pipe:':
+  Metadata:
+    title           : RK3568 Camera
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: wrapped_avframe, yuv420p, 1280x960, q=2-31, 200 kb/s, 30 fps, 30 tbn, 30 tbc
+    Metadata:
+      encoder         : Lavc58.54.100 wrapped_avframe
+frame=   44 fps=0.0 q=-0.0 size=N/A time=00:00:01.26 bitrate=N/A speed=2.39x    frame=   60 fps= 56 q=-0.0 size=N/A time=00:00:01.80 bitrate=N/A speed=1.69x    frame=   76 fps= 48 q=-0.0 size=N/A time=00:00:02.33 bitrate=N/A speed=1.46x    frame=   92 fps= 43 q=-0.0 size=N/A time=00:00:02.86 bitrate=N/A speed=1.35x    frame=  108 fps= 41 q=-0.0 size=N/A time=00:00:03.40 bitrate=N/A speed=1.28x    frame=  124 fps= 39 q=-0.0 size=N/A time=00:00:03.93 bitrate=N/A speed=1.23x    frame=  140 fps= 38 q=-0.0 size=N/A time=00:00:04.46 bitrate=N/A speed= 1.2x    frame=  156 fps= 37 q=-0.0 size=N/A time=00:00:05.00 bitrate=N/A speed=1.17x    frame=  172 fps= 36 q=-0.0 size=N/A time=00:00:05.53 bitrate=N/A speed=1.15x    frame=  188 fps= 35 q=-0.0 size=N/A time=00:00:06.06 bitrate=N/A speed=1.14x    frame=  204 fps= 35 q=-0.0 size=N/A time=00:00:06.60 bitrate=N/A speed=1.13x    frame=  220 fps= 34 q=-0.0 size=N/A time=00:00:07.13 bitrate=N/A speed=1.12x    frame=  236 fps= 34 q=-0.0 size=N/A time=00:00:07.66 bitrate=N/A speed=1.11x    frame=  252 fps= 34 q=-0.0 size=N/A time=00:00:08.20 bitrate=N/A speed= 1.1x    frame=  268 fps= 34 q=-0.0 size=N/A time=00:00:08.73 bitrate=N/A speed=1.09x    frame=  284 fps= 33 q=-0.0 size=N/A time=00:00:09.26 bitrate=N/A speed=1.09x    frame=  300 fps= 33 q=-0.0 size=N/A time=00:00:09.80 bitrate=N/A speed=1.08x    frame=  300 fps= 33 q=-0.0 Lsize=N/A time=00:00:09.80 bitrate=N/A speed=1.08x    
+video:157kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: unknown

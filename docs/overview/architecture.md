@@ -1,6 +1,6 @@
 # 系统架构
 
-主服务在 RK3568 厂商 Linux BSP 上使用 IMX415；OV8858 提供独立驱动与 RAW 采集支路：
+主服务在 RK3568 厂商 Linux BSP 上使用 IMX415 或 OV8858；每个 `evrec` 实例处理一路，也可用两个独立实例并发运行。OV8858 也保留 RAW 采集诊断：
 
 ```mermaid
 flowchart LR
@@ -11,10 +11,11 @@ flowchart LR
     E --> G[RGA letterbox / RKNN]
     G -.触发.-> R
     V -.独立程序.-> C[camd 队列验证]
-    O[OV8858] --> CIF[CIF] --> RAW[V4L2 RAW10]
+    O[OV8858] --> CIF[CIF / SDITF] --> ISP
+    CIF --> RAW[V4L2 RAW10 诊断]
 ```
 
-图中 `evrec` 和 `camd` 是各自使用采集节点的不同程序，不表示它们能同时独占同一节点。IMX415 使用 ISP 与 rkaiq 3A；OV8858 走 CIF RAW10，不能描述成经过完整 ISP/IQ 调优的彩色链路。实际节点与运行镜像需要现场核对。
+图表示单个实例的路径；双路时两套应用分别连接不同采集节点，共享物理 ISP、NPU 等资源。`evrec` 和 `camd` 是不同程序，不能同时占用同一节点。[双路短测](../../evidence/2026-11-10-dual-concurrency/README.md)验证了采集、编码、回环 RTSP 解码和手动事件；双路检测稳定性尚待验证。OV8858 使用参考 IQ，不能描述成完成该模组的 IQ 调优；实际节点与运行镜像需要现场核对。
 
 [`mini3a`](../../mini3a/README.md) 独立验证图像统计、曝光/增益和ISP params控制接口，不能与rkaiq同时控制链路。本轮AE有真实响应；AWB效果未被证明，主服务图像控制继续由rkaiq承担。
 

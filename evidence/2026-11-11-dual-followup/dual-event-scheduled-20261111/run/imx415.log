@@ -1,0 +1,584 @@
+imx415-isp: /dev/media1 -> /dev/video5
+/root/npu/examples/yolov8/model/yolov8n_rk3568_i8.rknn: 成功
+>>> S_FMT 回填 1920x1080 stride=1920 sizeimage=3110400
+>>> NPU 就绪 640x640 nout=9
+>>> 采集 /dev/video5 1920x1080,pre=3s post=2s ring=64MB 编码标称fps=15 gop=15
+>>> OSD 开启: #<seq> + t mm:ss.mmm @左上角(4px, sc=2), stride=1920
+>>> RTSP 监听 :8554 (多客户端, 上限 2)
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+[npu] in: sz=1228800 mean=74.6 rgb0=114/114/114 type=UINT8 pass_through=0
+[npu] out0 size=409600 b0..b7=6 -28 -41 -47 -55 -57 -54 -57
+[npu] in: sz=1228800 mean=74.5 rgb0=114/114/114 type=UINT8 pass_through=0
+[npu] out0 size=409600 b0..b7=7 -27 -41 -48 -55 -56 -54 -56
+[npu] in: sz=1228800 mean=74.5 rgb0=114/114/114 type=UINT8 pass_through=0
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+librga fail to get driver version! Compatibility mode will be enabled.
+
+432 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+>>> 检测连击开始 streak=1 score=0.914 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.899
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+[evw] open event_id=1 last_pkts=30 pushed=30
+>>> 预录就绪: 已覆盖 3 秒并包含起始 IDR
+>>> 触发 seq=29 ts=3545.1ms -> pre_i=0 pre_seq=0 (ring_cnt=30 head=0 pushed=30)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=31
+>>> 检测统计 5s: 命中 40/40 帧 (100%), 峰值 0.941, 输入均值 106.8, streak=40, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 41 帧): RGA 7.07 + RKNN 90.31 + 编码 19.26 = 116.64 ms/帧 -> 8.6 fps
+rtsp-ring: in=41 evict=11 depth=30 bytes=0.71/8MB tags=[11,41)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=31
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=31
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=31
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 0)
+rtsp c0: 客户端开始播放(从 tag 45 起)
+rtsp c0: sent=582/791129B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=582 epoch=0 rej453=0 fds=32
+rtsp c0: sent=769/1046587B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=769 epoch=0 rej453=0 fds=32
+>>> 检测统计 10s: 命中 42/42 帧 (100%), 峰值 0.941, 输入均值 121.6, streak=82, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 83 帧): RGA 7.17 + RKNN 89.20 + 编码 20.36 = 116.73 ms/帧 -> 8.6 fps
+rtsp-ring: in=83 evict=53 depth=30 bytes=1.04/8MB tags=[53,83)
+rtsp c0: sent=1003/1361475B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=1003 epoch=0 rej453=0 fds=32
+rtsp c0: sent=1257/1704115B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=1257 epoch=0 rej453=0 fds=32
+rtsp c0: sent=1378/1867876B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=1378 epoch=0 rej453=0 fds=32
+rtsp c0: sent=1651/2237435B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=1651 epoch=0 rej453=0 fds=32
+rtsp c0: sent=1788/2423567B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=1788 epoch=0 rej453=0 fds=32
+>>> 检测统计 15s: 命中 43/43 帧 (100%), 峰值 0.930, 输入均值 122.5, streak=125, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 126 帧): RGA 7.29 + RKNN 89.59 + 编码 20.27 = 117.15 ms/帧 -> 8.5 fps
+rtsp-ring: in=126 evict=96 depth=30 bytes=0.96/8MB tags=[96,126)
+rtsp c0: sent=2055/2787861B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=2055 epoch=0 rej453=0 fds=32
+rtsp c0: sent=2172/2944822B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=2172 epoch=0 rej453=0 fds=32
+rtsp c0: sent=2435/3301690B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=2435 epoch=0 rej453=0 fds=32
+rtsp c0: sent=2588/3510806B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=2588 epoch=0 rej453=0 fds=32
+rtsp c0: sent=2840/3851025B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=2840 epoch=0 rej453=0 fds=32
+>>> 检测统计 20s: 命中 43/43 帧 (100%), 峰值 0.938, 输入均值 120.4, streak=168, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 169 帧): RGA 7.33 + RKNN 89.03 + 编码 20.48 = 116.84 ms/帧 -> 8.6 fps
+rtsp-ring: in=169 evict=139 depth=30 bytes=0.96/8MB tags=[139,169)
+rtsp c0: sent=3103/4206062B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=3103 epoch=0 rej453=0 fds=32
+rtsp c0: sent=3240/4390409B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=3240 epoch=0 rej453=0 fds=32
+rtsp c0: sent=3486/4722266B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=3486 epoch=0 rej453=0 fds=32
+rtsp c0: sent=3630/4919056B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=3630 epoch=0 rej453=0 fds=32
+rtsp c0: sent=3902/5286404B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=3902 epoch=0 rej453=0 fds=32
+>>> 检测统计 25s: 命中 43/43 帧 (100%), 峰值 0.934, 输入均值 118.0, streak=211, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 211 帧): RGA 7.36 + RKNN 89.01 + 编码 20.56 = 116.93 ms/帧 -> 8.6 fps
+rtsp-ring: in=211 evict=181 depth=30 bytes=1.01/8MB tags=[181,211)
+rtsp c0: sent=4053/5490809B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=4053 epoch=0 rej453=0 fds=32
+rtsp c0: sent=4313/5843043B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=4313 epoch=0 rej453=0 fds=32
+rtsp c0: sent=4601/6233050B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=4601 epoch=0 rej453=0 fds=32
+rtsp c0: sent=4766/6457377B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=4766 epoch=0 rej453=0 fds=32
+rtsp c0: sent=4933/6679154B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=4933 epoch=0 rej453=0 fds=32
+>>> 检测统计 30s: 命中 42/42 帧 (100%), 峰值 0.945, 输入均值 120.6, streak=253, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 254 帧): RGA 7.40 + RKNN 89.07 + 编码 20.49 = 116.96 ms/帧 -> 8.6 fps
+rtsp-ring: in=254 evict=224 depth=30 bytes=0.85/8MB tags=[224,254)
+rtsp c0: sent=5054/6841521B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=5054 epoch=0 rej453=0 fds=32
+rtsp c0: sent=5276/7142790B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=5276 epoch=0 rej453=0 fds=32
+rtsp c0: sent=5454/7388110B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=5454 epoch=0 rej453=0 fds=32
+>>> 分段 1 (event_id=1, IDR 边界)
+rtsp c0: sent=5698/7718914B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=5698 epoch=0 rej453=0 fds=32
+rtsp c0: sent=5865/7947300B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=5865 epoch=0 rej453=0 fds=32
+>>> 检测统计 35s: 命中 39/39 帧 (100%), 峰值 0.930, 输入均值 123.0, streak=292, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 293 帧): RGA 7.62 + RKNN 90.42 + 编码 20.44 = 118.48 ms/帧 -> 8.4 fps
+rtsp-ring: in=293 evict=263 depth=30 bytes=1.02/8MB tags=[263,293)
+rtsp c0: sent=6091/8254583B skip=0 evict=0 dead=0 lag=0ms idle=0.2s
+rtsp: conn=1 play=1/2 sent=6091 epoch=0 rej453=0 fds=32
+rtsp c0: sent=6199/8399504B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=6199 epoch=0 rej453=0 fds=32
+Input #0, h264, from '/root/camera-integration-20261110-build/dual-event-scheduled-20261111/run/imx415/event_20261111-105406-01.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1920x1080, 15 fps, 15 tbr, 1200k tbn, 30 tbc
+Output #0, mp4, to '/root/camera-integration-20261110-build/dual-event-scheduled-20261111/run/imx415/event_20261111-105406-01.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, q=2-31, 15 fps, 15 tbr, 386261 tbn, 8.58 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x55b674b400] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+[mp4 @ 0x55b674b400] Starting second pass: moving the moov atom to the beginning of the file
+frame=  271 fps=0.0 q=-1.0 Lsize=    8644kB time=00:00:31.46 bitrate=2250.5kbits/s speed= 229x    
+video:8642kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.023605%
+rtsp c0: sent=6429/8708718B skip=0 evict=0 dead=0 lag=0ms idle=0.0s
+rtsp: conn=1 play=1/2 sent=6429 epoch=0 rej453=0 fds=32
+rtsp c0: sent=6551/8874885B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=6551 epoch=0 rej453=0 fds=32
+rtsp c0: sent=6762/9159688B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=6762 epoch=0 rej453=0 fds=32
+>>> 检测统计 40s: 命中 37/37 帧 (100%), 峰值 0.907, 输入均值 125.1, streak=329, 最近命中 0.0s 前
+[delivery] complete event_20261111-105406-01.json
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+524 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+186 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+>>> 阶段耗时(均值, 330 帧): RGA 8.07 + RKNN 91.66 + 编码 20.52 = 120.26 ms/帧 -> 8.3 fps
+rtsp-ring: in=330 evict=300 depth=30 bytes=0.93/8MB tags=[300,330)
+rtsp c0: sent=6910/9361829B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=6910 epoch=0 rej453=0 fds=32
+rtsp c0: sent=7168/9711255B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=7168 epoch=0 rej453=0 fds=32
+rtsp c0: sent=7415/10045749B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=7415 epoch=0 rej453=0 fds=32
+rtsp c0: sent=7595/10290393B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=7595 epoch=0 rej453=0 fds=32
+rtsp c0: sent=7864/10652658B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=7864 epoch=0 rej453=0 fds=32
+>>> 检测统计 45s: 命中 43/43 帧 (100%), 峰值 0.945, 输入均值 123.6, streak=372, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 372 帧): RGA 8.00 + RKNN 91.48 + 编码 20.52 = 119.99 ms/帧 -> 8.3 fps
+rtsp-ring: in=372 evict=342 depth=30 bytes=0.99/8MB tags=[342,372)
+rtsp c0: sent=7998/10833645B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=7998 epoch=0 rej453=0 fds=32
+rtsp c0: sent=8213/11122564B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=8213 epoch=0 rej453=0 fds=32
+rtsp c0: sent=8342/11297229B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=8342 epoch=0 rej453=0 fds=32
+rtsp c0: sent=8593/11635638B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=8593 epoch=0 rej453=0 fds=32
+rtsp c0: sent=8749/11849514B skip=0 evict=0 dead=0 lag=0ms idle=0.0s
+rtsp: conn=1 play=1/2 sent=8749 epoch=0 rej453=0 fds=32
+>>> 检测统计 50s: 命中 40/40 帧 (100%), 峰值 0.945, 输入均值 121.5, streak=412, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 412 帧): RGA 8.16 + RKNN 91.63 + 编码 20.65 = 120.44 ms/帧 -> 8.3 fps
+rtsp-ring: in=412 evict=382 depth=30 bytes=1.01/8MB tags=[382,412)
+rtsp c0: sent=9004/12194884B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=9004 epoch=0 rej453=0 fds=32
+rtsp c0: sent=9172/12422375B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=9172 epoch=0 rej453=0 fds=32
+rtsp c0: sent=9478/12838690B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=9478 epoch=0 rej453=0 fds=32
+rtsp c0: sent=9671/13098777B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=9671 epoch=0 rej453=0 fds=32
+rtsp c0: sent=9798/13268387B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=9798 epoch=0 rej453=0 fds=32
+>>> 检测统计 55s: 命中 43/43 帧 (100%), 峰值 0.945, 输入均值 123.3, streak=455, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 456 帧): RGA 8.12 + RKNN 91.02 + 编码 20.76 = 119.90 ms/帧 -> 8.3 fps
+rtsp-ring: in=456 evict=426 depth=30 bytes=0.81/8MB tags=[426,456)
+rtsp c0: sent=10032/13583842B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=10032 epoch=0 rej453=0 fds=32
+rtsp c0: sent=10187/13797341B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=10187 epoch=0 rej453=0 fds=32
+rtsp c0: sent=10478/14193506B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=10478 epoch=0 rej453=0 fds=32
+rtsp c0: sent=10781/14608084B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=10781 epoch=0 rej453=0 fds=32
+rtsp c0: sent=10889/14751460B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=10889 epoch=0 rej453=0 fds=32
+>>> 检测统计 60s: 命中 42/42 帧 (100%), 峰值 0.910, 输入均值 124.6, streak=497, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 498 帧): RGA 8.07 + RKNN 90.91 + 编码 20.77 = 119.75 ms/帧 -> 8.4 fps
+rtsp-ring: in=498 evict=468 depth=30 bytes=0.94/8MB tags=[468,498)
+rtsp c0: sent=11116/15058132B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=11116 epoch=0 rej453=0 fds=32
+rtsp c0: sent=11254/15243605B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=11254 epoch=0 rej453=0 fds=32
+rtsp c0: sent=11534/15622485B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=11534 epoch=0 rej453=0 fds=32
+rtsp c0: sent=11682/15822338B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=11682 epoch=0 rej453=0 fds=32
+>>> 分段 2 (event_id=1, IDR 边界)
+rtsp c0: sent=11937/16168546B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=11937 epoch=0 rej453=0 fds=32
+>>> 检测统计 65s: 命中 42/42 帧 (100%), 峰值 0.914, 输入均值 123.7, streak=539, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 540 帧): RGA 8.05 + RKNN 90.94 + 编码 20.79 = 119.79 ms/帧 -> 8.3 fps
+rtsp-ring: in=540 evict=510 depth=30 bytes=0.95/8MB tags=[510,540)
+rtsp c0: sent=12071/16349275B skip=0 evict=0 dead=0 lag=0ms idle=0.2s
+rtsp: conn=1 play=1/2 sent=12071 epoch=0 rej453=0 fds=32
+rtsp c0: sent=12307/16670517B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=12307 epoch=0 rej453=0 fds=32
+rtsp c0: sent=12425/16832120B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=12425 epoch=0 rej453=0 fds=32
+Input #0, h264, from '/root/camera-integration-20261110-build/dual-event-scheduled-20261111/run/imx415/event_20261111-105406-01-s1.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1920x1080, 15 fps, 15 tbr, 1200k tbn, 30 tbc
+Output #0, mp4, to '/root/camera-integration-20261110-build/dual-event-scheduled-20261111/run/imx415/event_20261111-105406-01-s1.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, q=2-31, 15 fps, 15 tbr, 691727.00 tbn, 8.19 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x557221d4d0] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+[mp4 @ 0x557221d4d0] Starting second pass: moving the moov atom to the beginning of the file
+frame=  256 fps=0.0 q=-1.0 Lsize=    8446kB time=00:00:31.13 bitrate=2222.5kbits/s speed= 234x    
+video:8444kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.023557%
+rtsp c0: sent=12692/17193624B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=12692 epoch=0 rej453=0 fds=32
+rtsp c0: sent=12805/17346895B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=12805 epoch=0 rej453=0 fds=32
+>>> 检测统计 70s: 命中 37/37 帧 (100%), 峰值 0.910, 输入均值 124.0, streak=576, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 577 帧): RGA 8.27 + RKNN 91.51 + 编码 20.93 = 120.70 ms/帧 -> 8.3 fps
+rtsp-ring: in=577 evict=547 depth=30 bytes=0.95/8MB tags=[547,577)
+rtsp c0: sent=13057/17688065B skip=0 evict=0 dead=0 lag=0ms idle=0.0s
+rtsp: conn=1 play=1/2 sent=13057 epoch=0 rej453=0 fds=32
+[delivery] complete event_20261111-105406-01-s1.json
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+373 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+151 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+rtsp c0: sent=13168/17837673B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=13168 epoch=0 rej453=0 fds=32
+rtsp c0: sent=13448/18215699B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=13448 epoch=0 rej453=0 fds=32
+rtsp c0: sent=13707/18565580B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=13707 epoch=0 rej453=0 fds=32
+rtsp c0: sent=13837/18741195B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=13837 epoch=0 rej453=0 fds=32
+>>> 检测统计 75s: 命中 42/42 帧 (100%), 峰值 0.914, 输入均值 124.4, streak=618, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 619 帧): RGA 8.26 + RKNN 91.41 + 编码 20.91 = 120.59 ms/帧 -> 8.3 fps
+rtsp-ring: in=619 evict=589 depth=30 bytes=0.95/8MB tags=[589,619)
+rtsp c0: sent=14092/19084866B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=14092 epoch=0 rej453=0 fds=32
+rtsp c0: sent=14236/19278145B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=14236 epoch=0 rej453=0 fds=32
+rtsp c0: sent=14484/19613548B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=14484 epoch=0 rej453=0 fds=32
+rtsp c0: sent=14620/19797479B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=14620 epoch=0 rej453=0 fds=32
+rtsp c0: sent=14879/20148462B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=14879 epoch=0 rej453=0 fds=32
+>>> 检测统计 80s: 命中 42/42 帧 (100%), 峰值 0.926, 输入均值 124.2, streak=660, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 661 帧): RGA 8.21 + RKNN 91.34 + 编码 20.88 = 120.44 ms/帧 -> 8.3 fps
+rtsp-ring: in=661 evict=631 depth=30 bytes=0.98/8MB tags=[631,661)
+rtsp c0: sent=15047/20378154B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=15047 epoch=0 rej453=0 fds=32
+rtsp c0: sent=15326/20756635B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=15326 epoch=0 rej453=0 fds=32
+rtsp c0: sent=15507/21000441B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=15507 epoch=0 rej453=0 fds=32
+rtsp c0: sent=15656/21203229B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=15656 epoch=0 rej453=0 fds=32
+rtsp c0: sent=15886/21513674B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=15886 epoch=0 rej453=0 fds=32
+>>> 检测统计 85s: 命中 39/39 帧 (100%), 峰值 0.949, 输入均值 122.4, streak=699, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 700 帧): RGA 8.28 + RKNN 91.78 + 编码 20.93 = 121.00 ms/帧 -> 8.3 fps
+rtsp-ring: in=700 evict=670 depth=30 bytes=0.91/8MB tags=[670,700)
+rtsp c0: sent=16035/21717092B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=16035 epoch=0 rej453=0 fds=32
+rtsp c0: sent=16307/22083440B skip=0 evict=0 dead=0 lag=0ms idle=0.0s
+rtsp: conn=1 play=1/2 sent=16307 epoch=0 rej453=0 fds=32
+rtsp c0: sent=16429/22247111B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=16429 epoch=0 rej453=0 fds=32
+rtsp c0: sent=16674/22579352B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=16674 epoch=0 rej453=0 fds=32
+rtsp c0: sent=16817/22773223B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=16817 epoch=0 rej453=0 fds=32
+>>> 检测统计 90s: 命中 42/42 帧 (100%), 峰值 0.938, 输入均值 122.9, streak=741, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 741 帧): RGA 8.26 + RKNN 91.71 + 编码 20.93 = 120.90 ms/帧 -> 8.3 fps
+rtsp-ring: in=741 evict=711 depth=30 bytes=0.92/8MB tags=[711,741)
+rtsp c0: sent=17049/23086265B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=17049 epoch=0 rej453=0 fds=32
+rtsp c0: sent=17220/23318001B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=17220 epoch=0 rej453=0 fds=32
+rtsp c0: sent=17455/23633861B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=17455 epoch=0 rej453=0 fds=32
+rtsp c0: sent=17585/23810528B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=17585 epoch=0 rej453=0 fds=32
+rtsp c0: sent=17843/24161173B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=17843 epoch=0 rej453=0 fds=32
+>>> 分段 3 (event_id=1, IDR 边界)
+>>> 检测统计 95s: 命中 41/41 帧 (100%), 峰值 0.930, 输入均值 123.4, streak=782, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 782 帧): RGA 8.24 + RKNN 91.77 + 编码 20.92 = 120.92 ms/帧 -> 8.3 fps
+rtsp-ring: in=782 evict=752 depth=30 bytes=0.98/8MB tags=[752,782)
+rtsp c0: sent=18125/24546297B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=18125 epoch=0 rej453=0 fds=32
+rtsp c0: sent=18282/24758985B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=18282 epoch=0 rej453=0 fds=32
+rtsp c0: sent=18547/25120958B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=18547 epoch=0 rej453=0 fds=32
+rtsp c0: sent=18640/25248588B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=18640 epoch=0 rej453=0 fds=32
+Input #0, h264, from '/root/camera-integration-20261110-build/dual-event-scheduled-20261111/run/imx415/event_20261111-105406-01-s2.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1920x1080, 15 fps, 15 tbr, 1200k tbn, 30 tbc
+Output #0, mp4, to '/root/camera-integration-20261110-build/dual-event-scheduled-20261111/run/imx415/event_20261111-105406-01-s2.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, q=2-31, 15 fps, 15 tbr, 850k tbn, 8.07 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x559123fe90] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+[mp4 @ 0x559123fe90] Starting second pass: moving the moov atom to the beginning of the file
+frame=  256 fps=0.0 q=-1.0 Lsize=    8470kB time=00:00:31.59 bitrate=2195.9kbits/s speed= 242x    
+video:8469kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.022660%
+rtsp c0: sent=18886/25582056B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=18886 epoch=0 rej453=0 fds=32
+>>> 检测统计 100s: 命中 39/39 帧 (100%), 峰值 0.918, 输入均值 123.9, streak=821, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 822 帧): RGA 8.33 + RKNN 92.04 + 编码 20.92 = 121.29 ms/帧 -> 8.2 fps
+rtsp-ring: in=822 evict=792 depth=30 bytes=0.91/8MB tags=[792,822)
+rtsp c0: sent=19001/25737735B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=19001 epoch=0 rej453=0 fds=32
+rtsp c0: sent=19255/26082022B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=19255 epoch=0 rej453=0 fds=32
+[delivery] complete event_20261111-105406-01-s2.json
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+364 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+168 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+rtsp c0: sent=19358/26220980B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=19358 epoch=0 rej453=0 fds=32
+rtsp c0: sent=19643/26607160B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=19643 epoch=0 rej453=0 fds=32
+rtsp c0: sent=19766/26771646B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=19766 epoch=0 rej453=0 fds=32
+>>> 检测统计 105s: 命中 40/40 帧 (100%), 峰值 0.930, 输入均值 124.3, streak=861, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 862 帧): RGA 8.37 + RKNN 92.10 + 编码 20.92 = 121.40 ms/帧 -> 8.2 fps
+rtsp-ring: in=862 evict=832 depth=30 bytes=0.96/8MB tags=[832,862)
+rtsp c0: sent=20035/27137267B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=20035 epoch=0 rej453=0 fds=32
+rtsp c0: sent=20193/27352658B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=20193 epoch=0 rej453=0 fds=32
+rtsp c0: sent=20444/27693931B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=20444 epoch=0 rej453=0 fds=32
+rtsp c0: sent=20690/28025426B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=20690 epoch=0 rej453=0 fds=32
+rtsp c0: sent=20841/28230541B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=20841 epoch=0 rej453=0 fds=32
+>>> 检测统计 110s: 命中 42/42 帧 (100%), 峰值 0.945, 输入均值 124.3, streak=903, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 904 帧): RGA 8.33 + RKNN 92.04 + 编码 20.93 = 121.30 ms/帧 -> 8.2 fps
+rtsp-ring: in=904 evict=874 depth=30 bytes=0.97/8MB tags=[874,904)
+rtsp c0: sent=21110/28594710B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=21110 epoch=0 rej453=0 fds=32
+rtsp c0: sent=21281/28826319B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=21281 epoch=0 rej453=0 fds=32
+rtsp c0: sent=21488/29106478B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=21488 epoch=0 rej453=0 fds=32
+rtsp c0: sent=21671/29355706B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=21671 epoch=0 rej453=0 fds=32
+rtsp c0: sent=21895/29658487B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=21895 epoch=0 rej453=0 fds=32
+>>> 检测统计 115s: 命中 43/43 帧 (100%), 峰值 0.903, 输入均值 124.1, streak=946, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 947 帧): RGA 8.29 + RKNN 91.73 + 编码 20.96 = 120.97 ms/帧 -> 8.3 fps
+rtsp-ring: in=947 evict=917 depth=30 bytes=0.93/8MB tags=[917,947)
+rtsp c0: sent=22120/29963925B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=22120 epoch=0 rej453=0 fds=32
+rtsp c0: sent=22305/30214787B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=22305 epoch=0 rej453=0 fds=32
+rtsp c0: sent=22531/30517983B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=22531 epoch=0 rej453=0 fds=32
+rtsp c0: sent=22683/30726629B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=22683 epoch=0 rej453=0 fds=32
+rtsp c0: sent=22949/31086441B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=22949 epoch=0 rej453=0 fds=32
+>>> 检测统计 120s: 命中 43/43 帧 (100%), 峰值 0.895, 输入均值 123.4, streak=989, 最近命中 0.0s 前
+>>> 检测连击结束 streak=989 (最近命中 0.1s 前)
+>>> 阶段耗时(均值, 990 帧): RGA 8.26 + RKNN 91.64 + 编码 20.95 = 120.84 ms/帧 -> 8.3 fps
+rtsp-ring: in=990 evict=960 depth=30 bytes=0.98/8MB tags=[960,990)
+rtsp c0: sent=23136/31342027B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=23136 epoch=0 rej453=0 fds=32
+>>> 检测连击开始 streak=1 score=0.624 (阈值 0.45, 需连续 3 帧)
+rtsp c0: sent=23340/31617653B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=23340 epoch=0 rej453=0 fds=32
+>>> 检测连击开始 streak=1 score=0.721 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.798
+rtsp c0: sent=23479/31807014B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=23479 epoch=0 rej453=0 fds=32
+rtsp c0: sent=23709/32117739B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=23709 epoch=0 rej453=0 fds=32
+>>> 检测连击结束 streak=21 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.577 (阈值 0.45, 需连续 3 帧)
+rtsp c0: sent=23955/32452104B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=23955 epoch=0 rej453=0 fds=32
+>>> 检测统计 125s: 命中 25/41 帧 (61%), 峰值 0.856, 输入均值 121.7, streak=0, 最近命中 0.8s 前
+>>> 检测连击开始 streak=1 score=0.492 (阈值 0.45, 需连续 3 帧)
+>>> 阶段耗时(均值, 1031 帧): RGA 8.22 + RKNN 91.74 + 编码 20.87 = 120.84 ms/帧 -> 8.3 fps
+rtsp-ring: in=1031 evict=1001 depth=30 bytes=0.93/8MB tags=[1001,1031)
+rtsp c0: sent=24109/32661809B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=24109 epoch=0 rej453=0 fds=32
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.457 (阈值 0.45, 需连续 3 帧)
+>>> 分段 4 (event_id=1, IDR 边界)
+>>> 检测连击开始 streak=1 score=0.461 (阈值 0.45, 需连续 3 帧)
+rtsp c0: sent=24378/33027084B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=24378 epoch=0 rej453=0 fds=32
+rtsp c0: sent=24496/33185196B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=24496 epoch=0 rej453=0 fds=32
+>>> 事件 1 完成(5 段, target_left)
+rtsp c0: sent=24738/33511641B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=24738 epoch=0 rej453=0 fds=30
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 1)
+rtsp c1: 客户端开始播放(从 tag 1050 起)
+rtsp c0: sent=24846/33657653B skip=0 evict=0 dead=0 lag=0ms idle=0.2s
+rtsp c1: sent=282/380917B skip=0 evict=0 dead=0 lag=0ms idle=0.2s
+rtsp: conn=2 play=2/2 sent=25128 epoch=0 rej453=0 fds=31
+Input #0, h264, from '/root/camera-integration-20261110-build/dual-event-scheduled-20261111/run/imx415/event_20261111-105406-01-s3.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1920x1080, 15 fps, 15 tbr, 1200k tbn, 30 tbc
+Output #0, mp4, to '/root/camera-integration-20261110-build/dual-event-scheduled-20261111/run/imx415/event_20261111-105406-01-s3.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, q=2-31, 15 fps, 15 tbr, 25k tbn, 8.30 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x5598950e50] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+>>> 检测连击开始 streak=1 score=0.484 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+[mp4 @ 0x5598950e50] Starting second pass: moving the moov atom to the beginning of the file
+frame=  256 fps=0.0 q=-1.0 Lsize=    8467kB time=00:00:30.73 bitrate=2256.9kbits/s speed= 240x    
+video:8465kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.022669%
+>>> 检测连击开始 streak=1 score=0.566 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 130s: 命中 8/38 帧 (21%), 峰值 0.566, 输入均值 121.5, streak=1, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 1069 帧): RGA 8.31 + RKNN 92.05 + 编码 20.91 = 121.27 ms/帧 -> 8.2 fps
+rtsp-ring: in=1069 evict=1039 depth=30 bytes=0.94/8MB tags=[1039,1069)
+rtsp c0: sent=25102/34005854B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=538/729118B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=25640 epoch=0 rej453=0 fds=31
+rtsp c0: sent=25230/34180264B skip=0 evict=0 dead=0 lag=0ms idle=0.2s
+rtsp c1: sent=666/903528B skip=0 evict=0 dead=0 lag=0ms idle=0.2s
+rtsp: conn=2 play=2/2 sent=25896 epoch=0 rej453=0 fds=31
+rtsp c0: sent=25463/34496476B skip=0 evict=0 dead=0 lag=0ms idle=0.0s
+rtsp c1: sent=899/1219740B skip=0 evict=0 dead=0 lag=0ms idle=0.0s
+rtsp: conn=2 play=2/2 sent=26362 epoch=0 rej453=0 fds=31
+rtsp c1: 发送判死(why=error errno=104), 断开
+rtsp c1: 连接关闭
+[delivery] complete event_20261111-105406-01-s3.json
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+355 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+181 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+rtsp c0: sent=25543/34604874B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=25543 epoch=0 rej453=0 fds=30
+rtsp c0: sent=25795/34945974B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=25795 epoch=0 rej453=0 fds=30
+>>> 检测统计 135s: 命中 0/38 帧 (0%), 峰值 0.453, 输入均值 122.0, streak=0, 最近命中 4.9s 前
+Input #0, h264, from '/root/camera-integration-20261110-build/dual-event-scheduled-20261111/run/imx415/event_20261111-105406-01-s4.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1920x1080, 15 fps, 15 tbr, 1200k tbn, 30 tbc
+Output #0, mp4, to '/root/camera-integration-20261110-build/dual-event-scheduled-20261111/run/imx415/event_20261111-105406-01-s4.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, q=2-31, 15 fps, 15 tbr, 10880 tbn, 7.73 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x5599bc1030] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+[mp4 @ 0x5599bc1030] Starting second pass: moving the moov atom to the beginning of the file
+frame=   18 fps=0.0 q=-1.0 Lsize=     692kB time=00:00:02.20 bitrate=2576.6kbits/s speed= 253x    
+video:691kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.127880%
+>>> 阶段耗时(均值, 1107 帧): RGA 8.40 + RKNN 92.25 + 编码 20.92 = 121.57 ms/帧 -> 8.2 fps
+rtsp-ring: in=1107 evict=1077 depth=30 bytes=0.89/8MB tags=[1077,1107)
+rtsp c0: sent=25938/35139510B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=25938 epoch=0 rej453=0 fds=30
+[delivery] complete event_20261111-105406-01-s4.json
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+327 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+158 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+rtsp c0: sent=26207/35503240B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=26207 epoch=0 rej453=0 fds=30
+rtsp c0: sent=26324/35660283B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=26324 epoch=0 rej453=0 fds=30
+rtsp c0: sent=26605/36040622B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=26605 epoch=0 rej453=0 fds=30
+rtsp c0: sent=26727/36204977B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=26727 epoch=0 rej453=0 fds=30
+>>> 检测统计 140s: 命中 0/42 帧 (0%), 峰值 0.518, 输入均值 122.7, streak=0, 最近命中 9.9s 前
+>>> 阶段耗时(均值, 1149 帧): RGA 8.37 + RKNN 92.19 + 编码 20.90 = 121.46 ms/帧 -> 8.2 fps
+rtsp-ring: in=1149 evict=1119 depth=30 bytes=0.94/8MB tags=[1119,1149)
+rtsp c0: sent=26995/36570353B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=26995 epoch=0 rej453=0 fds=30
+rtsp c0: sent=27253/36919201B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=27253 epoch=0 rej453=0 fds=30
+>>> 检测连击开始 streak=1 score=0.537 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=1 (最近命中 0.1s 前)
+rtsp c0: sent=27388/37101626B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=27388 epoch=0 rej453=0 fds=30
+rtsp c0: sent=27666/37480472B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=27666 epoch=0 rej453=0 fds=30
+rtsp c0: sent=27806/37670151B skip=0 evict=0 dead=0 lag=0ms idle=0.0s
+rtsp: conn=1 play=1/2 sent=27806 epoch=0 rej453=0 fds=30
+>>> 检测统计 145s: 命中 1/42 帧 (2%), 峰值 0.537, 输入均值 122.4, streak=0, 最近命中 3.8s 前
+>>> 阶段耗时(均值, 1191 帧): RGA 8.35 + RKNN 92.15 + 编码 20.90 = 121.40 ms/帧 -> 8.2 fps
+rtsp-ring: in=1191 evict=1161 depth=30 bytes=0.97/8MB tags=[1161,1191)
+rtsp c0: sent=28072/38030645B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=28072 epoch=0 rej453=0 fds=30
+rtsp c0: sent=28199/38203160B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=28199 epoch=0 rej453=0 fds=30
+rtsp c0: sent=28473/38573187B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=28473 epoch=0 rej453=0 fds=30
+rtsp c0: sent=28595/38738141B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=28595 epoch=0 rej453=0 fds=30
+rtsp c0: sent=28866/39105571B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=28866 epoch=0 rej453=0 fds=30
+>>> 检测统计 150s: 命中 0/43 帧 (0%), 峰值 0.467, 输入均值 122.4, streak=0, 最近命中 8.9s 前
+>>> 阶段耗时(均值, 1233 帧): RGA 8.33 + RKNN 92.01 + 编码 20.92 = 121.26 ms/帧 -> 8.2 fps
+rtsp-ring: in=1233 evict=1203 depth=30 bytes=0.94/8MB tags=[1203,1233)
+rtsp c0: sent=29128/39460923B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=29128 epoch=0 rej453=0 fds=30
+rtsp c0: sent=29272/39655714B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=29272 epoch=0 rej453=0 fds=30
+rtsp c0: sent=29542/40023942B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=1 play=1/2 sent=29542 epoch=0 rej453=0 fds=30
+rtsp c0: sent=29692/40228403B skip=0 evict=0 dead=0 lag=0ms idle=18446744073709552.0s
+rtsp: conn=1 play=1/2 sent=29692 epoch=0 rej453=0 fds=30
+rtsp c0: 发送判死(why=error errno=104), 断开
+rtsp c0: 连接关闭
+>>> 阶段耗时(均值, 1266 帧): RGA 8.31 + RKNN 92.01 + 编码 20.89 = 121.21 ms/帧 -> 8.3 fps
+>>> 收到 SIGTERM, 已停止

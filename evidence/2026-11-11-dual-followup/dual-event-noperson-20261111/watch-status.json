@@ -1,0 +1,11 @@
+{
+  "reason": "stop file",
+  "pair_rc": 0,
+  "client_rc": {
+    "imx415": 255,
+    "ov8858": 255
+  },
+  "3a": "active",
+  "device_users": "",
+  "ended": "2026-11-11T12:14:26.947026+08:00"
+}

@@ -1,0 +1,208 @@
+ov8858-isp: /dev/media2 -> /dev/video14
+/root/npu/examples/yolov8/model/yolov8n_rk3568_i8.rknn: 成功
+>>> S_FMT 回填 1280x960 stride=1280 sizeimage=1843200
+>>> NPU 就绪 640x640 nout=9
+>>> 采集 /dev/video14 1280x960,pre=3s post=2s ring=64MB 编码标称fps=30 gop=30
+>>> OSD 开启: #<seq> + t mm:ss.mmm @左上角(4px, sc=2), stride=1280
+>>> RTSP 监听 :8554 (多客户端, 上限 2)
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+[npu] in: sz=1228800 mean=131.1 rgb0=114/114/114 type=UINT8 pass_through=0
+[npu] out0 size=409600 b0..b7=5 -29 -42 -47 -59 -62 -59 -60
+[npu] in: sz=1228800 mean=126.2 rgb0=114/114/114 type=UINT8 pass_through=0
+[npu] out0 size=409600 b0..b7=6 -29 -42 -48 -60 -61 -60 -60
+[npu] in: sz=1228800 mean=125.8 rgb0=114/114/114 type=UINT8 pass_through=0
+librga fail to get driver version! Compatibility mode will be enabled.
+
+243 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 预录就绪: 已覆盖 3 秒并包含起始 IDR
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 5s: 命中 0/65 帧 (0%), 峰值 0.053, 输入均值 125.4, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 66 帧): RGA 4.69 + RKNN 59.41 + 编码 9.48 = 73.58 ms/帧 -> 13.6 fps
+rtsp-ring: in=66 evict=36 depth=30 bytes=0.57/8MB tags=[36,66)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 10s: 命中 0/69 帧 (0%), 峰值 0.053, 输入均值 125.3, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 135 帧): RGA 4.72 + RKNN 58.94 + 编码 9.34 = 73.00 ms/帧 -> 13.7 fps
+rtsp-ring: in=135 evict=105 depth=30 bytes=0.45/8MB tags=[105,135)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 15s: 命中 0/68 帧 (0%), 峰值 0.056, 输入均值 125.3, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 203 帧): RGA 4.72 + RKNN 59.20 + 编码 9.34 = 73.26 ms/帧 -> 13.7 fps
+rtsp-ring: in=203 evict=173 depth=30 bytes=0.50/8MB tags=[173,203)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 20s: 命中 0/68 帧 (0%), 峰值 0.053, 输入均值 125.3, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 271 帧): RGA 4.71 + RKNN 59.17 + 编码 9.35 = 73.23 ms/帧 -> 13.7 fps
+rtsp-ring: in=271 evict=241 depth=30 bytes=0.48/8MB tags=[241,271)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 25s: 命中 0/69 帧 (0%), 峰值 0.071, 输入均值 125.2, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 340 帧): RGA 4.71 + RKNN 59.06 + 编码 9.33 = 73.10 ms/帧 -> 13.7 fps
+rtsp-ring: in=340 evict=310 depth=30 bytes=0.47/8MB tags=[310,340)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 30s: 命中 0/69 帧 (0%), 峰值 0.068, 输入均值 125.2, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 409 帧): RGA 4.71 + RKNN 58.99 + 编码 9.32 = 73.02 ms/帧 -> 13.7 fps
+rtsp-ring: in=409 evict=379 depth=30 bytes=0.47/8MB tags=[379,409)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 35s: 命中 0/68 帧 (0%), 峰值 0.053, 输入均值 125.2, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 477 帧): RGA 4.71 + RKNN 59.05 + 编码 9.31 = 73.07 ms/帧 -> 13.7 fps
+rtsp-ring: in=477 evict=447 depth=30 bytes=0.48/8MB tags=[447,477)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 40s: 命中 0/68 帧 (0%), 峰值 0.056, 输入均值 125.2, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 545 帧): RGA 4.71 + RKNN 59.10 + 编码 9.31 = 73.12 ms/帧 -> 13.7 fps
+rtsp-ring: in=545 evict=515 depth=30 bytes=0.47/8MB tags=[515,545)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 45s: 命中 0/68 帧 (0%), 峰值 0.053, 输入均值 125.1, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 613 帧): RGA 4.71 + RKNN 59.11 + 编码 9.31 = 73.14 ms/帧 -> 13.7 fps
+rtsp-ring: in=613 evict=583 depth=30 bytes=0.50/8MB tags=[583,613)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 50s: 命中 0/68 帧 (0%), 峰值 0.053, 输入均值 125.1, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 681 帧): RGA 4.72 + RKNN 59.14 + 编码 9.32 = 73.17 ms/帧 -> 13.7 fps
+rtsp-ring: in=681 evict=651 depth=30 bytes=0.48/8MB tags=[651,681)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 55s: 命中 0/69 帧 (0%), 峰值 0.053, 输入均值 125.1, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 750 帧): RGA 4.72 + RKNN 59.08 + 编码 9.31 = 73.11 ms/帧 -> 13.7 fps
+rtsp-ring: in=750 evict=720 depth=30 bytes=0.47/8MB tags=[720,750)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 60s: 命中 0/68 帧 (0%), 峰值 0.047, 输入均值 125.0, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 818 帧): RGA 4.72 + RKNN 59.14 + 编码 9.31 = 73.17 ms/帧 -> 13.7 fps
+rtsp-ring: in=818 evict=788 depth=30 bytes=0.48/8MB tags=[788,818)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 65s: 命中 0/69 帧 (0%), 峰值 0.053, 输入均值 124.9, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 887 帧): RGA 4.72 + RKNN 59.11 + 编码 9.31 = 73.13 ms/帧 -> 13.7 fps
+rtsp-ring: in=887 evict=857 depth=30 bytes=0.49/8MB tags=[857,887)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 70s: 命中 0/68 帧 (0%), 峰值 0.062, 输入均值 124.9, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 955 帧): RGA 4.72 + RKNN 59.07 + 编码 9.30 = 73.09 ms/帧 -> 13.7 fps
+rtsp-ring: in=955 evict=925 depth=30 bytes=0.48/8MB tags=[925,955)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 75s: 命中 0/68 帧 (0%), 峰值 0.050, 输入均值 124.9, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 1023 帧): RGA 4.73 + RKNN 59.08 + 编码 9.30 = 73.11 ms/帧 -> 13.7 fps
+rtsp-ring: in=1023 evict=993 depth=30 bytes=0.48/8MB tags=[993,1023)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 80s: 命中 0/69 帧 (0%), 峰值 0.053, 输入均值 124.9, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 1092 帧): RGA 4.73 + RKNN 59.05 + 编码 9.30 = 73.08 ms/帧 -> 13.7 fps
+rtsp-ring: in=1092 evict=1062 depth=30 bytes=0.48/8MB tags=[1062,1092)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 85s: 命中 0/69 帧 (0%), 峰值 0.053, 输入均值 124.9, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 1160 帧): RGA 4.73 + RKNN 59.05 + 编码 9.30 = 73.08 ms/帧 -> 13.7 fps
+rtsp-ring: in=1160 evict=1130 depth=30 bytes=0.48/8MB tags=[1130,1160)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 90s: 命中 0/68 帧 (0%), 峰值 0.050, 输入均值 124.9, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 1229 帧): RGA 4.72 + RKNN 59.07 + 编码 9.30 = 73.09 ms/帧 -> 13.7 fps
+rtsp-ring: in=1229 evict=1199 depth=30 bytes=0.48/8MB tags=[1199,1229)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 95s: 命中 0/68 帧 (0%), 峰值 0.062, 输入均值 124.9, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 1296 帧): RGA 4.72 + RKNN 59.10 + 编码 9.31 = 73.13 ms/帧 -> 13.7 fps
+rtsp-ring: in=1296 evict=1266 depth=30 bytes=0.48/8MB tags=[1266,1296)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 100s: 命中 0/67 帧 (0%), 峰值 0.053, 输入均值 124.9, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 1364 帧): RGA 4.72 + RKNN 59.13 + 编码 9.31 = 73.16 ms/帧 -> 13.7 fps
+rtsp-ring: in=1364 evict=1334 depth=30 bytes=0.48/8MB tags=[1334,1364)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 105s: 命中 0/69 帧 (0%), 峰值 0.050, 输入均值 124.9, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 1433 帧): RGA 4.72 + RKNN 59.10 + 编码 9.30 = 73.12 ms/帧 -> 13.7 fps
+rtsp-ring: in=1433 evict=1403 depth=30 bytes=0.48/8MB tags=[1403,1433)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 110s: 命中 0/68 帧 (0%), 峰值 0.065, 输入均值 124.8, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 1501 帧): RGA 4.72 + RKNN 59.12 + 编码 9.30 = 73.14 ms/帧 -> 13.7 fps
+rtsp-ring: in=1501 evict=1471 depth=30 bytes=0.48/8MB tags=[1471,1501)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测统计 115s: 命中 0/68 帧 (0%), 峰值 0.059, 输入均值 124.8, streak=0, 最近命中 -1.0s 前
+>>> 阶段耗时(均值, 1569 帧): RGA 4.72 + RKNN 59.14 + 编码 9.30 = 73.16 ms/帧 -> 13.7 fps
+rtsp-ring: in=1569 evict=1539 depth=30 bytes=0.48/8MB tags=[1539,1569)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 阶段耗时(均值, 1626 帧): RGA 4.72 + RKNN 59.15 + 编码 9.30 = 73.17 ms/帧 -> 13.7 fps
+>>> 收到 SIGTERM, 已停止

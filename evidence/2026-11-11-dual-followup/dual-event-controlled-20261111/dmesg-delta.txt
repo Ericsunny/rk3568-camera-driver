@@ -1,0 +1,33 @@
+[ 1393.932648] rkisp rkisp-vir1: first params buf queue
+[ 1393.933587] rkcif_mipi_lvds: stream[0] start streaming
+[ 1393.934753] rkcif_mipi_lvds: Allocate dummy buffer, size: 0x00264000
+[ 1393.934837] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream on, src_sd: 00000000cfe66aed, sd_name:rockchip-csi2-dphy2
+[ 1393.934865] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream ON
+[ 1393.934976] rockchip-csi2-dphy2: dphy2, data_rate_mbps 720
+[ 1393.935005] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+[ 1393.935010] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+[ 1393.935015] ov8858-sm 5-0036: s_stream 1
+[ 1393.935020] ov8858-sm 5-0036: runtime_resume
+[ 1393.965799] rkisp rkisp-vir0: first params buf queue
+[ 1393.965899] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[ 1393.965931] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[ 1393.965939] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[ 1394.050894] imx415 1-001a: write reg array, sleep 30ms
+[ 1394.052154] imx415 1-001a: set vblank 0x3a vts 2250
+[ 1394.053405] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[ 1394.054238] imx415 1-001a: set analog gain 0x10
+[ 1394.102868] ov8858-sm 5-0036: start_stream[1632x1224]: stream=0x01 0x3814=0x03 0x3821=0x67 size=1632x1224 hts=1928 vts=1244
+[ 1394.166006] rga2: unknown ioctl cmd!
+[ 1394.203753] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:13
+[ 1394.356218] rga2: unknown ioctl cmd!
+[ 1469.228964] rkcif_mipi_lvds: stream[0] start stopping
+[ 1469.242567] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream off, src_sd: 00000000cfe66aed, sd_name:rockchip-csi2-dphy2
+[ 1469.242605] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream OFF
+[ 1469.242619] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream_stop stream stop, dphy2
+[ 1469.242624] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+[ 1469.242646] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+[ 1469.242653] ov8858-sm 5-0036: s_stream 0
+[ 1469.244468] rkcif_mipi_lvds: stream[0] stopping finished
+[ 1469.357316] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[ 1469.358776] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[ 1469.358786] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1

@@ -1,0 +1,1 @@
+OV8858, baseline IQ Enable=0, current system 3A; capture 180 NV12 frames to /dev/null; read /proc/rkisp-vir1 at 3 seconds while streaming.

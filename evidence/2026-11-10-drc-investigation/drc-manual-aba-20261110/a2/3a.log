@@ -1,0 +1,117 @@
+media get entity by name: stream_cif_dvp_id0 is null
+media get entity by name: stream_cif_dvp_id1 is null
+media get entity by name: stream_cif_dvp_id2 is null
+media get entity by name: stream_cif_dvp_id3 is null
+media get entity by name: rkcif-lvds-subdev is null
+media get entity by name: rkcif-lite-lvds-subdev is null
+media get entity by name: rockchip-mipi-dphy-rx is null
+media get entity by name: rockchip-csi2-dphy0 is null
+media get entity by name: stream_cif is null
+media get entity by name: rkcif-dvp-sof is null
+media get entity by name: rkisp-mpfbc-subdev is null
+media get entity by name: rkisp_rawwr1 is null
+media get entity by name: rkisp_dmapath is null
+media get entity by name: rkisp_rawrd1_l is null
+media get entity by name: rkisp-mipi-luma is null
+media get entity by name: rockchip-mipi-dphy-rx is null
+media get entity by name: rockchip-csi2-dphy0 is null
+media get entity by name: rkcif_dvp is null
+media get entity by name: rkcif_mipi_lvds is null
+media get entity by name: rkcif_dvp is null
+media get entity by name: rkcif_lite_mipi_lvds is null
+media get entity by name: rkcif_mipi_lvds is null
+media get entity by name: rkisp-mpfbc-subdev is null
+media get entity by name: rkisp_rawwr1 is null
+media get entity by name: rkisp_dmapath is null
+media get entity by name: rkisp_rawrd1_l is null
+media get entity by name: rkisp-mipi-luma is null
+media get entity by name: rockchip-mipi-dphy-rx is null
+media get entity by name: rockchip-csi2-dphy0 is null
+media get entity by name: rkcif_dvp is null
+media get entity by name: rkcif_dvp is null
+media get entity by name: rkcif_lite_mipi_lvds is null
+[20:36:33.243614][CAMHW]:XCAM ERROR CamHwIsp20.cpp:1075: No free isp&ispp needed by fake camera!
+media get entity by name: rkisp-isp-subdev is null
+media get entity by name: rkisp-input-params is null
+media get entity by name: rkisp-statistics is null
+media get entity by name: rkisp_mainpath is null
+Cound not find rkisp dev names, skipped /dev/media0
+ERR: Bad media topology for: /dev/media0
+DBG: get rkisp-isp-subdev devname: /dev/v4l-subdev6
+DBG: get rkisp-input-params devname: /dev/video13
+DBG: get rkisp-statistics devname: /dev/video12
+DBG: get rkisp_mainpath devname: /dev/video5
+DBG: get rkisp-isp-subdev devname: /dev/v4l-subdev3
+DBG: get rkisp-input-params devname: /dev/video22
+DBG: get rkisp-statistics devname: /dev/video21
+DBG: get rkisp_mainpath devname: /dev/video14
+ERR: Bad media topology for: /dev/media3
+ERR: Bad media topology for: /dev/media4
+DBG: subscribe events from /dev/video22 success !
+DBG: subscribe events from /dev/video13 success !
+media get entity by name: rkisp_rawrd1_l is null
+[20:36:33.610628][ADPCC]:XCAM ERROR rk_aiq_algo_adpcc_itf.cpp:75: prepare: (enter)
+
+[20:36:33.612261][AEC]:XCAM ERROR RkAiqAeHandle.cpp:86: the xcamvideobuffer of aec stats is null
+[20:36:33.612472][AEC]:XCAM ERROR rk_aiq_algo_awb_itf.cpp:172: awb stats is null
+[20:36:33.612750][XCORE]:XCAM ERROR RkAiqAfHandle.cpp:84: the xcamvideobuffer of af stats is null
+[20:36:33.612862][AEC]:XCAM ERROR RkAiqAeHandle.cpp:127: the xcamvideobuffer of aec stats is null
+[20:36:33.612936][ANALYZER]:XCAM ERROR RkAiqCore.cpp:4750: don't find the group shared params of group(0x0)
+[20:36:33.613212][AMERGE]:XCAM ERROR rk_aiq_algo_amerge_itf.cpp:160: AmergeProcess: Ae Proc result is null!!!
+
+[20:36:33.613271][AMERGE]:XCAM ERROR rk_aiq_algo_amerge_itf.cpp:176: AmergeProcess: ae Pre result is null!!!
+
+[20:36:33.613364][ADEHAZE]:XCAM ERROR rk_aiq_algo_adhaz_itf.cpp:187: processing:PreResBuf is NULL!
+
+[20:36:33.613628][ATMO]:XCAM ERROR rk_aiq_algo_adrc_itf.cpp:160: processing: Ae Proc result is null!!!
+
+[20:36:33.613675][ATMO]:XCAM ERROR rk_aiq_algo_adrc_itf.cpp:176: processing: ae Pre result is null!!!
+
+[20:36:33.613746][XCORE]:XCAM ERROR RkAiqHandleInt.cpp:3905: fail to get awb gain form AWB module,use default value 
+[20:36:33.613795][XCORE]:XCAM ERROR RkAiqHandleInt.cpp:6514: fail to get awb gain form AWB module,use default value 
+[20:36:33.613875][XCORE]:XCAM ERROR RkAiqHandleInt.cpp:4426: fail to get awb gain form AWB module,use default value 
+[20:36:33.614010][XCORE]:XCAM ERROR RkAiqAfHandle.cpp:125: the xcamvideobuffer of af stats is null
+[20:36:33.614321][XCORE]:XCAM ERROR RkAiqAfHandle.cpp:167: the xcamvideobuffer of af stats is null
+DBG: /dev/media2: wait stream start event...
+media get entity by name: rkisp_rawrd1_l is null
+[20:36:33.759766][ADPCC]:XCAM ERROR rk_aiq_algo_adpcc_itf.cpp:75: prepare: (enter)
+
+[20:36:33.760649][AEC]:XCAM ERROR RkAiqAeHandle.cpp:86: the xcamvideobuffer of aec stats is null
+[20:36:33.760790][AEC]:XCAM ERROR rk_aiq_algo_awb_itf.cpp:172: awb stats is null
+[20:36:33.760972][XCORE]:XCAM ERROR RkAiqAfHandle.cpp:84: the xcamvideobuffer of af stats is null
+[20:36:33.761046][AEC]:XCAM ERROR RkAiqAeHandle.cpp:127: the xcamvideobuffer of aec stats is null
+[20:36:33.761110][ANALYZER]:XCAM ERROR RkAiqCore.cpp:4750: don't find the group shared params of group(0x0)
+[20:36:33.761224][AMERGE]:XCAM ERROR rk_aiq_algo_amerge_itf.cpp:160: AmergeProcess: Ae Proc result is null!!!
+
+[20:36:33.761378][AMERGE]:XCAM ERROR rk_aiq_algo_amerge_itf.cpp:176: AmergeProcess: ae Pre result is null!!!
+
+[20:36:33.761451][ADEHAZE]:XCAM ERROR rk_aiq_algo_adhaz_itf.cpp:187: processing:PreResBuf is NULL!
+
+[20:36:33.761516][ANR]:XCAM ERROR rk_aiq_abayernr_algo_v2.cpp:305: Abayernr_ConfigSettingParam_V2(305): not support snr mode:127!
+
+[20:36:33.761597][ANR]:XCAM ERROR rk_aiq_aynr_algo_v2.cpp:311: Aynr_ConfigSettingParam_V2(311): not support snr mode:127!
+
+[20:36:33.761679][ANR]:XCAM ERROR rk_aiq_acnr_algo_v1.cpp:311: Acnr_ConfigSettingParam_V1(311): not support snr mode:127!
+
+[20:36:33.761741][ASHARP]:XCAM ERROR rk_aiq_asharp_algo_v3.cpp:318: Asharp_ConfigSettingParam_V3(318): not support snr mode:127!
+
+[20:36:33.761807][ATMO]:XCAM ERROR rk_aiq_algo_adrc_itf.cpp:160: processing: Ae Proc result is null!!!
+
+[20:36:33.761846][ATMO]:XCAM ERROR rk_aiq_algo_adrc_itf.cpp:176: processing: ae Pre result is null!!!
+
+[20:36:33.761900][XCORE]:XCAM ERROR RkAiqHandleInt.cpp:3905: fail to get awb gain form AWB module,use default value 
+[20:36:33.761943][XCORE]:XCAM ERROR RkAiqHandleInt.cpp:6514: fail to get awb gain form AWB module,use default value 
+[20:36:33.762012][XCORE]:XCAM ERROR RkAiqHandleInt.cpp:4426: fail to get awb gain form AWB module,use default value 
+[20:36:33.762140][XCORE]:XCAM ERROR RkAiqAfHandle.cpp:125: the xcamvideobuffer of af stats is null
+[20:36:33.762342][XCORE]:XCAM ERROR RkAiqAfHandle.cpp:167: the xcamvideobuffer of af stats is null
+DBG: /dev/media1: wait stream start event...
+DBG: /dev/media2: wait stream start event success ...
+DBG: device manager start
+DBG: rkisp_init engine succeed
+DBG: /dev/media2: wait stream stop event...
+[20:36:37.562432][CAMHW]:XCAM ERROR CamHwIsp21.cpp:364: get drc params from 3a result failed!
+
+[20:36:37.562597][CAMHW]:XCAM ERROR CamHwIsp21.cpp:429: get drc params from 3a result failed!
+
+DBG: /dev/media2: wait stream stop event success ...
+DBG: /dev/media2: wait stream start event...

@@ -1,0 +1,16 @@
+2026-11-10T15:18:23+08:00
+before: exposure 100, gain 128, vblank 20
+0x00 0x06 0x40
+0x00 0x80
+0x04 0xdc
+exposure: 100
+analogue_gain: 128
+vertical_blanking: 20
+setting: exposure 200, gain 256, vblank 100
+2026-11-10T15:18:24+08:00
+0x00 0x0c 0x80
+0x01 0x00
+0x05 0x2c
+exposure: 200
+analogue_gain: 256
+vertical_blanking: 100

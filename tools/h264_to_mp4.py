@@ -17,7 +17,7 @@ def frame_count(probe: str, path: Path) -> int:
     result = subprocess.run(
         [probe, "-v", "error", "-count_frames", "-select_streams", "v:0",
          "-show_entries", "stream=codec_name,nb_read_frames", "-of", "compact=p=0:nk=0", str(path)],
-        check=True, capture_output=True, text=True, timeout=120,
+        check=True, capture_output=True, text=True, encoding="utf-8", errors="backslashreplace", timeout=120,
     )
     if result.stderr.strip():
         raise ValueError("decoder reported errors: " + result.stderr.strip())

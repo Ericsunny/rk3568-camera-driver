@@ -1,0 +1,4 @@
+active
+74868 /usr/bin/rkaiq_3A_server
+1842c1b6096539d76b789b43d4fd7ab8f56677857a20b1f155fcf304b6a38839  /usr/lib/librkaiq.so
+b86cca83604f91f061be8228756521510940bcda5e704ea8a1e15e33890fcd4f  /etc/iqfiles/ov8858_DC-21AF-58-1474V1_unknown.json

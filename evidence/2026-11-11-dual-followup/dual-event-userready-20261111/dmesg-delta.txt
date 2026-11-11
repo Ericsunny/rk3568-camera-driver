@@ -1,0 +1,53 @@
+[12381.584754] rkisp rkisp-vir1: first params buf queue
+[12381.586815] rkcif_mipi_lvds: stream[0] start streaming
+[12381.588993] rkcif_mipi_lvds: Allocate dummy buffer, size: 0x00264000
+[12381.589093] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream on, src_sd: 00000000cfe66aed, sd_name:rockchip-csi2-dphy2
+[12381.589130] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream ON
+[12381.589243] rockchip-csi2-dphy2: dphy2, data_rate_mbps 720
+[12381.589282] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+[12381.589287] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+[12381.589293] ov8858-sm 5-0036: s_stream 1
+[12381.589305] ov8858-sm 5-0036: runtime_resume
+[12381.622771] rkisp rkisp-vir0: first params buf queue
+[12381.622871] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[12381.622904] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[12381.622911] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[12381.708792] imx415 1-001a: write reg array, sleep 30ms
+[12381.710087] imx415 1-001a: set vblank 0x3a vts 2250
+[12381.711379] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[12381.712219] imx415 1-001a: set analog gain 0x12
+[12381.754801] ov8858-sm 5-0036: start_stream[1632x1224]: stream=0x01 0x3814=0x03 0x3821=0x67 size=1632x1224 hts=1928 vts=1244
+[12381.820163] rga2: unknown ioctl cmd!
+[12381.861753] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:2692
+[12382.014843] rga2: unknown ioctl cmd!
+[12411.680219] imx415 1-001a: set analog gain 0x13
+[12411.813670] imx415 1-001a: set analog gain 0x14
+[12412.080741] imx415 1-001a: set analog gain 0x15
+[12412.346831] imx415 1-001a: set analog gain 0x16
+[12412.613595] imx415 1-001a: set analog gain 0x17
+[12412.880066] imx415 1-001a: set analog gain 0x18
+[12413.147032] imx415 1-001a: set analog gain 0x19
+[12413.414056] imx415 1-001a: set analog gain 0x1a
+[12414.509931] rga2: unknown ioctl cmd!
+[12417.157998] rga2: unknown ioctl cmd!
+[12418.641329] rga2: unknown ioctl cmd!
+[12421.474609] rga2: unknown ioctl cmd!
+[12447.555486] rga2: unknown ioctl cmd!
+[12450.119250] rga2: unknown ioctl cmd!
+[12452.812123] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[12452.812960] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[12452.813049] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[12452.842008] rkcif_mipi_lvds: stream[0] start stopping
+[12452.865044] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream off, src_sd: 00000000cfe66aed, sd_name:rockchip-csi2-dphy2
+[12452.865103] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream OFF
+[12452.865127] rockchip-mipi-csi2: ERR1: crc errors, reg: 0x1000000, cnt:1
+[12452.869261] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream_stop stream stop, dphy2
+[12452.869271] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+[12452.869295] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+[12452.869301] ov8858-sm 5-0036: s_stream 0
+[12452.874931] rkcif_mipi_lvds: stream[0] stopping finished
+[12453.717463] rga2: unknown ioctl cmd!
+[12453.838266] rga2: unknown ioctl cmd!
+[12454.895842] rga2: unknown ioctl cmd!
+[12455.516478] ov8858-sm 5-0036: runtime_suspend
+[12456.141099] rga2: unknown ioctl cmd!

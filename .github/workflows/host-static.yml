@@ -1,9 +1,9 @@
 name: host-static-checks
 on:
   push:
-    paths: [ 'tools/**', 'mini3a/**', 'config/final-demo.env', '.github/**' ]
+    paths: [ 'tools/**', 'driver/**', 'mini3a/**', 'config/**', '.github/**' ]
   pull_request:
-    paths: [ 'tools/**', 'mini3a/**', 'config/final-demo.env', '.github/**' ]
+    paths: [ 'tools/**', 'driver/**', 'mini3a/**', 'config/**', '.github/**' ]
 
 jobs:
   static:
@@ -75,10 +75,24 @@ jobs:
       - name: 固定演示配置启动检查(不访问设备)
         run: python3 tools/tests/test_camera_demo_profile.py
 
+      - name: 双路服务生命周期测试(主机替身，不访问设备)
+        run: python3 tools/tests/test_dual_camera.py
+
       - name: 事件交付与协议读取测试(主机合成数据和替身)
         run: |
           python3 tools/tests/test_evrec_preroll.py
+          python3 tools/tests/test_evrec_nal_start.py
+          python3 tools/tests/test_evrec_ring_bounds.py
+          python3 tools/tests/test_evrec_host.py
           python3 tools/tests/test_evrec_model_contract.py
+          python3 tools/tests/test_ov8858_controls.py
+          python3 tools/tests/test_ov8858_interval.py
+          python3 tools/tests/test_ov8858_enum.py
+          python3 tools/tests/test_ov8858_hdr_ioctl.py
+          python3 tools/tests/test_ov8858_iq_candidate.py
+          python3 tools/tests/test_create_drc_iq_variant.py
+          python3 tools/tests/test_analyze_isp_params_trace.py
+          python3 tools/tests/test_resolve_camera.py
           python3 tools/tests/test_rtsp_check.py
           python3 tools/tests/test_h264_to_mp4.py
           python3 tools/tests/test_camera_service.py

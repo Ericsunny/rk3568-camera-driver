@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "status": "failed",
+  "source_json": "event_20261110-154026-01.json",
+  "source_video": "event_20261110-154026-01.h264",
+  "output_video": "event_20261110-154026-01.mp4",
+  "error": "'utf-8' codec can't decode byte 0xff in position 371: invalid start byte"
+}

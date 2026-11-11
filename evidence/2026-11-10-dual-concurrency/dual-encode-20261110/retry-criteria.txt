@@ -1,0 +1,1 @@
+Retry recorded after initial ffmpeg returned 0 but decoded zero frames: force software h264 decoder, independently decode 150 IMX and 300 OV frames to null, timeout 30s each; require both exit zero and frame count met; no change to failed first result.

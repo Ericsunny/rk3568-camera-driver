@@ -1,0 +1,38 @@
+imx415-isp: /dev/media1 -> /dev/video5
+>>> S_FMT 回填 1920x1080 stride=1920 sizeimage=3110400
+>>> 采集 /dev/video5 1920x1080,pre=3s post=2s ring=64MB 编码标称fps=15 gop=15
+>>> OSD 开启: #<seq> + t mm:ss.mmm @左上角(4px, sc=2), stride=1920
+>>> RTSP 监听 :8554 (多客户端, 上限 2)
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+>>> 预录就绪: 已覆盖 3 秒并包含起始 IDR
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+[evw] open event_id=1 last_pkts=61 pushed=61
+>>> 触发 seq=60 ts=4391.7ms -> pre_i=0 pre_seq=0 (ring_cnt=61 head=0 pushed=61)
+rtsp-ring: in=70 evict=40 depth=30 bytes=0.80/8MB tags=[40,70)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=16
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=16
+>>> 事件 1 完成(1 段, target_left)
+Input #0, h264, from '/root/camera-integration-20261110-build/imx415-service-default61/event_20261110-155028-01.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1920x1080, 15 fps, 15 tbr, 1200k tbn, 30 tbc
+Output #0, mp4, to '/root/camera-integration-20261110-build/imx415-service-default61/event_20261110-155028-01.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, q=2-31, 15 fps, 15 tbr, 182k tbn, 15 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x5583c4dd40] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+[mp4 @ 0x5583c4dd40] Starting second pass: moving the moov atom to the beginning of the file
+frame=   92 fps=0.0 q=-1.0 Lsize=    2937kB time=00:00:06.06 bitrate=3966.4kbits/s speed= 207x    
+video:2936kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.041410%
+[delivery] complete event_20261110-155028-01.json
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+366 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+rga_api version 1.9.2_[1]

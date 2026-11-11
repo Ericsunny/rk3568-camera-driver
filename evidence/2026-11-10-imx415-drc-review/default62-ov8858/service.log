@@ -1,0 +1,37 @@
+ov8858-isp: /dev/media2 -> /dev/video14
+>>> S_FMT 回填 1280x960 stride=1280 sizeimage=1843200
+>>> 采集 /dev/video14 1280x960,pre=3s post=2s ring=64MB 编码标称fps=30 gop=30
+>>> OSD 开启: #<seq> + t mm:ss.mmm @左上角(4px, sc=2), stride=1280
+>>> RTSP 监听 :8554 (多客户端, 上限 2)
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+>>> 预录就绪: 已覆盖 3 秒并包含起始 IDR
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=14
+[evw] open event_id=1 last_pkts=126 pushed=126
+>>> 触发 seq=125 ts=4404.5ms -> pre_i=30 pre_seq=30 (ring_cnt=126 head=0 pushed=126)
+rtsp-ring: in=144 evict=114 depth=30 bytes=0.46/8MB tags=[114,144)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=16
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=16
+>>> 事件 1 完成(1 段, target_left)
+Input #0, h264, from '/root/camera-integration-20261110-build/ov8858-service-default62/event_20261110-201004-01.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1280x960, 30 fps, 30 tbr, 1200k tbn, 60 tbc
+Output #0, mp4, to '/root/camera-integration-20261110-build/ov8858-service-default62/event_20261110-201004-01.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1280x960, q=2-31, 30 fps, 30 tbr, 312k tbn, 30.02 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x556ceb9e70] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+[mp4 @ 0x556ceb9e70] Starting second pass: moving the moov atom to the beginning of the file
+frame=  157 fps=0.0 q=-1.0 Lsize=    2517kB time=00:00:05.19 bitrate=3967.3kbits/s speed= 236x    
+video:2515kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.058552%
+[delivery] complete event_20261110-201004-01.json
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+rga_api version 1.9.2_[1]

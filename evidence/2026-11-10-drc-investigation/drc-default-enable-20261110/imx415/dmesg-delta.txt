@@ -1,0 +1,60 @@
+[ 1976.928347] rkisp rkisp-vir0: first params buf queue
+[ 1976.928503] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[ 1976.928534] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[ 1976.928541] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[ 1977.013662] imx415 1-001a: write reg array, sleep 30ms
+[ 1977.015107] imx415 1-001a: set vblank 0x3a vts 2250
+[ 1977.016687] imx415 1-001a: set exposure(shr0) 2149 = cur_vts(2250) - val(101)
+[ 1977.017805] imx415 1-001a: set analog gain 0x0
+[ 1977.167541] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:182
+[ 1977.393864] imx415 1-001a: set exposure(shr0) 2117 = cur_vts(2250) - val(133)
+[ 1977.454493] imx415 1-001a: set exposure(shr0) 2077 = cur_vts(2250) - val(173)
+[ 1977.521148] imx415 1-001a: set exposure(shr0) 2023 = cur_vts(2250) - val(227)
+[ 1977.592076] imx415 1-001a: set exposure(shr0) 1953 = cur_vts(2250) - val(297)
+[ 1977.654374] imx415 1-001a: set analog gain 0x6
+[ 1977.655991] imx415 1-001a: set exposure(shr0) 1912 = cur_vts(2250) - val(338)
+[ 1977.720559] imx415 1-001a: set analog gain 0x7
+[ 1977.787405] imx415 1-001a: set analog gain 0xd
+[ 1977.854775] imx415 1-001a: set analog gain 0x10
+[ 1977.920950] imx415 1-001a: set analog gain 0x3
+[ 1977.923374] imx415 1-001a: set exposure(shr0) 1575 = cur_vts(2250) - val(675)
+[ 1977.988936] imx415 1-001a: set analog gain 0x5
+[ 1978.059607] imx415 1-001a: set analog gain 0xa
+[ 1978.124252] imx415 1-001a: set analog gain 0xb
+[ 1978.187275] imx415 1-001a: set analog gain 0x2
+[ 1978.188935] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[ 1978.254367] imx415 1-001a: set analog gain 0x4
+[ 1978.321025] imx415 1-001a: set analog gain 0x6
+[ 1978.387092] imx415 1-001a: set analog gain 0x8
+[ 1978.453703] imx415 1-001a: set analog gain 0xa
+[ 1978.520252] imx415 1-001a: set analog gain 0xb
+[ 1978.588231] imx415 1-001a: set analog gain 0xd
+[ 1978.653689] imx415 1-001a: set analog gain 0xe
+[ 1978.721108] imx415 1-001a: set analog gain 0x10
+[ 1978.788763] imx415 1-001a: set analog gain 0x11
+[ 1978.855576] imx415 1-001a: set analog gain 0x12
+[ 1978.921051] imx415 1-001a: set analog gain 0x13
+[ 1978.986749] imx415 1-001a: set analog gain 0x14
+[ 1979.054314] imx415 1-001a: set analog gain 0x15
+[ 1979.120531] imx415 1-001a: set analog gain 0x16
+[ 1979.188291] imx415 1-001a: set analog gain 0x17
+[ 1979.253628] imx415 1-001a: set analog gain 0x18
+[ 1979.320203] imx415 1-001a: set analog gain 0x19
+[ 1979.388021] imx415 1-001a: set analog gain 0x1a
+[ 1979.520868] imx415 1-001a: set analog gain 0x1b
+[ 1979.587919] imx415 1-001a: set analog gain 0x1c
+[ 1979.654074] imx415 1-001a: set analog gain 0x1d
+[ 1979.787344] imx415 1-001a: set analog gain 0x1e
+[ 1979.919890] imx415 1-001a: set analog gain 0x1f
+[ 1980.055309] imx415 1-001a: set analog gain 0x20
+[ 1980.187086] imx415 1-001a: set analog gain 0x21
+[ 1980.320010] imx415 1-001a: set analog gain 0x22
+[ 1980.586612] imx415 1-001a: set analog gain 0x23
+[ 1980.856557] imx415 1-001a: set analog gain 0x24
+[ 1981.121973] imx415 1-001a: set analog gain 0x25
+[ 1981.387533] imx415 1-001a: set analog gain 0x26
+[ 1983.453651] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[ 1983.455191] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[ 1983.455200] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[ 1984.482884] rga2: unknown ioctl cmd!
+[ 1986.234049] rga2: unknown ioctl cmd!

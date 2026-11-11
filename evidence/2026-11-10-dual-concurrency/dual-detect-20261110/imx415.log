@@ -1,0 +1,101 @@
+imx415-isp: /dev/media1 -> /dev/video5
+/root/npu/examples/yolov8/model/yolov8n_rk3568_i8.rknn: 成功
+>>> S_FMT 回填 1920x1080 stride=1920 sizeimage=3110400
+>>> NPU 就绪 640x640 nout=9
+>>> 采集 /dev/video5 1920x1080,pre=3s post=2s ring=64MB 编码标称fps=15 gop=15
+>>> OSD 开启: #<seq> + t mm:ss.mmm @左上角(4px, sc=2), stride=1920
+>>> RTSP 监听 :8554 (多客户端, 上限 2)
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+[npu] in: sz=1228800 mean=143.4 rgb0=114/114/114 type=UINT8 pass_through=0
+[npu] out0 size=409600 b0..b7=5 -28 -41 -47 -55 -56 -53 -56
+[npu] in: sz=1228800 mean=142.4 rgb0=114/114/114 type=UINT8 pass_through=0
+[npu] out0 size=409600 b0..b7=6 -28 -41 -48 -56 -58 -55 -56
+[npu] in: sz=1228800 mean=142.1 rgb0=114/114/114 type=UINT8 pass_through=0
+librga fail to get driver version! Compatibility mode will be enabled.
+
+432 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.763 (阈值 0.45, 需连续 3 帧)
+>>> 检测连击结束 streak=2 (最近命中 0.1s 前)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 检测连击开始 streak=1 score=0.558 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.527
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 预录尚未覆盖请求时长，拒绝本次触发
+>>> 检测连击结束 streak=12 (最近命中 0.1s 前)
+>>> 预录就绪: 已覆盖 3 秒并包含起始 IDR
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+>>> 检测连击开始 streak=1 score=0.600 (阈值 0.45, 需连续 3 帧)
+>>> 检测统计 5s: 命中 15/39 帧 (38%), 峰值 0.802, 输入均值 123.5, streak=1, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 40 帧): RGA 7.04 + RKNN 90.77 + 编码 20.06 = 117.88 ms/帧 -> 8.5 fps
+rtsp-ring: in=40 evict=10 depth=30 bytes=0.76/8MB tags=[10,40)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=29
+[evw] open event_id=1 last_pkts=41 pushed=41
+>>> 检测触发 streak=3 score=0.690
+>>> 触发 seq=40 ts=4878.4ms -> pre_i=0 pre_seq=0 (ring_cnt=41 head=0 pushed=41)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=31
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=31
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=31
+>>> 检测连击结束 streak=34 (最近命中 0.1s 前)
+>>> 检测连击开始 streak=1 score=0.651 (阈值 0.45, 需连续 3 帧)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=31
+>>> 检测连击开始 streak=1 score=0.488 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.473
+>>> 检测连击结束 streak=5 (最近命中 0.1s 前)
+>>> 检测统计 10s: 命中 39/43 帧 (91%), 峰值 0.814, 输入均值 118.4, streak=0, 最近命中 0.1s 前
+>>> 阶段耗时(均值, 83 帧): RGA 7.02 + RKNN 90.78 + 编码 19.86 = 117.66 ms/帧 -> 8.5 fps
+rtsp-ring: in=83 evict=53 depth=30 bytes=0.92/8MB tags=[53,83)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=31
+>>> 检测连击开始 streak=1 score=0.542 (阈值 0.45, 需连续 3 帧)
+>>> 检测触发 streak=3 score=0.577
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=31
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=31
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=31
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=31
+>>> 检测统计 15s: 命中 41/42 帧 (98%), 峰值 0.814, 输入均值 118.1, streak=41, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 125 帧): RGA 7.02 + RKNN 90.54 + 编码 19.94 = 117.50 ms/帧 -> 8.5 fps
+rtsp-ring: in=125 evict=95 depth=30 bytes=0.98/8MB tags=[95,125)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=31
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=31
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=31
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=31
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=31
+>>> 检测统计 20s: 命中 44/44 帧 (100%), 峰值 0.802, 输入均值 118.1, streak=85, 最近命中 0.0s 前
+>>> 阶段耗时(均值, 169 帧): RGA 7.01 + RKNN 89.46 + 编码 20.12 = 116.59 ms/帧 -> 8.6 fps
+rtsp-ring: in=169 evict=139 depth=30 bytes=0.92/8MB tags=[139,169)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=31
+>>> 阶段耗时(均值, 169 帧): RGA 7.01 + RKNN 89.46 + 编码 20.12 = 116.59 ms/帧 -> 8.6 fps
+>>> sigterm: 进行中的事件已落盘 /root/camera-integration-20261110-build/dual-detect-20261110/imx415/event_20261110-210901-01
+>>> 收到 SIGTERM, 已停止
+Input #0, h264, from '/root/camera-integration-20261110-build/dual-detect-20261110/imx415/event_20261110-210901-01.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1920x1080, 15 fps, 15 tbr, 1200k tbn, 30 tbc
+Output #0, mp4, to '/root/camera-integration-20261110-build/dual-detect-20261110/imx415/event_20261110-210901-01.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, q=2-31, 15 fps, 15 tbr, 560k tbn, 8.69 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x5561e9a5d0] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+[mp4 @ 0x5561e9a5d0] Starting second pass: moving the moov atom to the beginning of the file
+frame=  169 fps=0.0 q=-1.0 Lsize=    5405kB time=00:00:19.33 bitrate=2290.4kbits/s speed= 299x    
+video:5404kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.029439%
+[delivery] complete event_20261110-210901-01.json
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+408 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+160 im2d_rga_impl rga_version_below_minimun_range_user_driver(304): The driver may be compatible, but it is best to update the driver to version 1.2.4. You can try to update the SDK or update the <SDK>/kernel/drivers/video/rockchip/rga3 directory individually. current version: librga 1.9.2, driver .
+rga_api version 1.9.2_[1]

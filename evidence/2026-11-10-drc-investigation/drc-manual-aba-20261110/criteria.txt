@@ -1,0 +1,1 @@
+OV8858 A1(off), B(on), A2(off); same manual AE and reference IQ; skip 120 frames, retain 4 NV12 frames per arm locally; collect QBUF, proc, exposure and kernel logs.

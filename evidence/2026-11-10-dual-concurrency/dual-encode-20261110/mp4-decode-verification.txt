@@ -1,0 +1,6 @@
+ffmpeg -nostdin -v error -threads 2 -c:v h264 -i /root/camera-integration-20261110-build/dual-encode-20261110/imx/event_20261110-210530-01.mp4 -f null -
+exit=0
+a18e9883d3de88421833ac525e02a5782c6524ad5da39ef18c303da3ea927c6b  /root/camera-integration-20261110-build/dual-encode-20261110/imx/event_20261110-210530-01.mp4
+ffmpeg -nostdin -v error -threads 2 -c:v h264 -i /root/camera-integration-20261110-build/dual-encode-20261110/ov/event_20261110-210530-01.mp4 -f null -
+exit=0
+268ffe80d05a878c369f0bf5ee1a17cdc4df90db78ddae0cab01bb39d32f0001  /root/camera-integration-20261110-build/dual-encode-20261110/ov/event_20261110-210530-01.mp4

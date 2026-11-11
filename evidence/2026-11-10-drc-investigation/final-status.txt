@@ -1,0 +1,9 @@
+2026-11-10T20:44:09+08:00
+Linux yckt 4.19.232 #62 SMP Tue Nov 10 11:59:43 UTC 2026 aarch64 aarch64 aarch64 GNU/Linux
+40ec35eccd8e78ecacaee883257f2446d056614c50f649ae2d4988806bb07927  /boot/Image-4.19.232
+b386f6d716538d3305efbc47d4b39da17697510647ca8d576c44910c7926c689  /boot/Image-4.19.232-recovery61
+1842c1b6096539d76b789b43d4fd7ab8f56677857a20b1f155fcf304b6a38839  /usr/lib/librkaiq.so
+1dbb2b17c0244e90c2d35d5ccf88f56fb98c9a2d29be7a5ecd774fd8727cbb0f  /etc/iqfiles/ov8858_DC-21AF-58-1474V1_unknown.json
+b86cca83604f91f061be8228756521510940bcda5e704ea8a1e15e33890fcd4f  /root/camera-integration-20261110-build/drc-default-enable-20261110/iq-before.json
+active
+126121 /usr/bin/rkaiq_3A_server

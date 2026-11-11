@@ -1,0 +1,67 @@
+[ 4593.732416] rkisp rkisp-vir0: first params buf queue
+[ 4593.732544] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[ 4593.732574] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[ 4593.732582] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[ 4593.820353] imx415 1-001a: write reg array, sleep 30ms
+[ 4593.821737] imx415 1-001a: set vblank 0x3a vts 2250
+[ 4593.823005] imx415 1-001a: set exposure(shr0) 1575 = cur_vts(2250) - val(675)
+[ 4593.823840] imx415 1-001a: set analog gain 0x4
+[ 4593.835730] rkisp rkisp-vir1: first params buf queue
+[ 4593.836098] rkcif_mipi_lvds: stream[0] start streaming
+[ 4593.837317] rkcif_mipi_lvds: Allocate dummy buffer, size: 0x00264000
+[ 4593.837416] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream on, src_sd: 00000000cfe66aed, sd_name:rockchip-csi2-dphy2
+[ 4593.837453] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream ON
+[ 4593.837566] rockchip-csi2-dphy2: dphy2, data_rate_mbps 720
+[ 4593.837596] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+[ 4593.837602] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+[ 4593.837608] ov8858-sm 5-0036: s_stream 1
+[ 4593.837615] ov8858-sm 5-0036: runtime_resume
+[ 4593.973379] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:2689
+[ 4593.999720] ov8858-sm 5-0036: start_stream[1632x1224]: stream=0x01 0x3814=0x03 0x3821=0x67 size=1632x1224 hts=1928 vts=1244
+[ 4594.062063] rga2: unknown ioctl cmd!
+[ 4594.126252] rga2: unknown ioctl cmd!
+[ 4594.192626] imx415 1-001a: set analog gain 0x5
+[ 4594.460433] imx415 1-001a: set analog gain 0x4
+[ 4594.529587] imx415 1-001a: set analog gain 0x3
+[ 4642.588375] rga2: unknown ioctl cmd!
+[ 4643.474348] rga2: unknown ioctl cmd!
+[ 4644.276029] rga2: unknown ioctl cmd!
+[ 4645.350735] rga2: unknown ioctl cmd!
+[ 4708.469331] rga2: unknown ioctl cmd!
+[ 4710.416772] rga2: unknown ioctl cmd!
+[ 4722.234543] rga2: unknown ioctl cmd!
+[ 4725.797756] rga2: unknown ioctl cmd!
+[ 4726.419078] rga2: unknown ioctl cmd!
+[ 4728.496238] rga2: unknown ioctl cmd!
+[ 4728.856731] imx415 1-001a: set analog gain 0x2
+[ 4728.922817] imx415 1-001a: set analog gain 0x1
+[ 4728.990052] imx415 1-001a: set analog gain 0x13
+[ 4728.991801] imx415 1-001a: set exposure(shr0) 1912 = cur_vts(2250) - val(338)
+[ 4729.060698] imx415 1-001a: set analog gain 0x12
+[ 4729.123141] imx415 1-001a: set analog gain 0x11
+[ 4729.190094] imx415 1-001a: set analog gain 0x10
+[ 4729.257652] imx415 1-001a: set analog gain 0xe
+[ 4729.322907] imx415 1-001a: set analog gain 0xd
+[ 4729.389533] imx415 1-001a: set analog gain 0xc
+[ 4729.456391] imx415 1-001a: set analog gain 0xb
+[ 4729.523170] imx415 1-001a: set analog gain 0xa
+[ 4729.590993] imx415 1-001a: set analog gain 0x9
+[ 4729.656484] imx415 1-001a: set analog gain 0x8
+[ 4729.724829] imx415 1-001a: set analog gain 0x7
+[ 4729.789974] imx415 1-001a: set analog gain 0x6
+[ 4752.729778] rga2: unknown ioctl cmd!
+[ 4756.199704] rga2: unknown ioctl cmd!
+[ 4772.978927] rkcif_mipi_lvds: stream[0] start stopping
+[ 4772.992661] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[ 4772.993892] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[ 4772.993902] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[ 4773.004663] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream off, src_sd: 00000000cfe66aed, sd_name:rockchip-csi2-dphy2
+[ 4773.004715] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream OFF
+[ 4773.005775] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream_stop stream stop, dphy2
+[ 4773.005784] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+[ 4773.005818] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+[ 4773.005824] ov8858-sm 5-0036: s_stream 0
+[ 4773.007281] rkcif_mipi_lvds: stream[0] stopping finished
+[ 4774.015528] rga2: unknown ioctl cmd!
+[ 4775.517935] ov8858-sm 5-0036: runtime_suspend
+[ 4776.361685] rga2: unknown ioctl cmd!

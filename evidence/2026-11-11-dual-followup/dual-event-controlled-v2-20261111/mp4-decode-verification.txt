@@ -1,0 +1,6 @@
+ffmpeg -nostdin -v error -xerror -threads 2 -c:v h264 -i /root/camera-integration-20261110-build/dual-event-controlled-v2-20261111/run/imx415/event_20261111-091830-01.mp4 -f null -
+exit=0
+e2a551f384c2c428bf78e2deb321a900cbe4164abec3e2259708db81fe7b694c  /root/camera-integration-20261110-build/dual-event-controlled-v2-20261111/run/imx415/event_20261111-091830-01.mp4
+ffmpeg -nostdin -v error -xerror -threads 2 -c:v h264 -i /root/camera-integration-20261110-build/dual-event-controlled-v2-20261111/run/ov8858/event_20261111-091830-01.mp4 -f null -
+exit=0
+11fddc3b5a71f16eee7cd4681e18c57ea2966658317885af2bef765c03f14b9f  /root/camera-integration-20261110-build/dual-event-controlled-v2-20261111/run/ov8858/event_20261111-091830-01.mp4

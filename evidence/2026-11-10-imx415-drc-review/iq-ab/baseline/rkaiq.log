@@ -1,0 +1,10 @@
+-- Logs begin at Tue 2024-06-18 04:29:39 CST, end at Tue 2026-11-10 20:07:13 CST. --
+11月 10 20:07:11 yckt rkaiq[536]: DBG: device manager start
+11月 10 20:07:11 yckt rkaiq[536]: DBG: rkisp_init engine succeed
+11月 10 20:07:11 yckt rkaiq[536]: DBG: /dev/media2: wait stream stop event...
+11月 10 20:07:12 yckt rkaiq[536]: [20:07:12.006771][CAMHW]:XCAM ERROR CamHwIsp21.cpp:364: get drc params from 3a result failed!
+11月 10 20:07:12 yckt rkaiq[536]: 
+11月 10 20:07:12 yckt rkaiq[536]: [20:07:12.006897][CAMHW]:XCAM ERROR CamHwIsp21.cpp:429: get drc params from 3a result failed!
+11月 10 20:07:12 yckt rkaiq[536]: 
+11月 10 20:07:13 yckt rkaiq[536]: DBG: /dev/media2: wait stream stop event success ...
+11月 10 20:07:13 yckt rkaiq[536]: DBG: /dev/media2: wait stream start event...

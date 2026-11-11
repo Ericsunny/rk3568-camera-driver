@@ -6,6 +6,7 @@
 #include <linux/gpio/consumer.h>
 #include <linux/slab.h>
 #include <linux/math64.h>
+#include <linux/mutex.h>
 #include <linux/delay.h>
 #include <linux/of.h>
 #ifdef CONFIG_COMPAT
@@ -54,7 +55,7 @@ MODULE_PARM_DESC(stop_err_cnt, "cumulative stop_stream failure count (read-only)
 
 #define OV8858_SM_NAME "ov8858-sm"
 
-/* Datasheet table 2-1 lists 720 Mbps/lane for 4-lane RAW10 modes; the
+  /* Datasheet table 2-1 lists 720 Mbps/lane for 4-lane RAW10 modes; the
  * 2-lane 720 Mbps setting here comes from the vendor register table, not
  * that table's 1080p60 row.  See ov8858_sm_regs.h and docs/17 timing.
  * link_freq (V4L2) = 720 Mbps / 2 (DDR)      = 360 MHz
@@ -66,11 +67,10 @@ MODULE_PARM_DESC(stop_err_cnt, "cumulative stop_stream failure count (read-only)
 #define OV8858_SM_LINK_FREQ     360000000LL   /* Hz */
 #define OV8858_SM_PIXEL_RATE    144000000LL   /* pixel/s */
 #define OV8858_SM_EXPOSURE_MIN  1
-#define OV8858_SM_EXPOSURE_MAX  0xfffe
 #define OV8858_SM_EXPOSURE_DEF  0x100
-#define OV8858_SM_GAIN_MIN      0
-#define OV8858_SM_GAIN_MAX      0xff
-#define OV8858_SM_GAIN_DEF      0
+#define OV8858_SM_GAIN_MIN      0x80
+#define OV8858_SM_GAIN_MAX      0x7ff
+#define OV8858_SM_GAIN_DEF      0x80
 
 #define OV8858_SM_NUM_SUPPLIES  3
 
@@ -85,10 +85,21 @@ struct ov8858_sm {
 	struct v4l2_ctrl_handler ctrl_handler;
 	struct v4l2_ctrl *exposure;
 	struct v4l2_ctrl *anal_gain;
+	struct v4l2_ctrl *hblank;
+	struct v4l2_ctrl *vblank;
+	struct mutex mutex;
+	const char *module_name;
+	const char *lens_name;
 	bool is_1080p;
 	bool powered;		/* 电源/时钟是否已打开,保证上电断电严格配对 */
 	bool streaming;		/* 是否正在出流:流期间拒绝改 ACTIVE 格式 */
 	unsigned int test_pattern;	/* 彩条缓存:start_stream 重灌表后被 0x5e00=0 擦掉,需重放 */
+};
+
+struct ov8858_sm_timing { u32 hts, vts, width, height; };
+static const struct ov8858_sm_timing ov8858_sm_timings[] = {
+	{ 1928, 1244, 1632, 1224 },
+	{ 1940, 1236, 1920, 1080 },
 };
 
 static const struct i2c_device_id ov8858_sm_id[] = {
@@ -160,6 +171,15 @@ static int ov8858_sm_start_stream(struct ov8858_sm *ov8858)
 	if (ret)
 		return ret;
 
+	/* The mode table resets cached values; replay them after it has loaded. */
+	if (ov8858->subdev.ctrl_handler) {
+		ret = __v4l2_ctrl_handler_setup(&ov8858->ctrl_handler);
+		if (ret) {
+			ov8858_sm_write_reg(ov8858->client, 0x0100, 0);
+			return ret;
+		}
+	}
+
 	/* 初始化表把 0x5e00 写回 0, 会擦掉用户设的彩条 —— 重放缓存值。
 	 * 实测教训: 只在 set_ctrl 写一次的话, 彩条在开流瞬间被表覆盖。 */
 	if (ov8858->test_pattern) {
@@ -230,20 +250,25 @@ static int ov8858_sm_s_stream(struct v4l2_subdev *sd, int enable)
 
 	dev_info(sd->dev, "s_stream %d\n", enable);
 
+	mutex_lock(&ov8858->mutex);
+	if (!!enable == ov8858->streaming) {
+		ret = 0;
+		goto out;
+	}
 	if (enable) {
 		/* L4: 上电交给 runtime PM —— get_sync 会等 resume 回调把电和时钟打开 */
 		ret = pm_runtime_get_sync(&ov8858->client->dev);
 		if (ret < 0) {
 			dev_err(&ov8858->client->dev, "pm_runtime_get_sync failed: %d\n", ret);
 			pm_runtime_put_noidle(&ov8858->client->dev);
-			return ret;
+			goto out;
 		}
 
 		ret = ov8858_sm_start_stream(ov8858);
 		if (ret) {
 			dev_err(&ov8858->client->dev, "start_stream failed: %d\n", ret);
 			pm_runtime_put_sync(&ov8858->client->dev);
-			return ret;
+			goto out;
 		}
 		ov8858->streaming = true;
 	} else {
@@ -258,17 +283,21 @@ static int ov8858_sm_s_stream(struct v4l2_subdev *sd, int enable)
 		if (ret) {
 			dev_err(&ov8858->client->dev,
 				"stop_stream failed: %d (sensor 可能仍在出流)\n", ret);
-		} else {
-			ov8858->streaming = false;
 		}
+		/* The PM reference is released below even on I2C failure.  Do not
+		 * allow a repeated stop to release the same reference twice. */
+		ov8858->streaming = false;
 		/* 关流后不立刻断电:标记"最后忙",等 autosuspend 超时再挂起 */
 		pm_runtime_mark_last_busy(&ov8858->client->dev);
 		pm_runtime_put_autosuspend(&ov8858->client->dev);
 
-		return ret;
+		goto out;
 	}
 
-	return 0;
+	ret = 0;
+out:
+	mutex_unlock(&ov8858->mutex);
+	return ret;
 }
 
 /*
@@ -306,9 +335,9 @@ static void ov8858_sm_get_module_inf(struct ov8858_sm *ov8858,
 				     struct rkmodule_inf *inf)
 {
 	memset(inf, 0, sizeof(*inf));
-	strscpy(inf->base.sensor, "ov8858-sm", sizeof(inf->base.sensor));
-	strscpy(inf->base.module, "ov8858-sm", sizeof(inf->base.module));
-	strscpy(inf->base.lens, "default", sizeof(inf->base.lens));
+	strscpy(inf->base.sensor, "ov8858", sizeof(inf->base.sensor));
+	strscpy(inf->base.module, ov8858->module_name, sizeof(inf->base.module));
+	strscpy(inf->base.lens, ov8858->lens_name, sizeof(inf->base.lens));
 }
 
 static long ov8858_sm_ioctl(struct v4l2_subdev *sd, unsigned int cmd, void *arg)
@@ -319,6 +348,20 @@ static long ov8858_sm_ioctl(struct v4l2_subdev *sd, unsigned int cmd, void *arg)
 	case RKMODULE_GET_MODULE_INFO:
 		ov8858_sm_get_module_inf(ov8858, arg);
 		return 0;
+	case RKMODULE_GET_HDR_CFG: {
+		struct rkmodule_hdr_cfg *hdr = arg;
+
+		memset(hdr, 0, sizeof(*hdr));
+		hdr->hdr_mode = NO_HDR;
+		hdr->esp.mode = HDR_NORMAL_VC;
+		return 0;
+	}
+	case RKMODULE_SET_HDR_CFG: {
+		const struct rkmodule_hdr_cfg *hdr = arg;
+
+		/* Only the linear tables are supported in this driver. */
+		return hdr->hdr_mode == NO_HDR ? 0 : -EINVAL;
+	}
 	case RKMODULE_SET_QUICK_STREAM: {
 		u32 stream = *(u32 *)arg;
 		int ret;
@@ -402,6 +445,17 @@ static long ov8858_sm_compat_ioctl32(struct v4l2_subdev *sd,
 		if (copy_from_user(&stream, up, sizeof(stream)))
 			return -EFAULT;
 		return ov8858_sm_ioctl(sd, cmd, &stream);
+	}
+	case RKMODULE_GET_HDR_CFG:
+	case RKMODULE_SET_HDR_CFG: {
+		struct rkmodule_hdr_cfg hdr;
+
+		if (cmd == RKMODULE_SET_HDR_CFG && copy_from_user(&hdr, up, sizeof(hdr)))
+			return -EFAULT;
+		ret = ov8858_sm_ioctl(sd, cmd, &hdr);
+		if (!ret && cmd == RKMODULE_GET_HDR_CFG && copy_to_user(up, &hdr, sizeof(hdr)))
+			return -EFAULT;
+		return ret;
 	}
 	default:
 		return -ENOIOCTLCMD;
@@ -525,13 +579,25 @@ static int ov8858_sm_set_fmt(struct v4l2_subdev *sd,
 	if (fmt->pad != 0)
 		dev_dbg(sd->dev, "active set_fmt pad=%d (ignored)\n", fmt->pad);
 
+	mutex_lock(&ov8858->mutex);
 	if (ov8858->streaming) {
 		dev_err(sd->dev, "set_fmt(ACTIVE) refused while streaming\n");
+		mutex_unlock(&ov8858->mutex);
 		return -EBUSY;
 	}
 
 	/* 到这里才是 ACTIVE:提交驱动状态 */
 	ov8858->is_1080p = want_1080p;
+	{
+		const struct ov8858_sm_timing *t = &ov8858_sm_timings[want_1080p ? 1 : 0];
+		u32 hblank = 2 * t->hts - t->width;
+		u32 vblank = t->vts - t->height;
+
+		__v4l2_ctrl_modify_range(ov8858->hblank, hblank, hblank, 1, hblank);
+		__v4l2_ctrl_modify_range(ov8858->vblank, vblank,
+					 0xffff - t->height, 1, vblank);
+	}
+	mutex_unlock(&ov8858->mutex);
 
 	return 0;
 }
@@ -593,66 +659,39 @@ static int ov8858_sm_enum_frame_size(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * L1-B 收尾: 帧间隔(g/s/enum frame_interval)
- *
- * 为什么必须补: 2022 版 rkaiq 在 get_sensor_caps 阶段枚举帧间隔, 我们没实现,
- * 它一直打印 "@get_sensor_caps /dev/v4l-subdev2: Enum sensor frame interval failed"。
- *
- * 本内核(4.19 + Rockchip 回移)的 ABI 与新版不同:
- *   - G/S_FRAME_INTERVAL 在 video ops(sd, interval), 不在 pad ops;
- *   - pad ops 只有 enum_frame_interval;
- *   - 结构体里是 v4l2_fract interval, 不是 min/max。
- *
- * 帧率不是可调量: 由 datasheet 时序 HTS/VTS 与固定 pixel_rate 决定。
- *   fps = pixel_rate / (2 * HTS * VTS)   (系数 2 见 0x380e 注释 143.9M/(3880*1236))
- * 所以这里只"报告"帧间隔, set 只接受与当前模式一致的值。
- */
-static const struct ov8858_sm_timing {
-	u32 hts;
-	u32 vts;
-} ov8858_sm_timings[] = {
-	{ 1928, 1244 },		/* 1632x1224: 144M/(2*1928*1244) = 30.02 fps */
-	{ 1940, 1236 },		/* 1920x1080: 144M/(2*1940*1236) = 30.03 fps */
-};
-
-static u32 ov8858_sm_calc_fps(int idx)
-{
-	return (u32)div_u64((u64)OV8858_SM_PIXEL_RATE,
-			    2ULL * ov8858_sm_timings[idx].hts *
-			    ov8858_sm_timings[idx].vts);
-}
-
+/* The BSP rkaiq enumerates sensor modes with width/height set to zero.
+ * Size-specific callers instead get one default interval for that size. */
 static int ov8858_sm_enum_frame_interval(struct v4l2_subdev *sd,
 					 struct v4l2_subdev_pad_config *cfg,
 					 struct v4l2_subdev_frame_interval_enum *fie)
 {
-	bool size_ok = false;
-	int i;
+	const struct ov8858_sm_timing *t;
+	unsigned int i;
 
 	if (fie->pad != 0)
 		return -EINVAL;
 
-	/*
-	 * 帧间隔必须按尺寸回答: rkcif 的 video 节点把
-	 * VIDIOC_ENUM_FRAMEINTERVALS 原样转发到 subdev(capture.c:3608),
-	 * 不校验宽高的话, 任意无效尺寸(如 63x64)也会拿到帧间隔 ——
-	 * v4l2-compliance 的 ENUM_FMT/FRAMESIZES/FRAMEINTERVALS 项会抓这个。
-	 */
-	for (i = 0; i < ARRAY_SIZE(ov8858_sm_frmsizes); i++)
-		if (fie->width == ov8858_sm_frmsizes[i].width &&
-		    fie->height == ov8858_sm_frmsizes[i].height) {
-			size_ok = true;
-			break;
-		}
-	if (!size_ok)
-		return -EINVAL;
-
-	if (fie->index >= ARRAY_SIZE(ov8858_sm_timings))
-		return -EINVAL;
-
-	fie->interval.numerator = 1;
-	fie->interval.denominator = ov8858_sm_calc_fps(fie->index);
+	if (!fie->width && !fie->height) {
+		if (fie->index >= ARRAY_SIZE(ov8858_sm_timings))
+			return -EINVAL;
+		i = fie->index;
+	} else {
+		if (fie->index)
+			return -EINVAL;
+		for (i = 0; i < ARRAY_SIZE(ov8858_sm_timings); i++)
+			if (fie->width == ov8858_sm_timings[i].width &&
+			    fie->height == ov8858_sm_timings[i].height)
+				break;
+		if (i == ARRAY_SIZE(ov8858_sm_timings))
+			return -EINVAL;
+	}
+	t = &ov8858_sm_timings[i];
+	fie->width = t->width;
+	fie->height = t->height;
+	fie->code = MEDIA_BUS_FMT_SBGGR10_1X10;
+	fie->interval.numerator = 2 * t->hts * t->vts;
+	fie->interval.denominator = OV8858_SM_PIXEL_RATE;
+	fie->reserved[0] = 0; /* RKMODULE linear mode */
 
 	return 0;
 }
@@ -662,9 +701,13 @@ static int ov8858_sm_g_frame_interval(struct v4l2_subdev *sd,
 {
 	struct ov8858_sm *ov8858 = container_of(sd, struct ov8858_sm, subdev);
 
-	fi->interval.numerator = 1;
-	fi->interval.denominator =
-		ov8858_sm_calc_fps(ov8858->is_1080p ? 1 : 0);
+	const struct ov8858_sm_timing *t;
+
+	mutex_lock(&ov8858->mutex);
+	t = &ov8858_sm_timings[ov8858->is_1080p ? 1 : 0];
+	fi->interval.numerator = 2 * t->hts * (t->height + ov8858->vblank->val);
+	fi->interval.denominator = OV8858_SM_PIXEL_RATE;
+	mutex_unlock(&ov8858->mutex);
 
 	return 0;
 }
@@ -673,19 +716,23 @@ static int ov8858_sm_s_frame_interval(struct v4l2_subdev *sd,
 				      struct v4l2_subdev_frame_interval *fi)
 {
 	struct ov8858_sm *ov8858 = container_of(sd, struct ov8858_sm, subdev);
-	u32 fps = ov8858_sm_calc_fps(ov8858->is_1080p ? 1 : 0);
+	const struct ov8858_sm_timing *t;
+	u64 divisor, vts;
+	int ret;
 
-	/* 只接受当前模式的固定帧率 */
-	if (fi->interval.numerator != 1 || fi->interval.denominator != fps) {
-		dev_dbg(&ov8858->client->dev,
-			"s_frame_interval: %u/%u 不支持(固定 %u fps)\n",
-			fi->interval.numerator, fi->interval.denominator, fps);
-		fi->interval.numerator = 1;
-		fi->interval.denominator = fps;
+	if (!fi->interval.numerator || !fi->interval.denominator)
 		return -EINVAL;
-	}
-
-	return 0;
+	mutex_lock(&ov8858->mutex);
+	t = &ov8858_sm_timings[ov8858->is_1080p ? 1 : 0];
+	divisor = 2ULL * t->hts * fi->interval.denominator;
+	vts = div64_u64((u64)OV8858_SM_PIXEL_RATE * fi->interval.numerator +
+			 divisor / 2, divisor);
+	vts = clamp_t(u64, vts, t->vts, 0xffff);
+	ret = __v4l2_ctrl_s_ctrl(ov8858->vblank, (s32)vts - t->height);
+	fi->interval.numerator = 2 * t->hts * (t->height + ov8858->vblank->val);
+	fi->interval.denominator = OV8858_SM_PIXEL_RATE;
+	mutex_unlock(&ov8858->mutex);
+	return ret;
 }
 
 static const struct v4l2_subdev_pad_ops ov8858_sm_pad_ops = {
@@ -892,30 +939,35 @@ static int ov8858_sm_set_ctrl(struct v4l2_ctrl *ctrl)
 	struct ov8858_sm *ov8858 =
 		container_of(ctrl->handler, struct ov8858_sm, ctrl_handler);
 	struct i2c_client *client = ov8858->client;
-	u16 val;
+	u32 val;
 	int ret = 0;
 
-	/*
-	 * L1-B 收尾: 曝光/增益必须真的写进传感器。
-	 *
-	 * 寄存器映射(OV8858 8/10bit 模式共用):
-	 *   0x3501[7:0] = 曝光高 8 位, 0x3502[7:0] = 曝光低 8 位
-	 *   0x3508[4:0] = 增益整数部分, 0x3509[7:4] = 增益小数(1/16 为步长)
-	 *
-	 * 传感器未上电时不写:power_on() 会重新灌整张初始化表,
-	 * 此时写进去的值会在下一次开流被覆盖, 徒增一次 I2C 失败日志。
-	 */
+	/* R2A datasheet 5.8: exposure is in 1/16 lines; the mode table
+	 * selects real gain, in which 0x80 is unity and 0x100 is 2x. */
 	if (ctrl->id == V4L2_CID_TEST_PATTERN)
-		ov8858->test_pattern = ctrl->val;	/* 先缓存: 未上电时只记值,
-							 * 由 start_stream 重放(实测上电前设值会被 early-return 跳过) */
-	if (!ov8858->powered)
+		ov8858->test_pattern = ctrl->val;
+	/* Both supported mode tables have 0x3821[2:1]=3 and
+	 * 0x3820[2:1]=0. Only expose these fixed orientations until changing
+	 * the Bayer phase and image orientation is separately validated. */
+	if (ctrl->id == V4L2_CID_HFLIP)
+		return ctrl->val == 1 ? 0 : -EINVAL;
+	if (ctrl->id == V4L2_CID_VFLIP)
+		return ctrl->val == 0 ? 0 : -EINVAL;
+	if (ctrl->id == V4L2_CID_VBLANK && ov8858->exposure) {
+		const struct ov8858_sm_timing *t = &ov8858_sm_timings[ov8858->is_1080p ? 1 : 0];
+		__v4l2_ctrl_modify_range(ov8858->exposure, OV8858_SM_EXPOSURE_MIN,
+					 t->height + ctrl->val - 4, 1,
+					 OV8858_SM_EXPOSURE_DEF);
+	}
+	if (pm_runtime_get_if_in_use(&client->dev) <= 0)
 		return 0;
 
 	switch (ctrl->id) {
 	case V4L2_CID_EXPOSURE:
-		val = clamp_t(u16, ctrl->val,
-			      OV8858_SM_EXPOSURE_MIN, OV8858_SM_EXPOSURE_MAX);
-		ret = ov8858_sm_write_reg(client, 0x3501, (val >> 8) & 0xff);
+		val = (u32)ctrl->val << 4;
+		ret = ov8858_sm_write_reg(client, 0x3500, (val >> 16) & 0x0f);
+		if (!ret)
+			ret = ov8858_sm_write_reg(client, 0x3501, (val >> 8) & 0xff);
 		if (!ret)
 			ret = ov8858_sm_write_reg(client, 0x3502, val & 0xff);
 		if (ret)
@@ -924,16 +976,19 @@ static int ov8858_sm_set_ctrl(struct v4l2_ctrl *ctrl)
 			ctrl->val, val);
 		break;
 	case V4L2_CID_ANALOGUE_GAIN:
-		val = clamp_t(u16, ctrl->val,
-			      OV8858_SM_GAIN_MIN, OV8858_SM_GAIN_MAX);
-		ret = ov8858_sm_write_reg(client, 0x3508, (val >> 4) & 0x1f);
+		val = (u32)ctrl->val;
+		ret = ov8858_sm_write_reg(client, 0x3508, (val >> 8) & 0x07);
 		if (!ret)
-			ret = ov8858_sm_write_reg(client, 0x3509,
-						  (val & 0x0f) << 4);
+			ret = ov8858_sm_write_reg(client, 0x3509, val & 0xff);
 		if (ret)
 			break;
-		dev_dbg(&client->dev, "gain %d -> 0x%02x (int %u, frac %u/16)\n",
-			ctrl->val, val, (val >> 4) & 0x1f, val & 0x0f);
+		dev_dbg(&client->dev, "gain %d -> 0x%03x\n", ctrl->val, val);
+		break;
+	case V4L2_CID_VBLANK:
+		val = ov8858_sm_timings[ov8858->is_1080p ? 1 : 0].height + ctrl->val;
+		ret = ov8858_sm_write_reg(client, 0x380e, (val >> 8) & 0xff);
+		if (!ret)
+			ret = ov8858_sm_write_reg(client, 0x380f, val & 0xff);
 		break;
 	case V4L2_CID_TEST_PATTERN: {
 		/*
@@ -952,8 +1007,9 @@ static int ov8858_sm_set_ctrl(struct v4l2_ctrl *ctrl)
 		break;
 	}
 	default:
-		return 0;
+		break;
 	}
+	pm_runtime_put(&client->dev);
 
 	if (ret)
 		dev_err(&client->dev, "set_ctrl(0x%x=%d) failed: %d\n",
@@ -984,6 +1040,7 @@ static int ov8858_sm_initialize_controls(struct ov8858_sm *ov8858)
 	ret = v4l2_ctrl_handler_init(handler, 8);
 	if (ret)
 		return ret;
+	handler->lock = &ov8858->mutex;
 
 	ctrl = v4l2_ctrl_new_int_menu(handler, NULL, V4L2_CID_LINK_FREQ,
 				      0, 0, ov8858_sm_link_freq_menu);
@@ -992,11 +1049,24 @@ static int ov8858_sm_initialize_controls(struct ov8858_sm *ov8858)
 
 	v4l2_ctrl_new_std(handler, NULL, V4L2_CID_PIXEL_RATE,
 			  0, OV8858_SM_PIXEL_RATE, 1, OV8858_SM_PIXEL_RATE);
+	{
+		const struct ov8858_sm_timing *t = &ov8858_sm_timings[ov8858->is_1080p ? 1 : 0];
+		u32 hblank = 2 * t->hts - t->width;
+		u32 vblank = t->vts - t->height;
+
+		ov8858->hblank = v4l2_ctrl_new_std(handler, NULL, V4L2_CID_HBLANK,
+						     hblank, hblank, 1, hblank);
+		if (ov8858->hblank)
+			ov8858->hblank->flags |= V4L2_CTRL_FLAG_READ_ONLY;
+		ov8858->vblank = v4l2_ctrl_new_std(handler, &ov8858_sm_ctrl_ops,
+						     V4L2_CID_VBLANK, vblank,
+						     0xffff - t->height, 1, vblank);
+	}
 
 	ov8858->exposure = v4l2_ctrl_new_std(handler, &ov8858_sm_ctrl_ops,
 					     V4L2_CID_EXPOSURE,
 					     OV8858_SM_EXPOSURE_MIN,
-					     OV8858_SM_EXPOSURE_MAX, 1,
+					     ov8858_sm_timings[ov8858->is_1080p ? 1 : 0].vts - 4, 1,
 					     OV8858_SM_EXPOSURE_DEF);
 
 	ov8858->anal_gain = v4l2_ctrl_new_std(handler, &ov8858_sm_ctrl_ops,
@@ -1004,6 +1074,9 @@ static int ov8858_sm_initialize_controls(struct ov8858_sm *ov8858)
 					      OV8858_SM_GAIN_MIN,
 					      OV8858_SM_GAIN_MAX, 1,
 					      OV8858_SM_GAIN_DEF);
+
+	v4l2_ctrl_new_std(handler, &ov8858_sm_ctrl_ops, V4L2_CID_HFLIP, 0, 1, 1, 1);
+	v4l2_ctrl_new_std(handler, &ov8858_sm_ctrl_ops, V4L2_CID_VFLIP, 0, 1, 1, 0);
 
 	v4l2_ctrl_new_std_menu_items(handler, &ov8858_sm_ctrl_ops,
 				     V4L2_CID_TEST_PATTERN,
@@ -1032,7 +1105,14 @@ static int ov8858_sm_probe(struct i2c_client *client, const struct i2c_device_id
 		return -ENOMEM;
 
 	ov8858->client = client;
+	mutex_init(&ov8858->mutex);
 	ov8858->is_1080p = mode_1080p;
+	if (of_property_read_string(client->dev.of_node, "rockchip,camera-module-name",
+				    &ov8858->module_name))
+		ov8858->module_name = "unknown";
+	if (of_property_read_string(client->dev.of_node, "rockchip,camera-module-lens-name",
+				    &ov8858->lens_name))
+		ov8858->lens_name = "unknown";
 
 	ret = ov8858_sm_get_resources(ov8858);
 	if (ret)

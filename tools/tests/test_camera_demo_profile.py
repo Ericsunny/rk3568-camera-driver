@@ -55,12 +55,22 @@ def main():
             args=(root/'observed-args.txt').read_text().splitlines()
             assert args[args.index('--rtsp-clients')+1]=='2'
             assert args[args.index('--max-events')+1]=='1'
+            assert args[args.index('--fps')+1]=='15'
+            assert args[args.index('--gop')+1]=='15'
             assert args[args.index('-o')+1]==str(out/'event')
             assert ('--detect' in args)==(mode=='detect')
             assert not (out/'trigger').exists()  # no implicit startup trigger
             if mode=='manual':
                 assert args[args.index('--trigger')+1]==str(out/'trigger')
             assert run(mode,out).returncode!=0  # existing output is preserved
+        out=root/'alternate-port'
+        assert run('manual',out,RTSP_PORT_OVERRIDE='8555').returncode==0
+        args=(root/'observed-args.txt').read_text().splitlines()
+        assert args[args.index('--rtsp')+1]=='8555'
+        for port in ['0','65536','-1','abc','999999']:
+            out=root/('bad-port-'+port)
+            assert run('manual',out,RTSP_PORT_OVERRIDE=port).returncode==2
+            assert not out.exists()
         for setting in [{'MOCK_DAEMON':'0'},{'MOCK_BUSY':'1'},{'MOCK_PORT':'1'}]:
             out=root/('reject-'+next(iter(setting)))
             assert run('manual',out,**setting).returncode!=0

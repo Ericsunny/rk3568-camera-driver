@@ -9,10 +9,11 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools"))
-from camera_service import collect, finalize, sha256
+from camera_service import collect, finalize, sha256, DeliveryWorker
 from h264_to_mp4 import frame_count
 
 
@@ -110,6 +111,61 @@ class DeliveryTest(unittest.TestCase):
         self.write_metadata()
         self.assertFalse(finalize(self.metadata))
         self.assertIn("span", self.result()["error"])
+
+    def test_schema2_requires_consistent_packet_log(self):
+        self.data.update(schema=2, timestamp_source='v4l2-monotonic')
+        self.write_metadata()
+        self.assertFalse(finalize(self.metadata))
+        self.assertEqual(self.result()['status'], 'failed')
+
+    def test_schema2_rejects_mismatched_packet_bytes(self):
+        self.data.update(schema=2, timestamp_source='v4l2-monotonic')
+        self.write_metadata()
+        self.metadata.with_suffix('.packets.csv').write_text(
+            'frame_seq,packet_index,media_ms,capture_ms,bytes,decodable_start\n'
+            '1,0,1000,1000,1,1\n', encoding='utf-8')
+        self.assertFalse(finalize(self.metadata))
+        self.assertIn('byte count', self.result()['error'])
+
+    def test_worker_timeout_does_not_block_supervisor(self):
+        slow = self.run / 'slow.py'
+        slow.write_text('import time; time.sleep(30)\n', encoding='utf-8')
+        worker = DeliveryWorker(self.run, timeout=.2, worker_command=[sys.executable, str(slow)])
+        try:
+            worker.scan()
+            worker.step()
+            self.assertTrue(worker.busy())
+            started = time.monotonic()
+            # Polling remains available while the conversion is stuck.
+            while worker.busy() and time.monotonic() - started < 3:
+                worker.step()
+                time.sleep(.05)
+            self.assertLess(time.monotonic() - started, 3)
+            self.assertFalse(worker.busy())
+            self.assertTrue(worker.failed)
+        finally:
+            worker.terminate()
+
+    def test_worker_queue_is_bounded(self):
+        (self.run / 'event-02.json').write_text('{}', encoding='utf-8')
+        worker = DeliveryWorker(self.run, limit=1)
+        with self.assertRaisesRegex(RuntimeError, 'capacity'):
+            worker.scan(final=True)
+
+    def test_unreaped_worker_stops_delivery_queue(self):
+        worker = DeliveryWorker(self.run, timeout=0)
+        stuck = mock.Mock(pid=12345)
+        stuck.poll.return_value = None
+        stuck.wait.side_effect = subprocess.TimeoutExpired('worker', 2)
+        worker.worker = stuck
+        worker.started = time.monotonic() - 1
+        worker.pending.append(self.metadata)
+        with mock.patch('camera_service.os.killpg'), mock.patch('camera_service.subprocess.Popen') as launch:
+            with self.assertRaisesRegex(RuntimeError, 'still alive'):
+                worker.step()
+            launch.assert_not_called()
+        self.assertIs(worker.worker, stuck)
+        self.assertEqual(len(worker.pending), 1)
 
     def test_service_exit_and_sigterm(self):
         for mode in ("normal", "fail", "sigterm", "orphan"):

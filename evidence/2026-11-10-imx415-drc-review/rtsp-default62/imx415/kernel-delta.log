@@ -1,0 +1,14 @@
+[  356.915985] rkisp rkisp-vir0: first params buf queue
+[  356.916142] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+[  356.916174] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+[  356.916181] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+[  357.002645] imx415 1-001a: write reg array, sleep 30ms
+[  357.004079] imx415 1-001a: set vblank 0x3a vts 2250
+[  357.005408] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+[  357.006436] imx415 1-001a: set analog gain 0x27
+[  357.155963] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:94
+[  368.708295] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+[  368.709638] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+[  368.709647] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+[  369.597887] rga2: unknown ioctl cmd!
+[  371.208592] rga2: unknown ioctl cmd!

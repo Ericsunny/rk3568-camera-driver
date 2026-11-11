@@ -1,0 +1,20 @@
+{
+  "status": "stopped",
+  "signal": 15,
+  "mode": "detect",
+  "ports": {
+    "imx415": 8554,
+    "ov8858": 8555
+  },
+  "children": {
+    "imx415": {
+      "pid": 443234,
+      "returncode": 0
+    },
+    "ov8858": {
+      "pid": 443238,
+      "returncode": 0
+    }
+  },
+  "error": null
+}

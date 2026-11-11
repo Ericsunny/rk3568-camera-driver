@@ -1,0 +1,11 @@
+{
+  "reason": "ov8858 sampled D >=3 s",
+  "pair_rc": 0,
+  "client_rc": {
+    "imx415": 255,
+    "ov8858": 255
+  },
+  "3a": "active",
+  "device_users": "",
+  "ended": "2026-11-11T09:09:05.947344+08:00"
+}

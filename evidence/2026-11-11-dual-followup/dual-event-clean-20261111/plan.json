@@ -1,0 +1,28 @@
+{
+  "mode": "detect",
+  "camera_command": [
+    "python3",
+    "/root/camera-integration-20261110-dual-app/tools/run_dual_camera.py",
+    "detect",
+    "/root/camera-integration-20261110-build/dual-event-clean-20261111/run"
+  ],
+  "client_command": "ffmpeg -nostdin -v error -xerror -threads 2 -c:v h264 -rtsp_transport tcp -i rtsp://127.0.0.1:PORT/live -progress pipe:1 -nostats -vsync 0 -f null -",
+  "ports": {
+    "imx415": 8554,
+    "ov8858": 8555
+  },
+  "sample_interval_s": 0.25,
+  "duration_limit_s": 180,
+  "stop_conditions": [
+    "stop file",
+    "duration limit",
+    "unexpected child exit",
+    "sampled D for 3 s and no encoded or decoded progress for 7 s",
+    "no encoded progress for 10 s after first observation",
+    "no ISP mainpath progress for 5 s after first observation",
+    "missing first ISP frame by 12 s"
+  ],
+  "criteria": "For each camera, decoded frame counter increases while event .part exists; event is finalized and MP4 decodes. Detect mode additionally requires controlled no-person/person/leaving scene. No raw imagery exported.",
+  "signals": "create clients.start after warmup; create stop after event completion",
+  "privacy": "all camera media stays on board"
+}

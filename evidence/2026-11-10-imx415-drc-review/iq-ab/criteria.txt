@@ -1,0 +1,1 @@
+OV8858 #62: 2024 reference vs 2022 reference, fixed CISFlip=1; 40 NV12 frames to /dev/null; save journal and dmesg; restore original IQ and 3A after stream stops.

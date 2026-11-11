@@ -1,0 +1,1 @@
+Only OV8858 DRC Enable 0->1, reference DrcGain unchanged. Normal system 3A; OV/IMX separately, manual event and MP4, OV proc HDRDRC ON, no unexpected kernel errors. On failure restore original IQ and 3A after capture stops.

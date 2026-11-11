@@ -1,0 +1,18 @@
+{
+  "test": "dual detect progress observation only; no clients",
+  "command": [
+    "python3",
+    "/root/camera-integration-20261110-dual-app/tools/run_dual_camera.py",
+    "detect",
+    "/root/camera-integration-20261110-build/dual-progress-watch-20261110/run"
+  ],
+  "duration_s": 22,
+  "sample_interval_s": 0.25,
+  "stop_conditions": [
+    "D state continuously >= 3 seconds for either recorder",
+    "no ISP mainpath frame advance for 5 seconds after first frame",
+    "missing first frame after 12 seconds",
+    "early supervisor exit"
+  ],
+  "scope": "camera images and event videos stay on board; 3A remains active"
+}

@@ -62,7 +62,7 @@ python3 tools/run_dual_camera.py manual /root/new-dual-run
 - 历史 RTSP 测试记录包含双客户端并发、慢客户端隔离和事件录像并存场景；测试对应当时的程序版本和环境，不能自动视为当前版本的复测结果。[2026-10-29 板测记录](evidence/2026-10-29-H5板测/README.md)
 - 默认启动为 #62；OV8858 ISP 接入及独立应用目录的验证范围与指纹见[接入记录](evidence/2026-11-10-camera-integration/README.md)和[后续修复](evidence/2026-11-10-imx415-drc-review/README.md)。OV8858 的参考 IQ 已启用 DRC，[参数与单场景对照](docs/image/drc-validation.md)有响应；这不代表本模组已完成 IQ 标定。
 - #62 下，两路检测事件期间两个回环 RTSP 客户端持续解码，两路 MP4 均能独立解码，程序均以 `target_left` 收尾；一次抽帧中 IMX415 画面边缘仍有人体，不能将该状态等同于整幅画面无人。[联测与边界](evidence/2026-11-11-dual-followup/event02-natural-close.md) · [前次联测](evidence/2026-11-11-dual-followup/event-concurrent-report.md)
-- `evrec` 默认使用复制输入；MPP 共享采集缓冲是可选实验路径，能减少采集到编码之间的一次整帧 CPU 复制，OV8858 恢复测试中出现的 CRC 尚待排查。[共享输入对照及验证范围](evidence/2026-11-14-dmabuf-allocation/README.md)。`camd --npu-native` 是另一条实验路径，只对输入使用 native 内存，输出仍经 `rknn_outputs_get`；输出 native 的字节对照出现过差异并已回退。[实验说明](zerocopy/README.md) · [输出对照](evidence/2026-10-25-质量保障线/fv_ab2.json)
+- `evrec` 默认使用复制输入；MPP 共享采集缓冲是可选实验路径，能减少采集到编码之间的一次整帧 CPU 复制，OV8858 恢复测试中出现的 CRC 尚待排查。[路径选择依据](docs/overview/encoder-input-choice.md) · [共享输入对照及验证范围](evidence/2026-11-14-dmabuf-allocation/README.md)。`camd --npu-native` 是另一条实验路径，只对输入使用 native 内存，输出仍经 `rknn_outputs_get`；输出 native 的字节对照出现过差异并已回退。[实验说明](zerocopy/README.md) · [输出对照](evidence/2026-10-25-质量保障线/fv_ab2.json)
 - OV8858 可选择 CIF RAW10 诊断，候选路径也可通过 ISP 取得 NV12；部分历史性能数据的原始附件未完整入库，适用范围见对应记录。
 - 板上 3A 与采集有生命周期约束；运行中的服务和现役环境需要先核实，不能把历史命令直接套用到当前状态。[复现与环境说明](docs/acceptance/reproduction.md)
 

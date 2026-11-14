@@ -1,0 +1,25 @@
+>>> S_FMT 回填 1920x1080 stride=1920 sizeimage=3110400
+>>> 采集 /dev/video5 1920x1080,pre=2s post=2s ring=64MB 编码标称fps=15 gop=15
+>>> 编码输入模式=dmabuf
+>>> OSD 开启: #<seq> + t mm:ss.mmm @左上角(4px, sc=2), stride=1920
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=16
+>>> [fault-sim] 第 20 次 DQBUF 注入失败
+DQBUF: Input/output error
+>>> 链路故障, 开始恢复(上限 1 次)
+>>> S_FMT 回填 1920x1080 stride=1920 sizeimage=3110400
+>>> 恢复 第 1/1 次: 重开设备 成功
+>>> 恢复成功, 继续采集(frame_seq 从 18 起)
+rtsp: conn=0 play=0/4 sent=0 epoch=1 rej453=0 fds=16
+>>> 预录就绪: 已覆盖 2 秒并包含起始 IDR
+rtsp: conn=0 play=0/4 sent=0 epoch=1 rej453=0 fds=16
+rtsp: conn=0 play=0/4 sent=0 epoch=1 rej453=0 fds=16
+>>> 链路稳定 30 帧, 恢复计数复位
+rtsp-ring: in=63 evict=14 depth=30 bytes=0.82/8MB tags=[33,63)
+rtsp: conn=0 play=0/4 sent=0 epoch=1 rej453=0 fds=16
+[evw] open event_id=1 last_pkts=77 pushed=77
+>>> 触发 seq=76 ts=5974.2ms -> pre_i=34 pre_seq=34 (ring_cnt=77 head=0 pushed=77)
+rtsp: conn=0 play=0/4 sent=0 epoch=1 rej453=0 fds=18
+rtsp: conn=0 play=0/4 sent=0 epoch=1 rej453=0 fds=18
+>>> 事件 1 完成(1 段, target_left)
+>>> 输入统计 mode=dmabuf copy_bytes=0 returned=107

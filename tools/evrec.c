@@ -56,10 +56,13 @@
 #include <rga/rga.h>
 #endif
 #include <linux/videodev2.h>
+#include <linux/dma-buf.h>
 #include <rockchip/rk_mpi.h>
 #include <rockchip/mpp_frame.h>
 #include <rockchip/mpp_packet.h>
 #include <rockchip/mpp_buffer.h>
+#include <rockchip/mpp_task.h>
+#include <rockchip/mpp_meta.h>
 
 #define MAX_FRAMES 4096
 
@@ -88,6 +91,7 @@ static volatile sig_atomic_t g_trigger;
 static volatile sig_atomic_t g_stop;	/* SIGTERM: 优雅退出 */
 static const char *g_trig_path;
 static int g_osd;		/* --osd 烧 OSD; 默认关闭, 不加参数行为不变 */
+static int g_input_dmabuf;       /* opt-in MPP-owned capture pool; no implicit fallback */
 static int g_recover = 2;	/* --recover N: 链路故障重开设备次数(0=不恢复) */
 /* --fault-sim dqbuf:N[,N...]: 第 N 次 DQBUF 强制失败(仅测试) */
 static int g_fault_dqbuf[8];
@@ -126,6 +130,8 @@ static struct {
 	unsigned w, h, stride;	/* stride 来自 S_FMT 回填, 不等于 width */
 	void *map[8];
 	size_t len[8];
+	MppBuffer input[8];
+	MppBufferGroup group;
 } cap = { .fd = -1 };
 
 static int xioctl(int fd, unsigned long req, void *arg)
@@ -155,7 +161,7 @@ static void cap_release(void)
 		return;
 	xioctl(cap.fd, VIDIOC_STREAMOFF, &t);
 	for (i = 0; i < cap.nbufs; i++) {
-		if (cap.map[i] && cap.map[i] != MAP_FAILED)
+		if (!g_input_dmabuf && cap.map[i] && cap.map[i] != MAP_FAILED)
 			munmap(cap.map[i], cap.len[i]);
 		cap.map[i] = NULL;
 		cap.len[i] = 0;
@@ -163,9 +169,17 @@ static void cap_release(void)
 	memset(&rb, 0, sizeof(rb));
 	rb.count = 0;		/* 释放 vb2 buffer */
 	rb.type = t;
-	rb.memory = V4L2_MEMORY_MMAP;
+	rb.memory = g_input_dmabuf ? V4L2_MEMORY_DMABUF : V4L2_MEMORY_MMAP;
 	xioctl(cap.fd, VIDIOC_REQBUFS, &rb);
 	close(cap.fd);
+	for (i = 0; i < 8; i++) {
+		if (cap.input[i])
+			mpp_buffer_put(cap.input[i]);
+		cap.input[i] = NULL;
+	}
+	if (cap.group)
+		mpp_buffer_group_put(cap.group);
+	cap.group = NULL;
 	cap.fd = -1;
 	cap.nbufs = 0;
 }
@@ -213,7 +227,7 @@ static int cap_open(const char *dev, int w, int h, int nbufs)
 	memset(&rb, 0, sizeof(rb));
 	rb.count = nbufs;
 	rb.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
-	rb.memory = V4L2_MEMORY_MMAP;
+	rb.memory = g_input_dmabuf ? V4L2_MEMORY_DMABUF : V4L2_MEMORY_MMAP;
 	if (xioctl(cap.fd, VIDIOC_REQBUFS, &rb) < 0) {
 		perror("REQBUFS");
 		goto fail;
@@ -223,6 +237,11 @@ static int cap_open(const char *dev, int w, int h, int nbufs)
 		goto fail;
 	}
 	cap.nbufs = rb.count;
+	if (g_input_dmabuf &&
+	    mpp_buffer_group_get_internal(&cap.group, MPP_BUFFER_TYPE_ION) != MPP_OK) {
+		fprintf(stderr, "MPP 采集缓冲池分配失败\n");
+		goto fail;
+	}
 	for (i = 0; i < rb.count; i++) {
 		struct v4l2_buffer b;
 		struct v4l2_plane pl;
@@ -231,7 +250,7 @@ static int cap_open(const char *dev, int w, int h, int nbufs)
 		memset(&pl, 0, sizeof(pl));
 		memset(&b, 0, sizeof(b));
 		b.type = rb.type;
-		b.memory = V4L2_MEMORY_MMAP;
+		b.memory = rb.memory;
 		b.index = i;
 		b.length = 1;
 		b.m.planes = &pl;
@@ -244,11 +263,22 @@ static int cap_open(const char *dev, int w, int h, int nbufs)
 			fprintf(stderr, "采集 buffer %d 长度不足\n", i);
 			goto fail;
 		}
-		cap.map[i] = mmap(NULL, pl.length, PROT_READ | PROT_WRITE,
-				  MAP_SHARED, cap.fd, pl.m.mem_offset);
-		if (cap.map[i] == MAP_FAILED) {
-			perror("mmap");
-			goto fail;
+		if (g_input_dmabuf) {
+			/* QUERYBUF includes the BSP's allocation-height padding. */
+			if (mpp_buffer_get(cap.group, &cap.input[i], cap.len[i]) != MPP_OK ||
+			    !cap.input[i] ||
+			    !(cap.map[i] = mpp_buffer_get_ptr(cap.input[i])) ||
+			    (pl.m.fd = mpp_buffer_get_fd(cap.input[i])) < 0) {
+				fprintf(stderr, "共享采集缓冲 %d 分配失败\n", i);
+				goto fail;
+			}
+		} else {
+			cap.map[i] = mmap(NULL, pl.length, PROT_READ | PROT_WRITE,
+					  MAP_SHARED, cap.fd, pl.m.mem_offset);
+			if (cap.map[i] == MAP_FAILED) {
+				perror("mmap");
+				goto fail;
+			}
 		}
 		if (xioctl(cap.fd, VIDIOC_QBUF, &b) < 0) {
 			perror("QBUF");
@@ -369,6 +399,97 @@ static MppApi *g_mpi;
 static MppBufferGroup g_grp;
 static MppBuffer g_fbuf;
 static size_t g_fsize;
+static MppBuffer g_task_packet_buffer;
+static MppTask g_input_task, g_submitted_task, g_unused_tasks[32];
+static unsigned g_unused_count;
+static MppFrame g_shared_frame;
+static MppPacket g_shared_packet;
+static unsigned long long g_input_copy_bytes, g_input_returned;
+
+static int shared_cpu_sync(int fd, unsigned long long flags)
+{
+	struct dma_buf_sync sync = { .flags = flags };
+	int ret, retries = 0;
+
+	do {
+		ret = ioctl(fd, DMA_BUF_IOCTL_SYNC, &sync);
+	} while (ret < 0 && (errno == EINTR || errno == EAGAIN) && !g_stop && ++retries < 4);
+	return ret;
+}
+
+/* Task mode exposes the exact input returned by MPP; enqueue alone does not
+ * authorize QBUF.  The capture buffer stays out of V4L2 until this round trip. */
+static MPP_RET shared_submit(MppFrame frame)
+{
+	if (!g_input_task || g_submitted_task || g_shared_frame)
+		return MPP_NOK;
+	g_shared_frame = frame;
+	if (mpp_packet_init_with_buffer(&g_shared_packet, g_task_packet_buffer) != MPP_OK ||
+	    !g_shared_packet)
+		return MPP_NOK;
+	mpp_packet_set_length(g_shared_packet, 0);
+	if (mpp_task_meta_set_frame(g_input_task, KEY_INPUT_FRAME, frame) != MPP_OK ||
+	    mpp_task_meta_set_packet(g_input_task, KEY_OUTPUT_PACKET, g_shared_packet) != MPP_OK)
+		return MPP_NOK;
+	g_submitted_task = g_input_task;
+	g_input_task = NULL;
+	return g_mpi->enqueue(g_ctx, MPP_PORT_INPUT, g_submitted_task);
+}
+
+static MPP_RET shared_get_packet(MppPacket *packet)
+{
+	MppTask task = NULL;
+	MppPacket returned = NULL;
+
+	if (!g_submitted_task ||
+	    g_mpi->poll(g_ctx, MPP_PORT_OUTPUT, (MppPollType)2000) != MPP_OK ||
+	    g_mpi->dequeue(g_ctx, MPP_PORT_OUTPUT, &task) != MPP_OK || !task ||
+	    mpp_task_meta_get_packet(task, KEY_OUTPUT_PACKET, &returned) != MPP_OK ||
+	    !returned || returned != g_shared_packet)
+		return MPP_NOK;
+	/* This configuration does not enable split output. Fail explicitly if the
+	 * task interface returns a partial frame rather than reusing its buffer. */
+	if (mpp_packet_is_partition(returned) && !mpp_packet_is_eoi(returned))
+		return MPP_NOK;
+	if (g_mpi->enqueue(g_ctx, MPP_PORT_OUTPUT, task) != MPP_OK)
+		return MPP_NOK;
+	*packet = returned;
+	g_shared_packet = NULL; /* caller now owns packet destruction */
+	return MPP_OK;
+}
+
+static int shared_return_input(MppBuffer buffer, RK_S64 pts)
+{
+	int i;
+	double deadline = now_ms(CLOCK_MONOTONIC) + 2000.0;
+
+	for (i = 0; i < 32; i++) {
+		MppTask task = NULL;
+		MppFrame frame = NULL;
+		double left_ms = deadline - now_ms(CLOCK_MONOTONIC);
+
+		if (left_ms < 1 ||
+		    g_mpi->poll(g_ctx, MPP_PORT_INPUT, (MppPollType)left_ms) != MPP_OK ||
+		    g_mpi->dequeue(g_ctx, MPP_PORT_INPUT, &task) != MPP_OK || !task)
+			return -1;
+		if (task != g_submitted_task) {
+			if (g_unused_count >= 32)
+				return -1;
+			g_unused_tasks[g_unused_count++] = task;
+			continue;
+		}
+		if (mpp_task_meta_get_frame(task, KEY_INPUT_FRAME, &frame) != MPP_OK ||
+		    !frame || frame != g_shared_frame || mpp_frame_get_pts(frame) != pts ||
+		    mpp_frame_get_buffer(frame) != buffer)
+			return -1;
+		g_input_task = task;
+		g_submitted_task = NULL;
+		mpp_frame_deinit(&g_shared_frame);
+		g_input_returned++;
+		return 0;
+	}
+	return -1;
+}
 
 static int enc_init(int w, int h, int stride, int kbps, int fps, int gop)
 {
@@ -437,6 +558,16 @@ static int enc_init(int w, int h, int stride, int kbps, int fps, int gop)
 		return -1;
 	}
 	g_fsize = (size_t)stride * h * 3 / 2;
+	if (g_input_dmabuf) {
+		if (mpp_buffer_get(g_grp, &g_task_packet_buffer, g_fsize) != MPP_OK ||
+		    !g_task_packet_buffer ||
+		    g_mpi->poll(g_ctx, MPP_PORT_INPUT, (MppPollType)2000) != MPP_OK ||
+		    g_mpi->dequeue(g_ctx, MPP_PORT_INPUT, &g_input_task) != MPP_OK || !g_input_task) {
+			fprintf(stderr, "MPP 共享输入任务初始化失败\n");
+			return -1;
+		}
+		return 0;
+	}
 	if (mpp_buffer_get(g_grp, &g_fbuf, g_fsize) != MPP_OK) {
 		fprintf(stderr, "buffer_get 失败\n");
 		return -1;
@@ -447,8 +578,21 @@ static int enc_init(int w, int h, int stride, int kbps, int fps, int gop)
 static void enc_release(void)
 {
 	if (g_ctx) {
+		if (g_shared_frame)
+			g_mpi->reset(g_ctx);
 		mpp_destroy(g_ctx);
 		g_ctx = NULL;
+	}
+	if (g_shared_frame)
+		mpp_frame_deinit(&g_shared_frame);
+	if (g_shared_packet)
+		mpp_packet_deinit(&g_shared_packet);
+	g_input_task = g_submitted_task = NULL;
+	g_unused_count = 0;
+	memset(g_unused_tasks, 0, sizeof(g_unused_tasks));
+	if (g_task_packet_buffer) {
+		mpp_buffer_put(g_task_packet_buffer);
+		g_task_packet_buffer = NULL;
 	}
 	if (g_fbuf) {
 		mpp_buffer_put(g_fbuf);
@@ -513,8 +657,9 @@ static int rga_init(void)
 	return 0;
 }
 
-/* 用 mmap 虚拟地址做源, 不需要 EXPBUF(第①步先证明缩放可用) */
-static int rga_scale(const void *src_va, unsigned sw, unsigned sh, unsigned src_stride)
+/* Copy mode uses the capture mapping; shared mode passes its DMA-BUF fd. */
+static int rga_scale(const void *src_va, unsigned sw, unsigned sh, unsigned src_stride,
+		     int src_fd)
 {
 	IM_STATUS st;
 #ifdef HAVE_RKNN
@@ -526,8 +671,12 @@ static int rga_scale(const void *src_va, unsigned sw, unsigned sh, unsigned src_
 					     RK_FORMAT_RGB_888);
 #endif
 
-	g_rga_src = wrapbuffer_virtualaddr_t((void *)src_va, sw, sh, src_stride, sh,
-					     RK_FORMAT_YCbCr_420_SP);
+	if (src_fd >= 0)
+		g_rga_src = wrapbuffer_fd_t(src_fd, sw, sh, src_stride, sh,
+					  RK_FORMAT_YCbCr_420_SP);
+	else
+		g_rga_src = wrapbuffer_virtualaddr_t((void *)src_va, sw, sh, src_stride, sh,
+						     RK_FORMAT_YCbCr_420_SP);
 	st = imresize_t(g_rga_src, g_rga_dst, 0, 0, 0, 1);
 	if (st != IM_STATUS_SUCCESS) {
 		fprintf(stderr, "RGA 失败: %s\n", imStrError(st));
@@ -1460,6 +1609,9 @@ static void enc_drain_packets(void)
 	MppPacket pkt = NULL;
 	int guard = 0;
 
+	/* Shared task mode has no outstanding input after a successful frame. */
+	if (g_input_dmabuf)
+		return;
 	while (g_mpi->encode_get_packet(g_ctx, &pkt) == MPP_OK && pkt &&
 	       ++guard < 64) {
 		mpp_packet_deinit(&pkt);
@@ -1467,9 +1619,35 @@ static void enc_drain_packets(void)
 	}
 }
 
+/* The encoder and its input buffer survive capture recovery.  A newly
+ * negotiated layout must therefore match the layout they were created for. */
+static int capture_matches_encoder(int w, int h, unsigned stride, size_t capacity)
+{
+	size_t pixels, bytes;
+	int i;
+
+	if (w <= 0 || h <= 0 || cap.w != (unsigned)w || cap.h != (unsigned)h ||
+	    cap.stride != stride || !cap.stride ||
+	    cap.nbufs <= 0 || (size_t)cap.nbufs > sizeof(cap.len) / sizeof(cap.len[0]))
+		return 0;
+	if ((size_t)cap.stride > SIZE_MAX / cap.h)
+		return 0;
+	pixels = (size_t)cap.stride * cap.h;
+	if (pixels > SIZE_MAX / 3)
+		return 0;
+	bytes = pixels * 3 / 2;
+	if (bytes > capacity)
+		return 0;
+	for (i = 0; i < cap.nbufs; i++)
+		if (cap.len[i] < bytes)
+			return 0;
+	return 1;
+}
+
 static int link_recover(const char *dev, int w, int h, int used)
 {
 	int i;
+	unsigned expected_stride = cap.stride;
 
 	for (i = used; i < g_recover; i++) {
 		int r;
@@ -1484,6 +1662,13 @@ static int link_recover(const char *dev, int w, int h, int used)
 		fflush(stdout);
 		if (r < 0)
 			continue;
+		if (!capture_matches_encoder(w, h, expected_stride, g_fsize)) {
+			fprintf(stderr,
+				">>> 恢复格式与编码器不一致: %ux%u stride=%u, 原为 %dx%d stride=%u; 停止恢复\n",
+				cap.w, cap.h, cap.stride, w, h, expected_stride);
+			cap_release();
+			return -1;
+		}
 		enc_drain_packets();
 		/* 恢复后立刻要一个 IDR: 录像环/事件切片从这里重新对齐; RTSP
 		 * 发送端等 IDR, EACH_IDR 模式下参数集随该 IDR 一起补发 */
@@ -1576,6 +1761,9 @@ static int fault_sim_dqbuf(void)
 
 static void app_release(void)
 {
+	/* On an encoding error MPP may still own the capture buffer. */
+	if (g_input_dmabuf)
+		enc_release();
 	cap_release();
 	while (ring_cnt > 0) {
 		free(ring[ring_head].data);
@@ -1610,6 +1798,7 @@ static void usage(void)
 "  --kbps KBPS       编码码率 (默认 8000)\n"
 "  --fps FPS         编码标称帧率 (默认 30；应与相机配置一致)\n"
 "  --gop FRAMES      IDR 周期 (默认等于标称帧率)\n"
+"  --encoder-input M copy(默认) 或 dmabuf(MPP 采集池共享输入，无隐式回退)\n"
 "\n"
 "触发:\n"
 "  --trigger FILE    监听文件 mtime 变化触发; 不给则等 SIGUSR1\n"
@@ -1683,7 +1872,7 @@ int main(int argc, char **argv)
 			"--det-score", "--det-frames", "--obj-thresh",
 			"--rga-size", "--rtsp-ring", "--rtsp-ring-mb",
 			"--rtsp-clients", "--rtsp-deadline-s", "--ts-offset",
-			"--recover", "--fault-sim", "--rtp-trace",
+			"--recover", "--fault-sim", "--rtp-trace", "--encoder-input",
 		};
 		size_t j;
 
@@ -1724,6 +1913,14 @@ int main(int argc, char **argv)
 		else if (!strcmp(argv[i], "--kbps")) kbps = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--fps")) fps = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--gop")) gop = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "--encoder-input")) {
+			const char *mode = argv[++i];
+			if (strcmp(mode, "copy") && strcmp(mode, "dmabuf")) {
+				fprintf(stderr, "--encoder-input 只支持 copy 或 dmabuf\n");
+				return 1;
+			}
+			g_input_dmabuf = !strcmp(mode, "dmabuf");
+		}
 		else if (!strcmp(argv[i], "--detect")) g_detect = 1;
 		else if (!strcmp(argv[i], "--model")) g_model = argv[++i];
 		else if (!strcmp(argv[i], "--max-events")) g_max_events = atoi(argv[++i]);
@@ -1847,6 +2044,7 @@ int main(int argc, char **argv)
 	}
 	printf(">>> 采集 %s %dx%d,pre=%ds post=%ds ring=%zuMB 编码标称fps=%d gop=%d\n",
 	       dev, w, h, pre_sec, post_sec, ring_limit >> 20, fps, gop);
+	printf(">>> 编码输入模式=%s\n", g_input_dmabuf ? "dmabuf" : "copy");
 	if (g_osd)
 		printf(">>> OSD 开启: #<seq> + t mm:ss.mmm @左上角(4px, sc=2), stride=%u\n",
 		       cap.stride);
@@ -1873,6 +2071,8 @@ int main(int argc, char **argv)
 		struct v4l2_plane pl;
 		MppFrame frame = NULL;
 		MppPacket pkt = NULL;
+		MppBuffer encoder_buffer;
+		int input_fd = -1;
 		double ts, cap_ms, t_stage = 0, t_rga = 0, t_npu = 0;
 		RK_S64 frame_pts;
 
@@ -1881,7 +2081,7 @@ int main(int argc, char **argv)
 		memset(&pl, 0, sizeof(pl));
 		memset(&b, 0, sizeof(b));
 		b.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
-		b.memory = V4L2_MEMORY_MMAP;
+		b.memory = g_input_dmabuf ? V4L2_MEMORY_DMABUF : V4L2_MEMORY_MMAP;
 		b.length = 1;
 		b.m.planes = &pl;
 		if (fault_sim_dqbuf() < 0 ||
@@ -1898,6 +2098,22 @@ int main(int argc, char **argv)
 			end_reason = "capture_buffer_error";
 			rc = 1;
 			break;
+		}
+		if (g_input_dmabuf) {
+			if ((b.flags & V4L2_BUF_FLAG_ERROR) || pl.data_offset ||
+			    pl.bytesused < (size_t)cap.stride * cap.h * 3 / 2) {
+				fprintf(stderr, ">>> 共享输入帧错误或长度不足\n");
+				end_reason = "capture_buffer_error";
+				rc = 1;
+				break;
+			}
+			input_fd = mpp_buffer_get_fd(cap.input[b.index]);
+			if (input_fd < 0) {
+				fprintf(stderr, ">>> 共享输入 DMA-BUF fd 无效\n");
+				end_reason = "capture_buffer_error";
+				rc = 1;
+				break;
+			}
 		}
 		ts = now_ms(CLOCK_MONOTONIC);
 		{
@@ -1956,7 +2172,7 @@ int main(int argc, char **argv)
 #ifdef HAVE_RGA
 #ifdef HAVE_RKNN
 		if (g_detect) {
-			int rga_rc = rga_scale(cap.map[b.index], w, h, cap.stride);
+			int rga_rc = rga_scale(cap.map[b.index], w, h, cap.stride, input_fd);
 			t_rga = now_ms(CLOCK_MONOTONIC) - t_stage;
 			t_stage += t_rga;
 			if (rga_rc != 0 || npu_run(g_rgb) != 0) {
@@ -1972,28 +2188,46 @@ int main(int argc, char **argv)
 		}
 #else
 		if (g_detect) {
-			rga_scale(cap.map[b.index], w, h, cap.stride);
+			rga_scale(cap.map[b.index], w, h, cap.stride, input_fd);
 			t_rga = now_ms(CLOCK_MONOTONIC) - t_stage;
 			t_stage += t_rga;
 		}
 #endif
 #endif
-		if (!mpp_buffer_get_ptr(g_fbuf)) {
+		encoder_buffer = g_input_dmabuf ? cap.input[b.index] : g_fbuf;
+		if (!encoder_buffer || !mpp_buffer_get_ptr(encoder_buffer)) {
 			fprintf(stderr, ">>> 编码输入缓冲映射失败\n");
 			end_reason = "encoding_buffer_error";
 			rc = 1;
 			break;
 		}
-		memcpy(mpp_buffer_get_ptr(g_fbuf), cap.map[b.index],
-		       (size_t)cap.stride * h * 3 / 2);
+		if (!g_input_dmabuf) {
+			memcpy(mpp_buffer_get_ptr(encoder_buffer), cap.map[b.index],
+			       (size_t)cap.stride * h * 3 / 2);
+			g_input_copy_bytes += (size_t)cap.stride * h * 3 / 2;
+		}
 		/* OSD 画在编码输入缓冲(最终被编码的那块内存)上, 必须在 encode_put_frame 之前 */
 		if (g_osd) {
+			if (g_input_dmabuf &&
+			    shared_cpu_sync(input_fd, DMA_BUF_SYNC_START | DMA_BUF_SYNC_RW) < 0) {
+				perror("DMA_BUF_SYNC_START");
+				end_reason = "input_sync_error";
+				rc = 1;
+				break;
+			}
 			g_osd_seq = frame_seq;	/* 与 .json 的 seq/frame_seq 同源 */
 			/* 时间标签用 vb2 采集时刻(口径统一), 首帧 ≈ 0 */
 			g_osd_ms = cap_ms;
-			draw_osd(mpp_buffer_get_ptr(g_fbuf), (int)cap.stride, w, h);
+			draw_osd(mpp_buffer_get_ptr(encoder_buffer), (int)cap.stride, w, h);
+			if (g_input_dmabuf &&
+			    shared_cpu_sync(input_fd, DMA_BUF_SYNC_END | DMA_BUF_SYNC_RW) < 0) {
+				perror("DMA_BUF_SYNC_END");
+				end_reason = "input_sync_error";
+				rc = 1;
+				break;
+			}
 		}
-		if (xioctl(cap.fd, VIDIOC_QBUF, &b) < 0) {
+		if (!g_input_dmabuf && xioctl(cap.fd, VIDIOC_QBUF, &b) < 0) {
 			if (g_stop)
 				break;
 			perror("QBUF");
@@ -2011,17 +2245,20 @@ int main(int argc, char **argv)
 		mpp_frame_set_hor_stride(frame, (int)cap.stride);
 		mpp_frame_set_ver_stride(frame, h);
 		mpp_frame_set_fmt(frame, MPP_FMT_YUV420SP);
-		mpp_frame_set_buffer(frame, g_fbuf);
+		mpp_frame_set_buffer(frame, encoder_buffer);
 		frame_pts = (RK_S64)(cap_ms * 1000.0) + 1;
 		mpp_frame_set_pts(frame, frame_pts);
-		if (g_mpi->encode_put_frame(g_ctx, frame) != MPP_OK) {
-			mpp_frame_deinit(&frame);
+		if ((g_input_dmabuf ? shared_submit(frame) :
+		     g_mpi->encode_put_frame(g_ctx, frame)) != MPP_OK) {
+			if (!g_input_dmabuf || g_shared_frame != frame)
+				mpp_frame_deinit(&frame);
 			fprintf(stderr, ">>> encode_put_frame 失败\n");
 			end_reason = "encoding_error";
 			rc = 1;
 			break;
 		}
-		mpp_frame_deinit(&frame);
+		if (!g_input_dmabuf)
+			mpp_frame_deinit(&frame);
 
 		{
 			unsigned pkn = 0;	/* 帧内包序号, 只用于 json 的 pkt */
@@ -2029,7 +2266,8 @@ int main(int argc, char **argv)
 			int frame_complete = 0;
 
 			for (;;) {
-				MPP_RET er = g_mpi->encode_get_packet(g_ctx, &pkt);
+				MPP_RET er = g_input_dmabuf ? shared_get_packet(&pkt) :
+					g_mpi->encode_get_packet(g_ctx, &pkt);
 				void *pos;
 				size_t len;
 				unsigned char *copy;
@@ -2108,6 +2346,23 @@ int main(int argc, char **argv)
 			}
 			if (rc)
 				break;
+		}
+		if (g_input_dmabuf) {
+			if (shared_return_input(encoder_buffer, frame_pts) < 0) {
+				fprintf(stderr, ">>> MPP 输入归还不匹配或超时\n");
+				end_reason = "input_return_error";
+				rc = 1;
+				break;
+			}
+			frame = NULL;
+			pl.m.fd = input_fd;
+			pl.length = (unsigned)cap.len[b.index];
+			if (xioctl(cap.fd, VIDIOC_QBUF, &b) < 0) {
+				if (g_stop)
+					break;
+				perror("QBUF shared");
+				goto link_fault;
+			}
 		}
 
 		/* 阶段耗时累计(仅 --detect): 编码段 = 拷入缓冲 + OSD + 送帧到取包 */
@@ -2331,6 +2586,8 @@ link_fault:
 	/* P9: 检测开启时收尾打一行三阶段均值(每 5 s 也打过), 作为
 	 * "RGA+RKNN+编码三者串行 -> ~10 fps" 的可复核数字 */
 	stage_report();
+	printf(">>> 输入统计 mode=%s copy_bytes=%llu returned=%llu\n",
+	       g_input_dmabuf ? "dmabuf" : "copy", g_input_copy_bytes, g_input_returned);
 	/* 先记下退出原因: 停线程会唤醒发送线程, 不能事后区分 */
 	got_term = g_stop;
 	/* SIGTERM 且流式事件进行中: 先收尾当前事件(flush+close+rename+JSON,

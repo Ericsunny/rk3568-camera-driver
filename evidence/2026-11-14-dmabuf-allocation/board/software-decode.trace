@@ -1,0 +1,11 @@
+814654 ioctl(2</root/zc-allocation-20261114-9juwLl/software-decode.log>, TCGETS, 0x7fc96b8c50) = -1 ENOTTY (对设备不适当的 ioctl 操作)
+814700 +++ exited with 0 +++
+814701 +++ exited with 0 +++
+814702 +++ exited with 0 +++
+814703 +++ exited with 0 +++
+814705 +++ exited with 0 +++
+814711 +++ exited with 0 +++
+814710 +++ exited with 0 +++
+814713 +++ exited with 0 +++
+814712 +++ exited with 0 +++
+814654 +++ exited with 0 +++

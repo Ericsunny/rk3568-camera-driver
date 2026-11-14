@@ -1,0 +1,88 @@
+6,1469,14719130178,-;rkisp rkisp-vir0: first params buf queue
+ SUBSYSTEM=platform
+ DEVICE=+platform:rkisp-vir0
+
+6,1470,14719130303,-;rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+
+6,1471,14719130334,-;rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy1
+
+6,1472,14719130341,-;imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+6,1473,14719215721,-;imx415 1-001a: write reg array, sleep 30ms
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1474,14719217041,-;imx415 1-001a: set vblank 0x3a vts 2250
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1475,14719218379,-;imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1476,14719219215,-;imx415 1-001a: set analog gain 0x28
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+6,1477,14719368664,-;rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:96
+
+6,1478,14720787887,-;imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+6,1479,14720789399,-;rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy1
+
+6,1480,14720789408,-;rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy1
+
+6,1481,14720868698,-;rkisp rkisp-vir0: first params buf queue
+ SUBSYSTEM=platform
+ DEVICE=+platform:rkisp-vir0
+
+6,1482,14720868798,-;rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+
+6,1483,14720868828,-;rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy1
+
+6,1484,14720868836,-;imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+6,1485,14720958617,-;imx415 1-001a: write reg array, sleep 30ms
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1486,14720959909,-;imx415 1-001a: set vblank 0x3a vts 2250
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1487,14720961416,-;imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1488,14720962354,-;imx415 1-001a: set analog gain 0x28
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+6,1489,14721112265,-;rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:21
+
+6,1490,14727131351,-;imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+6,1491,14727132867,-;rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy1
+
+6,1492,14727132876,-;rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy1
+

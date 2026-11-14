@@ -1,0 +1,24 @@
+{
+  "rc": 0,
+  "stop": "kernel alert: 3,2081,18734818463,-;rockchip-mipi-csi2: ERR1: crc errors, reg: 0x1000000, cnt:1",
+  "child_alive": false,
+  "start_utc": "2026-11-14T13:40:07Z",
+  "elapsed_s": 1.195,
+  "3a_after": {
+    "argv": [
+      "systemctl",
+      "is-active",
+      "rkaiq_3A"
+    ],
+    "rc": 0,
+    "output": "active\n"
+  },
+  "busy_after": {
+    "argv": [
+      "fuser",
+      "/dev/video14"
+    ],
+    "rc": 1,
+    "output": ""
+  }
+}

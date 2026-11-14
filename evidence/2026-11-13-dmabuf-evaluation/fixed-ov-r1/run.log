@@ -1,0 +1,8 @@
+CAP device=/dev/video14 w=1280 h=960 stride=1280 nbuf=4
+HELD frame=0 index=0 len=1843200 bytesused=1843200 offset=0 fd=4
+HELD frame=1 index=1 len=1843200 bytesused=1843200 offset=0 fd=5
+HELD frame=2 index=2 len=1843200 bytesused=1843200 offset=0 fd=6
+IMPORT frame=0 ret=0 buffer=0x7f9c000f68
+IMPORT frame=1 ret=0 buffer=0x558d731be8
+IMPORT frame=2 ret=0 buffer=0x558d731d68
+PROBE_RC=0

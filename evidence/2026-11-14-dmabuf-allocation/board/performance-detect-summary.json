@@ -1,0 +1,104 @@
+{
+  "imx415": {
+    "rows": [
+      {
+        "mode": "copy",
+        "directory": "perf-detect-imx415-00-copy",
+        "cpu_ms_per_frame": 27.276473684210526,
+        "processed_frames": 95,
+        "copy_bytes": 295488000
+      },
+      {
+        "mode": "dmabuf",
+        "directory": "perf-detect-imx415-01-dmabuf",
+        "cpu_ms_per_frame": 26.443103092783502,
+        "processed_frames": 97,
+        "copy_bytes": 0
+      },
+      {
+        "mode": "dmabuf",
+        "directory": "perf-detect-imx415-02-dmabuf",
+        "cpu_ms_per_frame": 25.921000000000003,
+        "processed_frames": 97,
+        "copy_bytes": 0
+      },
+      {
+        "mode": "copy",
+        "directory": "perf-detect-imx415-03-copy",
+        "cpu_ms_per_frame": 27.97895789473684,
+        "processed_frames": 95,
+        "copy_bytes": 295488000
+      },
+      {
+        "mode": "copy",
+        "directory": "perf-detect-imx415-04-copy",
+        "cpu_ms_per_frame": 28.562308510638292,
+        "processed_frames": 94,
+        "copy_bytes": 292377600
+      },
+      {
+        "mode": "dmabuf",
+        "directory": "perf-detect-imx415-05-dmabuf",
+        "cpu_ms_per_frame": 26.170247422680408,
+        "processed_frames": 97,
+        "copy_bytes": 0
+      }
+    ],
+    "median_cpu_ms_per_frame": {
+      "copy": 27.97895789473684,
+      "dmabuf": 26.170247422680408
+    },
+    "cpu_reduction_percent": 6.464538382241436
+  },
+  "ov8858": {
+    "rows": [
+      {
+        "mode": "copy",
+        "directory": "perf-detect-ov8858-00-copy",
+        "cpu_ms_per_frame": 24.36523636363636,
+        "processed_frames": 110,
+        "copy_bytes": 202752000
+      },
+      {
+        "mode": "dmabuf",
+        "directory": "perf-detect-ov8858-01-dmabuf",
+        "cpu_ms_per_frame": 24.587468468468465,
+        "processed_frames": 111,
+        "copy_bytes": 0
+      },
+      {
+        "mode": "dmabuf",
+        "directory": "perf-detect-ov8858-02-dmabuf",
+        "cpu_ms_per_frame": 24.365495495495495,
+        "processed_frames": 111,
+        "copy_bytes": 0
+      },
+      {
+        "mode": "copy",
+        "directory": "perf-detect-ov8858-03-copy",
+        "cpu_ms_per_frame": 25.127844036697248,
+        "processed_frames": 109,
+        "copy_bytes": 200908800
+      },
+      {
+        "mode": "copy",
+        "directory": "perf-detect-ov8858-04-copy",
+        "cpu_ms_per_frame": 24.95934862385321,
+        "processed_frames": 109,
+        "copy_bytes": 200908800
+      },
+      {
+        "mode": "dmabuf",
+        "directory": "perf-detect-ov8858-05-dmabuf",
+        "cpu_ms_per_frame": 23.42760714285714,
+        "processed_frames": 112,
+        "copy_bytes": 0
+      }
+    ],
+    "median_cpu_ms_per_frame": {
+      "copy": 24.95934862385321,
+      "dmabuf": 24.365495495495495
+    },
+    "cpu_reduction_percent": 2.3792813558851433
+  }
+}

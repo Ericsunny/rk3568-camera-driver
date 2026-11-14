@@ -1,0 +1,27 @@
+--- /root/zc-eval-20261113-Y7s5zu/evrec.c	2026-11-13 17:45:28.700001878 +0800
++++ /root/zc-eval-20261113-Y7s5zu/evrec.meta.c	2026-11-13 17:52:32.916711169 +0800
+@@ -60,6 +60,7 @@
+ #include <rockchip/mpp_frame.h>
+ #include <rockchip/mpp_packet.h>
+ #include <rockchip/mpp_buffer.h>
++#include <rockchip/mpp_meta.h>
+ 
+ #define MAX_FRAMES 4096
+ 
+@@ -2048,6 +2049,16 @@
+ 					break;
+ 				}
+ 				last_packet = !mpp_packet_is_partition(pkt) || mpp_packet_is_eoi(pkt);
++                if (frame_seq < 8 && last_packet) {
++                    MppFrame returned = NULL;
++                    int has = mpp_packet_has_meta(pkt);
++                    int mr = has ? mpp_meta_get_frame(mpp_packet_get_meta(pkt), KEY_INPUT_FRAME, &returned) : -999;
++                    fprintf(stderr, "META seq=%u has=%d ret=%d returned=%p", frame_seq, has, mr, (void *)returned);
++                    if (mr == MPP_OK && returned && mpp_frame_get_buffer(returned))
++                        fprintf(stderr, " fd=%d pts=%lld", mpp_buffer_get_fd(mpp_frame_get_buffer(returned)), (long long)mpp_frame_get_pts(returned));
++                    fprintf(stderr, "\n");
++                }
++
+ 				if (mpp_packet_get_pts(pkt) != frame_pts) {
+ 					fprintf(stderr, ">>> 编码包 PTS 与输入帧不匹配\n");
+ 					mpp_packet_deinit(&pkt);

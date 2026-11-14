@@ -1,0 +1,1 @@
+Synthetic-only MPP task API probe, no camera: one internally allocated NV12 frame, explicit task input/output; require output task to return matching input frame and nonempty packet. 20-second timeout; failure stops this route. Not a hardware camera or performance test.

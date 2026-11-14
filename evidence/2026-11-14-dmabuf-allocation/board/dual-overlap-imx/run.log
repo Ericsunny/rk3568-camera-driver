@@ -1,0 +1,36 @@
+>>> S_FMT 回填 1920x1080 stride=1920 sizeimage=3110400
+>>> 采集 /dev/video5 1920x1080,pre=2s post=2s ring=64MB 编码标称fps=15 gop=15
+>>> 编码输入模式=dmabuf
+>>> OSD 开启: #<seq> + t mm:ss.mmm @左上角(4px, sc=2), stride=1920
+>>> RTSP 监听 :18754 (多客户端, 上限 2)
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=17
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=17
+>>> 预录就绪: 已覆盖 2 秒并包含起始 IDR
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=17
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=17
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 0)
+rtsp c0: 客户端开始播放(从 tag 45 起)
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 1)
+rtsp c1: 客户端开始播放(从 tag 45 起)
+rtsp-ring: in=70 evict=40 depth=30 bytes=0.99/8MB tags=[40,70)
+rtsp c0: sent=642/872865B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=642/872865B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=1284 epoch=0 rej453=0 fds=19
+[evw] open event_id=1 last_pkts=84 pushed=84
+>>> 触发 seq=83 ts=5967.7ms -> pre_i=45 pre_seq=45 (ring_cnt=84 head=0 pushed=84)
+rtsp c0: sent=993/1346118B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=993/1346118B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=1986 epoch=0 rej453=0 fds=21
+rtsp c0: sent=1359/1839195B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=1359/1839195B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=2718 epoch=0 rej453=0 fds=21
+rtsp c0: sent=1731/2343896B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp c1: sent=1731/2343896B skip=0 evict=0 dead=0 lag=0ms idle=0.1s
+rtsp: conn=2 play=2/2 sent=3462 epoch=0 rej453=0 fds=21
+>>> 事件 1 完成(1 段, target_left)
+>>> 输入统计 mode=dmabuf copy_bytes=0 returned=115
+rtsp c1: 连接关闭
+rtsp c0: 连接关闭

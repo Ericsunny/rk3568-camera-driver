@@ -1,0 +1,1 @@
+OV8858 copy baseline /dev/video14 1280x960 30fps/gop30 4000kbps; 3s pre/2s post; no detect/OSD/RTSP; trigger after 6s; expect normal exit, event metadata, complete decode. Isolated historical-format restore after tests.

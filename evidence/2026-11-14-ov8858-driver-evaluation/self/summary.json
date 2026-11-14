@@ -1,0 +1,131 @@
+{
+  "arm": "self",
+  "commands": {
+    "dmesg_before": [
+      "dmesg"
+    ],
+    "date": [
+      "date",
+      "-Is"
+    ],
+    "uname": [
+      "uname",
+      "-a"
+    ],
+    "iq_restart": [
+      "python3",
+      "/root/ov8858-driver-evaluation-20261114/observe_iq_restart.py"
+    ],
+    "three_a": [
+      "pgrep",
+      "-af",
+      "^/usr/bin/rkaiq_3A_server([[:space:]]|$)"
+    ],
+    "enumeration": [
+      "/root/ov8858-driver-evaluation-20261114/enum_probe",
+      "/dev/v4l-subdev2"
+    ],
+    "tryfmt": [
+      "/root/ov8858-driver-evaluation-20261114/tryfmt_test",
+      "/dev/v4l-subdev2",
+      "0"
+    ],
+    "sensor_before": [
+      "v4l2-ctl",
+      "-d",
+      "/dev/v4l-subdev2",
+      "--get-subdev-fmt=0"
+    ],
+    "controls_before": [
+      "v4l2-ctl",
+      "-d",
+      "/dev/v4l-subdev2",
+      "--list-ctrls"
+    ],
+    "set_same_sensor_mode": [
+      "v4l2-ctl",
+      "-d",
+      "/dev/v4l-subdev2",
+      "--set-subdev-fmt=pad=0,width=1632,height=1224,code=0x3007"
+    ],
+    "sensor_after": [
+      "v4l2-ctl",
+      "-d",
+      "/dev/v4l-subdev2",
+      "--get-subdev-fmt=0"
+    ],
+    "controls_after": [
+      "v4l2-ctl",
+      "-d",
+      "/dev/v4l-subdev2",
+      "--list-ctrls"
+    ],
+    "switch_01": [
+      "/root/ov8858-driver-evaluation-20261114/switch_probe"
+    ],
+    "switch_02": [
+      "/root/ov8858-driver-evaluation-20261114/switch_probe"
+    ],
+    "switch_03": [
+      "/root/ov8858-driver-evaluation-20261114/switch_probe"
+    ],
+    "switch_04": [
+      "/root/ov8858-driver-evaluation-20261114/switch_probe"
+    ],
+    "switch_05": [
+      "/root/ov8858-driver-evaluation-20261114/switch_probe"
+    ],
+    "switch_06": [
+      "/root/ov8858-driver-evaluation-20261114/switch_probe"
+    ],
+    "switch_07": [
+      "/root/ov8858-driver-evaluation-20261114/switch_probe"
+    ],
+    "switch_08": [
+      "/root/ov8858-driver-evaluation-20261114/switch_probe"
+    ],
+    "switch_09": [
+      "/root/ov8858-driver-evaluation-20261114/switch_probe"
+    ],
+    "switch_10": [
+      "/root/ov8858-driver-evaluation-20261114/switch_probe"
+    ],
+    "post_three_a": [
+      "pgrep",
+      "-af",
+      "^/usr/bin/rkaiq_3A_server([[:space:]]|$)"
+    ],
+    "dmesg_after": [
+      "dmesg"
+    ]
+  },
+  "results": {
+    "dmesg_before": 0,
+    "date": 0,
+    "uname": 0,
+    "iq_restart": 0,
+    "three_a": 0,
+    "enumeration": 0,
+    "tryfmt": 0,
+    "sensor_before": 0,
+    "controls_before": 0,
+    "set_same_sensor_mode": 0,
+    "sensor_after": 0,
+    "controls_after": 0,
+    "switch_01": 0,
+    "switch_02": 0,
+    "switch_03": 0,
+    "switch_04": 0,
+    "switch_05": 0,
+    "switch_06": 0,
+    "switch_07": 0,
+    "switch_08": 0,
+    "switch_09": 0,
+    "switch_10": 0,
+    "post_three_a": 0,
+    "dmesg_after": 0
+  },
+  "switch_pass": 10,
+  "fatal": null,
+  "dmesg_overlap_lines": 1067
+}

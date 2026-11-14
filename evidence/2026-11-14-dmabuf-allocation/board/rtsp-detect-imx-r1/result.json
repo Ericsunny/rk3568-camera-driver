@@ -1,0 +1,25 @@
+{
+  "rc": 0,
+  "stop": "kernel alert: 3,1411,14331251866,-;rga2: unknown ioctl cmd!",
+  "child_alive": false,
+  "start_utc": "2026-11-14T12:26:40Z",
+  "rga_version_probe_count": 2,
+  "elapsed_s": 5.472,
+  "3a_after": {
+    "argv": [
+      "systemctl",
+      "is-active",
+      "rkaiq_3A"
+    ],
+    "rc": 0,
+    "output": "active\n"
+  },
+  "busy_after": {
+    "argv": [
+      "fuser",
+      "/dev/video5"
+    ],
+    "rc": 1,
+    "output": ""
+  }
+}

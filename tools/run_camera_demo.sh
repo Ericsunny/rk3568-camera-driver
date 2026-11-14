@@ -33,11 +33,21 @@ if [ "$RTSP_PORT" -lt 1 ] || [ "$RTSP_PORT" -gt 65535 ]; then
     exit 2
 fi
 binary=${EVREC_BIN:-$root/evrec}
+ENCODER_INPUT=${ENCODER_INPUT:-copy}
+case "$ENCODER_INPUT" in
+    copy|dmabuf) ;;
+    *) echo 'ENCODER_INPUT must be copy or dmabuf' >&2; exit 2 ;;
+esac
 for tool in pgrep fuser sha256sum ss python3 ffmpeg ffprobe; do
     command -v "$tool" >/dev/null 2>&1 || { echo "missing tool: $tool" >&2; exit 1; }
 done
 case "$run_dir" in /*) ;; *) echo 'RUN_DIRECTORY must be absolute' >&2; exit 2;; esac
 [ -x "$binary" ] || { echo "missing executable: $binary" >&2; exit 1; }
+if [ "$ENCODER_INPUT" = dmabuf ] &&
+   ! "$binary" --help | grep -q -- '--encoder-input'; then
+    echo 'evrec binary does not support dmabuf input' >&2
+    exit 1
+fi
 [ -c "$VIDEO" ] || { echo "missing video device: $VIDEO" >&2; exit 1; }
 # A service's "active" alone does not prove a live daemon (forking unit may
 # report active/exited with MainPID=0). Validate one actual process as well.
@@ -70,6 +80,9 @@ set -- "$binary" -d "$VIDEO" -w "$WIDTH" -h "$HEIGHT" \
     --disk-min-mb "$DISK_MIN_MB" --recover 1 --max-events "${MAX_EVENTS:-0}" \
     --rtsp "$RTSP_PORT" --rtsp-clients "$RTSP_CLIENTS" \
     --rtsp-deadline-s "$RTSP_DEADLINE" --osd -o "$run_dir/event"
+if [ "$ENCODER_INPUT" = dmabuf ]; then
+    set -- "$@" --encoder-input dmabuf
+fi
 if [ "$mode" = detect ]; then
     set -- "$@" --detect --model "$MODEL" --det-score "$DET_SCORE" --det-frames "$DET_FRAMES"
 else

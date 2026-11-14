@@ -1,0 +1,4 @@
+librga fail to get driver version! Compatibility mode will be enabled.
+
+rga_api version 1.9.2_[1]
+RESULT rc=0 compared=30 different=0 bytes_per_rgb=1228800

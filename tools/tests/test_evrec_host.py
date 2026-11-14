@@ -200,7 +200,7 @@ static unsigned long g_rga_sum, g_rga_n;
 static unsigned char data[64], rgb[64];
 static unsigned char *g_rga_buf = data, *g_rgb = rgb;
 static rga_buffer_t g_rga_src, g_rga_dst;
-static int g_detect = 1, w = 4, h = 4;
+static int g_detect = 1, w = 4, h = 4, input_fd = -1;
 static int rc, g_streak, g_det_announced, g_trigger;
 static const char *end_reason;
 static int g_npu_w = 4, g_npu_h = 4;
@@ -211,6 +211,8 @@ static double t_stage, t_rga, t_npu;
 static double now_ms(int clock_id) { (void)clock_id; return 1.0; }
 static rga_buffer_t wrapbuffer_virtualaddr_t(void *p, int a, int b, int c, int d, int e)
 { (void)a; (void)b; (void)c; (void)d; (void)e; return (rga_buffer_t){p}; }
+static rga_buffer_t wrapbuffer_fd_t(int fd, int a, int b, int c, int d, int e)
+{ (void)fd; return wrapbuffer_virtualaddr_t(NULL, a, b, c, d, e); }
 static IM_STATUS imresize_t(rga_buffer_t a, rga_buffer_t b, int c, int d, int e, int f)
 { (void)a; (void)b; (void)c; (void)d; (void)e; (void)f; return fail_resize; }
 static const char *imStrError(int s) { (void)s; return "injected"; }
@@ -239,7 +241,7 @@ int main(void)
     if (npu_calls || g_rga_n || g_streak || g_det_announced || g_trigger ||
         rc != 1 || !end_reason) return 1;
 #endif
-    rc = rga_scale(data, 4, 4, 4);
+    rc = rga_scale(data, 4, 4, 4, -1);
     if (rc == 0 || npu_calls || g_rga_n) return 1;
     fail_resize = 0;
 #ifdef HAVE_RKNN
@@ -247,7 +249,7 @@ int main(void)
     rc = 0;
     if (npu_calls != 1 || g_rga_sum != 13) return 2;
 #else
-    rc = rga_scale(data, 4, 4, 4);
+    rc = rga_scale(data, 4, 4, 4, -1);
     if (g_rga_sum != 9) return 3;
 #endif
 #ifdef HAVE_RKNN
@@ -265,7 +267,7 @@ QBUF_PRELUDE = r'''
 #include <errno.h>
 #define VIDIOC_QBUF 1
 struct { int fd; } cap;
-static int g_stop, fail_qbuf, recovered, encoded;
+static int g_stop, g_input_dmabuf, fail_qbuf, recovered, encoded;
 static int xioctl(int fd, int req, void *b)
 { (void)fd; (void)req; (void)b; errno = EIO; return fail_qbuf ? -1 : 0; }
 static void run_frame(void)
@@ -309,7 +311,7 @@ def main():
     rga = (RGA_PRELUDE + function('static void letterbox_size(') + '\n' +
            function('static void pad_rgb(') + '\n' + function('static int rga_scale(') + '\n' +
            RGA_TEST.replace('RGA_CALLER_BLOCK', caller))
-    qbuf = block('if (xioctl(cap.fd, VIDIOC_QBUF, &b) < 0) {\n\t\t\tif (g_stop)',
+    qbuf = block('if (!g_input_dmabuf && xioctl(cap.fd, VIDIOC_QBUF, &b) < 0) {\n\t\t\tif (g_stop)',
                  '\n\n\t\tif (mpp_frame_init')
     qbuf = QBUF_PRELUDE.replace('QBUF_BLOCK', qbuf)
     with tempfile.TemporaryDirectory(prefix='evrec-host-') as tmp:

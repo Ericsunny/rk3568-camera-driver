@@ -1,0 +1,7 @@
+2026-11-14T15:26:22+08:00
+Linux yckt 4.19.232 #62 SMP Tue Nov 10 11:59:43 UTC 2026 aarch64 aarch64 aarch64 GNU/Linux
+../../../../../bus/i2c/drivers/ov8858-sm
+539 /usr/bin/rkaiq_3A_server
+40ec35eccd8e78ecacaee883257f2446d056614c50f649ae2d4988806bb07927  /boot/Image-4.19.232
+eb38789325c307867f0d9d5b9b09c81123c48bc113cbd74af6d505877ccc6ce0  /boot/rk-kernel.dtb
+1dbb2b17c0244e90c2d35d5ccf88f56fb98c9a2d29be7a5ecd774fd8727cbb0f  /etc/iqfiles/ov8858_DC-21AF-58-1474V1_unknown.json

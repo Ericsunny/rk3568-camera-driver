@@ -1,0 +1,132 @@
+24d5f755008fa98d14c1d12c1ccc4a374c81dec706f6b9e8302f0a287a554944  tools/evrec.c
+806bd8d2f3ec50030c534a9d0df9ed189d466303604e50979de61d7219a32b0c  tools/run_camera_demo.sh
+fa166646bf022310ecd6ce3e0b646636d82ed36e78bcebff890d96fe3ebea417  tools/tests/test_evrec_dmabuf.py
+MPP shared input ownership: PASS
+MPP shared input ownership: PASS
+PASS camera profile: modes, arguments, isolated outputs and startup rejection
+>>> sigterm: 进行中的事件已落盘 /tmp/evrec-host-i876r21r/event0
+>>> fopen /tmp/evrec-host-i876r21r/event1.pending.json 失败: Permission denied
+>>> sigterm: 事件落盘失败
+>>> 写入 /tmp/evrec-host-i876r21r/event2.pending.json 失败: No space left on device
+>>> sigterm: 事件落盘失败
+>>> 关闭 /tmp/evrec-host-i876r21r/event3.pending.json 失败: Input/output error
+>>> sigterm: 事件落盘失败
+>>> 视频写入或关闭失败，保留 /tmp/evrec-host-i876r21r/event4.part
+>>> sigterm: 事件落盘失败
+>>> rename /tmp/evrec-host-i876r21r/event5.part 失败: Input/output error
+>>> sigterm: 事件落盘失败
+>>> rename /tmp/evrec-host-i876r21r/event6.pending.json 失败: Input/output error
+>>> sigterm: 事件落盘失败
+>>> 视频写入或关闭失败，保留 /tmp/evrec-host-i876r21r/event7.part
+>>> sigterm: 事件落盘失败
+>>> fopen /tmp/evrec-host-i876r21r/event11.pending.json 失败: Permission denied
+>>> 事件落盘失败
+>>> 写入 /tmp/evrec-host-i876r21r/event12.pending.json 失败: No space left on device
+>>> 事件落盘失败
+>>> 关闭 /tmp/evrec-host-i876r21r/event13.pending.json 失败: Input/output error
+>>> 事件落盘失败
+>>> 收到 SIGTERM, 已停止
+SIGTERM fault=0 rc=0 event_id=7 segment=2 write_error=0
+SIGTERM fault=1 rc=1 event_id=7 segment=2 write_error=0
+SIGTERM fault=2 rc=1 event_id=7 segment=2 write_error=0
+SIGTERM fault=3 rc=1 event_id=7 segment=2 write_error=0
+SIGTERM fault=4 rc=1 event_id=7 segment=2 write_error=1
+SIGTERM fault=5 rc=1 event_id=7 segment=2 write_error=0
+SIGTERM fault=6 rc=1 event_id=7 segment=2 write_error=0
+SIGTERM fault=7 rc=1 event_id=7 segment=2 write_error=1
+target_left fault=0 rc=0 completed=1
+target_left fault=1 rc=1 completed=0
+target_left fault=2 rc=1 completed=0
+target_left fault=3 rc=1 completed=0
+event: PASS
+QBUF: Input/output error
+QBUF failure enters recovery; SIGTERM stops; success encodes
+qbuf: PASS
+/tmp/evrec-host-i876r21r/rga-only.c:44:13: warning: ‘pad_rgb’ defined but not used [-Wunused-function]
+   44 | static void pad_rgb(unsigned char *rgb, int tw, int th, int rw, int rh)
+      |             ^~~~~~~
+/tmp/evrec-host-i876r21r/rga-only.c:32:13: warning: ‘letterbox_size’ defined but not used [-Wunused-function]
+   32 | static void letterbox_size(unsigned sw, unsigned sh, int tw, int th, int *rw, int *rh)
+      |             ^~~~~~~~~~~~~~
+/tmp/evrec-host-i876r21r/rga-only.c:31:12: warning: ‘npu_run’ defined but not used [-Wunused-function]
+   31 | static int npu_run(const unsigned char *p) { (void)p; npu_calls++; return 0; }
+      |            ^~~~~~~
+/tmp/evrec-host-i876r21r/rga-only.c:23:15: warning: ‘now_ms’ defined but not used [-Wunused-function]
+   23 | static double now_ms(int clock_id) { (void)clock_id; return 1.0; }
+      |               ^~~~~~
+/tmp/evrec-host-i876r21r/rga-only.c:21:31: warning: ‘t_npu’ defined but not used [-Wunused-variable]
+   21 | static double t_stage, t_rga, t_npu;
+      |                               ^~~~~
+/tmp/evrec-host-i876r21r/rga-only.c:21:24: warning: ‘t_rga’ defined but not used [-Wunused-variable]
+   21 | static double t_stage, t_rga, t_npu;
+      |                        ^~~~~
+/tmp/evrec-host-i876r21r/rga-only.c:21:15: warning: ‘t_stage’ defined but not used [-Wunused-variable]
+   21 | static double t_stage, t_rga, t_npu;
+      |               ^~~~~~~
+/tmp/evrec-host-i876r21r/rga-only.c:20:30: warning: ‘b’ defined but not used [-Wunused-variable]
+   20 | static struct { int index; } b;
+      |                              ^
+/tmp/evrec-host-i876r21r/rga-only.c:18:25: warning: ‘g_npu_h’ defined but not used [-Wunused-variable]
+   18 | static int g_npu_w = 4, g_npu_h = 4;
+      |                         ^~~~~~~
+/tmp/evrec-host-i876r21r/rga-only.c:18:12: warning: ‘g_npu_w’ defined but not used [-Wunused-variable]
+   18 | static int g_npu_w = 4, g_npu_h = 4;
+      |            ^~~~~~~
+/tmp/evrec-host-i876r21r/rga-only.c:17:20: warning: ‘end_reason’ defined but not used [-Wunused-variable]
+   17 | static const char *end_reason;
+      |                    ^~~~~~~~~~
+/tmp/evrec-host-i876r21r/rga-only.c:16:43: warning: ‘g_trigger’ defined but not used [-Wunused-variable]
+   16 | static int rc, g_streak, g_det_announced, g_trigger;
+      |                                           ^~~~~~~~~
+/tmp/evrec-host-i876r21r/rga-only.c:16:26: warning: ‘g_det_announced’ defined but not used [-Wunused-variable]
+   16 | static int rc, g_streak, g_det_announced, g_trigger;
+      |                          ^~~~~~~~~~~~~~~
+/tmp/evrec-host-i876r21r/rga-only.c:16:16: warning: ‘g_streak’ defined but not used [-Wunused-variable]
+   16 | static int rc, g_streak, g_det_announced, g_trigger;
+      |                ^~~~~~~~
+/tmp/evrec-host-i876r21r/rga-only.c:15:40: warning: ‘input_fd’ defined but not used [-Wunused-variable]
+   15 | static int g_detect = 1, w = 4, h = 4, input_fd = -1;
+      |                                        ^~~~~~~~
+/tmp/evrec-host-i876r21r/rga-only.c:15:33: warning: ‘h’ defined but not used [-Wunused-variable]
+   15 | static int g_detect = 1, w = 4, h = 4, input_fd = -1;
+      |                                 ^
+/tmp/evrec-host-i876r21r/rga-only.c:15:26: warning: ‘w’ defined but not used [-Wunused-variable]
+   15 | static int g_detect = 1, w = 4, h = 4, input_fd = -1;
+      |                          ^
+/tmp/evrec-host-i876r21r/rga-only.c:15:12: warning: ‘g_detect’ defined but not used [-Wunused-variable]
+   15 | static int g_detect = 1, w = 4, h = 4, input_fd = -1;
+      |            ^~~~~~~~
+/tmp/evrec-host-i876r21r/rga-only.c:13:42: warning: ‘g_rgb’ defined but not used [-Wunused-variable]
+   13 | static unsigned char *g_rga_buf = data, *g_rgb = rgb;
+      |                                          ^~~~~
+RGA 失败: injected
+RGA failure skips inference; successful buffer sampled
+rga-only: PASS
+/tmp/evrec-host-i876r21r/rga-rknn.c:13:23: warning: ‘g_rga_buf’ defined but not used [-Wunused-variable]
+   13 | static unsigned char *g_rga_buf = data, *g_rgb = rgb;
+      |                       ^~~~~~~~~
+/tmp/evrec-host-i876r21r/rga-rknn.c:10:25: warning: ‘g_rga_h’ defined but not used [-Wunused-variable]
+   10 | static int g_rga_w = 4, g_rga_h = 4, fail_resize, npu_calls;
+      |                         ^~~~~~~
+/tmp/evrec-host-i876r21r/rga-rknn.c:10:12: warning: ‘g_rga_w’ defined but not used [-Wunused-variable]
+   10 | static int g_rga_w = 4, g_rga_h = 4, fail_resize, npu_calls;
+      |            ^~~~~~~
+RGA 失败: injected
+RGA 失败: injected
+RGA failure skips inference; successful buffer sampled
+rga-rknn: PASS
+>>> 恢复 第 1/2 次: 重开设备 成功
+>>> 恢复 第 1/2 次: 重开设备 成功
+>>> 恢复格式与编码器不一致: 1920x1080 stride=2048, 原为 1920x1080 stride=1920; 停止恢复
+>>> 恢复 第 1/2 次: 重开设备 成功
+>>> 恢复格式与编码器不一致: 1280x1080 stride=1920, 原为 1920x1080 stride=1920; 停止恢复
+>>> 恢复 第 1/2 次: 重开设备 成功
+>>> 恢复格式与编码器不一致: 1920x720 stride=1920, 原为 1920x1080 stride=1920; 停止恢复
+>>> 恢复 第 1/2 次: 重开设备 成功
+>>> 恢复格式与编码器不一致: 1920x1080 stride=1920, 原为 1920x1080 stride=1920; 停止恢复
+>>> 恢复 第 1/2 次: 重开设备 成功
+>>> 恢复格式与编码器不一致: 1920x1080 stride=1920, 原为 1920x1080 stride=1920; 停止恢复
+RTSP eviction and recovery format contracts: PASS
+ring limits, multiple evictions and ownership: PASS
+IDR and independently decodable start classification: PASS
+pre-roll timestamps and byte count: PASS

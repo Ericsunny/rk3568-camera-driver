@@ -1,0 +1,16 @@
+{
+  "order": [
+    "copy",
+    "dmabuf",
+    "dmabuf",
+    "copy",
+    "copy",
+    "dmabuf"
+  ],
+  "groups": [
+    "imx415",
+    "ov8858"
+  ],
+  "rounds_per_mode": 3,
+  "scope": "OSD and RGA/RKNN on; threshold 1.1, manual event; no network clients; includes process startup CPU"
+}

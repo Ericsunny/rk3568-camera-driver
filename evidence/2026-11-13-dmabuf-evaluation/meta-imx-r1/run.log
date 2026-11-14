@@ -1,0 +1,23 @@
+>>> 采集 /dev/video5 1920x1080,pre=3s post=2s ring=64MB 编码标称fps=15 gop=15
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+META seq=0 has=1 ret=-1 returned=(nil)
+META seq=1 has=1 ret=-1 returned=(nil)
+META seq=2 has=1 ret=-1 returned=(nil)
+META seq=3 has=1 ret=-1 returned=(nil)
+META seq=4 has=1 ret=-1 returned=(nil)
+META seq=5 has=1 ret=-1 returned=(nil)
+META seq=6 has=1 ret=-1 returned=(nil)
+META seq=7 has=1 ret=-1 returned=(nil)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=13
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=13
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=13
+>>> 预录就绪: 已覆盖 3 秒并包含起始 IDR
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=13
+rtsp-ring: in=70 evict=40 depth=30 bytes=0.95/8MB tags=[40,70)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=13
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=13
+[evw] open event_id=1 last_pkts=85 pushed=85
+>>> 触发 seq=84 ts=6012.7ms -> pre_i=30 pre_seq=30 (ring_cnt=85 head=0 pushed=85)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=15
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=15
+>>> 事件 1 完成(1 段, target_left)

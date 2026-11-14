@@ -1,0 +1,18 @@
+
+User Controls
+
+                       exposure 0x00980911 (int)    : min=1 max=1240 step=1 default=256 value=1120
+                horizontal_flip 0x00980914 (bool)   : default=1 value=1
+                  vertical_flip 0x00980915 (bool)   : default=0 value=0
+
+Image Source Controls
+
+              vertical_blanking 0x009e0901 (int)    : min=20 max=64311 step=1 default=20 value=20
+            horizontal_blanking 0x009e0902 (int)    : min=2224 max=2224 step=1 default=2224 value=2224 flags=read-only
+                  analogue_gain 0x009e0903 (int)    : min=128 max=2047 step=1 default=128 value=536
+
+Image Processing Controls
+
+                 link_frequency 0x009f0901 (intmenu): min=0 max=0 default=0 value=0 flags=read-only
+                     pixel_rate 0x009f0902 (int64)  : min=0 max=144000000 step=1 default=144000000 value=144000000 flags=read-only
+                   test_pattern 0x009f0903 (menu)   : min=0 max=4 default=0 value=0

@@ -1,0 +1,93 @@
+{
+  "utc": "2026-11-14T13:42:42Z",
+  "time": {
+    "argv": [
+      "date",
+      "+%F %T %z"
+    ],
+    "rc": 0,
+    "output": "2026-11-14 21:42:42 +0800\n"
+  },
+  "uname": {
+    "argv": [
+      "uname",
+      "-a"
+    ],
+    "rc": 0,
+    "output": "Linux yckt 4.19.232 #62 SMP Tue Nov 10 11:59:43 UTC 2026 aarch64 aarch64 aarch64 GNU/Linux\n"
+  },
+  "3a": {
+    "argv": [
+      "systemctl",
+      "is-active",
+      "rkaiq_3A"
+    ],
+    "rc": 0,
+    "output": "active\n"
+  },
+  "driver": {
+    "argv": [
+      "readlink",
+      "/sys/bus/i2c/devices/5-0036/driver"
+    ],
+    "rc": 0,
+    "output": "../../../../../bus/i2c/drivers/ov8858-sm\n"
+  },
+  "format_imx": {
+    "argv": [
+      "v4l2-ctl",
+      "-d",
+      "/dev/video5",
+      "--get-fmt-video"
+    ],
+    "rc": 0,
+    "output": "Format Video Capture Multiplanar:\n\tWidth/Height      : 3840/2160\n\tPixel Format      : 'NV12' (Y/CbCr 4:2:0)\n\tField             : None\n\tNumber of planes  : 1\n\tFlags             : \n\tColorspace        : Default\n\tTransfer Function : Default\n\tYCbCr/HSV Encoding: Default\n\tQuantization      : Full Range\n\tPlane 0           :\n\t   Bytes per Line : 3840\n\t   Size Image     : 12441600\n"
+  },
+  "format_ov": {
+    "argv": [
+      "v4l2-ctl",
+      "-d",
+      "/dev/video14",
+      "--get-fmt-video"
+    ],
+    "rc": 0,
+    "output": "Format Video Capture Multiplanar:\n\tWidth/Height      : 1632/1224\n\tPixel Format      : 'NV12' (Y/CbCr 4:2:0)\n\tField             : None\n\tNumber of planes  : 1\n\tFlags             : \n\tColorspace        : Default\n\tTransfer Function : Default\n\tYCbCr/HSV Encoding: Default\n\tQuantization      : Full Range\n\tPlane 0           :\n\t   Bytes per Line : 1632\n\t   Size Image     : 2996352\n"
+  },
+  "fuser": {
+    "argv": [
+      "fuser",
+      "/dev/video5",
+      "/dev/video14"
+    ],
+    "rc": 1,
+    "output": ""
+  },
+  "boot_sha": {
+    "argv": [
+      "sha256sum",
+      "/boot/Image-4.19.232",
+      "/boot/rk-kernel.dtb"
+    ],
+    "rc": 0,
+    "output": "40ec35eccd8e78ecacaee883257f2446d056614c50f649ae2d4988806bb07927  /boot/Image-4.19.232\neb38789325c307867f0d9d5b9b09c81123c48bc113cbd74af6d505877ccc6ce0  /boot/rk-kernel.dtb\n"
+  },
+  "candidate_sha": {
+    "argv": [
+      "sha256sum",
+      "/root/zc-allocation-20261114-9juwLl/candidate-v3/evrec",
+      "/root/zc-allocation-20261114-9juwLl/candidate-v3/tools/evrec.c"
+    ],
+    "rc": 0,
+    "output": "455480b074bfffe964d1b75ab56882f1cd70b80310191a57e39ed5aa6a60d9ee  /root/zc-allocation-20261114-9juwLl/candidate-v3/evrec\n71718ae633483d0a62932313b7eb1d2eb4faba778a7c30b80c9d2ce01e196ef2  /root/zc-allocation-20261114-9juwLl/candidate-v3/tools/evrec.c\n"
+  },
+  "ports": {
+    "argv": [
+      "ss",
+      "-H",
+      "-ltn",
+      "sport = :18754 or sport = :18755 or sport = :18760"
+    ],
+    "rc": 0,
+    "output": ""
+  }
+}

@@ -1,0 +1,1 @@
+Metadata probe: same IMX settings and controller; inspect packet KEY_INPUT_FRAME only, record return code/PTS/fd for first 8 completed frames; no claimed MPP input release until API semantics and board behavior confirmed. This is a diagnostic build, not performance data.

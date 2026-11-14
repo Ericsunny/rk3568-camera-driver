@@ -1,0 +1,37 @@
+{
+  "3a": {
+    "argv": [
+      "systemctl",
+      "is-active",
+      "rkaiq_3A"
+    ],
+    "rc": 0,
+    "output": "active\n"
+  },
+  "busy": {
+    "argv": [
+      "fuser",
+      "/dev/video14"
+    ],
+    "rc": 1,
+    "output": ""
+  },
+  "format": {
+    "argv": [
+      "v4l2-ctl",
+      "-d",
+      "/dev/video14",
+      "--get-fmt-video"
+    ],
+    "rc": 0,
+    "output": "Format Video Capture Multiplanar:\n\tWidth/Height      : 1280/960\n\tPixel Format      : 'NV12' (Y/CbCr 4:2:0)\n\tField             : None\n\tNumber of planes  : 1\n\tFlags             : \n\tColorspace        : Default\n\tTransfer Function : Default\n\tYCbCr/HSV Encoding: Default\n\tQuantization      : Full Range\n\tPlane 0           :\n\t   Bytes per Line : 1280\n\t   Size Image     : 1843200\n"
+  },
+  "uname": {
+    "argv": [
+      "uname",
+      "-a"
+    ],
+    "rc": 0,
+    "output": "Linux yckt 4.19.232 #62 SMP Tue Nov 10 11:59:43 UTC 2026 aarch64 aarch64 aarch64 GNU/Linux\n"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "collected_utc": "2026-11-14T02:20:31Z",
+  "uname": {
+    "argv": [
+      "uname",
+      "-a"
+    ],
+    "returncode": 0,
+    "output": "Linux yckt 4.19.232 #62 SMP Tue Nov 10 11:59:43 UTC 2026 aarch64 aarch64 aarch64 GNU/Linux"
+  },
+  "board_image": {
+    "argv": [
+      "sha256sum",
+      "/boot/Image-4.19.232"
+    ],
+    "returncode": 0,
+    "output": "40ec35eccd8e78ecacaee883257f2446d056614c50f649ae2d4988806bb07927  /boot/Image-4.19.232"
+  },
+  "mpp_library": {
+    "argv": [
+      "sha256sum",
+      "/usr/lib/aarch64-linux-gnu/librockchip_mpp.so.0"
+    ],
+    "returncode": 0,
+    "output": "9db8192bf6d4bd927a9b48df5a4154af81fd72975a3ca180dab26ad1455d9323  /usr/lib/aarch64-linux-gnu/librockchip_mpp.so.0"
+  },
+  "mpp_package": {
+    "argv": [
+      "dpkg-query",
+      "-W",
+      "-f=${Package} ${Version}\n",
+      "librockchip-mpp1"
+    ],
+    "returncode": 0,
+    "output": "librockchip-mpp1 1.5.0-1"
+  },
+  "evrec": {
+    "argv": [
+      "sha256sum",
+      "/root/camera-integration-20261110-app/evrec"
+    ],
+    "returncode": 0,
+    "output": "620f67a160df04d238e57cc8cd26e2bdf32328a611329f9848714a46b7b99509  /root/camera-integration-20261110-app/evrec"
+  }
+}

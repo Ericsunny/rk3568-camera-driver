@@ -1,0 +1,17 @@
+{
+  "prefix_matches": true,
+  "lines": [
+    "[59760.808367] rkisp rkisp-vir0: first params buf queue",
+    "[59760.808505] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891",
+    "[59760.808537] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1",
+    "[59760.808545] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10",
+    "[59760.895894] imx415 1-001a: write reg array, sleep 30ms",
+    "[59760.897294] imx415 1-001a: set vblank 0x3a vts 2250",
+    "[59760.898725] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)",
+    "[59760.899618] imx415 1-001a: set analog gain 0x1d",
+    "[59761.049225] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:123",
+    "[59769.201608] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10",
+    "[59769.203133] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1",
+    "[59769.203143] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1"
+  ]
+}

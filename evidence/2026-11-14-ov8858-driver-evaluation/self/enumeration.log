@@ -1,0 +1,12 @@
+code=0x3007 in=0x0 index=0 rc=0 errno=0 out=1632x1224 code=0x3007 interval=4796864/144000000
+code=0x3007 in=0x0 index=1 rc=0 errno=0 out=1920x1080 code=0x3007 interval=4795680/144000000
+code=0x3007 in=0x0 index=2 rc=-1 errno=22 out=0x0 code=0x3007 interval=0/0
+code=0x3007 in=1632x1224 index=0 rc=0 errno=0 out=1632x1224 code=0x3007 interval=4796864/144000000
+code=0x3007 in=1632x1224 index=1 rc=-1 errno=22 out=1632x1224 code=0x3007 interval=0/0
+code=0x3007 in=1632x1224 index=2 rc=-1 errno=22 out=1632x1224 code=0x3007 interval=0/0
+code=0x0000 in=0x0 index=0 rc=0 errno=0 out=1632x1224 code=0x3007 interval=4796864/144000000
+code=0x0000 in=0x0 index=1 rc=0 errno=0 out=1920x1080 code=0x3007 interval=4795680/144000000
+code=0x0000 in=0x0 index=2 rc=-1 errno=22 out=0x0 code=0x0000 interval=0/0
+code=0x0000 in=1632x1224 index=0 rc=0 errno=0 out=1632x1224 code=0x3007 interval=4796864/144000000
+code=0x0000 in=1632x1224 index=1 rc=-1 errno=22 out=1632x1224 code=0x0000 interval=0/0
+code=0x0000 in=1632x1224 index=2 rc=-1 errno=22 out=1632x1224 code=0x0000 interval=0/0

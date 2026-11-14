@@ -1,0 +1,59 @@
+{
+  "controller_rc": 0,
+  "clients": [
+    {
+      "argv": [
+        "ffmpeg",
+        "-nostdin",
+        "-v",
+        "info",
+        "-rtsp_transport",
+        "tcp",
+        "-hwaccel",
+        "none",
+        "-c:v",
+        "h264",
+        "-i",
+        "rtsp://127.0.0.1:18754/live",
+        "-map",
+        "0:v:0",
+        "-frames:v",
+        "20",
+        "-vsync",
+        "0",
+        "-an",
+        "-f",
+        "null",
+        "-"
+      ],
+      "rc": 0
+    },
+    {
+      "argv": [
+        "ffmpeg",
+        "-nostdin",
+        "-v",
+        "info",
+        "-rtsp_transport",
+        "tcp",
+        "-hwaccel",
+        "none",
+        "-c:v",
+        "h264",
+        "-i",
+        "rtsp://127.0.0.1:18754/live",
+        "-map",
+        "0:v:0",
+        "-frames:v",
+        "20",
+        "-vsync",
+        "0",
+        "-an",
+        "-f",
+        "null",
+        "-"
+      ],
+      "rc": 0
+    }
+  ]
+}

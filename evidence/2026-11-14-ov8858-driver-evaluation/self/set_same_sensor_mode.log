@@ -1,0 +1,3 @@
+Note: --set-subdev-fmt is only for testing.
+Normally media-ctl is used to configure the video pipeline.
+ioctl: VIDIOC_SUBDEV_S_FMT (pad=0)

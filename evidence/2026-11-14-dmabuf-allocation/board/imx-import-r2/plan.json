@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/root/zc-allocation-20261114-9juwLl/shared-pool-probe-v2",
+    "/dev/video5",
+    "1920",
+    "1080",
+    "15",
+    "120"
+  ],
+  "timeout_s": 90,
+  "D_limit_s": 3,
+  "pass": "exit 0; matching returned inputs before QBUF; requested frame count; both bitstreams fully decode and per-frame hashes match; no kernel alert; 3A active; no remaining test process",
+  "scope": "isolated same-frame two-encoder probe, no service performance claim"
+}

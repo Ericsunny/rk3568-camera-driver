@@ -1,0 +1,12 @@
+--- self.dts	2026-11-14 15:04:23.531045262 +0800
++++ vendor.dts	2026-11-14 15:04:23.631045272 +0800
+@@ -4112,7 +4112,8 @@
+ 		};
+ 
+ 		cam1_ov8858@36 {
+-			compatible = "ovti,ov8858-sm";
++			rockchip,ov8858-capture-mode = <0x01>;
++			compatible = "ovti,ov8858";
+ 			status = "okay";
+ 			reg = <0x36>;
+ 			clocks = <0xf4>;

@@ -1,0 +1,31 @@
+{
+  "prefix_matches": true,
+  "lines": [
+    "[59101.335479] rkisp rkisp-vir0: first params buf queue",
+    "[59101.335604] rockchip-csi2-dphy1: dphy1, data_rate_mbps 891",
+    "[59101.335635] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1",
+    "[59101.335642] imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10",
+    "[59101.422055] imx415 1-001a: write reg array, sleep 30ms",
+    "[59101.423354] imx415 1-001a: set vblank 0x3a vts 2250",
+    "[59101.424743] imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)",
+    "[59101.425615] imx415 1-001a: set analog gain 0x33",
+    "[59101.575121] rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:85",
+    "[59101.796499] imx415 1-001a: set analog gain 0x32",
+    "[59101.867547] imx415 1-001a: set analog gain 0x31",
+    "[59101.927975] imx415 1-001a: set analog gain 0x2e",
+    "[59101.996033] imx415 1-001a: set analog gain 0x2c",
+    "[59102.061034] imx415 1-001a: set analog gain 0x28",
+    "[59102.132334] imx415 1-001a: set analog gain 0x27",
+    "[59102.195044] imx415 1-001a: set analog gain 0x25",
+    "[59102.260946] imx415 1-001a: set analog gain 0x24",
+    "[59102.327966] imx415 1-001a: set analog gain 0x22",
+    "[59102.395652] imx415 1-001a: set analog gain 0x21",
+    "[59102.461015] imx415 1-001a: set analog gain 0x20",
+    "[59102.533170] imx415 1-001a: set analog gain 0x1f",
+    "[59102.595095] imx415 1-001a: set analog gain 0x1e",
+    "[59102.662574] imx415 1-001a: set analog gain 0x1d",
+    "[59103.727618] imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10",
+    "[59103.729214] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1",
+    "[59103.729221] rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1"
+  ]
+}

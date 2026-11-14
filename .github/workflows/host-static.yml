@@ -84,6 +84,7 @@ jobs:
           python3 tools/tests/test_evrec_nal_start.py
           python3 tools/tests/test_evrec_ring_bounds.py
           python3 tools/tests/test_evrec_host.py
+          python3 tools/tests/test_evrec_dmabuf.py
           python3 tools/tests/test_evrec_model_contract.py
           python3 tools/tests/test_ov8858_controls.py
           python3 tools/tests/test_ov8858_interval.py

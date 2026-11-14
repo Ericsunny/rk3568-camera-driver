@@ -1,0 +1,58 @@
+{
+  "default": {
+    "argv": [
+      "strace",
+      "-f",
+      "-yy",
+      "-e",
+      "trace=ioctl",
+      "-o",
+      "/root/zc-allocation-20261114-9juwLl/default-decode.trace",
+      "ffmpeg",
+      "-nostdin",
+      "-v",
+      "info",
+      "-i",
+      "/root/zc-allocation-20261114-9juwLl/event-imx-dma-r1/event_20261114-201950-01.h264",
+      "-frames:v",
+      "1",
+      "-an",
+      "-f",
+      "null",
+      "-"
+    ],
+    "rc": 0,
+    "dmesg_delta": [
+      "[14471.801846] rga2: unknown ioctl cmd!"
+    ]
+  },
+  "software": {
+    "argv": [
+      "strace",
+      "-f",
+      "-yy",
+      "-e",
+      "trace=ioctl",
+      "-o",
+      "/root/zc-allocation-20261114-9juwLl/software-decode.trace",
+      "ffmpeg",
+      "-nostdin",
+      "-v",
+      "info",
+      "-hwaccel",
+      "none",
+      "-c:v",
+      "h264",
+      "-i",
+      "/root/zc-allocation-20261114-9juwLl/event-imx-dma-r1/event_20261114-201950-01.h264",
+      "-frames:v",
+      "1",
+      "-an",
+      "-f",
+      "null",
+      "-"
+    ],
+    "rc": 0,
+    "dmesg_delta": []
+  }
+}

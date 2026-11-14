@@ -1,0 +1,70 @@
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_READ, 0x72, 0x1, 0x1c), 0x55720186e4) = -1 EINVAL (无效的参数)
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x60, 0x1b, 0), 0x5572018660) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 --- SIGUSR1 {si_signo=SIGUSR1, si_code=SI_USER, si_pid=1008838, si_uid=0} ---
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1008870 ioctl(21</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fd99276e0) = 0
+1009169 +++ exited with 0 +++
+1009164 +++ exited with 0 +++
+1008912 +++ exited with 0 +++
+1008895 +++ exited with 0 +++
+1008870 +++ exited with 0 +++

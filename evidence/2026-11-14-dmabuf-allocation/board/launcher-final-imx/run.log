@@ -1,0 +1,39 @@
+imx415-isp: /dev/media1 -> /dev/video5
+>>> S_FMT 回填 1920x1080 stride=1920 sizeimage=3110400
+>>> 采集 /dev/video5 1920x1080,pre=3s post=2s ring=64MB 编码标称fps=15 gop=15
+>>> 编码输入模式=dmabuf
+>>> OSD 开启: #<seq> + t mm:ss.mmm @左上角(4px, sc=2), stride=1920
+>>> RTSP 监听 :18760 (多客户端, 上限 2)
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=17
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=17
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=17
+>>> 预录就绪: 已覆盖 3 秒并包含起始 IDR
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=17
+[evw] open event_id=1 last_pkts=63 pushed=63
+>>> 触发 seq=62 ts=4560.1ms -> pre_i=15 pre_seq=15 (ring_cnt=63 head=0 pushed=63)
+rtsp-ring: in=70 evict=40 depth=30 bytes=0.97/8MB tags=[40,70)
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=19
+rtsp: conn=0 play=0/2 sent=0 epoch=0 rej453=0 fds=19
+>>> 事件 1 完成(1 段, target_left)
+>>> 输入统计 mode=dmabuf copy_bytes=0 returned=93
+Input #0, h264, from '/root/zc-allocation-20261114-9juwLl/launcher-final-imx/service/event_20261114-212309-01.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1920x1080, 15 fps, 15 tbr, 1200k tbn, 30 tbc
+Output #0, mp4, to '/root/zc-allocation-20261114-9juwLl/launcher-final-imx/service/event_20261114-212309-01.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, q=2-31, 15 fps, 15 tbr, 192500 tbn, 15 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x55850f0c50] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+[mp4 @ 0x55850f0c50] Starting second pass: moving the moov atom to the beginning of the file
+frame=   78 fps=0.0 q=-1.0 Lsize=    2558kB time=00:00:05.13 bitrate=4082.8kbits/s speed= 166x    
+video:2557kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.044796%
+[delivery] complete event_20261114-212309-01.json
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+rga_api version 1.9.2_[1]
+ffprobe library output:
+librga fail to get driver version! Compatibility mode will be enabled.
+rga_api version 1.9.2_[1]

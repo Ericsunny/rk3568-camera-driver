@@ -1,0 +1,28 @@
+{
+  "rc": 1,
+  "stop": null,
+  "child_alive": false,
+  "start_utc": "2026-11-14T13:39:26Z",
+  "user_s": 0.0033460000000000018,
+  "system_s": 0.073619,
+  "maxrss_kb": 15456,
+  "triggered": false,
+  "elapsed_s": 1.088,
+  "3a_after": {
+    "argv": [
+      "systemctl",
+      "is-active",
+      "rkaiq_3A"
+    ],
+    "rc": 0,
+    "output": "active\n"
+  },
+  "busy_after": {
+    "argv": [
+      "fuser",
+      "/dev/video5"
+    ],
+    "rc": 1,
+    "output": ""
+  }
+}

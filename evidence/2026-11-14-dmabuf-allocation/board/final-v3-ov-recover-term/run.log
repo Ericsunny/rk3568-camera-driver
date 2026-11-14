@@ -1,0 +1,13 @@
+>>> S_FMT 回填 1280x960 stride=1280 sizeimage=1843200
+>>> 采集 /dev/video14 1280x960,pre=2s post=2s ring=64MB 编码标称fps=30 gop=30
+>>> 编码输入模式=dmabuf
+>>> OSD 开启: #<seq> + t mm:ss.mmm @左上角(4px, sc=2), stride=1280
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+>>> [fault-sim] 第 20 次 DQBUF 注入失败
+DQBUF: Input/output error
+>>> 链路故障, 开始恢复(上限 1 次)
+>>> S_FMT 回填 1280x960 stride=1280 sizeimage=1843200
+>>> 恢复 第 1/1 次: 重开设备 成功
+>>> 恢复成功, 继续采集(frame_seq 从 18 起)
+>>> 输入统计 mode=dmabuf copy_bytes=0 returned=19
+>>> 收到 SIGTERM, 已停止

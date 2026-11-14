@@ -29,7 +29,9 @@ def main():
         (root/'config/final-demo.env').write_text(''.join(
             key+'='+shlex.quote(value)+'\n' for key,value in config.items()))
         binary=root/'evrec'
-        binary.write_text('#!/bin/sh\nprintf "%s\\n" "$@" > "$MOCK_ARGV"\n')
+        binary.write_text('#!/bin/sh\nif [ "${1:-}" = --help ]; then\n'
+                          '  [ "${MOCK_SUPPORT_DMA:-1}" = 1 ] && echo --encoder-input\n'
+                          '  exit 0\nfi\nprintf "%s\\n" "$@" > "$MOCK_ARGV"\n')
         binary.chmod(0o755)
         mocks={
             'pgrep':'[ "${MOCK_DAEMON:-1}" = 1 ] && echo 123\n',
@@ -67,6 +69,16 @@ def main():
         assert run('manual',out,RTSP_PORT_OVERRIDE='8555').returncode==0
         args=(root/'observed-args.txt').read_text().splitlines()
         assert args[args.index('--rtsp')+1]=='8555'
+        out=root/'dmabuf'
+        assert run('manual',out,ENCODER_INPUT='dmabuf').returncode==0
+        args=(root/'observed-args.txt').read_text().splitlines()
+        assert args[args.index('--encoder-input')+1]=='dmabuf'
+        out=root/'unsupported-dmabuf'
+        assert run('manual',out,ENCODER_INPUT='dmabuf',MOCK_SUPPORT_DMA='0').returncode!=0
+        assert not out.exists()
+        out=root/'invalid-input'
+        assert run('manual',out,ENCODER_INPUT='other').returncode==2
+        assert not out.exists()
         for port in ['0','65536','-1','abc','999999']:
             out=root/('bad-port-'+port)
             assert run('manual',out,RTSP_PORT_OVERRIDE=port).returncode==2

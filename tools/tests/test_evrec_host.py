@@ -41,6 +41,9 @@ EVENT_PRELUDE = r'''
 #include <sys/stat.h>
 
 static FILE *g_ev_fp, *g_ev_packets, *json_fp;
+struct evw_queue { int started; };
+static struct evw_queue g_ev_queue;
+static int evw_queue_stop(struct evw_queue *q) { (void)q; return 0; }
 static char g_ev_path[512];
 static unsigned char ev_buf[4 << 20];
 static unsigned ev_bn, g_ev_event_id, g_ev_segment, g_ev_coalesced, g_ev_cdskip;
@@ -201,12 +204,30 @@ static unsigned char data[64], rgb[64];
 static unsigned char *g_rga_buf = data, *g_rgb = rgb;
 static rga_buffer_t g_rga_src, g_rga_dst;
 static int g_detect = 1, w = 4, h = 4, input_fd = -1;
+static unsigned frame_seq, g_det_every = 1;
 static int rc, g_streak, g_det_announced, g_trigger;
 static const char *end_reason;
 static int g_npu_w = 4, g_npu_h = 4;
 static struct { unsigned char *map[1]; unsigned stride; } cap;
 static struct { int index; } b;
 static double t_stage, t_rga, t_npu;
+#ifdef HAVE_RKNN
+typedef struct { int x, y, width, height; } im_rect;
+typedef struct { int fd; } rknn_tensor_mem;
+#define RKNN_SUCC 0
+#define RKNN_MEMORY_SYNC_FROM_DEVICE 1
+#define RKNN_MEMORY_SYNC_TO_DEVICE 2
+#define IM_SYNC 1
+static int g_npu_input_dmabuf, g_nctx, fail_sync, fail_process, process_calls;
+static int g_npu_pad_rw = -1, g_npu_pad_rh = -1;
+static rknn_tensor_mem tensor_mem = { 7 }, *g_npu_rgb_mem = &tensor_mem;
+static int rknn_mem_sync(int ctx, rknn_tensor_mem *mem, int direction)
+{ (void)ctx; (void)mem; (void)direction; return fail_sync; }
+static IM_STATUS improcess(rga_buffer_t a, rga_buffer_t b, rga_buffer_t c,
+                           im_rect d, im_rect e, im_rect f, int usage)
+{ (void)a; (void)b; (void)c; (void)d; (void)e; (void)f; (void)usage;
+  process_calls++; return fail_process; }
+#endif
 #define CLOCK_MONOTONIC 1
 static double now_ms(int clock_id) { (void)clock_id; return 1.0; }
 static rga_buffer_t wrapbuffer_virtualaddr_t(void *p, int a, int b, int c, int d, int e)
@@ -254,6 +275,18 @@ int main(void)
 #endif
 #ifdef HAVE_RKNN
     if (rc || g_rga_n != 3) return 4;
+    g_det_every = 2; frame_seq = 1;
+    run_detection();
+    if (npu_calls != 1) return 8;
+    frame_seq = 2; run_detection();
+    if (npu_calls != 2) return 9;
+    g_npu_input_dmabuf = 1;
+    fail_sync = 1;
+    if (rga_scale(data, 4, 4, 4, -1) == 0 || process_calls) return 5;
+    fail_sync = 0; fail_process = 1;
+    if (rga_scale(data, 4, 4, 4, -1) == 0 || process_calls != 1) return 6;
+    fail_process = 0;
+    if (rga_scale(data, 4, 4, 4, -1) != 0 || process_calls != 2) return 7;
 #else
     if (rc || g_rga_n != 1) return 4;
 #endif
@@ -307,7 +340,7 @@ def main():
              EVENT_TEST.replace('SIGNAL_BLOCK', signal)
                        .replace('EXIT_BLOCK', exit_block)
                        .replace('NORMAL_CLOSE_BLOCK', normal_close))
-    caller = block('if (g_detect) {\n\t\t\tint rga_rc = rga_scale(', '\n#else')
+    caller = block('if (g_detect && frame_seq % g_det_every == 0) {\n\t\t\tint rga_rc = rga_scale(', '\n#else')
     rga = (RGA_PRELUDE + function('static void letterbox_size(') + '\n' +
            function('static void pad_rgb(') + '\n' + function('static int rga_scale(') + '\n' +
            RGA_TEST.replace('RGA_CALLER_BLOCK', caller))

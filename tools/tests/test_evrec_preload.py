@@ -40,6 +40,9 @@ PRELUDE = r'''
 #include <errno.h>
 #include <time.h>
 static FILE *g_ev_fp, *g_ev_packets;
+struct evw_queue { int started; };
+static struct evw_queue g_ev_queue;
+static int evw_queue_stop(struct evw_queue *q) { (void)q; return 0; }
 static char g_ev_path[512];
 static unsigned char ev_buf[64];
 static unsigned ev_bn, g_ev_event_id = 7, g_ev_segment = 2;

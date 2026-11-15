@@ -80,11 +80,16 @@ jobs:
 
       - name: 事件交付与协议读取测试(主机合成数据和替身)
         run: |
+          gcc -std=c11 -pthread -Wall -Wextra -Werror -fsanitize=address,undefined tools/tests/test_evrec_writer.c -o /tmp/test_evrec_writer
+          /tmp/test_evrec_writer
+          python3 tools/tests/test_evrec_async_event.py
           python3 tools/tests/test_evrec_preroll.py
           python3 tools/tests/test_evrec_nal_start.py
           python3 tools/tests/test_evrec_ring_bounds.py
+          python3 tools/tests/test_recovery_rtsp_contract.py
           python3 tools/tests/test_evrec_host.py
           python3 tools/tests/test_evrec_dmabuf.py
+          python3 tools/tests/test_rtsp_shutdown.py
           python3 tools/tests/test_evrec_model_contract.py
           python3 tools/tests/test_ov8858_controls.py
           python3 tools/tests/test_ov8858_interval.py

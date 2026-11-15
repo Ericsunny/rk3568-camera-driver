@@ -31,6 +31,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <signal.h>
+#include <stdatomic.h>
 #include <time.h>
 #include <stdint.h>
 #include <limits.h>
@@ -44,6 +45,7 @@
 #include <sys/uio.h>
 #include <dirent.h>
 #include "rtsp_hub.h"
+#include "evrec_writer.h"
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
@@ -190,7 +192,7 @@ static int cap_open(const char *dev, int w, int h, int nbufs)
 	struct v4l2_requestbuffers rb;
 	int i;
 
-	cap.fd = open(dev, O_RDWR);
+	cap.fd = open(dev, O_RDWR | O_NONBLOCK);
 	if (cap.fd < 0) {
 		perror("open");
 		return -1;
@@ -610,6 +612,13 @@ static int g_detect, g_rga_w = 640, g_rga_h = 360;
 static unsigned long g_rga_sum, g_rga_n;
 static unsigned char *g_rgb;
 static int g_npu_w = 640, g_npu_h = 640;
+static int g_npu_input_dmabuf;
+
+#ifdef HAVE_RKNN
+static rknn_context g_nctx;
+static rknn_tensor_mem *g_npu_rgb_mem;
+static int g_npu_pad_rw = -1, g_npu_pad_rh = -1;
+#endif
 
 #ifdef HAVE_RGA
 static rga_buffer_t g_rga_src, g_rga_dst;
@@ -677,13 +686,49 @@ static int rga_scale(const void *src_va, unsigned sw, unsigned sh, unsigned src_
 	else
 		g_rga_src = wrapbuffer_virtualaddr_t((void *)src_va, sw, sh, src_stride, sh,
 						     RK_FORMAT_YCbCr_420_SP);
-	st = imresize_t(g_rga_src, g_rga_dst, 0, 0, 0, 1);
+#ifdef HAVE_RKNN
+	if (g_npu_input_dmabuf) {
+		im_rect src_rect = {0}, dst_rect = {0}, pat_rect = {0};
+		rga_buffer_t pat = {0};
+
+		if (!g_npu_rgb_mem || g_npu_rgb_mem->fd < 0)
+			return -1;
+		/* The border persists until the capture geometry changes. */
+		if (rw != g_npu_pad_rw || rh != g_npu_pad_rh) {
+			if (rknn_mem_sync(g_nctx, g_npu_rgb_mem,
+			                  RKNN_MEMORY_SYNC_FROM_DEVICE) != RKNN_SUCC)
+				return -1;
+			memset(g_rgb, 114, (size_t)g_npu_w * g_npu_h * 3);
+			if (rknn_mem_sync(g_nctx, g_npu_rgb_mem,
+			                  RKNN_MEMORY_SYNC_TO_DEVICE) != RKNN_SUCC)
+				return -1;
+			g_npu_pad_rw = rw;
+			g_npu_pad_rh = rh;
+		}
+		g_rga_dst = wrapbuffer_fd_t(g_npu_rgb_mem->fd, g_npu_w, g_npu_h,
+		                           g_npu_w, g_npu_h, RK_FORMAT_RGB_888);
+		dst_rect.x = (g_npu_w - rw) / 2;
+		dst_rect.y = (g_npu_h - rh) / 2;
+		dst_rect.width = rw;
+		dst_rect.height = rh;
+		st = improcess(g_rga_src, g_rga_dst, pat, src_rect, dst_rect,
+		               pat_rect, IM_SYNC);
+	} else
+#endif
+		st = imresize_t(g_rga_src, g_rga_dst, 0, 0, 0, 1);
 	if (st != IM_STATUS_SUCCESS) {
 		fprintf(stderr, "RGA 失败: %s\n", imStrError(st));
 		return -1;
 	}
 #ifdef HAVE_RKNN
-	pad_rgb(g_rgb, g_npu_w, g_npu_h, rw, rh);
+	if (g_npu_input_dmabuf) {
+		/* The following diagnostics read the RGA-written buffer on the CPU. */
+		if (rknn_mem_sync(g_nctx, g_npu_rgb_mem,
+		                  RKNN_MEMORY_SYNC_FROM_DEVICE) != RKNN_SUCC)
+			return -1;
+	} else {
+		pad_rgb(g_rgb, g_npu_w, g_npu_h, rw, rh);
+	}
 #endif
 	{	/* 采样均值: 与 camd 同口径(Y 平面每 16 像素取 1) */
 		unsigned long sum = 0, n = 0;
@@ -718,6 +763,7 @@ static float g_obj_thresh = OBJ_THRESH;
 static int g_no_obj_mul = 1; /* YOLOv8 score_sum is not a second objectness probability. */
 static float g_det_score = 0.45f;   /* 触发所需分数 */
 static int g_det_frames = 3;        /* 连续命中帧数 */
+static unsigned g_det_every = 1;     /* sample one in N captured frames */
 static int g_streak;
 static int g_det_announced;	    /* 本轮连击是否已打过"检测触发" */
 /* S1(事件治理,docs/37): 事件延长判定用 last_detect_ms,不用 streak ——
@@ -874,7 +920,6 @@ static unsigned g_det_total, g_det_max;
 static float g_score_max;
 
 #ifdef HAVE_RKNN
-static rknn_context g_nctx;
 static rknn_tensor_attr g_in_attr, g_out_attr[MAX_OUT];
 static unsigned g_nout;
 
@@ -897,14 +942,53 @@ static int npu_init(void)
 
 	ret = rknn_query(g_nctx, RKNN_QUERY_NATIVE_INPUT_ATTR, &g_in_attr, sizeof(g_in_attr));
 	if (ret != RKNN_SUCC) { fprintf(stderr, "query native input %d\n", ret); return -1; }
+	if (g_npu_input_dmabuf && (g_in_attr.n_dims != 4 ||
+	    g_in_attr.dims[0] != 1 || g_in_attr.dims[1] != 640 ||
+	    g_in_attr.dims[2] != 640 || g_in_attr.dims[3] != 3)) {
+		fprintf(stderr, "不支持的 NPU 共享输入维度\n");
+		return -1;
+	}
 	/* NATIVE 输入是 NHWC [1,640,640,3] */
 	g_npu_h = (int)g_in_attr.dims[1];
 	g_npu_w = (int)g_in_attr.dims[2];
 
-	/* 本入口使用 inputs_set/outputs_get 的拷贝路径，不分配未绑定的 native 内存。 */
 	sz = g_npu_w * g_npu_h * 3;
-	g_rgb  = malloc((size_t)sz);
-	if (!g_rgb) return -1;
+	if (g_npu_input_dmabuf) {
+		rknn_tensor_attr input = g_in_attr;
+
+		/* The board-validated path is a tightly packed UINT8 RGB image.
+		 * Runtime conversion remains enabled for the INT8 model input. */
+		if (g_in_attr.n_dims != 4 || g_in_attr.dims[0] != 1 ||
+		    g_in_attr.dims[3] != 3 || g_in_attr.fmt != RKNN_TENSOR_NHWC ||
+		    g_in_attr.type != RKNN_TENSOR_INT8 || g_in_attr.zp != -128 ||
+		    g_in_attr.qnt_type != RKNN_TENSOR_QNT_AFFINE_ASYMMETRIC ||
+		    fabsf(g_in_attr.scale - 1.0f / 255.0f) > 0.000001f ||
+		    g_npu_w != 640 || g_npu_h != 640 ||
+		    g_in_attr.size_with_stride != (unsigned)sz ||
+		    (g_in_attr.w_stride && g_in_attr.w_stride != (unsigned)g_npu_w) ||
+		    (g_in_attr.h_stride && g_in_attr.h_stride != (unsigned)g_npu_h)) {
+			fprintf(stderr, "不支持的 NPU 共享输入契约\n");
+			return -1;
+		}
+		g_npu_rgb_mem = rknn_create_mem(g_nctx, (uint32_t)sz);
+		if (!g_npu_rgb_mem || !g_npu_rgb_mem->virt_addr ||
+		    g_npu_rgb_mem->fd < 0 || g_npu_rgb_mem->size < (unsigned)sz) {
+			fprintf(stderr, "NPU 共享输入分配失败\n");
+			return -1;
+		}
+		input.type = RKNN_TENSOR_UINT8;
+		input.fmt = RKNN_TENSOR_NHWC;
+		input.pass_through = 0;
+		if (rknn_set_io_mem(g_nctx, g_npu_rgb_mem, &input) != RKNN_SUCC) {
+			fprintf(stderr, "NPU 共享输入绑定失败\n");
+			return -1;
+		}
+		g_rgb = g_npu_rgb_mem->virt_addr;
+		printf(">>> NPU 输入: dmabuf UINT8 RGB, runtime 转换已启用\n");
+	} else {
+		g_rgb = malloc((size_t)sz);
+		if (!g_rgb) return -1;
+	}
 
 	{	rknn_input_output_num io;
 		unsigned k;
@@ -977,9 +1061,13 @@ static int npu_run(const unsigned char *rgb)
 				rgb[0], rgb[1], rgb[2]);
 	}
 
-	ret = rknn_inputs_set(g_nctx, 1, &in);
+	if (g_npu_input_dmabuf)
+		ret = rknn_mem_sync(g_nctx, g_npu_rgb_mem, RKNN_MEMORY_SYNC_TO_DEVICE);
+	else
+		ret = rknn_inputs_set(g_nctx, 1, &in);
 	if (ret != RKNN_SUCC) {
-		fprintf(stderr, "[npu] inputs_set ret=%d\n", ret);
+		fprintf(stderr, "[npu] %s ret=%d\n",
+		        g_npu_input_dmabuf ? "input mem_sync" : "inputs_set", ret);
 		return -1;
 	}
 	ret = rknn_run(g_nctx, NULL);
@@ -1152,13 +1240,9 @@ static int h264_packet_flags(const unsigned char *p, int len)
 	return flags;
 }
 
-/* ---------------- S2: 流式事件写入(docs/37 §3.3) ----------------
- * 事件 = 临时文件(.part)打开后逐包 append;结束才 close+rename+JSON。
- * pre-roll 在事件开启时从 ring 取(自最近 IDR);之后 ring_push 单点 append。
- * 背压: 用户态 4MB 缓冲批量写, 不逐包 fsync; flush 失败/超时立即收尾当前
- * 文件并停录(write_error), 绝不阻塞采集(docs/37 §3.5)。
- * 注意: ring_push 在主循环线程内调用, writer 写失败只置标志, 文件收尾
- * 延迟到主循环的事件状态机里做(避免 IO 在 push 路径上拖采集)。 */
+/* Event payload/packet metadata writes run on one bounded writer thread.
+ * Queue overflow and write errors fail the event; .part is retained.
+ * Event open and final publication remain synchronous at segment boundaries. */
 static FILE *g_ev_fp;			/* 当前事件 .part 文件 */
 static FILE *g_ev_packets;		/* 包时间记录，与视频一起关闭 */
 static char g_ev_path[512];		/* 最终名(不含 .part) */
@@ -1191,12 +1275,15 @@ static int ev_cooldown_active(void)
 }
 static double g_ev_first_ts, g_ev_last_ts;	/* 媒体跨度: 首包/末包 ts_ms */
 #define EV_BUF_CAP (4u << 20) /* 4 MiB event write batch, not a per-packet fsync */
-static int g_ev_werr;			/* 写失败标志(主循环收尾时清) */
+static atomic_int g_ev_werr;		/* writer publishes errors to capture loop */
 static int g_pre_seconds, g_post_seconds;
 static char g_out_base[512];		/* 事件输出前缀(带运行时间戳, main 里赋值) */
 
 static unsigned char ev_buf[EV_BUF_CAP];	/* 用户态写缓冲(批量, 不逐包 fsync) */
 static unsigned ev_bn;
+#define EVW_QUEUE_MAX_BYTES (64u << 20)
+#define EVW_QUEUE_MAX_PACKETS 4096u
+static struct evw_queue g_ev_queue = EVW_QUEUE_INITIALIZER;
 
 static void ev_flush(void)
 {
@@ -1208,38 +1295,62 @@ static void ev_flush(void)
 	ev_bn = 0;
 }
 
+static int evw_consume(const struct evw_packet *p)
+{
+	if (!g_ev_packets || fprintf(g_ev_packets, "%u,%u,%.3f,%.3f,%d,%d\n",
+				     p->seq, p->pkt, p->ts_ms, p->cap_ms,
+				     (int)p->len, p->key) < 0) {
+		g_ev_werr = 1;
+		return -1;
+	}
+	if (p->len > EV_BUF_CAP - ev_bn)
+		ev_flush();
+	if (g_ev_werr)
+		return -1;
+	if (p->len <= EV_BUF_CAP - ev_bn) {
+		memcpy(ev_buf + ev_bn, p->data, p->len);
+		ev_bn += (unsigned)p->len;
+	} else {
+		if (g_ev_fp && fwrite(p->data, 1, p->len, g_ev_fp) != p->len)
+			g_ev_werr = 1;
+		g_ev_bytes += (unsigned long)p->len;
+	}
+	return g_ev_werr ? -1 : 0;
+}
+
+static int evw_finish_io(void)
+{
+	ev_flush();
+	/* Only the writer closes these streams; the producer joins before reuse. */
+	if (g_ev_fp && fclose(g_ev_fp) != 0)
+		g_ev_werr = 1;
+	g_ev_fp = NULL;
+	if (g_ev_packets && fclose(g_ev_packets) != 0)
+		g_ev_werr = 1;
+	g_ev_packets = NULL;
+	return g_ev_werr ? -1 : 0;
+}
+
+static int evw_enqueue(const unsigned char *d, int len, unsigned seq, unsigned pkt,
+		       double ts_ms, double cap_ms, int key)
+{
+	if (len <= 0 || evw_queue_push(&g_ev_queue, d, (size_t)len, seq, pkt,
+				       ts_ms, cap_ms, key) != 0) {
+		fprintf(stderr, ">>> 事件写队列已满或写入失败\n");
+		g_ev_werr = 1;
+		return -1;
+	}
+	g_ev_last_ts = ts_ms;
+	return 0;
+}
+
 static void evw_write(const unsigned char *d, int len, unsigned seq, unsigned pkt,
 		      double ts_ms, double cap_ms, int start)
 {
-
-	/* 包级游标: g_pushed 是全局单调包计数; 事件开启时快照过 pre-roll 尾,
-	 * 这里只放行之后的新包(同帧多包计数不同, 不会被误滤) */
-	if (g_pushed <= g_ev_last_pkts) {
-		fprintf(stderr, "[evw] skip: pushed=%lu last=%lu\n",
-			g_pushed, g_ev_last_pkts);
+	if (g_pushed <= g_ev_last_pkts)
 		return;
-	}
 	g_ev_last_pkts = g_pushed;
-	if (g_ev_first_ts == 0)
-		g_ev_first_ts = ts_ms;
-	g_ev_last_ts = ts_ms;
-	if (!g_ev_packets || fprintf(g_ev_packets, "%u,%u,%.3f,%.3f,%d,%d\n",
-				     seq, pkt, ts_ms, cap_ms, len, start) < 0) {
-		g_ev_werr = 1;
-		return;
-	}
-
-	if (ev_bn + (unsigned)len > EV_BUF_CAP)
-		ev_flush();
-	if (ev_bn + (unsigned)len <= EV_BUF_CAP) {
-		memcpy(ev_buf + ev_bn, d, (size_t)len);
-		ev_bn += (unsigned)len;
-	} else {
-		/* 单包超缓冲(理论不会): 直写 */
-		if (g_ev_fp && fwrite(d, 1, (size_t)len, g_ev_fp) != (size_t)len)
-			g_ev_werr = 1;
-		g_ev_bytes += (unsigned)len;
-	}
+	(void)evw_enqueue(d, len, seq, pkt, ts_ms, cap_ms, start);
 }
 
 /* S2: 事件开启 —— 开 .part, 从 ring 写 pre-roll(自 IDR 到 ring 尾),
@@ -1364,24 +1475,22 @@ static int evw_open_at(int pre_i, unsigned serial, unsigned segment,
 	g_ev_first_ts = g_ev_last_ts = 0;
 	g_ev_event_id = event_id;
 	g_ev_segment = segment;
+	if (evw_queue_start(&g_ev_queue, EVW_QUEUE_MAX_BYTES, EVW_QUEUE_MAX_PACKETS,
+			    evw_consume, evw_finish_io) != 0) {
+		fprintf(stderr, ">>> 事件写线程启动失败\n");
+		g_ev_werr = 1;
+		return -1;
+	}
 	/* pre-roll: from(最近 IDR) 到 ring 尾; 这些包之后由 evw_write 过滤。
 	 * 续段时 from 就是切段那个 IDR, 与上一段末尾的同一包重叠 1 个,
 	 * 这是刻意的: 两段都从 IDR 起, 各自独立可解码。 */
 	for (i = from; g_ev_fp && i < ring_cnt; i++) {
 		struct rec *r = ring_at(i);
-		if (fprintf(g_ev_packets, "%u,%u,%.3f,%.3f,%d,%d\n", r->seq,
-			    r->pkt, r->ts_ms, r->cap_ms, r->len, r->key) < 0) {
-			g_ev_werr = 1;
+		if (evw_enqueue(r->data, r->len, r->seq, r->pkt,
+				r->ts_ms, r->cap_ms, r->key) != 0)
 			break;
-		}
-		if (fwrite(r->data, 1, (size_t)r->len, g_ev_fp) != (size_t)r->len) {
-			g_ev_werr = 1;
-			break;
-		}
-		g_ev_bytes += (unsigned)r->len;
 		if (i == from)
 			g_ev_first_ts = r->ts_ms;
-		g_ev_last_ts = r->ts_ms;
 	}
 	/* 包级游标: pre-roll 写完后全局已推包数为界, 之后的新包才 append */
 	g_ev_last_pkts = g_pushed;
@@ -1447,6 +1556,14 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 	FILE *j;
 	int had_packets = g_ev_packets != NULL;
 
+	if (evw_queue_stop(&g_ev_queue) != 0) {
+		g_ev_werr = 1;
+		/* A failed join leaves stream ownership with the worker. */
+		if (g_ev_queue.started) {
+			fprintf(stderr, ">>> 事件写线程无法回收，不发布文件\n");
+			return -1;
+		}
+	}
 	ev_flush();
 	if (g_ev_fp && fclose(g_ev_fp) != 0)
 		g_ev_werr = 1;
@@ -1690,10 +1807,9 @@ static int link_recover(const char *dev, int w, int h, int used)
  *     pkb_push / pkb_set_stop / rtsp_ring_report / rtsp_stats_report
  *     (签名与原 static 版本一致, 由 rtsp_hub.c 提供)。 */
 
-/* ---------------- 阶段耗时(P9 观察项的证据) ----------------
- * 只统计 --detect 的帧, 三段严格串行在同一采集线程内:
- *   RGA 缩放 -> RKNN 推理 -> 编码(拷入编码缓冲 + OSD + 送帧到取包)
- * 三者均值之和直接解释"检测开启时 ~10 fps、纯录像 ~15 fps"。 */
+/* With detection enabled, report stage cost per processed capture frame.
+ * Sampling can skip RGA/RKNN on some frames; selected work remains serial.
+ * The reciprocal of stage cost is not end-to-end measured FPS. */
 static double g_t_rga, g_t_npu, g_t_enc;	/* 累计 ms */
 static unsigned long g_t_frames;		/* 累计帧数 */
 static double g_t_next_ms = 5000.0;		/* 下次打印时刻(相对 t_start) */
@@ -1773,6 +1889,11 @@ static void app_release(void)
 	}
 	enc_release();
 #ifdef HAVE_RKNN
+	if (g_npu_rgb_mem) {
+		rknn_destroy_mem(g_nctx, g_npu_rgb_mem);
+		g_npu_rgb_mem = NULL;
+		g_rgb = NULL;
+	}
 	if (g_nctx)
 		rknn_destroy(g_nctx);
 #endif
@@ -1813,8 +1934,10 @@ static void usage(void)
 "检测(内置 YOLOv8n):\n"
 "  --detect          启用检测, 命中即自动触发\n"
 "  --model PATH      RKNN 模型路径\n"
+"  --npu-input MODE  copy(默认) 或 dmabuf(共享 RGB 输入, runtime 转换)\n"
 "  --det-score F     命中分数阈值 (默认 0.45)\n"
 "  --det-frames N    连续命中帧数才触发 (默认 3)\n"
+"  --detect-every N  每 N 个采集帧检测一次 (1..120, 默认 1)\n"
 "  --obj-thresh F    objectness 阈值 (默认 0)\n"
 "  --rga-size WxH    RGA 缩放目标 (默认 640x360)\n"
 "\n"
@@ -1869,10 +1992,10 @@ int main(int argc, char **argv)
 		static const char * const need_val[] = {
 			"-d", "-w", "--pre", "--post", "--ring-mb", "-o",
 			"--trigger", "--kbps", "--fps", "--gop", "--model", "--max-events",
-			"--det-score", "--det-frames", "--obj-thresh",
+			"--det-score", "--det-frames", "--detect-every", "--obj-thresh",
 			"--rga-size", "--rtsp-ring", "--rtsp-ring-mb",
 			"--rtsp-clients", "--rtsp-deadline-s", "--ts-offset",
-			"--recover", "--fault-sim", "--rtp-trace", "--encoder-input",
+			"--recover", "--fault-sim", "--rtp-trace", "--encoder-input", "--npu-input",
 		};
 		size_t j;
 
@@ -1923,12 +2046,36 @@ int main(int argc, char **argv)
 		}
 		else if (!strcmp(argv[i], "--detect")) g_detect = 1;
 		else if (!strcmp(argv[i], "--model")) g_model = argv[++i];
+		else if (!strcmp(argv[i], "--npu-input")) {
+			const char *mode;
+			if (i + 1 >= argc) {
+				fprintf(stderr, "--npu-input 缺少参数\n");
+				return 1;
+			}
+			mode = argv[++i];
+			if (strcmp(mode, "copy") && strcmp(mode, "dmabuf")) {
+				fprintf(stderr, "--npu-input 只支持 copy 或 dmabuf\n");
+				return 1;
+			}
+			g_npu_input_dmabuf = !strcmp(mode, "dmabuf");
+		}
 		else if (!strcmp(argv[i], "--max-events")) g_max_events = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--max-event-sec")) g_max_event_sec = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--cooldown")) g_cooldown_sec = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--disk-min-mb")) g_disk_min_mb = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--det-score")) g_det_score = (float)atof(argv[++i]);
 		else if (!strcmp(argv[i], "--det-frames")) g_det_frames = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "--detect-every")) {
+			char *end;
+			long value;
+			errno = 0;
+			value = strtol(argv[++i], &end, 10);
+			if (errno || !*argv[i] || *end || value < 1 || value > 120) {
+				fprintf(stderr, "--detect-every 取 1..120\n");
+				return 1;
+			}
+			g_det_every = (unsigned)value;
+		}
 		else if (!strcmp(argv[i], "--obj-thresh")) g_obj_thresh = (float)atof(argv[++i]);
 		else if (!strcmp(argv[i], "--rga-size")) sscanf(argv[++i], "%dx%d", &g_rga_w, &g_rga_h);
 		else if (!strcmp(argv[i], "--osd")) g_osd = 1;
@@ -1960,6 +2107,16 @@ int main(int argc, char **argv)
 			}
 		}
 	}
+	if (g_npu_input_dmabuf && !g_detect) {
+		fprintf(stderr, "--npu-input dmabuf 需要 --detect\n");
+		return 1;
+	}
+#if !defined(HAVE_RGA) || !defined(HAVE_RKNN)
+	if (g_npu_input_dmabuf) {
+		fprintf(stderr, "--npu-input dmabuf 需要 RGA 和 RKNN\n");
+		return 1;
+	}
+#endif
 	if (g_rtsp_port < 0 || g_rtsp_port > 65535) {
 		fprintf(stderr, "--rtsp 取值 0..65535 (0=关闭)\n");
 		return 1;
@@ -2045,6 +2202,8 @@ int main(int argc, char **argv)
 	printf(">>> 采集 %s %dx%d,pre=%ds post=%ds ring=%zuMB 编码标称fps=%d gop=%d\n",
 	       dev, w, h, pre_sec, post_sec, ring_limit >> 20, fps, gop);
 	printf(">>> 编码输入模式=%s\n", g_input_dmabuf ? "dmabuf" : "copy");
+	if (g_detect)
+		printf(">>> 检测间隔=%u 采集帧; 连续命中按检测帧计数\n", g_det_every);
 	if (g_osd)
 		printf(">>> OSD 开启: #<seq> + t mm:ss.mmm @左上角(4px, sc=2), stride=%u\n",
 		       cap.stride);
@@ -2069,6 +2228,7 @@ int main(int argc, char **argv)
 	for (;;) {
 		struct v4l2_buffer b;
 		struct v4l2_plane pl;
+		struct pollfd capture_poll = { .fd = cap.fd, .events = POLLIN };
 		MppFrame frame = NULL;
 		MppPacket pkt = NULL;
 		MppBuffer encoder_buffer;
@@ -2078,6 +2238,27 @@ int main(int argc, char **argv)
 
 		if (g_stop)
 			break;
+		/* A blocked camera must not hide a writer failure indefinitely. */
+		if (g_ev_werr || evw_queue_failed(&g_ev_queue)) {
+			fprintf(stderr, ">>> 事件写入器失败\n");
+			end_reason = "write_error";
+			rc = 1;
+			break;
+		}
+		{
+			int pr = poll(&capture_poll, 1, 200);
+			if (pr == 0 || (pr < 0 && errno == EINTR))
+				continue;
+			if (pr < 0 || (capture_poll.revents & (POLLERR | POLLHUP | POLLNVAL))) {
+				if (pr < 0)
+					perror("capture poll");
+				else
+					fprintf(stderr, ">>> capture poll revents=0x%x\n", capture_poll.revents);
+				goto link_fault;
+			}
+			if (!(capture_poll.revents & POLLIN))
+				continue;
+		}
 		memset(&pl, 0, sizeof(pl));
 		memset(&b, 0, sizeof(b));
 		b.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
@@ -2088,7 +2269,7 @@ int main(int argc, char **argv)
 		    xioctl(cap.fd, VIDIOC_DQBUF, &b) < 0) {
 			if (g_stop)
 				break;	/* SIGTERM: 不再重试, 尽快退出 */
-			if (errno == EINTR)
+			if (errno == EINTR || errno == EAGAIN)
 				continue;
 			perror("DQBUF");
 			goto link_fault;
@@ -2171,7 +2352,7 @@ int main(int argc, char **argv)
 		t_stage = now_ms(CLOCK_MONOTONIC);
 #ifdef HAVE_RGA
 #ifdef HAVE_RKNN
-		if (g_detect) {
+		if (g_detect && frame_seq % g_det_every == 0) {
 			int rga_rc = rga_scale(cap.map[b.index], w, h, cap.stride, input_fd);
 			t_rga = now_ms(CLOCK_MONOTONIC) - t_stage;
 			t_stage += t_rga;

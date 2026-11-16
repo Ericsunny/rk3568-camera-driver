@@ -2,7 +2,7 @@
 
 ## 当前运行流程
 
-入口为 `sh tools/run_camera_demo.sh manual|detect NEW_RUN_DIRECTORY`，配置见 [`config/final-demo.env`](../../config/final-demo.env)。`evrec` 在一个采集进程中完成可选检测、编码与事件写入；RTSP 客户端各自发送，`camera_service.py` 在另一个进程中完成录像后的 MP4 封装，避免封装 I/O 直接阻塞采集循环。
+入口为 `./camera_demo imx415-isp|ov8858-isp manual|detect NEW_RUN_DIRECTORY`，配置见 [`config/final-demo.env`](../../config/final-demo.env)。`evrec` 在一个采集进程中完成可选检测、编码与事件写入；RTSP 客户端各自发送，C++ `camera_service` 监管采集并启动独立的 `camera_delivery` 进程完成录像后的 MP4 交付，避免封装 I/O 直接阻塞采集循环。
 
 事件输出分为：
 

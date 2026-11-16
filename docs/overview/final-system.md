@@ -59,16 +59,16 @@ flowchart LR
 
 ```sh
 make apps
-sh tools/run_camera_demo.sh ov8858-isp manual /root/new-manual-run
+./camera_demo ov8858-isp manual /root/new-manual-run
 # 预热后，在另一终端更新 /root/new-manual-run/trigger 的时间触发
 # 检测模式另选隐私安全的场景，使用新的运行目录：
-sh tools/run_camera_demo.sh imx415-isp detect /root/new-detect-run
+./camera_demo imx415-isp detect /root/new-detect-run
 # 显式选择复制输入用于兼容和对照：
-ENCODER_INPUT=copy NPU_INPUT=copy sh tools/run_camera_demo.sh imx415-isp detect /root/new-copy-run
+ENCODER_INPUT=copy NPU_INPUT=copy ./camera_demo imx415-isp detect /root/new-copy-run
 # 检测抽帧会影响检测时效，默认不启用：
-DETECT_EVERY=2 sh tools/run_camera_demo.sh imx415-isp detect /root/new-sampled-run
+DETECT_EVERY=2 ./camera_demo imx415-isp detect /root/new-sampled-run
 # 两路并发，每路独立目录与端口；向进程发送 SIGTERM 正常收尾
-python3 tools/run_dual_camera.py manual /root/new-dual-run
+./run_dual_camera manual /root/new-dual-run
 # 分别触发 /root/new-dual-run/imx415/trigger、/root/new-dual-run/ov8858/trigger
 ```
 
@@ -76,7 +76,17 @@ python3 tools/run_dual_camera.py manual /root/new-dual-run
 
 启动器只检查、记录并运行独立应用，不改服务或启动配置。先确认现役环境和设备无人占用；后台运行按维护约定使用 nohup/disown，保留 stdout/stderr 和退出码。手动事件、自动事件分别验收，手动触发成功不能代替模型检测成功。
 
-本次候选应用目录为 `/root/camera-integration-20261110-app`，历史 #57 目录为 `/root/camera-service-final`；先核对内核、设备拓扑和板钟，重启后时钟可能回到出厂时间。主服务依赖 Python 3、FFmpeg/FFprobe、匹配的 3A 与模型。使用新的绝对运行目录，不覆盖既有录像。
+本次候选应用目录为 `/root/camera-integration-20261110-app`，历史 #57 目录为 `/root/camera-service-final`；先核对内核、设备拓扑和板钟，重启后时钟可能回到出厂时间。C++ 主服务依赖 `media-ctl`、FFmpeg/FFprobe、匹配的 3A 与模型，配置文件为不执行命令的 `KEY=VALUE` 文本。使用新的绝对运行目录，不覆盖既有录像。
+
+C++ 服务替代入口经过主机替身、板端编译与合成视频封装验证；板上以 `/bin/true` 代替采集程序时，两路手动模式和 IMX415 检测模式的启动前检查完成，包含拓扑解析与检测模型哈希检查。这些检查没有启动真实采集。原 Shell/Python 入口保留作兼容与对照。历史板测对应当时的脚本版本，不自动证明 C++ 主链已完成真实相机业务验证。
+
+入口与进程职责：
+
+- `run_dual_camera` 创建两路独立运行目录，启动并监管两个 `camera_demo`；任一路意外退出时通知另一条停止。
+- `camera_demo` 读取 `config/*.env` 中的简单字面量配置，调用 `resolve_camera` 按已启用的媒体拓扑寻找采集节点，并检查 3A、设备占用、端口、模型与可执行文件；通过后启动 `camera_service`。
+- `camera_service` 监管 `evrec`，按完成事件启动有界的单个 `camera_delivery` 工作进程；后者核对元数据和帧数，使用 FFmpeg/FFprobe 封装和检查 MP4，再发布交付状态。
+
+配置文件不由 shell 执行，值不能使用变量展开、命令替换或带空格的 shell 引号。主运行路径不需要 Python；测试脚本仍使用 Python。上述程序继续依赖 `media-ctl`、`pgrep`、`fuser`、`ss`、`sha256sum` 和 FFmpeg/FFprobe 等系统工具。
 
 ## 运行前的环境检查
 
@@ -84,10 +94,9 @@ python3 tools/run_dual_camera.py manual /root/new-dual-run
 
 ```bash
 uname -a
-python3 --version
 ffmpeg -version | head -1
 ffprobe -version | head -1
-for cmd in python3 ffmpeg ffprobe media-ctl pgrep fuser sha256sum ss; do
+for cmd in ffmpeg ffprobe media-ctl pgrep fuser sha256sum ss; do
     command -v "$cmd" || echo "缺少: $cmd"
 done
 ldd ./evrec

@@ -8,7 +8,7 @@
 
 ```sh
 ENCODER_INPUT=dmabuf NPU_INPUT=dmabuf \
-  sh tools/run_camera_demo.sh imx415-isp detect /absolute/path/to/new-run
+  ./camera_demo imx415-isp detect /absolute/path/to/new-run
 ```
 
 启动器可显式指定 `ENCODER_INPUT=copy NPU_INPUT=copy` 选择复制路径；手动模式不启用 NPU 共享输入。`NPU_INPUT=dmabuf` 要求检测模式和支持该参数的程序；模型契约不符时拒绝启动。本地曾进行两路同帧对照、短时手动录像与 RTSP 测试，原始记录未收录，不能在仓库内独立复核。没有测量 DDR 带宽或证明 runtime 内部没有复制，长期稳定性与其他模型兼容性仍待验证。

@@ -41,6 +41,11 @@ __pycache__/
 /hdr_demo
 /evrec
 /camd
+/camera_demo
+/camera_service
+/camera_delivery
+/resolve_camera
+/run_dual_camera
 /ioctlspy.so
 /mini3a/mini3a
 

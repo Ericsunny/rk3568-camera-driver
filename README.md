@@ -39,15 +39,17 @@ flowchart LR
 
 ## 快速开始
 
-`evrec` 和 `camd` 依赖 Rockchip MPP、RGA、RKNN 头文件与运行库；自动交付另需 Python 3、FFmpeg/FFprobe。在依赖齐全的目标 Linux 环境中可运行：
+`evrec` 和 `camd` 依赖 Rockchip MPP、RGA、RKNN 头文件与运行库；C++ 相机服务需要 C++17 编译器、`media-ctl`、FFmpeg/FFprobe 和基础系统工具。在依赖齐全的目标 Linux 环境中可运行：
+
+C++ 服务入口已做主机替身测试、板端编译和合成录像封装检查；真实相机业务链路的板端验证尚未完成。
 
 ```bash
 make apps
-sh tools/run_camera_demo.sh ov8858-isp manual /root/new-event-run
+./camera_demo ov8858-isp manual /root/new-event-run
 # 预热后，在另一终端 touch /root/new-event-run/trigger
 # IMX415 配置改为 imx415-isp；人体检测模式将 manual 改为 detect
 # 双路手动模式：两个独立目录，端口分别为 8554 和 8555
-python3 tools/run_dual_camera.py manual /root/new-dual-run
+./run_dual_camera manual /root/new-dual-run
 # 分别触发 /root/new-dual-run/imx415/trigger、/root/new-dual-run/ov8858/trigger
 ```
 

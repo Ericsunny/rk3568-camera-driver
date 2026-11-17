@@ -1,0 +1,2 @@
+capture_import_open: Invalid argument
+RESULT rc=1 returned=0 qbuf=0 sync_pairs=0 copy_cpu_ms=0.000 dma_cpu_ms=0.000

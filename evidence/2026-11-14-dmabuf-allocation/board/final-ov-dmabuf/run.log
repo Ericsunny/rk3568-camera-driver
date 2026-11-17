@@ -1,0 +1,19 @@
+>>> S_FMT 回填 1280x960 stride=1280 sizeimage=1843200
+>>> 采集 /dev/video14 1280x960,pre=2s post=2s ring=64MB 编码标称fps=30 gop=30
+>>> 编码输入模式=dmabuf
+>>> OSD 开启: #<seq> + t mm:ss.mmm @左上角(4px, sc=2), stride=1280
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=16
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=16
+>>> 预录就绪: 已覆盖 2 秒并包含起始 IDR
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=16
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=16
+rtsp-ring: in=144 evict=114 depth=30 bytes=0.48/8MB tags=[114,144)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=16
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=16
+[evw] open event_id=1 last_pkts=174 pushed=174
+>>> 触发 seq=173 ts=6008.1ms -> pre_i=90 pre_seq=90 (ring_cnt=174 head=0 pushed=174)
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=18
+rtsp: conn=0 play=0/4 sent=0 epoch=0 rej453=0 fds=18
+>>> 事件 1 完成(1 段, target_left)
+>>> 输入统计 mode=dmabuf copy_bytes=0 returned=235

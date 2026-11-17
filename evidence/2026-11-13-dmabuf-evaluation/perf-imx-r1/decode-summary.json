@@ -1,0 +1,6 @@
+{
+  "exit_code": 0,
+  "stderr_bytes": 0,
+  "decoded_frames": 1,
+  "note": "all six elementary streams have identical SHA256; decoded one representative"
+}

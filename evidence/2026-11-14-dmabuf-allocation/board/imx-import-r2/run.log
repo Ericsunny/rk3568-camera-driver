@@ -1,0 +1,5 @@
+import QBUF index=0 fd=5 length=3110400 errno=22
+capture_import_open: Invalid argument
+FORMAT 1920x1080 planes=1 stride=1920 size=3110400
+REQBUFS DMABUF returned 4
+RESULT rc=1 returned=0 qbuf=0 sync_pairs=0 copy_cpu_ms=0.000 dma_cpu_ms=0.000

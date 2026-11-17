@@ -1,0 +1,29 @@
+{
+  "rc": 0,
+  "stop": null,
+  "child_alive": false,
+  "start_utc": "2026-11-14T12:25:16Z",
+  "trigger_sent_s": 6.031,
+  "user_s": 0.233379,
+  "system_s": 0.315555,
+  "maxrss_kb": 20844,
+  "triggered": true,
+  "elapsed_s": 8.627,
+  "3a_after": {
+    "argv": [
+      "systemctl",
+      "is-active",
+      "rkaiq_3A"
+    ],
+    "rc": 0,
+    "output": "active\n"
+  },
+  "busy_after": {
+    "argv": [
+      "fuser",
+      "/dev/video14"
+    ],
+    "rc": 1,
+    "output": ""
+  }
+}

@@ -1,0 +1,7 @@
+librga fail to get driver version! Compatibility mode will be enabled.
+
+rga_api version 1.9.2_[1]
+codec_name=h264
+width=1920
+height=1080
+nb_read_frames=85

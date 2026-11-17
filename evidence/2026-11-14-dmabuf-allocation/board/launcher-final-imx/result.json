@@ -1,0 +1,12 @@
+{
+  "rc": 0,
+  "reason": null,
+  "triggered": true,
+  "version_probes": 2,
+  "trace_pids": {
+    "1002846": 1,
+    "1002711": 1
+  },
+  "delivery": "complete",
+  "pass": true
+}

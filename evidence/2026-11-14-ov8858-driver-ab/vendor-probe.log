@@ -1,0 +1,30 @@
+[    1.616568] ov8858 5-0036: driver version: 00.01.06
+[    1.616640] ov8858 5-0036: Failed to get power-gpios, maybe no use
+[    1.616720] ov8858 5-0036: Looking up avdd-supply from device tree
+[    1.616810] ov8858 5-0036: Linked as a consumer to regulator.9
+[    1.616838] ov8858 5-0036: Looking up dovdd-supply from device tree
+[    1.616886] ov8858 5-0036: Linked as a consumer to regulator.8
+[    1.616913] ov8858 5-0036: Looking up dvdd-supply from device tree
+[    1.616964] ov8858 5-0036: Linked as a consumer to regulator.10
+[    1.616999] ov8858 5-0036: lane_num(2)  pixel_rate(144000000)
+[    1.622886] ov8858 5-0036: Detected OV008858 sensor, REVISION 0xb2
+[    1.622911] ov8858 5-0036: capture_mode is 1632x1224
+[    2.065165] rockchip-csi2-dphy csi2-dphy2: dphy2 matches m01_f_ov8858 5-0036:bus type 4
+[    2.240188] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[    2.241183] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[    2.241243] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[    2.242032] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[    2.242081] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[    5.705391] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[    5.705413] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[    5.713431] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[    5.715144] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[    5.719371] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[    5.885047] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[    5.887249] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[    6.064192] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[    7.756327] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[    7.756341] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[    7.919533] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[    7.919549] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[    7.921780] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!

@@ -1,0 +1,1 @@
+No S_FMT, QBUF or STREAMON. Query current format, allocate MMAP buffer, EXPBUF index 0, read /proc/self/fdinfo, close exported fd and release buffers. Require normal exit, unchanged format, 3A active, no process left.

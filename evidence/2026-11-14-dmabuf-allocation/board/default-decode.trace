@@ -1,0 +1,97 @@
+814584 ioctl(2</root/zc-allocation-20261114-9juwLl/default-decode.log>, TCGETS, 0x7fee4b6240) = -1 ENOTTY (对设备不适当的 ioctl 操作)
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6b90) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6c30) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6c30) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6c30) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6c30) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6c30) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6b90) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6b90) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6b90) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6b90) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6b90) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6b90) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6b90) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6b90) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6b90) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6b90) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6b90) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6b90) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6b90) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6b90) = 0
+814584 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7fee4b6c90) = 0
+814584 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_CREATE_DUMB, 0x7fee4b6b38) = 0
+814584 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_PRIME_HANDLE_TO_FD, 0x7fee4b6b38) = 0
+814584 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_DESTROY_DUMB, 0x7fee4b6b38) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_CREATE_DUMB, 0x7f8bd1f738) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_PRIME_HANDLE_TO_FD, 0x7f8bd1f738) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_DESTROY_DUMB, 0x7f8bd1f738) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_CREATE_DUMB, 0x7f8bd1f738) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_PRIME_HANDLE_TO_FD, 0x7f8bd1f738) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_DESTROY_DUMB, 0x7f8bd1f738) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_CREATE_DUMB, 0x7f8bd1f5d8) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_PRIME_HANDLE_TO_FD, 0x7f8bd1f5d8) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_DESTROY_DUMB, 0x7f8bd1f5d8) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_CREATE_DUMB, 0x7f8bd1f658) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_PRIME_HANDLE_TO_FD, 0x7f8bd1f658) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_DESTROY_DUMB, 0x7f8bd1f658) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_CREATE_DUMB, 0x7f8bd1f658) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_PRIME_HANDLE_TO_FD, 0x7f8bd1f658) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_DESTROY_DUMB, 0x7f8bd1f658) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_CREATE_DUMB, 0x7f8bd1f658) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_PRIME_HANDLE_TO_FD, 0x7f8bd1f658) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_DESTROY_DUMB, 0x7f8bd1f658) = 0
+814630 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7f8bd1f800) = 0
+814630 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x55d0c07960) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_CREATE_DUMB <unfinished ...>
+814632 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY <unfinished ...>
+814630 <... ioctl resumed>, 0x7f8bd1f738) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_PRIME_HANDLE_TO_FD, 0x7f8bd1f738) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_DESTROY_DUMB, 0x7f8bd1f738) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_CREATE_DUMB <unfinished ...>
+814632 <... ioctl resumed>, 0x7f8b51e880) = 0
+814630 <... ioctl resumed>, 0x7f8bd1f738) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_PRIME_HANDLE_TO_FD, 0x7f8bd1f738) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_DESTROY_DUMB, 0x7f8bd1f738) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_CREATE_DUMB, 0x7f8bd1f5d8) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_PRIME_HANDLE_TO_FD, 0x7f8bd1f5d8) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_DESTROY_DUMB, 0x7f8bd1f5d8) = 0
+814630 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY <unfinished ...>
+814584 ioctl(17</dev/rga<char 10:58>>, _IOC(_IOC_READ, 0x72, 0x1, 0x1c), 0x55d096f6a4) = -1 EINVAL (无效的参数)
+814630 <... ioctl resumed>, 0x55d0c07960) = 0
+814584 ioctl(17</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x60, 0x1b, 0), 0x55d096f620) = 0
+814632 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY <unfinished ...>
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_CREATE_DUMB <unfinished ...>
+814584 ioctl(17</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0) <unfinished ...>
+814632 <... ioctl resumed>, 0x7f8b51e880) = 0
+814630 <... ioctl resumed>, 0x7f8bd1f738) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_PRIME_HANDLE_TO_FD, 0x7f8bd1f738) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_DESTROY_DUMB, 0x7f8bd1f738) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_CREATE_DUMB, 0x7f8bd1f5d8) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_PRIME_HANDLE_TO_FD, 0x7f8bd1f5d8) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_DESTROY_DUMB, 0x7f8bd1f5d8) = 0
+814630 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x55d0c07960) = 0
+814632 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY <unfinished ...>
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_CREATE_DUMB <unfinished ...>
+814584 <... ioctl resumed>, 0x7fee4b6420) = 0
+814632 <... ioctl resumed>, 0x7f8b51e880) = 0
+814630 <... ioctl resumed>, 0x7f8bd1f738) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_PRIME_HANDLE_TO_FD, 0x7f8bd1f738) = 0
+814630 ioctl(5</dev/dri/card0<char 226:0>>, DRM_IOCTL_MODE_DESTROY_DUMB, 0x7f8bd1f738) = 0
+814630 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x55d0c07960) = 0
+814632 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x7f8b51e880) = 0
+814630 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY, 0x55d0c07960) = 0
+814632 ioctl(6</dev/mpp_service<char 242:0>>, V4L2_SUBDEV_IR_TX_NOTIFY <unfinished ...>
+814584 ioctl(17</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0) <unfinished ...>
+814632 <... ioctl resumed>, 0x7f8b51e880) = 0
+814584 <... ioctl resumed>, 0x7fee4b6420) = 0
+814584 ioctl(17</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fee4b6420) = 0
+814584 ioctl(17</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fee4b6420) = 0
+814584 ioctl(17</dev/rga<char 10:58>>, _IOC(_IOC_NONE, 0x50, 0x17, 0), 0x7fee4b6420) = 0
+814630 +++ exited with 0 +++
+814632 +++ exited with 0 +++
+814635 +++ exited with 0 +++
+814636 +++ exited with 0 +++
+814634 +++ exited with 0 +++
+814638 +++ exited with 0 +++
+814584 +++ exited with 0 +++

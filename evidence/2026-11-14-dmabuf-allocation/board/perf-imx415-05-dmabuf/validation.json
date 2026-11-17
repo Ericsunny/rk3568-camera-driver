@@ -1,0 +1,33 @@
+{
+  "argv": [
+    "python3",
+    "/root/zc-allocation-20261114-9juwLl/candidate/camera_service.py",
+    "--finalize-one",
+    "/root/zc-allocation-20261114-9juwLl/perf-imx415-05-dmabuf/event_20261114-202401-01.json"
+  ],
+  "remux_rc": 0,
+  "delivery": {
+    "schema": 1,
+    "status": "complete",
+    "source_json": "event_20261114-202401-01.json",
+    "source_video": "event_20261114-202401-01.h264",
+    "output_video": "event_20261114-202401-01.mp4",
+    "event_id": 1,
+    "segment_index": 0,
+    "close_reason": "target_left",
+    "video_frames": 71,
+    "packet_time_span_ms": 4666.5,
+    "playback_fps": "140000/9333",
+    "timing": "average-rate approximation; individual capture timestamps not preserved",
+    "source_sha256": "e00e27330ec3c9f52441aff422266e45cee19e098a8c13360156f0f04c5acde7",
+    "metadata_sha256": "e9b26e318cfd6cb7fbf36c126e60c6e4360cd6691e0f090df2e850ddb282c062",
+    "output_sha256": "8c263d19d2e395458538c42f719a507f676f7aa5263130b24eb4eef5f026f1cf",
+    "packet_log_sha256": "8e9581e4ba222e6e02f124bfc4aac1cf7cc866a8ad23074fec279b4549899200"
+  },
+  "write_error": false,
+  "processed_frames": 116,
+  "copy_bytes": 0,
+  "cpu_ms_per_processed_frame": 3.682913793103448,
+  "timing_scope": "whole recorder child process CPU, including startup; no remux or RTSP client CPU",
+  "pass": true
+}

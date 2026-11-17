@@ -29,7 +29,12 @@ def main():
         (root/'config/final-demo.env').write_text(''.join(
             key+'='+shlex.quote(value)+'\n' for key,value in config.items()))
         binary=root/'evrec'
-        binary.write_text('#!/bin/sh\nprintf "%s\\n" "$@" > "$MOCK_ARGV"\n')
+        binary.write_text('#!/bin/sh\nif [ "${1:-}" = --help ]; then\n'
+                          '  [ "${MOCK_SUPPORT_DMA:-1}" = 1 ] && echo --encoder-input\n'
+                          '  [ "${MOCK_SUPPORT_NPU:-1}" = 1 ] && echo --npu-input\n'
+                          '  echo --detect-every\n'
+                          '  [ "${MOCK_SUPPORT_METRICS:-1}" = 1 ] && echo --frame-metrics\n'
+                          '  exit 0\nfi\nprintf "%s\\n" "$@" > "$MOCK_ARGV"\n')
         binary.chmod(0o755)
         mocks={
             'pgrep':'[ "${MOCK_DAEMON:-1}" = 1 ] && echo 123\n',
@@ -59,6 +64,8 @@ def main():
             assert args[args.index('--gop')+1]=='15'
             assert args[args.index('-o')+1]==str(out/'event')
             assert ('--detect' in args)==(mode=='detect')
+            assert args[args.index('--encoder-input')+1]=='dmabuf'
+            assert ('--npu-input' in args)==(mode=='detect')
             assert not (out/'trigger').exists()  # no implicit startup trigger
             if mode=='manual':
                 assert args[args.index('--trigger')+1]==str(out/'trigger')
@@ -67,6 +74,51 @@ def main():
         assert run('manual',out,RTSP_PORT_OVERRIDE='8555').returncode==0
         args=(root/'observed-args.txt').read_text().splitlines()
         assert args[args.index('--rtsp')+1]=='8555'
+        out=root/'frame-observations'
+        target=str(out/'frames.csv')
+        assert run('manual',out,FRAME_METRICS=target).returncode==0
+        args=(root/'observed-args.txt').read_text().splitlines()
+        assert args[args.index('--frame-metrics')+1]==target
+        out=root/'bad-frame-observations'
+        assert run('manual',out,FRAME_METRICS='relative.csv').returncode==2
+        assert not out.exists()
+        out=root/'unsupported-frame-observations'
+        assert run('manual',out,FRAME_METRICS=str(out/'frames.csv'),MOCK_SUPPORT_METRICS='0').returncode!=0
+        assert not out.exists()
+        out=root/'explicit-copy'
+        assert run('detect',out,ENCODER_INPUT='copy',NPU_INPUT='copy').returncode==0
+        args=(root/'observed-args.txt').read_text().splitlines()
+        assert '--encoder-input' not in args and '--npu-input' not in args
+        out=root/'sample-every-two'
+        assert run('detect',out,DETECT_EVERY='2').returncode==0
+        args=(root/'observed-args.txt').read_text().splitlines()
+        assert args[args.index('--detect-every')+1]=='2'
+        out=root/'bad-sample-interval'
+        assert run('detect',out,DETECT_EVERY='0').returncode==2
+        assert not out.exists()
+        out=root/'dmabuf'
+        assert run('manual',out,ENCODER_INPUT='dmabuf').returncode==0
+        args=(root/'observed-args.txt').read_text().splitlines()
+        assert args[args.index('--encoder-input')+1]=='dmabuf'
+        out=root/'unsupported-dmabuf'
+        assert run('manual',out,ENCODER_INPUT='dmabuf',MOCK_SUPPORT_DMA='0').returncode!=0
+        assert not out.exists()
+        out=root/'invalid-input'
+        assert run('manual',out,ENCODER_INPUT='other').returncode==2
+        assert not out.exists()
+        out=root/'npu-dmabuf'
+        assert run('detect',out,NPU_INPUT='dmabuf').returncode==0
+        args=(root/'observed-args.txt').read_text().splitlines()
+        assert args[args.index('--npu-input')+1]=='dmabuf'
+        out=root/'npu-unsupported'
+        assert run('detect',out,NPU_INPUT='dmabuf',MOCK_SUPPORT_NPU='0').returncode!=0
+        assert not out.exists()
+        out=root/'npu-manual'
+        assert run('manual',out,NPU_INPUT='dmabuf').returncode==2
+        assert not out.exists()
+        out=root/'npu-invalid'
+        assert run('detect',out,NPU_INPUT='other').returncode==2
+        assert not out.exists()
         for port in ['0','65536','-1','abc','999999']:
             out=root/('bad-port-'+port)
             assert run('manual',out,RTSP_PORT_OVERRIDE=port).returncode==2

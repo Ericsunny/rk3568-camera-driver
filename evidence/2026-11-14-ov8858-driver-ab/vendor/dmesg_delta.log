@@ -1,0 +1,64 @@
+[  287.394660] rkisp rkisp-vir1: first params buf queue
+[  287.395030] rkcif_mipi_lvds: stream[0] start streaming
+[  287.395044] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[  287.395050] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[  287.395957] rkcif_mipi_lvds: Allocate dummy buffer, size: 0x00264000
+[  287.396030] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream on, src_sd: 00000000cc57b9ac, sd_name:rockchip-csi2-dphy2
+[  287.396055] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream ON
+[  287.396078] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[  287.396088] rockchip-csi2-dphy2: dphy2, data_rate_mbps 720
+[  287.396092] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[  287.396119] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+[  287.396123] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+[  287.396127] ov8858 5-0036: ov8858_s_stream: on: 1, 1632x1224@30
+[  291.166158] rkcif_mipi_lvds: stream[0] start stopping
+[  291.190806] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream off, src_sd: 00000000cc57b9ac, sd_name:rockchip-csi2-dphy2
+[  291.190842] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream OFF
+[  291.191874] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream_stop stream stop, dphy2
+[  291.191881] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+[  291.191903] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+[  291.191911] ov8858 5-0036: ov8858_s_stream: on: 0, 1632x1224@30
+[  291.194830] rkcif_mipi_lvds: stream[0] stopping finished
+[  291.260193] rkisp rkisp-vir1: first params buf queue
+[  291.260598] rkcif_mipi_lvds: stream[0] start streaming
+[  291.260613] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[  291.260620] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[  291.261750] rkcif_mipi_lvds: Allocate dummy buffer, size: 0x00264000
+[  291.261839] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream on, src_sd: 00000000cc57b9ac, sd_name:rockchip-csi2-dphy2
+[  291.261867] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream ON
+[  291.261891] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[  291.261902] rockchip-csi2-dphy2: dphy2, data_rate_mbps 720
+[  291.261906] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[  291.261933] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+[  291.261937] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+[  291.261942] ov8858 5-0036: ov8858_s_stream: on: 1, 1632x1224@30
+[  293.392394] rkcif_mipi_lvds: stream[0] start stopping
+[  293.416462] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream off, src_sd: 00000000cc57b9ac, sd_name:rockchip-csi2-dphy2
+[  293.416498] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream OFF
+[  293.417441] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream_stop stream stop, dphy2
+[  293.417448] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+[  293.417472] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+[  293.417480] ov8858 5-0036: ov8858_s_stream: on: 0, 1632x1224@30
+[  293.419913] rkcif_mipi_lvds: stream[0] stopping finished
+[  293.602039] rkisp rkisp-vir1: first params buf queue
+[  293.602545] rkcif_mipi_lvds: stream[0] start streaming
+[  293.602563] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[  293.602572] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[  293.603884] rkcif_mipi_lvds: Allocate dummy buffer, size: 0x00264000
+[  293.603975] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream on, src_sd: 00000000cc57b9ac, sd_name:rockchip-csi2-dphy2
+[  293.604008] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream ON
+[  293.604117] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[  293.604202] rockchip-csi2-dphy2: dphy2, data_rate_mbps 720
+[  293.604216] ov8858 5-0036: ov8858_g_mbus_config(2875) enter!
+[  293.604252] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+[  293.604259] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+[  293.604265] ov8858 5-0036: ov8858_s_stream: on: 1, 1632x1224@30
+[  301.190283] rkcif_mipi_lvds: stream[0] start stopping
+[  301.215425] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream off, src_sd: 00000000cc57b9ac, sd_name:rockchip-csi2-dphy2
+[  301.215466] rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream OFF
+[  301.216504] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream_stop stream stop, dphy2
+[  301.216510] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+[  301.216534] rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+[  301.216542] ov8858 5-0036: ov8858_s_stream: on: 0, 1632x1224@30
+[  301.219437] rkcif_mipi_lvds: stream[0] stopping finished
+[  302.926538] rga2: unknown ioctl cmd!

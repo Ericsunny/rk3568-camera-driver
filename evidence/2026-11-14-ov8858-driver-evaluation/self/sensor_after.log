@@ -1,0 +1,8 @@
+ioctl: VIDIOC_SUBDEV_G_FMT (pad=0)
+	Width/Height      : 1632/1224
+	Mediabus Code     : 0x3007 (MEDIA_BUS_FMT_SBGGR10_1X10)
+	Field             : None
+	Colorspace        : sRGB
+	Transfer Function : Default (maps to sRGB)
+	YCbCr/HSV Encoding: Default (maps to ITU-R 601)
+	Quantization      : Default (maps to Full Range)

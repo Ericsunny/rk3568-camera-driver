@@ -1,0 +1,22 @@
+{
+  "old_pids": [
+    539
+  ],
+  "new_pids": [
+    75527
+  ],
+  "restart_rc": 0,
+  "restart_stderr": "",
+  "service_status": "active",
+  "events": [
+    {
+      "name": "ov8858_DC-21AF-58-1474V1_unknown.json",
+      "seconds_after_start": 0.195
+    },
+    {
+      "name": "imx415_CMK-OT1522-FG3_CS-P1150-IRC-8M-FAU.json",
+      "seconds_after_start": 0.466
+    }
+  ],
+  "note": "inotify does not identify which process opened a file"
+}

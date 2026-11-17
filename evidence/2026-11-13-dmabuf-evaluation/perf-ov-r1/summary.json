@@ -1,0 +1,58 @@
+{
+  "runs": {
+    "copy": [
+      {
+        "frames": 60,
+        "cpu_ms_frame": 2.1607,
+        "wall_ms_frame": 9.346783333333333,
+        "bytes": 110592000
+      },
+      {
+        "frames": 60,
+        "cpu_ms_frame": 2.140833333333333,
+        "wall_ms_frame": 9.345566666666667,
+        "bytes": 110592000
+      },
+      {
+        "frames": 60,
+        "cpu_ms_frame": 2.1854500000000003,
+        "wall_ms_frame": 9.380766666666666,
+        "bytes": 110592000
+      }
+    ],
+    "dmabuf": [
+      {
+        "frames": 60,
+        "cpu_ms_frame": 1.0204666666666666,
+        "wall_ms_frame": 8.248583333333334,
+        "bytes": 0
+      },
+      {
+        "frames": 60,
+        "cpu_ms_frame": 0.9634333333333333,
+        "wall_ms_frame": 8.14585,
+        "bytes": 0
+      },
+      {
+        "frames": 60,
+        "cpu_ms_frame": 1.0434666666666665,
+        "wall_ms_frame": 8.295716666666667,
+        "bytes": 0
+      }
+    ]
+  },
+  "sha256": {
+    "run00-copy.h264": "633012c5031de384498f6c879d0c8f12abb400cc7aba45ae6b28ef429af02521",
+    "run01-dmabuf.h264": "633012c5031de384498f6c879d0c8f12abb400cc7aba45ae6b28ef429af02521",
+    "run02-dmabuf.h264": "633012c5031de384498f6c879d0c8f12abb400cc7aba45ae6b28ef429af02521",
+    "run03-copy.h264": "633012c5031de384498f6c879d0c8f12abb400cc7aba45ae6b28ef429af02521",
+    "run04-copy.h264": "633012c5031de384498f6c879d0c8f12abb400cc7aba45ae6b28ef429af02521",
+    "run05-dmabuf.h264": "633012c5031de384498f6c879d0c8f12abb400cc7aba45ae6b28ef429af02521"
+  },
+  "all_h264_byte_equal": true,
+  "copy_median_cpu_ms_frame": 2.1607,
+  "copy_median_wall_ms_frame": 9.346783333333333,
+  "dmabuf_median_cpu_ms_frame": 1.0204666666666666,
+  "dmabuf_median_wall_ms_frame": 8.248583333333334,
+  "cpu_reduction_pct": 52.77147837892041
+}

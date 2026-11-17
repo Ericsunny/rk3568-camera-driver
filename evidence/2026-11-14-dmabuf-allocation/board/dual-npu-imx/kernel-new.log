@@ -1,0 +1,114 @@
+6,1725,17824157220,-;rkisp rkisp-vir1: first params buf queue
+ SUBSYSTEM=platform
+ DEVICE=+platform:rkisp-vir1
+
+6,1726,17824157589,-;rkcif_mipi_lvds: stream[0] start streaming
+
+6,1727,17824158704,-;rkcif_mipi_lvds: Allocate dummy buffer, size: 0x00264000
+
+3,1728,17824158893,-;rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream on, src_sd: 0000000029ab365c, sd_name:rockchip-csi2-dphy2
+ SUBSYSTEM=platform
+ DEVICE=+platform:fdfb0000.mipi-csi2
+
+3,1729,17824158983,-;rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream ON
+ SUBSYSTEM=platform
+ DEVICE=+platform:fdfb0000.mipi-csi2
+
+6,1730,17824159042,-;rockchip-csi2-dphy2: dphy2, data_rate_mbps 720
+
+6,1731,17824159084,-;rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy2
+
+6,1732,17824159089,-;rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy2
+
+6,1733,17824159098,-;ov8858-sm 5-0036: s_stream 1
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:5-0036
+
+6,1734,17824159109,-;ov8858-sm 5-0036: runtime_resume
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:5-0036
+
+6,1735,17824200850,-;rkisp rkisp-vir0: first params buf queue
+ SUBSYSTEM=platform
+ DEVICE=+platform:rkisp-vir0
+
+6,1736,17824200939,-;rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+
+6,1737,17824200970,-;rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy1
+
+6,1738,17824200977,-;imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+6,1739,17824286069,-;imx415 1-001a: write reg array, sleep 30ms
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1740,17824287331,-;imx415 1-001a: set vblank 0x3a vts 2250
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1741,17824288575,-;imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1742,17824289463,-;imx415 1-001a: set analog gain 0x28
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+6,1743,17824322129,-;ov8858-sm 5-0036: start_stream[1632x1224]: stream=0x01 0x3814=0x03 0x3821=0x67 size=1632x1224 hts=1928 vts=1244
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:5-0036
+
+3,1744,17824385993,-;rga2: unknown ioctl cmd!
+
+6,1745,17824438998,-;rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:98
+
+3,1746,17824595346,-;rga2: unknown ioctl cmd!
+
+6,1747,17832538933,-;rkcif_mipi_lvds: stream[0] start stopping
+
+3,1748,17832543165,-;rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream off, src_sd: 0000000029ab365c, sd_name:rockchip-csi2-dphy2
+ SUBSYSTEM=platform
+ DEVICE=+platform:fdfb0000.mipi-csi2
+
+3,1749,17832543199,-;rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream OFF
+ SUBSYSTEM=platform
+ DEVICE=+platform:fdfb0000.mipi-csi2
+
+6,1750,17832543211,-;rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream_stop stream stop, dphy2
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy2
+
+6,1751,17832543216,-;rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy2
+
+6,1752,17832543240,-;rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy2
+
+6,1753,17832543246,-;ov8858-sm 5-0036: s_stream 0
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:5-0036
+
+6,1754,17832544751,-;rkcif_mipi_lvds: stream[0] stopping finished
+
+6,1755,17832728065,-;imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+6,1756,17832729452,-;rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy1
+
+6,1757,17832729461,-;rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy1
+

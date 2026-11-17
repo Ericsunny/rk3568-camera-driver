@@ -1,0 +1,21 @@
+>>> 采集 /dev/video14 1280x960,pre=2s post=2s ring=24MB 编码标称fps=30 gop=30
+>>> RTSP 监听 :18555 (多客户端, 上限 1)
+>>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)
+rtsp: conn=0 play=0/1 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/1 sent=0 epoch=0 rej453=0 fds=14
+>>> 预录就绪: 已覆盖 2 秒并包含起始 IDR
+rtsp: conn=0 play=0/1 sent=0 epoch=0 rej453=0 fds=14
+rtsp: conn=0 play=0/1 sent=0 epoch=0 rej453=0 fds=14
+rtsp: SO_SNDBUF=425984 (请求 524288, wmem_max 封顶)
+rtsp: 客户端接入(槽 0)
+rtsp c0: 客户端开始播放(从 tag 120 起)
+rtsp-ring: in=144 evict=114 depth=30 bytes=0.47/8MB tags=[114,144)
+rtsp c0: sent=304/407856B skip=0 evict=0 dead=0 lag=0ms idle=0.0s
+rtsp: conn=1 play=1/1 sent=304 epoch=0 rej453=0 fds=15
+rtsp c0: 发送判死(why=error errno=104), 断开
+rtsp c0: 连接关闭
+[evw] open event_id=1 last_pkts=157 pushed=157
+>>> 触发 seq=156 ts=5429.3ms -> pre_i=90 pre_seq=90 (ring_cnt=157 head=0 pushed=157)
+rtsp: conn=0 play=0/1 sent=0 epoch=0 rej453=0 fds=16
+rtsp: conn=0 play=0/1 sent=0 epoch=0 rej453=0 fds=16
+>>> 事件 1 完成(1 段, target_left)

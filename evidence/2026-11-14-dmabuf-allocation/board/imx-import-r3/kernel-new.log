@@ -1,0 +1,232 @@
+6,1066,12985540031,-;rkisp rkisp-vir0: first params buf queue
+ SUBSYSTEM=platform
+ DEVICE=+platform:rkisp-vir0
+
+6,1067,12985540154,-;rockchip-csi2-dphy1: dphy1, data_rate_mbps 891
+
+6,1068,12985540192,-;rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:1, dphy1
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy1
+
+6,1069,12985540200,-;imx415 1-001a: s_stream: 1. 3864x2192, hdr: 0, bpp: 10
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+6,1070,12985628362,-;imx415 1-001a: write reg array, sleep 30ms
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1071,12985629892,-;imx415 1-001a: set vblank 0x3a vts 2250
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1072,12985631454,-;imx415 1-001a: set exposure(shr0) 2149 = cur_vts(2250) - val(101)
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1073,12985632421,-;imx415 1-001a: set analog gain 0x0
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+6,1074,12985781995,-;rkisp-vir0: tx stream:4 lose frame:0, isp state:0x201 frame:0
+
+7,1075,12986001741,-;imx415 1-001a: set exposure(shr0) 2117 = cur_vts(2250) - val(133)
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1076,12986070776,-;imx415 1-001a: set exposure(shr0) 2077 = cur_vts(2250) - val(173)
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1077,12986137508,-;imx415 1-001a: set exposure(shr0) 2023 = cur_vts(2250) - val(227)
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1078,12986202080,-;imx415 1-001a: set exposure(shr0) 1953 = cur_vts(2250) - val(297)
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1079,12986268476,-;imx415 1-001a: set analog gain 0x6
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1080,12986270188,-;imx415 1-001a: set exposure(shr0) 1912 = cur_vts(2250) - val(338)
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1081,12986335816,-;imx415 1-001a: set analog gain 0x7
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1082,12986401163,-;imx415 1-001a: set analog gain 0xd
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1083,12986468082,-;imx415 1-001a: set analog gain 0x10
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1084,12986535711,-;imx415 1-001a: set analog gain 0x3
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1085,12986537117,-;imx415 1-001a: set exposure(shr0) 1575 = cur_vts(2250) - val(675)
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1086,12986601894,-;imx415 1-001a: set analog gain 0x6
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1087,12986668350,-;imx415 1-001a: set analog gain 0xa
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1088,12986737244,-;imx415 1-001a: set analog gain 0xb
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1089,12986801337,-;imx415 1-001a: set analog gain 0x3
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1090,12986802708,-;imx415 1-001a: set exposure(shr0) 1237 = cur_vts(2250) - val(1013)
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1091,12986867956,-;imx415 1-001a: set analog gain 0x4
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1092,12986941784,-;imx415 1-001a: set analog gain 0x7
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1093,12987001669,-;imx415 1-001a: set analog gain 0x9
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1094,12987069085,-;imx415 1-001a: set analog gain 0xb
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1095,12987135860,-;imx415 1-001a: set analog gain 0xc
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1096,12987201184,-;imx415 1-001a: set analog gain 0xe
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1097,12987268753,-;imx415 1-001a: set analog gain 0xf
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1098,12987334978,-;imx415 1-001a: set analog gain 0x11
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1099,12987401293,-;imx415 1-001a: set analog gain 0x12
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1100,12987467816,-;imx415 1-001a: set analog gain 0x13
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1101,12987534714,-;imx415 1-001a: set analog gain 0x14
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1102,12987601656,-;imx415 1-001a: set analog gain 0x15
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1103,12987673953,-;imx415 1-001a: set analog gain 0x16
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1104,12987738319,-;imx415 1-001a: set analog gain 0x17
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1105,12987802533,-;imx415 1-001a: set analog gain 0x18
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1106,12987868177,-;imx415 1-001a: set analog gain 0x19
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1107,12987936449,-;imx415 1-001a: set analog gain 0x1a
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1108,12988004854,-;imx415 1-001a: set analog gain 0x1b
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1109,12988068328,-;imx415 1-001a: set analog gain 0x1c
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1110,12988135230,-;imx415 1-001a: set analog gain 0x1d
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1111,12988268248,-;imx415 1-001a: set analog gain 0x1e
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1112,12988334500,-;imx415 1-001a: set analog gain 0x1f
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1113,12988402166,-;imx415 1-001a: set analog gain 0x20
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1114,12988536800,-;imx415 1-001a: set analog gain 0x21
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1115,12988668241,-;imx415 1-001a: set analog gain 0x22
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1116,12988806487,-;imx415 1-001a: set analog gain 0x23
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1117,12988934847,-;imx415 1-001a: set analog gain 0x24
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1118,12989201172,-;imx415 1-001a: set analog gain 0x25
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1119,12989472499,-;imx415 1-001a: set analog gain 0x26
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1120,12989735279,-;imx415 1-001a: set analog gain 0x27
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+7,1121,12990002740,-;imx415 1-001a: set analog gain 0x28
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+6,1122,12994002267,-;imx415 1-001a: s_stream: 0. 3864x2192, hdr: 0, bpp: 10
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:1-001a
+
+6,1123,12994003907,-;rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream_stop stream stop, dphy1
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy1
+
+6,1124,12994003929,-;rockchip-csi2-dphy csi2-dphy1: csi2_dphy_s_stream stream on:0, dphy1
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy1
+

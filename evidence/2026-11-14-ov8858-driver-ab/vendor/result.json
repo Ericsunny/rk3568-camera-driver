@@ -1,0 +1,235 @@
+{
+  "arm": "vendor",
+  "steps": {
+    "dmesg_before": {
+      "rc": 0,
+      "wall_seconds_including_setup": 0.036
+    },
+    "uname": {
+      "rc": 0,
+      "wall_seconds_including_setup": 0.006
+    },
+    "date": {
+      "rc": 0,
+      "wall_seconds_including_setup": 0.005
+    },
+    "three_a": {
+      "rc": 0,
+      "wall_seconds_including_setup": 0.037
+    },
+    "media0": {
+      "rc": 0,
+      "wall_seconds_including_setup": 0.016
+    },
+    "media2": {
+      "rc": 0,
+      "wall_seconds_including_setup": 0.015
+    },
+    "controls_before": {
+      "rc": 0,
+      "wall_seconds_including_setup": 0.012
+    },
+    "capture90": {
+      "rc": 0,
+      "wall_seconds_including_setup": 3.841
+    },
+    "capture_frame": {
+      "rc": 0,
+      "wall_seconds_including_setup": 2.236
+    },
+    "controls_after": {
+      "rc": 0,
+      "wall_seconds_including_setup": 0.013
+    },
+    "rtsp_client": {
+      "rc": 0,
+      "wall_seconds_including_setup": 1.383
+    },
+    "evrec": {
+      "rc": 0
+    },
+    "event_decode": {
+      "rc": 0,
+      "wall_seconds_including_setup": 1.127
+    },
+    "event_probe": {
+      "rc": 0,
+      "wall_seconds_including_setup": 1.082
+    },
+    "dmesg_after": {
+      "rc": 0,
+      "wall_seconds_including_setup": 0.038
+    },
+    "after_process": {
+      "rc": 0,
+      "wall_seconds_including_setup": 0.039
+    },
+    "after_format": {
+      "rc": 0,
+      "wall_seconds_including_setup": 0.024
+    }
+  },
+  "commands": {
+    "dmesg_before": [
+      "dmesg"
+    ],
+    "uname": [
+      "uname",
+      "-a"
+    ],
+    "date": [
+      "date",
+      "-Is"
+    ],
+    "three_a": [
+      "pgrep",
+      "-af",
+      "^/usr/bin/rkaiq_3A_server([[:space:]]|$)"
+    ],
+    "media0": [
+      "media-ctl",
+      "-d",
+      "/dev/media0",
+      "-p"
+    ],
+    "media2": [
+      "media-ctl",
+      "-d",
+      "/dev/media2",
+      "-p"
+    ],
+    "controls_before": [
+      "v4l2-ctl",
+      "-d",
+      "/dev/v4l-subdev2",
+      "--list-ctrls"
+    ],
+    "capture90": [
+      "v4l2-ctl",
+      "-d",
+      "/dev/video14",
+      "--set-fmt-video=width=1632,height=1224,pixelformat=NV12",
+      "--stream-mmap=4",
+      "--stream-skip=20",
+      "--stream-count=90",
+      "--stream-to=/dev/null"
+    ],
+    "capture_frame": [
+      "v4l2-ctl",
+      "-d",
+      "/dev/video14",
+      "--set-fmt-video=width=1632,height=1224,pixelformat=NV12",
+      "--stream-mmap=4",
+      "--stream-skip=60",
+      "--stream-count=1",
+      "--stream-to=/root/ov8858-driver-ab-20261114/vendor/run/frame.nv12"
+    ],
+    "controls_after": [
+      "v4l2-ctl",
+      "-d",
+      "/dev/v4l-subdev2",
+      "--list-ctrls"
+    ],
+    "evrec": [
+      "/root/ov8858-driver-ab-20261114/evrec-test",
+      "-d",
+      "/dev/video14",
+      "-w",
+      "1280",
+      "-h",
+      "960",
+      "--fps",
+      "30",
+      "--gop",
+      "30",
+      "--pre",
+      "2",
+      "--post",
+      "2",
+      "--ring-mb",
+      "24",
+      "--kbps",
+      "4000",
+      "--recover",
+      "1",
+      "--rtsp",
+      "18555",
+      "--rtsp-clients",
+      "1",
+      "--max-events",
+      "1",
+      "--trigger",
+      "/root/ov8858-driver-ab-20261114/vendor/run/trigger",
+      "-o",
+      "/root/ov8858-driver-ab-20261114/vendor/run/event"
+    ],
+    "rtsp_client": [
+      "ffmpeg",
+      "-hide_banner",
+      "-loglevel",
+      "info",
+      "-rtsp_transport",
+      "tcp",
+      "-c:v",
+      "h264",
+      "-i",
+      "rtsp://127.0.0.1:18555/live",
+      "-frames:v",
+      "30",
+      "-an",
+      "-f",
+      "null",
+      "-"
+    ],
+    "event_decode": [
+      "ffmpeg",
+      "-v",
+      "error",
+      "-xerror",
+      "-c:v",
+      "h264",
+      "-i",
+      "/root/ov8858-driver-ab-20261114/vendor/run/event_20261114-151845-01.h264",
+      "-f",
+      "null",
+      "-"
+    ],
+    "event_probe": [
+      "ffprobe",
+      "-v",
+      "error",
+      "-count_frames",
+      "-select_streams",
+      "v:0",
+      "-show_entries",
+      "stream=width,height,nb_read_frames",
+      "-of",
+      "json",
+      "/root/ov8858-driver-ab-20261114/vendor/run/event_20261114-151845-01.h264"
+    ],
+    "dmesg_after": [
+      "dmesg"
+    ],
+    "after_process": [
+      "pgrep",
+      "-af",
+      "^/usr/bin/rkaiq_3A_server([[:space:]]|$)"
+    ],
+    "after_format": [
+      "v4l2-ctl",
+      "-d",
+      "/dev/video14",
+      "--get-fmt-video"
+    ]
+  },
+  "fatal": null,
+  "frame_bytes": 2996352,
+  "frame_sha256": "1a1fbb1280cebc53c32a8f5b46fed5cbcb9a806dda9e54fe7ca58dc7568a1eb9",
+  "y_mean": 116.646,
+  "video_count": 1,
+  "metadata_count": 1,
+  "video_sha256": "ecb95668c4cd0355acb175315e8fdaa31a3de3f5cdf930956fb1bdf70bb5d9e5",
+  "metadata_sha256": "ee60c48e6fa55452cf05a5f406ac2bcbffc32653c08a884824643a0d351b372d",
+  "dmesg_overlap_lines": 1086,
+  "elapsed_seconds": 16.45
+}

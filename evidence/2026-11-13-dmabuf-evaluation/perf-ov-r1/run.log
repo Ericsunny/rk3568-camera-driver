@@ -1,0 +1,8 @@
+HELD device=/dev/video14 width=1280 height=960 stride=1280 index=0 len=1843200 fd=4
+RUN index=0 mode=copy frames=60 cpu_ms=129.642 wall_ms=560.807 copy_bytes=110592000
+RUN index=1 mode=dmabuf frames=60 cpu_ms=61.228 wall_ms=494.915 copy_bytes=0
+RUN index=2 mode=dmabuf frames=60 cpu_ms=57.806 wall_ms=488.751 copy_bytes=0
+RUN index=3 mode=copy frames=60 cpu_ms=128.450 wall_ms=560.734 copy_bytes=110592000
+RUN index=4 mode=copy frames=60 cpu_ms=131.127 wall_ms=562.846 copy_bytes=110592000
+RUN index=5 mode=dmabuf frames=60 cpu_ms=62.608 wall_ms=497.743 copy_bytes=0
+PERF_PROBE_RC=0

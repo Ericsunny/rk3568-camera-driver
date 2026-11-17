@@ -1,0 +1,17 @@
+Input #0, rtsp, from 'rtsp://127.0.0.1:18555/live':
+  Metadata:
+    title           : RK3568 Camera
+  Duration: N/A, start: 0.199811, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1280x960, 30 fps, 30 tbr, 90k tbn, 60 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (h264 (native) -> wrapped_avframe (native))
+Press [q] to stop, [?] for help
+Output #0, null, to 'pipe:':
+  Metadata:
+    title           : RK3568 Camera
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: wrapped_avframe, yuv420p, 1280x960, q=2-31, 200 kb/s, 30 fps, 30 tbn, 30 tbc
+    Metadata:
+      encoder         : Lavc58.54.100 wrapped_avframe
+frame=   30 fps=0.0 q=-0.0 Lsize=N/A time=00:00:00.80 bitrate=N/A speed=4.12x    
+video:16kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: unknown

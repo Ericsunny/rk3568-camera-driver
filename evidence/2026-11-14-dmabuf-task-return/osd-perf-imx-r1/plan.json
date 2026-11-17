@@ -1,0 +1,15 @@
+{
+  "purpose": "live two-encoder same-frame compare; no detect, event or RTSP; OSD=True",
+  "argv": [
+    "/root/zc-input-return-20261114-5QFN6U/live-osd-perf",
+    "/dev/video5",
+    "1920",
+    "1080",
+    "15",
+    "120"
+  ],
+  "timeout_s": 45,
+  "stop_sustained_D_s": 3,
+  "pass": "all frames returned from matching task and buffer before QBUF; 0 exit; full decode and same-frame comparison; if OSD, DMA-BUF start/end CPU sync succeeds; no unexplained kernel errors; 3A active",
+  "scope": "diagnostic probe only; no production replacement implied"
+}

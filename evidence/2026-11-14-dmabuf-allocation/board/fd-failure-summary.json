@@ -1,0 +1,7 @@
+{
+  "controller_rc": 1,
+  "recorder_rc": 1,
+  "injection_hit": true,
+  "no_silent_fallback": true,
+  "pass": true
+}

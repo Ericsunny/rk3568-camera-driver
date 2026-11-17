@@ -1,0 +1,7 @@
+[fault] shared main-loop fd lookup returned -1
+>>> 共享输入 DMA-BUF fd 无效
+>>> S_FMT 回填 1920x1080 stride=1920 sizeimage=3110400
+>>> 采集 /dev/video5 1920x1080,pre=2s post=2s ring=64MB 编码标称fps=15 gop=15
+>>> 编码输入模式=dmabuf
+>>> OSD 开启: #<seq> + t mm:ss.mmm @左上角(4px, sc=2), stride=1920
+>>> 输入统计 mode=dmabuf copy_bytes=0 returned=0

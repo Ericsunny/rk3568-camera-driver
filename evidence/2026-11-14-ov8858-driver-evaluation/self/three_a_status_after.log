@@ -1,0 +1,224 @@
+● rkaiq_3A.service - enable Debian RKAIQ
+     Loaded: loaded (/lib/systemd/system/rkaiq_3A.service; enabled; vendor preset: enabled)
+     Active: active (running) since Sat 2026-11-14 15:40:57 CST; 4min 31s ago
+    Process: 75524 ExecStart=/etc/init.d/rkaiq_3A.sh start (code=exited, status=0/SUCCESS)
+     Memory: 23.4M
+     CGroup: /system.slice/rkaiq_3A.service
+             ├─75527 /usr/bin/rkaiq_3A_server
+             └─75528 logger -t rkaiq
+
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: stream_cif_dvp_id0 is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: stream_cif_dvp_id1 is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: stream_cif_dvp_id2 is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: stream_cif_dvp_id3 is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkcif-lvds-subdev is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkcif-lite-lvds-subdev is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rockchip-mipi-dphy-rx is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rockchip-csi2-dphy0 is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: stream_cif is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkcif-dvp-sof is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkisp-mpfbc-subdev is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkisp_rawwr1 is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkisp_dmapath is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkisp_rawrd1_l is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkisp-mipi-luma is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rockchip-mipi-dphy-rx is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rockchip-csi2-dphy0 is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkcif_dvp is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkcif_mipi_lvds is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkcif_dvp is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkcif_lite_mipi_lvds is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkcif_mipi_lvds is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkisp-mpfbc-subdev is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkisp_rawwr1 is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkisp_dmapath is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkisp_rawrd1_l is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkisp-mipi-luma is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rockchip-mipi-dphy-rx is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rockchip-csi2-dphy0 is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkcif_dvp is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkcif_dvp is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkcif_lite_mipi_lvds is null
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.192202][CAMHW]:XCAM ERROR CamHwIsp20.cpp:1075: No free isp&ispp needed by fake camera!
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkisp-isp-subdev is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkisp-input-params is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkisp-statistics is null
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkisp_mainpath is null
+11月 14 15:40:57 yckt rkaiq[75528]: Cound not find rkisp dev names, skipped /dev/media0
+11月 14 15:40:57 yckt rkaiq[75528]: ERR: Bad media topology for: /dev/media0
+11月 14 15:40:57 yckt rkaiq[75528]: DBG: get rkisp-isp-subdev devname: /dev/v4l-subdev6
+11月 14 15:40:57 yckt rkaiq[75528]: DBG: get rkisp-input-params devname: /dev/video13
+11月 14 15:40:57 yckt rkaiq[75528]: DBG: get rkisp-statistics devname: /dev/video12
+11月 14 15:40:57 yckt rkaiq[75528]: DBG: get rkisp_mainpath devname: /dev/video5
+11月 14 15:40:57 yckt rkaiq[75528]: DBG: get rkisp-isp-subdev devname: /dev/v4l-subdev3
+11月 14 15:40:57 yckt rkaiq[75528]: DBG: get rkisp-input-params devname: /dev/video22
+11月 14 15:40:57 yckt rkaiq[75528]: DBG: get rkisp-statistics devname: /dev/video21
+11月 14 15:40:57 yckt rkaiq[75528]: DBG: get rkisp_mainpath devname: /dev/video14
+11月 14 15:40:57 yckt rkaiq[75528]: ERR: Bad media topology for: /dev/media3
+11月 14 15:40:57 yckt rkaiq[75528]: ERR: Bad media topology for: /dev/media4
+11月 14 15:40:57 yckt rkaiq[75528]: DBG: subscribe events from /dev/video22 success !
+11月 14 15:40:57 yckt rkaiq[75528]: DBG: subscribe events from /dev/video13 success !
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkisp_rawrd1_l is null
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.551922][ADPCC]:XCAM ERROR rk_aiq_algo_adpcc_itf.cpp:75: prepare: (enter)
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.553548][AEC]:XCAM ERROR RkAiqAeHandle.cpp:86: the xcamvideobuffer of aec stats is null
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.553721][AEC]:XCAM ERROR rk_aiq_algo_awb_itf.cpp:172: awb stats is null
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.554024][XCORE]:XCAM ERROR RkAiqAfHandle.cpp:84: the xcamvideobuffer of af stats is null
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.554150][AEC]:XCAM ERROR RkAiqAeHandle.cpp:127: the xcamvideobuffer of aec stats is null
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.554228][ANALYZER]:XCAM ERROR RkAiqCore.cpp:4750: don't find the group shared params of group(0x0)
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.554561][AMERGE]:XCAM ERROR rk_aiq_algo_amerge_itf.cpp:160: AmergeProcess: Ae Proc result is null!!!
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.554631][AMERGE]:XCAM ERROR rk_aiq_algo_amerge_itf.cpp:176: AmergeProcess: ae Pre result is null!!!
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.554723][ADEHAZE]:XCAM ERROR rk_aiq_algo_adhaz_itf.cpp:187: processing:PreResBuf is NULL!
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.554813][ANR]:XCAM ERROR rk_aiq_abayernr_algo_v2.cpp:305: Abayernr_ConfigSettingParam_V2(305): not support snr mode:127!
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.554906][ANR]:XCAM ERROR rk_aiq_aynr_algo_v2.cpp:311: Aynr_ConfigSettingParam_V2(311): not support snr mode:127!
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.554997][ANR]:XCAM ERROR rk_aiq_acnr_algo_v1.cpp:311: Acnr_ConfigSettingParam_V1(311): not support snr mode:127!
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.555067][ASHARP]:XCAM ERROR rk_aiq_asharp_algo_v3.cpp:318: Asharp_ConfigSettingParam_V3(318): not support snr mode:127!
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.555139][ATMO]:XCAM ERROR rk_aiq_algo_adrc_itf.cpp:160: processing: Ae Proc result is null!!!
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.555179][ATMO]:XCAM ERROR rk_aiq_algo_adrc_itf.cpp:176: processing: ae Pre result is null!!!
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.555244][XCORE]:XCAM ERROR RkAiqHandleInt.cpp:3905: fail to get awb gain form AWB module,use default value
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.555286][XCORE]:XCAM ERROR RkAiqHandleInt.cpp:6514: fail to get awb gain form AWB module,use default value
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.555366][XCORE]:XCAM ERROR RkAiqHandleInt.cpp:4426: fail to get awb gain form AWB module,use default value
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.555507][XCORE]:XCAM ERROR RkAiqAfHandle.cpp:125: the xcamvideobuffer of af stats is null
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.555797][XCORE]:XCAM ERROR RkAiqAfHandle.cpp:167: the xcamvideobuffer of af stats is null
+11月 14 15:40:57 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event...
+11月 14 15:40:57 yckt rkaiq[75528]: media get entity by name: rkisp_rawrd1_l is null
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.705540][ADPCC]:XCAM ERROR rk_aiq_algo_adpcc_itf.cpp:75: prepare: (enter)
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.706573][AEC]:XCAM ERROR RkAiqAeHandle.cpp:86: the xcamvideobuffer of aec stats is null
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.706703][AEC]:XCAM ERROR rk_aiq_algo_awb_itf.cpp:172: awb stats is null
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.706910][XCORE]:XCAM ERROR RkAiqAfHandle.cpp:84: the xcamvideobuffer of af stats is null
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.707010][AEC]:XCAM ERROR RkAiqAeHandle.cpp:127: the xcamvideobuffer of aec stats is null
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.707069][ANALYZER]:XCAM ERROR RkAiqCore.cpp:4750: don't find the group shared params of group(0x0)
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.707212][AMERGE]:XCAM ERROR rk_aiq_algo_amerge_itf.cpp:160: AmergeProcess: Ae Proc result is null!!!
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.707261][AMERGE]:XCAM ERROR rk_aiq_algo_amerge_itf.cpp:176: AmergeProcess: ae Pre result is null!!!
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.707317][ADEHAZE]:XCAM ERROR rk_aiq_algo_adhaz_itf.cpp:187: processing:PreResBuf is NULL!
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.707368][ANR]:XCAM ERROR rk_aiq_abayernr_algo_v2.cpp:305: Abayernr_ConfigSettingParam_V2(305): not support snr mode:127!
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.707431][ANR]:XCAM ERROR rk_aiq_aynr_algo_v2.cpp:311: Aynr_ConfigSettingParam_V2(311): not support snr mode:127!
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.707501][ANR]:XCAM ERROR rk_aiq_acnr_algo_v1.cpp:311: Acnr_ConfigSettingParam_V1(311): not support snr mode:127!
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.707554][ASHARP]:XCAM ERROR rk_aiq_asharp_algo_v3.cpp:318: Asharp_ConfigSettingParam_V3(318): not support snr mode:127!
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.707607][ATMO]:XCAM ERROR rk_aiq_algo_adrc_itf.cpp:160: processing: Ae Proc result is null!!!
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.707634][ATMO]:XCAM ERROR rk_aiq_algo_adrc_itf.cpp:176: processing: ae Pre result is null!!!
+11月 14 15:40:57 yckt rkaiq[75528]: 
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.707677][XCORE]:XCAM ERROR RkAiqHandleInt.cpp:3905: fail to get awb gain form AWB module,use default value
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.707711][XCORE]:XCAM ERROR RkAiqHandleInt.cpp:6514: fail to get awb gain form AWB module,use default value
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.707769][XCORE]:XCAM ERROR RkAiqHandleInt.cpp:4426: fail to get awb gain form AWB module,use default value
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.707884][XCORE]:XCAM ERROR RkAiqAfHandle.cpp:125: the xcamvideobuffer of af stats is null
+11月 14 15:40:57 yckt rkaiq[75528]: [15:40:57.708079][XCORE]:XCAM ERROR RkAiqAfHandle.cpp:167: the xcamvideobuffer of af stats is null
+11月 14 15:40:57 yckt rkaiq[75528]: DBG: /dev/media1: wait stream start event...
+11月 14 15:41:02 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event success ...
+11月 14 15:41:02 yckt rkaiq[75528]: DBG: device manager start
+11月 14 15:41:02 yckt rkaiq[75528]: DBG: rkisp_init engine succeed
+11月 14 15:41:02 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event...
+11月 14 15:41:02 yckt rkaiq[75528]: [15:41:02.717993][CAMHW]:XCAM ERROR CamHwIsp21.cpp:364: get drc params from 3a result failed!
+11月 14 15:41:02 yckt rkaiq[75528]: 
+11月 14 15:41:02 yckt rkaiq[75528]: [15:41:02.718121][CAMHW]:XCAM ERROR CamHwIsp21.cpp:429: get drc params from 3a result failed!
+11月 14 15:41:02 yckt rkaiq[75528]: 
+11月 14 15:41:02 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event success ...
+11月 14 15:41:02 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event...
+11月 14 15:41:02 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event success ...
+11月 14 15:41:02 yckt rkaiq[75528]: DBG: device manager start
+11月 14 15:41:03 yckt rkaiq[75528]: DBG: rkisp_init engine succeed
+11月 14 15:41:03 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event...
+11月 14 15:41:03 yckt rkaiq[75528]: [15:41:03.198077][CAMHW]:XCAM ERROR CamHwIsp21.cpp:364: get drc params from 3a result failed!
+11月 14 15:41:03 yckt rkaiq[75528]: 
+11月 14 15:41:03 yckt rkaiq[75528]: [15:41:03.198206][CAMHW]:XCAM ERROR CamHwIsp21.cpp:429: get drc params from 3a result failed!
+11月 14 15:41:03 yckt rkaiq[75528]: 
+11月 14 15:41:03 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event success ...
+11月 14 15:41:03 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event...
+11月 14 15:41:03 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event success ...
+11月 14 15:41:03 yckt rkaiq[75528]: DBG: device manager start
+11月 14 15:41:03 yckt rkaiq[75528]: DBG: rkisp_init engine succeed
+11月 14 15:41:03 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event...
+11月 14 15:41:03 yckt rkaiq[75528]: [15:41:03.674266][CAMHW]:XCAM ERROR CamHwIsp21.cpp:364: get drc params from 3a result failed!
+11月 14 15:41:03 yckt rkaiq[75528]: 
+11月 14 15:41:03 yckt rkaiq[75528]: [15:41:03.674391][CAMHW]:XCAM ERROR CamHwIsp21.cpp:429: get drc params from 3a result failed!
+11月 14 15:41:03 yckt rkaiq[75528]: 
+11月 14 15:41:03 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event success ...
+11月 14 15:41:03 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event...
+11月 14 15:41:03 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event success ...
+11月 14 15:41:03 yckt rkaiq[75528]: DBG: device manager start
+11月 14 15:41:04 yckt rkaiq[75528]: DBG: rkisp_init engine succeed
+11月 14 15:41:04 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event...
+11月 14 15:41:04 yckt rkaiq[75528]: [15:41:04.150396][CAMHW]:XCAM ERROR CamHwIsp21.cpp:364: get drc params from 3a result failed!
+11月 14 15:41:04 yckt rkaiq[75528]: 
+11月 14 15:41:04 yckt rkaiq[75528]: [15:41:04.150551][CAMHW]:XCAM ERROR CamHwIsp21.cpp:429: get drc params from 3a result failed!
+11月 14 15:41:04 yckt rkaiq[75528]: 
+11月 14 15:41:04 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event success ...
+11月 14 15:41:04 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event...
+11月 14 15:41:04 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event success ...
+11月 14 15:41:04 yckt rkaiq[75528]: DBG: device manager start
+11月 14 15:41:04 yckt rkaiq[75528]: DBG: rkisp_init engine succeed
+11月 14 15:41:04 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event...
+11月 14 15:41:04 yckt rkaiq[75528]: [15:41:04.613671][CAMHW]:XCAM ERROR CamHwIsp21.cpp:364: get drc params from 3a result failed!
+11月 14 15:41:04 yckt rkaiq[75528]: 
+11月 14 15:41:04 yckt rkaiq[75528]: [15:41:04.613801][CAMHW]:XCAM ERROR CamHwIsp21.cpp:429: get drc params from 3a result failed!
+11月 14 15:41:04 yckt rkaiq[75528]: 
+11月 14 15:41:04 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event success ...
+11月 14 15:41:04 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event...
+11月 14 15:41:04 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event success ...
+11月 14 15:41:04 yckt rkaiq[75528]: DBG: device manager start
+11月 14 15:41:05 yckt rkaiq[75528]: DBG: rkisp_init engine succeed
+11月 14 15:41:05 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event...
+11月 14 15:41:05 yckt rkaiq[75528]: [15:41:05.088843][CAMHW]:XCAM ERROR CamHwIsp21.cpp:364: get drc params from 3a result failed!
+11月 14 15:41:05 yckt rkaiq[75528]: 
+11月 14 15:41:05 yckt rkaiq[75528]: [15:41:05.088975][CAMHW]:XCAM ERROR CamHwIsp21.cpp:429: get drc params from 3a result failed!
+11月 14 15:41:05 yckt rkaiq[75528]: 
+11月 14 15:41:05 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event success ...
+11月 14 15:41:05 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event...
+11月 14 15:41:05 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event success ...
+11月 14 15:41:05 yckt rkaiq[75528]: DBG: device manager start
+11月 14 15:41:05 yckt rkaiq[75528]: DBG: rkisp_init engine succeed
+11月 14 15:41:05 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event...
+11月 14 15:41:05 yckt rkaiq[75528]: [15:41:05.557173][CAMHW]:XCAM ERROR CamHwIsp21.cpp:364: get drc params from 3a result failed!
+11月 14 15:41:05 yckt rkaiq[75528]: 
+11月 14 15:41:05 yckt rkaiq[75528]: [15:41:05.557322][CAMHW]:XCAM ERROR CamHwIsp21.cpp:429: get drc params from 3a result failed!
+11月 14 15:41:05 yckt rkaiq[75528]: 
+11月 14 15:41:05 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event success ...
+11月 14 15:41:05 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event...
+11月 14 15:41:05 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event success ...
+11月 14 15:41:05 yckt rkaiq[75528]: DBG: device manager start
+11月 14 15:41:05 yckt rkaiq[75528]: DBG: rkisp_init engine succeed
+11月 14 15:41:05 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event...
+11月 14 15:41:06 yckt rkaiq[75528]: [15:41:06.033507][CAMHW]:XCAM ERROR CamHwIsp21.cpp:364: get drc params from 3a result failed!
+11月 14 15:41:06 yckt rkaiq[75528]: 
+11月 14 15:41:06 yckt rkaiq[75528]: [15:41:06.033628][CAMHW]:XCAM ERROR CamHwIsp21.cpp:429: get drc params from 3a result failed!
+11月 14 15:41:06 yckt rkaiq[75528]: 
+11月 14 15:41:06 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event success ...
+11月 14 15:41:06 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event...
+11月 14 15:41:06 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event success ...
+11月 14 15:41:06 yckt rkaiq[75528]: DBG: device manager start
+11月 14 15:41:06 yckt rkaiq[75528]: DBG: rkisp_init engine succeed
+11月 14 15:41:06 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event...
+11月 14 15:41:06 yckt rkaiq[75528]: [15:41:06.520940][CAMHW]:XCAM ERROR CamHwIsp21.cpp:364: get drc params from 3a result failed!
+11月 14 15:41:06 yckt rkaiq[75528]: 
+11月 14 15:41:06 yckt rkaiq[75528]: [15:41:06.521068][CAMHW]:XCAM ERROR CamHwIsp21.cpp:429: get drc params from 3a result failed!
+11月 14 15:41:06 yckt rkaiq[75528]: 
+11月 14 15:41:06 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event success ...
+11月 14 15:41:06 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event...
+11月 14 15:41:06 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event success ...
+11月 14 15:41:06 yckt rkaiq[75528]: DBG: device manager start
+11月 14 15:41:06 yckt rkaiq[75528]: DBG: rkisp_init engine succeed
+11月 14 15:41:06 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event...
+11月 14 15:41:06 yckt rkaiq[75528]: [15:41:06.994860][CAMHW]:XCAM ERROR CamHwIsp21.cpp:364: get drc params from 3a result failed!
+11月 14 15:41:06 yckt rkaiq[75528]: 
+11月 14 15:41:06 yckt rkaiq[75528]: [15:41:06.994991][CAMHW]:XCAM ERROR CamHwIsp21.cpp:429: get drc params from 3a result failed!
+11月 14 15:41:06 yckt rkaiq[75528]: 
+11月 14 15:41:07 yckt rkaiq[75528]: DBG: /dev/media2: wait stream stop event success ...
+11月 14 15:41:07 yckt rkaiq[75528]: DBG: /dev/media2: wait stream start event...

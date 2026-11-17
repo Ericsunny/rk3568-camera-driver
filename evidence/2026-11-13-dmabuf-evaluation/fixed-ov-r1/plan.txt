@@ -1,0 +1,1 @@
+OV8858 /dev/video14, 1280x960 NV12 at nominal 30, no detect/OSD; three capture buffers held until both MPP contexts destroyed. Encode same frames first via copy then external DMA; require three valid outputs per mode and compare decoded per-frame hashes. No continuous reuse, event/RTSP, OSD or performance claims. Timeout is failure.

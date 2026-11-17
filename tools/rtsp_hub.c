@@ -25,6 +25,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <dirent.h>
+#include <stdatomic.h>
 
 #include "rtsp_hub.h"		/* 包含自身接口: 原型/定义不匹配在编译期暴露 */
 #ifndef SIOCOUTQ
@@ -77,6 +78,7 @@ enum {
 };
 #define RTSP_SNDBUF_REQ (512 * 1024)	/* 内核按 wmem_max 封顶, 实际 >= 2*wmem_max */
 #define RTSP_TX_POLL_MS 100		/* 单次等可写的间隔(H4 起不再有 10 次上限) */
+#define RTSP_STOP_GRACE_MS 2000	/* Finish the current frame under dual-camera load. */
 struct txdiag {
 	int why;
 	int w;			/* sendmsg 实际收下的字节数 */
@@ -107,7 +109,8 @@ static int g_rtsp_port;			/* 监听端口(0=关); evrec --rtsp 解析后经 rtsp
 static int g_rtsp_lfd = -1;
 static pthread_t g_rtsp_accept_tid;
 static int g_rtsp_accept_started;
-static volatile sig_atomic_t g_rtsp_stopping;
+static atomic_int g_rtsp_stopping;
+static atomic_uint_fast64_t g_rtsp_finish_by_ms;
 static pthread_mutex_t g_rtsp_lock = PTHREAD_MUTEX_INITIALIZER;
 
 static volatile sig_atomic_t g_hub_stopping;
@@ -443,7 +446,8 @@ static int rtsp_send_interleaved(int fd, int ch, const uint8_t *rtp, int len,
 	while (off < total) {
 		ssize_t w;
 
-		if (g_rtsp_stopping) {
+		if (g_rtsp_stopping && now_ms_mono() >=
+		    atomic_load_explicit(&g_rtsp_finish_by_ms, memory_order_acquire)) {
 			errno = EINTR;
 			if (dg) {
 				dg->why = TX_WHY_ERROR;
@@ -1339,6 +1343,7 @@ int rtsp_start(int port)
 	}
 
 	g_rtsp_stopping = 0;
+	atomic_store_explicit(&g_rtsp_finish_by_ms, 0, memory_order_release);
 	if (pthread_create(&g_rtsp_accept_tid, NULL, rtsp_accept_thread,
 			   NULL) != 0) {
 		close(g_rtsp_lfd);
@@ -1355,16 +1360,33 @@ int rtsp_start(int port)
 void rtsp_stop(void)
 {
 	int i;
+	uint64_t finish_by;
 
 	if (!g_rtsp_accept_started && g_rtsp_lfd < 0)
 		return;
+	finish_by = now_ms_mono() + RTSP_STOP_GRACE_MS;
+	atomic_store_explicit(&g_rtsp_finish_by_ms, finish_by, memory_order_release);
 	g_rtsp_stopping = 1;
+	pkb_set_stop();
 	if (g_rtsp_accept_started) {
 		pthread_join(g_rtsp_accept_tid, NULL);
 		g_rtsp_accept_started = 0;
 	}
-	/* 唤醒等环的客户端线程 + 解除 send/poll 阻塞 */
-	pkb_set_stop();
+	/* Stop taking new frames, but let an in-flight FU-A reach its end marker.
+	 * The absolute deadline also bounds a client that makes slow progress. */
+	while (now_ms_mono() < finish_by) {
+		int pending = 0;
+
+		pthread_mutex_lock(&g_rtsp_lock);
+		for (i = 0; i < RTSP_CLI_MAX; i++)
+			if (g_cli[i].used && !g_cli[i].th_done)
+				pending = 1;
+		pthread_mutex_unlock(&g_rtsp_lock);
+		if (!pending)
+			break;
+		usleep(1000);
+	}
+	/* A stalled client still gets a bounded forced disconnect. */
 	pthread_mutex_lock(&g_rtsp_lock);
 	for (i = 0; i < RTSP_CLI_MAX; i++)
 		if (g_cli[i].used && g_cli[i].fd >= 0)
@@ -1502,7 +1524,7 @@ void pkb_push(const unsigned char *src, int len, unsigned seq, int key,
 	 * evicted 并等 IDR, 不再需要 H1 的全局 gap 标志。 */
 	while (g_pkb_oldest_tag < g_pkb_next_tag &&
 	       ((int)(g_pkb_next_tag - g_pkb_oldest_tag) >= g_pkb_depth ||
-		g_pkb_bytes + (unsigned long)len >
+		g_pkb_bytes - ev_bytes + (unsigned long)len >
 		(unsigned long)g_pkb_mb << 20)) {
 		p = &g_pkb[g_pkb_oldest_tag % PKB_MAX];
 

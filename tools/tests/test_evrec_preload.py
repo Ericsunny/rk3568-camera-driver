@@ -40,6 +40,9 @@ PRELUDE = r'''
 #include <errno.h>
 #include <time.h>
 static FILE *g_ev_fp, *g_ev_packets;
+struct evw_queue { int started; };
+static struct evw_queue g_ev_queue;
+static int evw_queue_stop(struct evw_queue *q) { (void)q; return 0; }
 static char g_ev_path[512];
 static unsigned char ev_buf[64];
 static unsigned ev_bn, g_ev_event_id = 7, g_ev_segment = 2;
@@ -48,6 +51,9 @@ static unsigned long g_ev_bytes;
 static double g_ev_first_ts = 1, g_ev_last_ts = 2, g_last_detect_ms = 1;
 static int g_ev_werr, g_events, g_max_events = 1;
 static int g_pre_seconds, g_post_seconds, g_ts_flags;
+static int g_detect_pipeline;
+static struct { unsigned seq, epoch; } g_event_trigger_source;
+static unsigned long long g_event_trigger_applied_ns;
 static double now_ms(int clock_id) { (void)clock_id; return 2000.0; }
 static long disk_free_mb(void) { return 1234; }
 static void evw_event_end(const char *reason) { (void)reason; g_events++; }

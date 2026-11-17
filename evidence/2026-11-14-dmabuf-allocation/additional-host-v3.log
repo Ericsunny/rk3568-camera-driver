@@ -1,0 +1,49 @@
+ordinary sigterm: control and five failures PASS
+ordinary target-left: control and five failures PASS
+ordinary unrelated event paths are unaffected: PASS
+fortified sigterm: control and five failures PASS
+fortified target-left: control and five failures PASS
+fortified unrelated event paths are unaffected: PASS
+scope, symlink and unhit occurrence: PASS
+selected occurrence injects only once: PASS
+invalid configuration fails closed: PASS
+letterbox, RGB padding, class confidence and class-aware NMS: PASS
+[delivery] failed event-01.json: missing or invalid packet time span
+.[delivery] failed event-01.json: Command '['ffprobe', '-v', 'error', '-count_frames', '-select_streams', 'v:0', '-show_entries', 'stream=codec_name,nb_read_frames', '-of', 'compact=p=0:nk=0', '/tmp/event delivery j9s4jflc/event-01.h264']' returned non-zero exit status 1.
+.[delivery] failed event-01.json: MP4 output or unfinished conversion already exists
+.[delivery] failed event-01.json: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+.[delivery] failed event-01.json: recorder did not report a clean close
+.[delivery] failed event-01.json: Command '['/bin/false', '-nostdin', '-hide_banner', '-n', '-r', '10', '-f', 'h264', '-i', '/tmp/event delivery qgawe6xk/event-01.h264', '-map', '0:v:0', '-c:v', 'copy', '-movflags', '+faststart', '/tmp/event delivery qgawe6xk/event-01.pending.mp4']' returned non-zero exit status 1.
+.[delivery] failed event-01.json: packet record does not match video byte count
+.[delivery] failed event-01.json: [Errno 2] No such file or directory: '/tmp/event delivery j2h0lt92/event-01.packets.csv'
+..Input #0, h264, from '/tmp/event delivery 0b9hgbm8/event-01.h264':
+  Duration: N/A, bitrate: N/A
+    Stream #0:0: Video: h264 (High), yuv420p(progressive), 160x120 [SAR 1:1 DAR 4:3], 10 fps, 10 tbr, 1200k tbn, 20 tbc
+Output #0, mp4, to '/tmp/event delivery 0b9hgbm8/event-01.pending.mp4':
+  Metadata:
+    encoder         : Lavf58.29.100
+    Stream #0:0: Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 160x120 [SAR 1:1 DAR 4:3], q=2-31, 10 fps, 10 tbr, 10240 tbn, 10 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+[mp4 @ 0x555e1e66e600] Timestamps are unset in a packet for stream 0. This is deprecated and will stop working in the future. Fix your code to set the timestamps properly
+[mp4 @ 0x555e1e66e600] Starting second pass: moving the moov atom to the beginning of the file
+frame=   10 fps=0.0 q=-1.0 Lsize=      13kB time=00:00:00.90 bitrate= 115.0kbits/s speed=1.23e+04x    
+video:12kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 7.263681%
+[delivery] complete event-01.json
+.[delivery] worker timed out; terminating its process group
+..[delivery] worker timed out; terminating its process group
+.[delivery] failed event-01.json: recorded video size differs from metadata
+.
+----------------------------------------------------------------------
+Ran 14 tests in 3.419s
+
+OK
+ffprobe library output:
+vendor \xff
+..ffprobe library output:
+librga initialization diagnostic
+.
+----------------------------------------------------------------------
+Ran 3 tests in 0.417s
+
+OK

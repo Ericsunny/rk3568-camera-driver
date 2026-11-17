@@ -1,0 +1,13 @@
+Format Video Capture Multiplanar:
+	Width/Height      : 1632/1224
+	Pixel Format      : 'NV12' (Y/CbCr 4:2:0)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : Default
+	Transfer Function : Default
+	YCbCr/HSV Encoding: Default
+	Quantization      : Full Range
+	Plane 0           :
+	   Bytes per Line : 1632
+	   Size Image     : 2996352

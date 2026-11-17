@@ -1,0 +1,14 @@
+START device=/dev/video5 width=1920 height=1080 stride=1920 buffers=4 frames=120
+PROGRESS frames=10 returned=10 qbuf=10
+PROGRESS frames=20 returned=20 qbuf=20
+PROGRESS frames=30 returned=30 qbuf=30
+PROGRESS frames=40 returned=40 qbuf=40
+PROGRESS frames=50 returned=50 qbuf=50
+PROGRESS frames=60 returned=60 qbuf=60
+PROGRESS frames=70 returned=70 qbuf=70
+PROGRESS frames=80 returned=80 qbuf=80
+PROGRESS frames=90 returned=90 qbuf=90
+PROGRESS frames=100 returned=100 qbuf=100
+PROGRESS frames=110 returned=110 qbuf=110
+PROGRESS frames=120 returned=120 qbuf=120
+RESULT rc=0 returned=120 qbuf=120 sync_pairs=120 copy_cpu_ms=510.468 dma_cpu_ms=192.314

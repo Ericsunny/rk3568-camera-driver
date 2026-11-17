@@ -1,0 +1,31 @@
+{
+  "/dev/video5": {
+    "set_argv": [
+      "v4l2-ctl",
+      "-d",
+      "/dev/video5",
+      "--set-fmt-video=width=3840,height=2160,pixelformat=NV12"
+    ],
+    "set_rc": 0,
+    "get_rc": 0,
+    "equals_initial": true,
+    "before": "Format Video Capture Multiplanar:\n\tWidth/Height      : 3840/2160\n\tPixel Format      : 'NV12' (Y/CbCr 4:2:0)\n\tField             : None\n\tNumber of planes  : 1\n\tFlags             : \n\tColorspace        : Default\n\tTransfer Function : Default\n\tYCbCr/HSV Encoding: Default\n\tQuantization      : Full Range\n\tPlane 0           :\n\t   Bytes per Line : 3840\n\t   Size Image     : 12441600\n",
+    "after": "Format Video Capture Multiplanar:\n\tWidth/Height      : 3840/2160\n\tPixel Format      : 'NV12' (Y/CbCr 4:2:0)\n\tField             : None\n\tNumber of planes  : 1\n\tFlags             : \n\tColorspace        : Default\n\tTransfer Function : Default\n\tYCbCr/HSV Encoding: Default\n\tQuantization      : Full Range\n\tPlane 0           :\n\t   Bytes per Line : 3840\n\t   Size Image     : 12441600\n",
+    "stderr": ""
+  },
+  "/dev/video14": {
+    "set_argv": [
+      "v4l2-ctl",
+      "-d",
+      "/dev/video14",
+      "--set-fmt-video=width=1632,height=1224,pixelformat=NV12"
+    ],
+    "set_rc": 0,
+    "get_rc": 0,
+    "equals_initial": true,
+    "before": "Format Video Capture Multiplanar:\n\tWidth/Height      : 1632/1224\n\tPixel Format      : 'NV12' (Y/CbCr 4:2:0)\n\tField             : None\n\tNumber of planes  : 1\n\tFlags             : \n\tColorspace        : Default\n\tTransfer Function : Default\n\tYCbCr/HSV Encoding: Default\n\tQuantization      : Full Range\n\tPlane 0           :\n\t   Bytes per Line : 1632\n\t   Size Image     : 2996352\n",
+    "after": "Format Video Capture Multiplanar:\n\tWidth/Height      : 1632/1224\n\tPixel Format      : 'NV12' (Y/CbCr 4:2:0)\n\tField             : None\n\tNumber of planes  : 1\n\tFlags             : \n\tColorspace        : Default\n\tTransfer Function : Default\n\tYCbCr/HSV Encoding: Default\n\tQuantization      : Full Range\n\tPlane 0           :\n\t   Bytes per Line : 1632\n\t   Size Image     : 2996352\n",
+    "stderr": ""
+  },
+  "3a_after": "active"
+}

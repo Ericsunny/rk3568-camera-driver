@@ -1,0 +1,8 @@
+input_poll=0
+input_dequeue=0 task=0x557adacfa0
+input_enqueue=0
+output_poll=0
+output_dequeue=0 task=0x557adad2c0
+returned_frame_rc=-1 ptr=(nil) same=0 returned_packet_rc=0 ptr=0x557ad9ba48 same=1 len=1151
+output_enqueue=0
+TASK_PROBE_RC=1 enqueued=1

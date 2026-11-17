@@ -19,7 +19,9 @@
 # 可覆盖: make RKNN_INC=/path/to/rknn/include
 
 CC      ?= gcc
+CXX     ?= g++
 CFLAGS  ?= -O2 -Wall
+CXXFLAGS ?= -O2 -Wall -Wextra -std=c++17
 PTH     := -pthread
 
 # ---- 依赖探测: 缺头文件时提示；apps 固定使用 RGA+RKNN 组合 ----
@@ -44,7 +46,7 @@ endif
 TOOLS := reg_switch fi_probe fi_test streamoff_test tryfmt_test \
          focus_score st_burn
 
-APP_BIN := evrec camd
+APP_BIN := evrec camd camera_demo camera_service camera_delivery resolve_camera run_dual_camera
 
 .PHONY: all tools apps spy clean
 
@@ -66,11 +68,17 @@ fi_probe fi_test streamoff_test tryfmt_test focus_score st_burn: %: tools/%.c
 hdr_demo: tools/hdr_demo.c
 	$(CC) $(CFLAGS) -std=gnu99 -o $@ $< -lm
 
-evrec: tools/evrec.c tools/rtsp_hub.c
+evrec: tools/evrec.c tools/evrec_writer.h tools/evrec_metrics.h tools/evrec_pipeline.h tools/evrec_detect_pipeline.h tools/rtsp_hub.c
 	$(CC) $(CFLAGS) $(PTH) $(DEFS) $(INCS) -o $@ tools/evrec.c tools/rtsp_hub.c $(APP_LIBS)
 
 camd: tools/camd.c
 	$(CC) $(CFLAGS) $(PTH) $(DEFS) $(INCS) -o $@ $< $(APP_LIBS)
+
+camera_demo camera_service camera_delivery: %: tools/%.cpp tools/camera_process.h tools/camera_json.h
+	$(CXX) $(CXXFLAGS) -pthread -o $@ $<
+
+resolve_camera run_dual_camera: %: tools/%.cpp
+	$(CXX) $(CXXFLAGS) -pthread -o $@ $<
 
 # LD_PRELOAD 注入库(无 main)
 ioctlspy.so: tools/ioctlspy.c

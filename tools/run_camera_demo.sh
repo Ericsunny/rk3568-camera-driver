@@ -33,11 +33,60 @@ if [ "$RTSP_PORT" -lt 1 ] || [ "$RTSP_PORT" -gt 65535 ]; then
     exit 2
 fi
 binary=${EVREC_BIN:-$root/evrec}
+ENCODER_INPUT=${ENCODER_INPUT:-dmabuf}
+FRAME_METRICS=${FRAME_METRICS:-}
+case "$FRAME_METRICS" in
+    ''|/*) ;;
+    *) echo 'FRAME_METRICS must be an absolute path' >&2; exit 2 ;;
+esac
+if [ -z "${NPU_INPUT:-}" ]; then
+    if [ "$mode" = detect ]; then NPU_INPUT=dmabuf; else NPU_INPUT=copy; fi
+fi
+DETECT_EVERY=${DETECT_EVERY:-1}
+case "$DETECT_EVERY" in
+    ''|*[!0-9]*|????*) echo 'DETECT_EVERY must be 1..120' >&2; exit 2 ;;
+esac
+if [ "$DETECT_EVERY" -lt 1 ] || [ "$DETECT_EVERY" -gt 120 ]; then
+    echo 'DETECT_EVERY must be 1..120' >&2
+    exit 2
+fi
+case "$ENCODER_INPUT" in
+    copy|dmabuf) ;;
+    *) echo 'ENCODER_INPUT must be copy or dmabuf' >&2; exit 2 ;;
+esac
+case "$NPU_INPUT" in
+    copy|dmabuf) ;;
+    *) echo 'NPU_INPUT must be copy or dmabuf' >&2; exit 2 ;;
+esac
+if [ "$NPU_INPUT" = dmabuf ] && [ "$mode" != detect ]; then
+    echo 'NPU_INPUT=dmabuf requires detect mode' >&2
+    exit 2
+fi
 for tool in pgrep fuser sha256sum ss python3 ffmpeg ffprobe; do
     command -v "$tool" >/dev/null 2>&1 || { echo "missing tool: $tool" >&2; exit 1; }
 done
 case "$run_dir" in /*) ;; *) echo 'RUN_DIRECTORY must be absolute' >&2; exit 2;; esac
 [ -x "$binary" ] || { echo "missing executable: $binary" >&2; exit 1; }
+if [ -n "$FRAME_METRICS" ] &&
+   ! "$binary" --help | grep -q -- '--frame-metrics'; then
+    echo 'evrec binary does not support frame observations' >&2
+    exit 1
+fi
+if [ "$ENCODER_INPUT" = dmabuf ] &&
+   ! "$binary" --help | grep -q -- '--encoder-input'; then
+    echo 'evrec binary does not support dmabuf input' >&2
+    exit 1
+fi
+if [ "$NPU_INPUT" = dmabuf ] &&
+   ! "$binary" --help | grep -q -- '--npu-input'; then
+    echo 'evrec binary does not support dmabuf NPU input' >&2
+    exit 1
+fi
+if [ "$mode" = detect ] && [ "$DETECT_EVERY" -gt 1 ] &&
+   ! "$binary" --help | grep -q -- '--detect-every'; then
+    echo 'evrec binary does not support detection sampling' >&2
+    exit 1
+fi
 [ -c "$VIDEO" ] || { echo "missing video device: $VIDEO" >&2; exit 1; }
 # A service's "active" alone does not prove a live daemon (forking unit may
 # report active/exited with MainPID=0). Validate one actual process as well.
@@ -70,8 +119,20 @@ set -- "$binary" -d "$VIDEO" -w "$WIDTH" -h "$HEIGHT" \
     --disk-min-mb "$DISK_MIN_MB" --recover 1 --max-events "${MAX_EVENTS:-0}" \
     --rtsp "$RTSP_PORT" --rtsp-clients "$RTSP_CLIENTS" \
     --rtsp-deadline-s "$RTSP_DEADLINE" --osd -o "$run_dir/event"
+if [ "$ENCODER_INPUT" = dmabuf ]; then
+    set -- "$@" --encoder-input dmabuf
+fi
+if [ -n "$FRAME_METRICS" ]; then
+    set -- "$@" --frame-metrics "$FRAME_METRICS"
+fi
 if [ "$mode" = detect ]; then
     set -- "$@" --detect --model "$MODEL" --det-score "$DET_SCORE" --det-frames "$DET_FRAMES"
+    if [ "$DETECT_EVERY" -gt 1 ]; then
+        set -- "$@" --detect-every "$DETECT_EVERY"
+    fi
+    if [ "$NPU_INPUT" = dmabuf ]; then
+        set -- "$@" --npu-input dmabuf
+    fi
 else
     # Leave the path absent until the operator triggers it. evrec treats an
     # already-existing file's first observed mtime as a trigger too.

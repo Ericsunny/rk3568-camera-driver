@@ -1,0 +1,64 @@
+{
+  "controller_rc": 0,
+  "clients": [
+    {
+      "argv": [
+        "ffmpeg",
+        "-nostdin",
+        "-v",
+        "info",
+        "-rtsp_transport",
+        "tcp",
+        "-hwaccel",
+        "none",
+        "-c:v",
+        "h264",
+        "-i",
+        "rtsp://127.0.0.1:18755/live",
+        "-map",
+        "0:v:0",
+        "-frames:v",
+        "1000",
+        "-vsync",
+        "0",
+        "-an",
+        "-f",
+        "null",
+        "-"
+      ],
+      "rc": 0,
+      "decoded_frames": 144,
+      "native_h264": true
+    },
+    {
+      "argv": [
+        "ffmpeg",
+        "-nostdin",
+        "-v",
+        "info",
+        "-rtsp_transport",
+        "tcp",
+        "-hwaccel",
+        "none",
+        "-c:v",
+        "h264",
+        "-i",
+        "rtsp://127.0.0.1:18755/live",
+        "-map",
+        "0:v:0",
+        "-frames:v",
+        "1000",
+        "-vsync",
+        "0",
+        "-an",
+        "-f",
+        "null",
+        "-"
+      ],
+      "rc": 0,
+      "decoded_frames": 144,
+      "native_h264": true
+    }
+  ],
+  "both_playing_at_trigger": true
+}

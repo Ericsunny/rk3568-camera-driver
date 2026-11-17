@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "strace",
+    "-D",
+    "-f",
+    "-yy",
+    "-e",
+    "trace=ioctl",
+    "-P",
+    "/dev/rga",
+    "-o",
+    "/root/zc-allocation-20261114-9juwLl/launcher-final-imx/rga.trace",
+    "sh",
+    "/root/zc-allocation-20261114-9juwLl/candidate-v2/tools/run_camera_demo.sh",
+    "imx415-isp",
+    "manual",
+    "/root/zc-allocation-20261114-9juwLl/launcher-final-imx/service"
+  ],
+  "env_overrides": {
+    "ENCODER_INPUT": "dmabuf",
+    "RTSP_PORT_OVERRIDE": "18760",
+    "MAX_EVENTS": "1"
+  },
+  "pass": "real launcher selects dmabuf, trigger file creates clean event, MP4 delivery complete, 0 exit, no residual process, expected per-process RGA version probes only",
+  "timeout_s": 90
+}

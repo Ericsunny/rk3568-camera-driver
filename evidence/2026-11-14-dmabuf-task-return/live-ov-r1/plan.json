@@ -1,0 +1,15 @@
+{
+  "purpose": "live two-encoder same-frame compare; no detect, OSD, event or RTSP",
+  "argv": [
+    "/root/zc-input-return-20261114-5QFN6U/live-task-probe",
+    "/dev/video14",
+    "1280",
+    "960",
+    "30",
+    "30"
+  ],
+  "timeout_s": 45,
+  "stop_sustained_D_s": 3,
+  "pass": "all frames returned from matching task and buffer before QBUF; 0 exit; full decode and same-frame comparison; no unexplained kernel errors; 3A active",
+  "scope": "diagnostic probe only; no production replacement implied"
+}

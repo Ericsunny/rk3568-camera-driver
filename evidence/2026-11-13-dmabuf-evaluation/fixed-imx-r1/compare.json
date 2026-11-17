@@ -1,0 +1,23 @@
+{
+  "copy": {
+    "ffmpeg_rc": 0,
+    "stderr_bytes": 0,
+    "frames": 3,
+    "hashes": [
+      "a611905b7090fe7b68165ee53dab2d7e",
+      "c128c46554943638a34eb3c28c63abfc",
+      "4a1ed2c81dc08fa3b5c36b161dfb0140"
+    ]
+  },
+  "dmabuf": {
+    "ffmpeg_rc": 0,
+    "stderr_bytes": 0,
+    "frames": 3,
+    "hashes": [
+      "a611905b7090fe7b68165ee53dab2d7e",
+      "c128c46554943638a34eb3c28c63abfc",
+      "4a1ed2c81dc08fa3b5c36b161dfb0140"
+    ]
+  },
+  "same_decoded_frames": true
+}

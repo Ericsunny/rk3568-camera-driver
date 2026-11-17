@@ -1,0 +1,66 @@
+6,1161,13976026637,-;rkisp rkisp-vir1: first params buf queue
+ SUBSYSTEM=platform
+ DEVICE=+platform:rkisp-vir1
+
+6,1162,13976027370,-;rkcif_mipi_lvds: stream[0] start streaming
+
+6,1163,13976028651,-;rkcif_mipi_lvds: Allocate dummy buffer, size: 0x00264000
+
+3,1164,13976028751,-;rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream on, src_sd: 0000000029ab365c, sd_name:rockchip-csi2-dphy2
+ SUBSYSTEM=platform
+ DEVICE=+platform:fdfb0000.mipi-csi2
+
+3,1165,13976028780,-;rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream ON
+ SUBSYSTEM=platform
+ DEVICE=+platform:fdfb0000.mipi-csi2
+
+6,1166,13976028814,-;rockchip-csi2-dphy2: dphy2, data_rate_mbps 720
+
+6,1167,13976028844,-;rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy2
+
+6,1168,13976028848,-;rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:1, dphy2
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy2
+
+6,1169,13976028853,-;ov8858-sm 5-0036: s_stream 1
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:5-0036
+
+6,1170,13976028860,-;ov8858-sm 5-0036: runtime_resume
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:5-0036
+
+6,1171,13976191473,-;ov8858-sm 5-0036: start_stream[1632x1224]: stream=0x01 0x3814=0x03 0x3821=0x67 size=1632x1224 hts=1928 vts=1244
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:5-0036
+
+6,1172,13984085685,-;rkcif_mipi_lvds: stream[0] start stopping
+
+3,1173,13984109580,-;rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream off, src_sd: 0000000029ab365c, sd_name:rockchip-csi2-dphy2
+ SUBSYSTEM=platform
+ DEVICE=+platform:fdfb0000.mipi-csi2
+
+3,1174,13984109613,-;rockchip-mipi-csi2 fdfb0000.mipi-csi2: stream OFF
+ SUBSYSTEM=platform
+ DEVICE=+platform:fdfb0000.mipi-csi2
+
+6,1175,13984110330,-;rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream_stop stream stop, dphy2
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy2
+
+6,1176,13984110337,-;rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy2
+
+6,1177,13984110362,-;rockchip-csi2-dphy csi2-dphy2: csi2_dphy_s_stream stream on:0, dphy2
+ SUBSYSTEM=platform
+ DEVICE=+platform:csi2-dphy2
+
+6,1178,13984110370,-;ov8858-sm 5-0036: s_stream 0
+ SUBSYSTEM=i2c
+ DEVICE=+i2c:5-0036
+
+6,1179,13984113021,-;rkcif_mipi_lvds: stream[0] stopping finished
+

@@ -46,6 +46,8 @@
 #include <dirent.h>
 #include "rtsp_hub.h"
 #include "evrec_writer.h"
+#include "evrec_metrics.h"
+#include "evrec_pipeline.h"
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
@@ -93,6 +95,10 @@ static volatile sig_atomic_t g_trigger;
 static volatile sig_atomic_t g_stop;	/* SIGTERM: 优雅退出 */
 static const char *g_trig_path;
 static int g_osd;		/* --osd 烧 OSD; 默认关闭, 不加参数行为不变 */
+static int g_detect_pipeline, g_pipeline_selfcheck;
+static unsigned g_capture_epoch;
+static struct ep_job g_dp_trigger_source, g_event_trigger_source;
+static uint64_t g_dp_trigger_applied_ns, g_event_trigger_applied_ns;
 static int g_input_dmabuf;       /* opt-in MPP-owned capture pool; no implicit fallback */
 static int g_recover = 2;	/* --recover N: 链路故障重开设备次数(0=不恢复) */
 /* --fault-sim dqbuf:N[,N...]: 第 N 次 DQBUF 强制失败(仅测试) */
@@ -100,6 +106,14 @@ static int g_fault_dqbuf[8];
 static int g_fault_done[8];
 static int g_fault_cnt;
 static unsigned g_dqbuf_calls;
+static struct evm_context g_frame_metrics;
+static const char *g_frame_metrics_path;
+
+static void frame_metrics_exit(void)
+{
+	if (evm_finish(&g_frame_metrics) < 0)
+		fprintf(stderr, ">>> 帧观测写入失败\n");
+}
 
 /* 恢复后连续采到多少帧才算"链路稳定", 稳定后恢复计数复位 */
 #define RECOVER_STABLE_FRAMES 30
@@ -296,6 +310,8 @@ static int cap_open(const char *dev, int w, int h, int nbufs)
 			goto fail;
 		}
 	}
+	++g_capture_epoch;
+	evm_new_epoch(&g_frame_metrics);
 	return 0;
 fail:
 	/* 重开失败必须把半开的设备关掉, 否则恢复重试会 EBUSY/fd 泄漏 */
@@ -667,8 +683,8 @@ static int rga_init(void)
 }
 
 /* Copy mode uses the capture mapping; shared mode passes its DMA-BUF fd. */
-static int rga_scale(const void *src_va, unsigned sw, unsigned sh, unsigned src_stride,
-		     int src_fd)
+static int rga_scale_to(const void *src_va, unsigned sw, unsigned sh, unsigned src_stride,
+		     int src_fd, rknn_tensor_mem *target)
 {
 	IM_STATUS st;
 #ifdef HAVE_RKNN
@@ -691,21 +707,25 @@ static int rga_scale(const void *src_va, unsigned sw, unsigned sh, unsigned src_
 		im_rect src_rect = {0}, dst_rect = {0}, pat_rect = {0};
 		rga_buffer_t pat = {0};
 
-		if (!g_npu_rgb_mem || g_npu_rgb_mem->fd < 0)
+		if (!target || target->fd < 0)
 			return -1;
+		if (g_detect_pipeline) {
+			if (g_npu_pad_rw < 0) { g_npu_pad_rw = rw; g_npu_pad_rh = rh; }
+			if (rw != g_npu_pad_rw || rh != g_npu_pad_rh) return -1;
+		}
 		/* The border persists until the capture geometry changes. */
-		if (rw != g_npu_pad_rw || rh != g_npu_pad_rh) {
-			if (rknn_mem_sync(g_nctx, g_npu_rgb_mem,
+		if (!g_detect_pipeline && (rw != g_npu_pad_rw || rh != g_npu_pad_rh)) {
+			if (rknn_mem_sync(g_nctx, target,
 			                  RKNN_MEMORY_SYNC_FROM_DEVICE) != RKNN_SUCC)
 				return -1;
 			memset(g_rgb, 114, (size_t)g_npu_w * g_npu_h * 3);
-			if (rknn_mem_sync(g_nctx, g_npu_rgb_mem,
+			if (rknn_mem_sync(g_nctx, target,
 			                  RKNN_MEMORY_SYNC_TO_DEVICE) != RKNN_SUCC)
 				return -1;
 			g_npu_pad_rw = rw;
 			g_npu_pad_rh = rh;
 		}
-		g_rga_dst = wrapbuffer_fd_t(g_npu_rgb_mem->fd, g_npu_w, g_npu_h,
+		g_rga_dst = wrapbuffer_fd_t(target->fd, g_npu_w, g_npu_h,
 		                           g_npu_w, g_npu_h, RK_FORMAT_RGB_888);
 		dst_rect.x = (g_npu_w - rw) / 2;
 		dst_rect.y = (g_npu_h - rh) / 2;
@@ -721,16 +741,16 @@ static int rga_scale(const void *src_va, unsigned sw, unsigned sh, unsigned src_
 		return -1;
 	}
 #ifdef HAVE_RKNN
-	if (g_npu_input_dmabuf) {
+	if (g_npu_input_dmabuf && !g_detect_pipeline) {
 		/* The following diagnostics read the RGA-written buffer on the CPU. */
-		if (rknn_mem_sync(g_nctx, g_npu_rgb_mem,
+		if (rknn_mem_sync(g_nctx, target,
 		                  RKNN_MEMORY_SYNC_FROM_DEVICE) != RKNN_SUCC)
 			return -1;
-	} else {
+	} else if (!g_npu_input_dmabuf) {
 		pad_rgb(g_rgb, g_npu_w, g_npu_h, rw, rh);
 	}
 #endif
-	{	/* 采样均值: 与 camd 同口径(Y 平面每 16 像素取 1) */
+	if (!g_detect_pipeline) {	/* 采样均值: 与 camd 同口径(Y 平面每 16 像素取 1) */
 		unsigned long sum = 0, n = 0;
 #ifdef HAVE_RKNN
 		unsigned char *y = g_rgb;
@@ -1023,7 +1043,7 @@ static void prepare_npu_outputs(rknn_output *outputs, unsigned count)
 		outputs[i].index = i;
 }
 
-static int npu_run(const unsigned char *rgb)
+static int npu_infer(const unsigned char *rgb, rknn_tensor_mem *memory, int bind, struct ep_detection *d)
 {
 	rknn_input in;
 	rknn_output outs[MAX_OUT];
@@ -1032,6 +1052,13 @@ static int npu_run(const unsigned char *rgb)
 	float maxscore = 0.0f;
 	size_t i, sz = (size_t)g_npu_w * g_npu_h * 3;
 
+	memset(d, 0, sizeof(*d));
+	if (memory && bind) {
+		rknn_tensor_attr input = g_in_attr;
+		input.type = RKNN_TENSOR_UINT8; input.fmt = RKNN_TENSOR_NHWC; input.pass_through = 0;
+		if (rknn_set_io_mem(g_nctx, memory, &input) != RKNN_SUCC ||
+		    rknn_mem_sync(g_nctx, memory, RKNN_MEMORY_SYNC_FROM_DEVICE) != RKNN_SUCC) return -1;
+	}
 	memset(&in, 0, sizeof(in));
 	in.index = 0;
 	in.buf = (void *)rgb;
@@ -1052,8 +1079,8 @@ static int npu_run(const unsigned char *rgb)
 		for (i = 0; i < sz; i += 64)
 			s += rgb[i];
 		in_mean = sz >= 64 ? (double)s / (double)(sz / 64) : 0.0;
-		g_det_mean_sum += in_mean;
-		g_det_mean_n++;
+		d->mean = in_mean;
+		if (g_pipeline_selfcheck) d->input_hash = ep_hash(UINT64_C(1469598103934665603), rgb, sz);
 		if (dbg++ < 3)
 			fprintf(stderr,
 				"[npu] in: sz=%u mean=%.1f rgb0=%u/%u/%u type=UINT8 pass_through=0\n",
@@ -1061,8 +1088,8 @@ static int npu_run(const unsigned char *rgb)
 				rgb[0], rgb[1], rgb[2]);
 	}
 
-	if (g_npu_input_dmabuf)
-		ret = rknn_mem_sync(g_nctx, g_npu_rgb_mem, RKNN_MEMORY_SYNC_TO_DEVICE);
+	if (memory)
+		ret = rknn_mem_sync(g_nctx, memory, RKNN_MEMORY_SYNC_TO_DEVICE);
 	else
 		ret = rknn_inputs_set(g_nctx, 1, &in);
 	if (ret != RKNN_SUCC) {
@@ -1105,7 +1132,23 @@ static int npu_run(const unsigned char *rgb)
 			od[i] = (int8_t *)outs[i].buf;
 		nd = decode_yolov8(g_out_attr, od, boxes, MAX_BOX, &maxscore);
 	}
-	rknn_outputs_release(g_nctx, g_nout, outs);
+	if (g_pipeline_selfcheck) {
+		d->output_hash = UINT64_C(1469598103934665603);
+		for (i = 0; i < g_nout; i++) d->output_hash = ep_hash(d->output_hash, outs[i].buf, g_out_attr[i].size);
+	}
+	if (rknn_outputs_release(g_nctx, g_nout, outs) != RKNN_SUCC) return -1;
+	d->nd = nd; d->maxscore = maxscore;
+	for (i = 0; i < (size_t)nd; i++)
+		if (boxes[i].cls == 0 && boxes[i].score >= g_det_score) {
+			d->hit = 1; d->score = boxes[i].score; break;
+		}
+	return 0;
+}
+static void npu_apply(const struct ep_detection *d)
+{
+	int nd = d->nd;
+	float maxscore = d->maxscore;
+	g_det_mean_sum += d->mean; g_det_mean_n++;
 
 	{	/* 触发判定: 目标类 + 分数门限, 且必须连续 N 帧。
 		 * P5: 只在状态变化时打印, 不再每帧一行 ——
@@ -1119,13 +1162,8 @@ static int npu_run(const unsigned char *rgb)
 		 * 不会影响它; 置位仍用 s >= g_det_frames, 预热结束后哪怕
 		 * streak 已经很大也能立刻触发。连击中断(streak 归零)或事件
 		 * 完成时清 g_det_announced, 下一轮连击照常各打一行。 */
-		int hit = 0, k, s;
+		int hit = d->hit, s;
 
-		for (k = 0; k < nd; k++)
-			if (boxes[k].cls == 0 && boxes[k].score >= g_det_score) {
-				hit = 1;
-				break;
-			}
 		if (hit) {
 			s = ++g_streak;
 			/* S1: 命中即刷新"目标在场"时刻(事件延长判定唯一依据);
@@ -1134,13 +1172,13 @@ static int npu_run(const unsigned char *rgb)
 			if (s == 1 && g_det_frames > 1)
 				printf(">>> 检测连击开始 streak=1 score=%.3f "
 				       "(阈值 %.2f, 需连续 %d 帧)\n",
-				       (double)boxes[k].score, (double)g_det_score,
+				       (double)d->score, (double)g_det_score,
 				       g_det_frames);
 			if (s >= g_det_frames) {
 				if (!g_det_announced) {
 					g_det_announced = 1;
 					printf(">>> 检测触发 streak=%d score=%.3f\n",
-					       s, (double)boxes[k].score);
+					       s, (double)d->score);
 					/* 本 episode 落在哪: 冷却期 -> 记跳过;
 					 * 事件进行中 -> 记合并(docs/37 §5) */
 					if (ev_cooldown_active())
@@ -1202,8 +1240,16 @@ static int npu_run(const unsigned char *rgb)
 	g_det_total += (unsigned)nd;
 	if ((unsigned)nd > g_det_max) g_det_max = (unsigned)nd;
 	if (maxscore > g_score_max) g_score_max = maxscore;
+	return;
+}
+static int npu_run(const unsigned char *rgb)
+{
+	struct ep_detection d;
+	if (npu_infer(rgb, g_npu_input_dmabuf ? g_npu_rgb_mem : NULL, 0, &d)) return -1;
+	npu_apply(&d);
 	return 0;
 }
+
 #endif
 
 static void rga_to_rgb(void)
@@ -1211,6 +1257,10 @@ static void rga_to_rgb(void)
 	g_rga_dst = wrapbuffer_virtualaddr_t(g_rgb, g_npu_w, g_npu_h,
 					     g_npu_w, g_npu_h, RK_FORMAT_RGB_888);
 }
+
+#if defined(HAVE_RKNN) && defined(HAVE_RGA)
+#include "evrec_detect_pipeline.h"
+#endif
 
 /* ---------------- 环形缓冲 ---------------- */
 /* A standalone event starts only where SPS and PPS precede an IDR in the
@@ -1614,6 +1664,7 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 			"\"first_ts_ms\":%.1f,\"last_ts_ms\":%.1f,"
 			"\"requested_pre_sec\":%d,\"requested_post_sec\":%d,"
 			"\"actual_preroll_ms\":%.1f,\"timestamp_source\":\"%s\","
+			"\"detection_pipeline\":%s,\"trigger_source_frame_seq\":%u,\"trigger_source_epoch\":%u,\"trigger_result_applied_ns\":%llu,"
 			"\"write_error\":%s}\n",
 			g_ev_path, trig_seq, trig_ts, reason,
 			g_ev_bytes, g_ev_last_ts - g_ev_first_ts,
@@ -1623,6 +1674,8 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 			g_pre_seconds, g_post_seconds,
 			g_ev_segment == 0 ? trig_ts - g_ev_first_ts : 0.0,
 			g_ts_flags == 1 ? "v4l2-monotonic" : "dqbuf-monotonic",
+			g_detect_pipeline ? "true" : "false", g_event_trigger_source.seq, g_event_trigger_source.epoch,
+			(unsigned long long)g_event_trigger_applied_ns,
 			g_ev_werr ? "true" : "false") < 0) {
 			fprintf(stderr, ">>> 写入 %s 失败: %s\n", jpath, strerror(errno));
 			failed = 1;
@@ -1671,7 +1724,7 @@ static int ring_push(unsigned char *d, int len, unsigned seq, unsigned pkt,
 	r->key = key;
 	r->ts_ms = cap_ms;
 	r->abs_ms = now_ms(CLOCK_REALTIME);
-	r->cap_ms = cap_ms;	/* 采集时刻(自启动); proc = ts_ms - cap_ms */
+	r->cap_ms = cap_ms;	/* 同一媒体标签；处理耗时另见可选帧观测 */
 	ring_cnt++;
 	g_pushed++;
 	ring_bytes += (size_t)len;
@@ -1821,6 +1874,10 @@ static void stage_report(void)
 	if (!g_t_frames)
 		return;
 	tot = g_t_rga + g_t_npu + g_t_enc;
+	if (g_detect_pipeline) {
+		printf(">>> 并行采集主路径(不含检测线程): RGA %.2f + 编码/归还 %.2f ms/帧 frames=%lu ring=%zu/%zu\n", g_t_rga/g_t_frames, g_t_enc/g_t_frames, g_t_frames, ring_bytes, ring_limit);
+		return;
+	}
 	printf(">>> 阶段耗时(均值, %lu 帧): RGA %.2f + RKNN %.2f + 编码 %.2f "
 	       "= %.2f ms/帧 -> %.1f fps\n",
 	       g_t_frames, g_t_rga / g_t_frames, g_t_npu / g_t_frames,
@@ -1877,6 +1934,9 @@ static int fault_sim_dqbuf(void)
 
 static void app_release(void)
 {
+	#if defined(HAVE_RKNN) && defined(HAVE_RGA)
+	dp_release();
+	#endif
 	/* On an encoding error MPP may still own the capture buffer. */
 	if (g_input_dmabuf)
 		enc_release();
@@ -1920,6 +1980,7 @@ static void usage(void)
 "  --fps FPS         编码标称帧率 (默认 30；应与相机配置一致)\n"
 "  --gop FRAMES      IDR 周期 (默认等于标称帧率)\n"
 "  --encoder-input M copy(默认) 或 dmabuf(MPP 采集池共享输入，无隐式回退)\n"
+"  --frame-metrics P 可选独立 CSV，最多 4096 帧，退出后写出；默认关闭\n"
 "\n"
 "触发:\n"
 "  --trigger FILE    监听文件 mtime 变化触发; 不给则等 SIGUSR1\n"
@@ -1938,6 +1999,8 @@ static void usage(void)
 "  --det-score F     命中分数阈值 (默认 0.45)\n"
 "  --det-frames N    连续命中帧数才触发 (默认 3)\n"
 "  --detect-every N  每 N 个采集帧检测一次 (1..120, 默认 1)\n"
+"  --detect-pipeline 双RGB槽并行自动检测，要求detect/dmabuf/every=1；忽略SIGUSR1\n"
+"  --pipeline-selfcheck 仅生成图像验证双槽输入，不打开摄像头\n"
 "  --obj-thresh F    objectness 阈值 (默认 0)\n"
 "  --rga-size WxH    RGA 缩放目标 (默认 640x360)\n"
 "\n"
@@ -1996,6 +2059,7 @@ int main(int argc, char **argv)
 			"--rga-size", "--rtsp-ring", "--rtsp-ring-mb",
 			"--rtsp-clients", "--rtsp-deadline-s", "--ts-offset",
 			"--recover", "--fault-sim", "--rtp-trace", "--encoder-input", "--npu-input",
+			"--frame-metrics",
 		};
 		size_t j;
 
@@ -2012,7 +2076,9 @@ int main(int argc, char **argv)
 	}
 
 	for (i = 1; i < argc; i++) {
-		if (!strcmp(argv[i], "-d")) dev = argv[++i];
+		if (!strcmp(argv[i], "--detect-pipeline")) g_detect_pipeline = 1;
+		else if (!strcmp(argv[i], "--pipeline-selfcheck")) { g_pipeline_selfcheck = 1; g_detect_pipeline = 1; }
+		else if (!strcmp(argv[i], "-d")) dev = argv[++i];
 		else if (!strcmp(argv[i], "-w")) w = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--help") || !strcmp(argv[i], "-?")) {
 			usage();
@@ -2033,6 +2099,7 @@ int main(int argc, char **argv)
 		else if (!strcmp(argv[i], "-o"))
 			out = argv[++i];
 		else if (!strcmp(argv[i], "--trigger")) g_trig_path = argv[++i];
+		else if (!strcmp(argv[i], "--frame-metrics")) g_frame_metrics_path = argv[++i];
 		else if (!strcmp(argv[i], "--kbps")) kbps = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--fps")) fps = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "--gop")) gop = atoi(argv[++i]);
@@ -2107,6 +2174,12 @@ int main(int argc, char **argv)
 			}
 		}
 	}
+	if (g_detect_pipeline && (!g_detect || !g_npu_input_dmabuf || g_det_every != 1 || g_trig_path)) {
+		fprintf(stderr, "pipeline requires detect, NPU dmabuf, every=1 and no manual trigger\n"); return 1;
+	}
+#if !defined(HAVE_RGA) || !defined(HAVE_RKNN)
+	if (g_detect_pipeline) { fprintf(stderr, "pipeline requires RGA/RKNN\n"); return 1; }
+#endif
 	if (g_npu_input_dmabuf && !g_detect) {
 		fprintf(stderr, "--npu-input dmabuf 需要 --detect\n");
 		return 1;
@@ -2129,8 +2202,19 @@ int main(int argc, char **argv)
 		gop = fps;
 	g_pre_seconds = pre_sec;
 	g_post_seconds = post_sec;
+	if (g_frame_metrics_path) {
+		if (evm_open(&g_frame_metrics, g_frame_metrics_path) < 0) {
+			perror("frame metrics");
+			return 1;
+		}
+		if (atexit(frame_metrics_exit)) {
+			frame_metrics_exit();
+			return 1;
+		}
+	}
 
-	signal(SIGUSR1, on_sig);
+	/* Experimental async mode attributes events to accepted detector results. */
+	signal(SIGUSR1, g_detect_pipeline ? SIG_IGN : on_sig);
 	{	/* SIGTERM 用不带 SA_RESTART 的 sigaction:
 		 * 否则阻塞的 DQBUF 会被内核自动重启, 收不到 EINTR, 无法及时退出 */
 		struct sigaction sa;
@@ -2146,6 +2230,13 @@ int main(int argc, char **argv)
 	t_start = t0_ms;
 	preroll_unready_since = t_start;
 
+#if defined(HAVE_RGA) && defined(HAVE_RKNN)
+	if (g_pipeline_selfcheck) {
+		int check;
+		if (rga_init() || npu_init()) { app_release(); return 1; }
+		rga_to_rgb(); check = dp_selfcheck(); app_release(); return check ? 1 : 0;
+	}
+#endif
 	if (cap_open(dev, w, h, 4) < 0)
 		return 1;
 	/* 分辨率以 S_FMT 回填为准(驱动可能改), stride 同理 */
@@ -2168,6 +2259,7 @@ int main(int argc, char **argv)
 			return 1;
 		}
 		rga_to_rgb();
+		if (g_detect_pipeline && dp_start()) { app_release(); return 1; }
 #endif
 	}
 #endif
@@ -2235,9 +2327,14 @@ int main(int argc, char **argv)
 		int input_fd = -1;
 		double ts, cap_ms, t_stage = 0, t_rga = 0, t_npu = 0;
 		RK_S64 frame_pts;
+		struct evm_row *metrics_row = NULL;
+		uint64_t source_dq_ns;
 
 		if (g_stop)
 			break;
+#if defined(HAVE_RKNN) && defined(HAVE_RGA)
+		if (g_detect_pipeline && dp_drain()) { end_reason = "detection_error"; rc = 1; break; }
+#endif
 		/* A blocked camera must not hide a writer failure indefinitely. */
 		if (g_ev_werr || evw_queue_failed(&g_ev_queue)) {
 			fprintf(stderr, ">>> 事件写入器失败\n");
@@ -2274,6 +2371,12 @@ int main(int argc, char **argv)
 			perror("DQBUF");
 			goto link_fault;
 		}
+		source_dq_ns = ep_now();
+		if (g_frame_metrics.enabled)
+			metrics_row = evm_begin(&g_frame_metrics, seq, b.sequence,
+				b.index, b.flags,
+				(uint64_t)b.timestamp.tv_sec * UINT64_C(1000000000) +
+				(uint64_t)b.timestamp.tv_usec * 1000, g_input_dmabuf);
 		if (b.index >= (unsigned)cap.nbufs || !cap.map[b.index]) {
 			fprintf(stderr, ">>> DQBUF 返回无效缓冲区索引 %u\n", b.index);
 			end_reason = "capture_buffer_error";
@@ -2298,9 +2401,9 @@ int main(int argc, char **argv)
 		}
 		ts = now_ms(CLOCK_MONOTONIC);
 		{
-			/* vb2 采集时间戳: 帧在驱动里完成采集的时刻, 比 DQBUF
-			 * 时刻更接近真实曝光完成点。MONOTONIC flag 下它与
-			 * CLOCK_MONOTONIC 同零点, cap_ms 与 ts_ms 可直接相减;
+			/* V4L2 驱动时间标签: 取样位置须核对 TSTAMP_SRC 和 BSP，
+			 * 不能仅凭 MONOTONIC 就认定是曝光/采集完成时刻。
+			 * MONOTONIC flag 表示可与用户态 CLOCK_MONOTONIC 比较；
 			 * 驱动没给(时间戳为 0/非 MONOTONIC)则退化为 DQBUF 时刻,
 			 * 口径由首帧打印的 flags 与 json 的 cap_ms 诚实标明。 */
 			double vb2_ms = (double)b.timestamp.tv_sec * 1000.0 +
@@ -2312,7 +2415,7 @@ int main(int argc, char **argv)
 			if (g_ts_flags < 0) {
 				g_ts_flags = source;
 				if (source)
-					printf(">>> vb2 ts = MONOTONIC(采集完成时刻, 与 DQBUF 同钟源)\n");
+					printf(">>> vb2 ts = MONOTONIC(驱动时间标签，与 DQBUF 同钟源，取样位置另核对)\n");
 				else
 					printf(">>> vb2 ts flags=0x%x(非 MONOTONIC, cap 退化为 DQBUF 时刻)\n",
 					       flags);
@@ -2353,10 +2456,22 @@ int main(int argc, char **argv)
 #ifdef HAVE_RGA
 #ifdef HAVE_RKNN
 		if (g_detect && frame_seq % g_det_every == 0) {
-			int rga_rc = rga_scale(cap.map[b.index], w, h, cap.stride, input_fd);
+			int slot = -1, rga_rc;
+			if (g_detect_pipeline) {
+				g_dp_eligible++; slot = ep_reserve(&g_dp);
+				if (slot < 0) { end_reason = "detection_error"; rc = 1; break; }
+			}
+			rga_rc = rga_scale_to(cap.map[b.index], w, h, cap.stride, input_fd,
+			                          g_detect_pipeline ? g_dp_mem[slot] : g_npu_rgb_mem);
 			t_rga = now_ms(CLOCK_MONOTONIC) - t_stage;
 			t_stage += t_rga;
-			if (rga_rc != 0 || npu_run(g_rgb) != 0) {
+			if (!rga_rc && g_detect_pipeline) {
+				struct ep_job job = {0};
+				job.epoch = g_capture_epoch; job.seq = frame_seq;
+				job.driver_seq = b.sequence; job.dq_ns = source_dq_ns; job.media_ms = cap_ms;
+				rga_rc = ep_submit(&g_dp, slot, &job);
+			}
+			if (rga_rc != 0 || (!g_detect_pipeline && npu_run(g_rgb) != 0)) {
 				g_streak = 0;
 				g_det_announced = 0;
 				g_trigger = 0;
@@ -2364,12 +2479,12 @@ int main(int argc, char **argv)
 				rc = 1;
 				break;
 			}
-			t_npu = now_ms(CLOCK_MONOTONIC) - t_stage;
+			t_npu = g_detect_pipeline ? 0 : now_ms(CLOCK_MONOTONIC) - t_stage;
 			t_stage += t_npu;
 		}
 #else
 		if (g_detect) {
-			rga_scale(cap.map[b.index], w, h, cap.stride, input_fd);
+			rga_scale_to(cap.map[b.index], w, h, cap.stride, input_fd, NULL);
 			t_rga = now_ms(CLOCK_MONOTONIC) - t_stage;
 			t_stage += t_rga;
 		}
@@ -2414,6 +2529,8 @@ int main(int argc, char **argv)
 			perror("QBUF");
 			goto link_fault;
 		}
+		if (!g_input_dmabuf)
+			evm_qbuf(metrics_row);
 
 		if (mpp_frame_init(&frame) != MPP_OK || !frame) {
 			fprintf(stderr, ">>> 编码帧分配失败\n");
@@ -2528,6 +2645,7 @@ int main(int argc, char **argv)
 			if (rc)
 				break;
 		}
+		evm_encoded(metrics_row);
 		if (g_input_dmabuf) {
 			if (shared_return_input(encoder_buffer, frame_pts) < 0) {
 				fprintf(stderr, ">>> MPP 输入归还不匹配或超时\n");
@@ -2535,6 +2653,7 @@ int main(int argc, char **argv)
 				rc = 1;
 				break;
 			}
+			evm_input_returned(metrics_row);
 			frame = NULL;
 			pl.m.fd = input_fd;
 			pl.length = (unsigned)cap.len[b.index];
@@ -2544,7 +2663,12 @@ int main(int argc, char **argv)
 				perror("QBUF shared");
 				goto link_fault;
 			}
+			evm_qbuf(metrics_row);
 		}
+		evm_completed(&g_frame_metrics, metrics_row);
+#if defined(HAVE_RKNN) && defined(HAVE_RGA)
+		if (g_detect_pipeline && dp_drain()) { end_reason = "detection_error"; rc = 1; break; }
+#endif
 
 		/* 阶段耗时累计(仅 --detect): 编码段 = 拷入缓冲 + OSD + 送帧到取包 */
 		if (g_detect) {
@@ -2679,6 +2803,7 @@ int main(int argc, char **argv)
 				/* P6: 触发帧 = 本次循环 DQBUF 到的那一帧(检测/触发
 				 * 文件/信号都在这一帧的循环里被看到); trig_ts 取该帧
 				 * 的环形时间戳(与 json 的 ts_ms 同源), 前后窗口不错位。 */
+				if (g_detect_pipeline) { g_event_trigger_source = g_dp_trigger_source; g_event_trigger_applied_ns = g_dp_trigger_applied_ns; }
 				trig_seq = frame_seq;
 				trig_ts = ring_cnt > 0 ?
 					  ring_at(ring_cnt - 1)->ts_ms : ts - t_start;
@@ -2766,6 +2891,9 @@ link_fault:
 
 	/* P9: 检测开启时收尾打一行三阶段均值(每 5 s 也打过), 作为
 	 * "RGA+RKNN+编码三者串行 -> ~10 fps" 的可复核数字 */
+#if defined(HAVE_RKNN) && defined(HAVE_RGA)
+	if (g_detect_pipeline && dp_stop()) { rc = 1; end_reason = "detection_error"; }
+#endif
 	stage_report();
 	printf(">>> 输入统计 mode=%s copy_bytes=%llu returned=%llu\n",
 	       g_input_dmabuf ? "dmabuf" : "copy", g_input_copy_bytes, g_input_returned);
@@ -2791,6 +2919,11 @@ link_fault:
 	rtsp_stop();
 	pkb_stop();
 	app_release();
+	if (evm_finish(&g_frame_metrics) < 0) {
+		fprintf(stderr, ">>> 帧观测写入失败\n");
+		rc = 1;
+	}
+	evm_report(&g_frame_metrics);
 	/* SIGTERM: 优雅退出; 进行中的事件已在上面收尾落盘。
 	 * 若同时已有真错误(rc!=0), 以错误码为准, 不掩盖失败。 */
 	if (got_term && !rc) {

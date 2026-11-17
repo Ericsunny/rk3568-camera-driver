@@ -140,7 +140,7 @@ while True: time.sleep(.05)
         root.mkdir()
         shutil.copytree(ROOT / 'config', root / 'config')
         executable(root / 'resolve_camera', "print('/dev/null')\n")
-        executable(root / 'evrec', "print('--encoder-input --npu-input --detect-every')\n")
+        executable(root / 'evrec', "print('--encoder-input --npu-input --detect-every --frame-metrics --detect-pipeline')\n")
         executable(root / 'camera_service', "import pathlib,sys\npathlib.Path(sys.argv[1], 'service-argv').write_text('\\n'.join(sys.argv[2:]))\n")
         executable(root / 'camera_delivery', "pass\n")
         fakebin = tmp / 'bin'
@@ -156,6 +156,17 @@ while True: time.sleep(.05)
         args = (run / 'argv.txt').read_text().splitlines()
         assert '--encoder-input' in args and '--trigger' in args and '--detect' not in args
         assert (run / 'service-argv').exists()
+        observed = tmp / 'observed'
+        r = subprocess.run([str(tmp / 'camera_demo'), 'imx415-isp', 'manual', str(observed)],
+                           env=dict(env, FRAME_METRICS=str(observed / 'frames.csv')),
+                           capture_output=True, text=True, timeout=20)
+        assert r.returncode == 0, (r.stdout, r.stderr)
+        args = (observed / 'argv.txt').read_text().splitlines()
+        assert args[args.index('--frame-metrics') + 1] == str(observed / 'frames.csv')
+        rejected = tmp / 'relative-metrics'
+        r = subprocess.run([str(tmp / 'camera_demo'), 'imx415-isp', 'manual', str(rejected)],
+                           env=dict(env, FRAME_METRICS='relative.csv'), capture_output=True, text=True)
+        assert r.returncode != 0 and not rejected.exists()
         assert subprocess.run([str(tmp / 'camera_demo'), 'imx415-isp', 'manual', str(run)],
                               env=env, capture_output=True).returncode != 0
         import hashlib
@@ -167,6 +178,18 @@ while True: time.sleep(.05)
         assert result.returncode == 0, (result.stdout, result.stderr)
         args = (run / 'argv.txt').read_text().splitlines()
         assert '--encoder-input' in args and '--npu-input' in args and '--detect' in args
+        pipeline = tmp / 'pipeline'
+        result = subprocess.run([str(tmp / 'camera_demo'), 'imx415-isp', 'detect', str(pipeline)],
+                                env=dict(env, DETECT_PIPELINE='1'), capture_output=True, text=True)
+        assert result.returncode == 0, (result.stdout, result.stderr)
+        assert '--detect-pipeline' in (pipeline / 'argv.txt').read_text().splitlines()
+        for name, mode, extra in [('manual-pipeline','manual',{}),
+                                  ('sampled-pipeline','detect',{'DETECT_EVERY':'2'}),
+                                  ('copy-pipeline','detect',{'NPU_INPUT':'copy'})]:
+            path=tmp/name
+            result=subprocess.run([str(tmp/'camera_demo'),'imx415-isp',mode,str(path)],
+                                  env=dict(env,DETECT_PIPELINE='1',**extra),capture_output=True,text=True)
+            assert result.returncode != 0 and not path.exists(), (name,result.stderr)
         executable(fakebin / 'fuser', "import sys\nsys.exit(0)\n")
         blocked = tmp / 'blocked'
         assert subprocess.run([str(tmp / 'camera_demo'), 'imx415-isp', 'manual', str(blocked)],

@@ -1,0 +1,23 @@
+Linux host validation, 2026-11-17; device paths are not executed.
+
+r0
+PASS shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本) rc=0
+PASS python 语法检查(py_compile) rc=0
+PASS C 纯 glibc 工具组语法检查(-fsyntax-only) rc=0
+FAIL evrec 故障注入夹具主机集成测试(不访问设备) rc=1
+PASS 补丁 unified diff 语法检查(不验证可应用性) rc=0
+PASS RAW10 统计合成数据测试(不访问设备) rc=0
+PASS mini3a 主机替身测试(不访问设备) rc=0
+PASS 固定演示配置启动检查(不访问设备) rc=0
+PASS 双路服务生命周期测试(主机替身，不访问设备) rc=0
+PASS C++ 相机服务测试（主机替身，不访问设备） rc=0
+FAIL 事件交付与协议读取测试(主机合成数据和替身) rc=1
+PASS Bounded observations and detection pipeline (host substitutes) rc=0
+
+r1 after fixture declaration update
+PASS evrec 故障注入夹具主机集成测试(不访问设备) rc=0
+PASS 事件交付与协议读取测试(主机合成数据和替身) rc=0
+
+Initial failure: extracted evw_close referenced g_detect_pipeline, g_event_trigger_source and g_event_trigger_applied_ns; old fixture lacked declarations.
+Fix: add fixture declarations without changing production code or existing fault assertions.
+Result: 12 effective workflow groups passed; raw per-step logs retained with the experiment records.

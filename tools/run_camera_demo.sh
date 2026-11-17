@@ -34,6 +34,11 @@ if [ "$RTSP_PORT" -lt 1 ] || [ "$RTSP_PORT" -gt 65535 ]; then
 fi
 binary=${EVREC_BIN:-$root/evrec}
 ENCODER_INPUT=${ENCODER_INPUT:-dmabuf}
+FRAME_METRICS=${FRAME_METRICS:-}
+case "$FRAME_METRICS" in
+    ''|/*) ;;
+    *) echo 'FRAME_METRICS must be an absolute path' >&2; exit 2 ;;
+esac
 if [ -z "${NPU_INPUT:-}" ]; then
     if [ "$mode" = detect ]; then NPU_INPUT=dmabuf; else NPU_INPUT=copy; fi
 fi
@@ -62,6 +67,11 @@ for tool in pgrep fuser sha256sum ss python3 ffmpeg ffprobe; do
 done
 case "$run_dir" in /*) ;; *) echo 'RUN_DIRECTORY must be absolute' >&2; exit 2;; esac
 [ -x "$binary" ] || { echo "missing executable: $binary" >&2; exit 1; }
+if [ -n "$FRAME_METRICS" ] &&
+   ! "$binary" --help | grep -q -- '--frame-metrics'; then
+    echo 'evrec binary does not support frame observations' >&2
+    exit 1
+fi
 if [ "$ENCODER_INPUT" = dmabuf ] &&
    ! "$binary" --help | grep -q -- '--encoder-input'; then
     echo 'evrec binary does not support dmabuf input' >&2
@@ -111,6 +121,9 @@ set -- "$binary" -d "$VIDEO" -w "$WIDTH" -h "$HEIGHT" \
     --rtsp-deadline-s "$RTSP_DEADLINE" --osd -o "$run_dir/event"
 if [ "$ENCODER_INPUT" = dmabuf ]; then
     set -- "$@" --encoder-input dmabuf
+fi
+if [ -n "$FRAME_METRICS" ]; then
+    set -- "$@" --frame-metrics "$FRAME_METRICS"
 fi
 if [ "$mode" = detect ]; then
     set -- "$@" --detect --model "$MODEL" --det-score "$DET_SCORE" --det-frames "$DET_FRAMES"

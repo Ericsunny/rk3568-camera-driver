@@ -1,0 +1,15 @@
+{
+  "scope": "published source with LF line endings",
+  "files": {
+    "tools/evrec.c": "ba794f7c46d2fbf19984c874c88a016f74d6d64b1eb6632270310c8f0793875e",
+    "tools/evrec_writer.h": "d4316ec24143c0769c44e7ea109bd80f491a70449e8e8ecc26130ed266459250",
+    "tools/evrec_metrics.h": "0f25c19482b518b5b68af4e2ce478f559434e3bf3846431bfd033ea739e15e9b",
+    "tools/evrec_pipeline.h": "017a23552762f18b6dcd1922a52ede121f8276ee012fc2ef5663d8f1b0089cec",
+    "tools/evrec_detect_pipeline.h": "7d273a8ce8d157dc0ba8fcc99d51d3b024c71b00f3844306d516e548fa3a4b03",
+    "tools/rtsp_hub.c": "450b841acb6dcb9a1e3c3c355d53d1e303ecfeaba5de39220c8dcd405167b93a",
+    "tools/camera_demo.cpp": "d6dcbaaf178e1f8a714336fb20cf36438e58af0a2b795327551d63b76cbe4359",
+    "tools/camera_service.cpp": "09fc3ff6f2eafe4239e184117b428b0b98c44b26266ad870c50ed142fb43e57f",
+    "tools/camera_delivery.cpp": "f9e2c596f5b6e33c6b3a1181c5346e4c98fea9424cf9b345f90aa3ceaf32f123",
+    "config/final-demo.env": "3e2862fd124c6db25fc132c9314682a46248165ef14f5865ec1cc155856e866d"
+  }
+}

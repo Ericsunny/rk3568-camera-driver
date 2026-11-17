@@ -51,6 +51,9 @@ static unsigned long g_ev_bytes;
 static double g_ev_first_ts, g_ev_last_ts, g_last_detect_ms = 1;
 static int g_ev_werr, fault, g_max_events = 1, g_events;
 static int g_pre_seconds, g_post_seconds, g_ts_flags;
+static int g_detect_pipeline;
+static struct { unsigned seq, epoch; } g_event_trigger_source;
+static unsigned long long g_event_trigger_applied_ns;
 #define CLOCK_MONOTONIC 1
 static double now_ms(int clock_id) { (void)clock_id; return 2000.0; }
 static void evw_event_end(const char *reason) { (void)reason; g_events++; }
@@ -195,6 +198,7 @@ RGA_PRELUDE = r'''
 #include <string.h>
 typedef int IM_STATUS;
 typedef struct { unsigned char *ptr; } rga_buffer_t;
+typedef struct { int fd; } rknn_tensor_mem;
 #define IM_STATUS_SUCCESS 0
 #define RK_FORMAT_YCbCr_420_SP 1
 #define RK_FORMAT_RGB_888 2
@@ -209,11 +213,21 @@ static int rc, g_streak, g_det_announced, g_trigger;
 static const char *end_reason;
 static int g_npu_w = 4, g_npu_h = 4;
 static struct { unsigned char *map[1]; unsigned stride; } cap;
-static struct { int index; } b;
+static struct { int index; unsigned sequence; } b;
+static int g_detect_pipeline, g_dp;
+static unsigned g_capture_epoch;
+static uint64_t source_dq_ns, g_dp_eligible;
+static double cap_ms;
+static rknn_tensor_mem *g_dp_mem[2];
+#ifndef HAVE_RKNN
+static rknn_tensor_mem *g_npu_rgb_mem;
+#endif
+struct ep_job { unsigned epoch, seq, driver_seq; uint64_t dq_ns; double media_ms; };
+static int ep_reserve(int *q) { (void)q; return -1; }
+static int ep_submit(int *q,int slot,const struct ep_job *job) { (void)q;(void)slot;(void)job;return -1; }
 static double t_stage, t_rga, t_npu;
 #ifdef HAVE_RKNN
 typedef struct { int x, y, width, height; } im_rect;
-typedef struct { int fd; } rknn_tensor_mem;
 #define RKNN_SUCC 0
 #define RKNN_MEMORY_SYNC_FROM_DEVICE 1
 #define RKNN_MEMORY_SYNC_TO_DEVICE 2
@@ -301,6 +315,8 @@ QBUF_PRELUDE = r'''
 #define VIDIOC_QBUF 1
 struct { int fd; } cap;
 static int g_stop, g_input_dmabuf, fail_qbuf, recovered, encoded;
+static void *metrics_row;
+static void evm_qbuf(void *row) { (void)row; }
 static int xioctl(int fd, int req, void *b)
 { (void)fd; (void)req; (void)b; errno = EIO; return fail_qbuf ? -1 : 0; }
 static void run_frame(void)
@@ -340,10 +356,11 @@ def main():
              EVENT_TEST.replace('SIGNAL_BLOCK', signal)
                        .replace('EXIT_BLOCK', exit_block)
                        .replace('NORMAL_CLOSE_BLOCK', normal_close))
-    caller = block('if (g_detect && frame_seq % g_det_every == 0) {\n\t\t\tint rga_rc = rga_scale(', '\n#else')
+    caller = block('if (g_detect && frame_seq % g_det_every == 0) {', '\n#else')
     rga = (RGA_PRELUDE + function('static void letterbox_size(') + '\n' +
-           function('static void pad_rgb(') + '\n' + function('static int rga_scale(') + '\n' +
-           RGA_TEST.replace('RGA_CALLER_BLOCK', caller))
+           function('static void pad_rgb(') + '\n' + function('static int rga_scale_to(') + '\n' +
+           RGA_TEST.replace('RGA_CALLER_BLOCK', caller).replace('rga_scale(data, 4, 4, 4, -1)',
+             'rga_scale_to(data, 4, 4, 4, -1, g_npu_rgb_mem)'))
     qbuf = block('if (!g_input_dmabuf && xioctl(cap.fd, VIDIOC_QBUF, &b) < 0) {\n\t\t\tif (g_stop)',
                  '\n\n\t\tif (mpp_frame_init')
     qbuf = QBUF_PRELUDE.replace('QBUF_BLOCK', qbuf)

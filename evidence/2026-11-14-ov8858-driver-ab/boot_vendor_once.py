@@ -3,11 +3,12 @@
 from pathlib import Path
 import re
 import subprocess
+import os
 import time
 import serial
 
-SSH = r'C:\Windows\System32\OpenSSH\ssh.exe'
-LOG = Path(r'D:\vm\board-test-logs\ov8858-driver-ab-20261114-serial.raw')
+SSH = os.environ.get('SSH_BIN', 'ssh')
+LOG = Path(os.environ.get('SERIAL_LOG', 'ov8858-driver-ab-20261114-serial.raw'))
 BASE = '/root/ov8858-driver-ab-20261114/'
 
 

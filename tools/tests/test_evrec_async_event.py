@@ -39,6 +39,9 @@ static int ring_cnt = 3, fail_video, fail_close, g_pre_seconds=2, g_post_seconds
 static unsigned char ev_buf[EV_BUF_CAP];
 static unsigned ev_bn, g_ev_event_id, g_ev_segment, g_ev_coalesced, g_ev_cdskip;
 static double g_ev_first_ts, g_ev_last_ts;
+static int g_detect_pipeline;
+static struct { unsigned seq, epoch; } g_event_trigger_source;
+static unsigned long long g_event_trigger_applied_ns;
 static struct evw_queue g_ev_queue = EVW_QUEUE_INITIALIZER;
 static long disk_free_mb(void) { return 1000; }
 static int ring_last_idr(void) { return 0; }

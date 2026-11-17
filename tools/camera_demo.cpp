@@ -82,6 +82,12 @@ int main(int argc,char** argv) {
         if(npu!="copy" && npu!="dmabuf") throw std::runtime_error("invalid NPU_INPUT");
         if(mode!="detect" && npu=="dmabuf") throw std::runtime_error("NPU_INPUT=dmabuf requires detect mode");
         std::string interval=env("DETECT_EVERY","1"); number(interval,1,120,"DETECT_EVERY");
+        std::string pipeline=env("DETECT_PIPELINE","0"); number(pipeline,0,1,"DETECT_PIPELINE");
+        if(pipeline=="1" && (mode!="detect" || npu!="dmabuf" || interval!="1"))
+            throw std::runtime_error("DETECT_PIPELINE=1 requires detect, NPU_INPUT=dmabuf and DETECT_EVERY=1");
+        std::string metrics=env("FRAME_METRICS");
+        if(!metrics.empty() && !fs::path(metrics).is_absolute())
+            throw std::runtime_error("FRAME_METRICS must be an absolute path");
         fs::path binary=env("EVREC_BIN",(root/"evrec").string());
         if(access(binary.c_str(),X_OK)) throw std::runtime_error("missing executable: "+binary.string());
         for(const auto *program:{"camera_service","camera_delivery","resolve_camera"}) {
@@ -90,12 +96,16 @@ int main(int argc,char** argv) {
         }
         auto help=run({binary.string(),"--help"},10);
         std::string helptext=help.out+help.err;
+        if(!metrics.empty() && helptext.find("--frame-metrics")==std::string::npos)
+            throw std::runtime_error("evrec does not support frame observations");
         if(encoder=="dmabuf" && helptext.find("--encoder-input")==std::string::npos)
             throw std::runtime_error("evrec does not support dmabuf encoding");
         if(npu=="dmabuf" && helptext.find("--npu-input")==std::string::npos)
             throw std::runtime_error("evrec does not support dmabuf NPU input");
         if(mode=="detect" && interval!="1" && helptext.find("--detect-every")==std::string::npos)
             throw std::runtime_error("evrec does not support detection sampling");
+        if(pipeline=="1" && helptext.find("--detect-pipeline")==std::string::npos)
+            throw std::runtime_error("evrec does not support detection pipeline");
         auto video=trim(checked({(root/"resolve_camera").string(),profile},15));
         struct stat st{}; if(stat(video.c_str(),&st) || !S_ISCHR(st.st_mode)) throw std::runtime_error("invalid capture device: "+video);
         auto aiq=run({"pgrep","-f","^/usr/bin/rkaiq_3A_server([[:space:]]|$)"},10);
@@ -126,9 +136,11 @@ int main(int argc,char** argv) {
             "--max-events",env("MAX_EVENTS","0"),"--rtsp",port,"--rtsp-clients",cfg["RTSP_CLIENTS"],
             "--rtsp-deadline-s",cfg["RTSP_DEADLINE"],"--osd","-o",(dir/"event").string()};
         if(encoder=="dmabuf") { args.push_back("--encoder-input"); args.push_back("dmabuf"); }
+        if(!metrics.empty()) args.insert(args.end(),{"--frame-metrics",metrics});
         if(mode=="detect") {
             args.insert(args.end(),{"--detect","--model",cfg["MODEL"],"--det-score",cfg["DET_SCORE"],"--det-frames",cfg["DET_FRAMES"]});
             if(interval!="1") args.insert(args.end(),{"--detect-every",interval});
+            if(pipeline=="1") args.push_back("--detect-pipeline");
             if(npu=="dmabuf") args.insert(args.end(),{"--npu-input","dmabuf"});
         } else args.insert(args.end(),{"--trigger",(dir/"trigger").string()});
         std::string recorded; for(const auto& a:args) recorded+=a+"\n"; write_file(dir/"argv.txt",recorded);

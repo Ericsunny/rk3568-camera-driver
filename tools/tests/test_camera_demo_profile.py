@@ -33,6 +33,7 @@ def main():
                           '  [ "${MOCK_SUPPORT_DMA:-1}" = 1 ] && echo --encoder-input\n'
                           '  [ "${MOCK_SUPPORT_NPU:-1}" = 1 ] && echo --npu-input\n'
                           '  echo --detect-every\n'
+                          '  [ "${MOCK_SUPPORT_METRICS:-1}" = 1 ] && echo --frame-metrics\n'
                           '  exit 0\nfi\nprintf "%s\\n" "$@" > "$MOCK_ARGV"\n')
         binary.chmod(0o755)
         mocks={
@@ -73,6 +74,17 @@ def main():
         assert run('manual',out,RTSP_PORT_OVERRIDE='8555').returncode==0
         args=(root/'observed-args.txt').read_text().splitlines()
         assert args[args.index('--rtsp')+1]=='8555'
+        out=root/'frame-observations'
+        target=str(out/'frames.csv')
+        assert run('manual',out,FRAME_METRICS=target).returncode==0
+        args=(root/'observed-args.txt').read_text().splitlines()
+        assert args[args.index('--frame-metrics')+1]==target
+        out=root/'bad-frame-observations'
+        assert run('manual',out,FRAME_METRICS='relative.csv').returncode==2
+        assert not out.exists()
+        out=root/'unsupported-frame-observations'
+        assert run('manual',out,FRAME_METRICS=str(out/'frames.csv'),MOCK_SUPPORT_METRICS='0').returncode!=0
+        assert not out.exists()
         out=root/'explicit-copy'
         assert run('detect',out,ENCODER_INPUT='copy',NPU_INPUT='copy').returncode==0
         args=(root/'observed-args.txt').read_text().splitlines()

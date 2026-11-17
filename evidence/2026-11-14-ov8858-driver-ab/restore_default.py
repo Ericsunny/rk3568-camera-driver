@@ -2,11 +2,12 @@
 """Reboot once to the unchanged default Image and DTB, recording serial output."""
 from pathlib import Path
 import subprocess
+import os
 import time
 import serial
 
-SSH = r'C:\Windows\System32\OpenSSH\ssh.exe'
-LOG = Path(r'D:\vm\board-test-logs\ov8858-driver-ab-20261114-restore.raw')
+SSH = os.environ.get('SSH_BIN', 'ssh')
+LOG = Path(os.environ.get('SERIAL_LOG', 'ov8858-driver-ab-20261114-restore.raw'))
 with LOG.open('xb') as log:
     port = serial.Serial()
     port.port, port.baudrate = 'COM8', 1500000

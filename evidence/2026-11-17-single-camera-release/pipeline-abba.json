@@ -1,0 +1,574 @@
+{
+  "schema": 1,
+  "p95_method": "linear interpolation at .95*(n-1); timing warmup 30 completed frames/epoch",
+  "cases": [
+    {
+      "name": "case-00-serial",
+      "frame": {
+        "schema": 1,
+        "rows": 507,
+        "completed": 507,
+        "incomplete": 0,
+        "warmup_per_epoch": 30,
+        "selected": 477,
+        "capture_epochs": [
+          1
+        ],
+        "driver_sequence_gaps": 68,
+        "driver_sequence_duplicates": 0,
+        "timestamp_sources": {
+          "monotonic/EOF-flag": 477
+        },
+        "driver_age_unavailable": 0,
+        "observed_dq_fps": 13.177297534147264,
+        "timings": {
+          "dq_to_encode_done": {
+            "n": 477,
+            "mean_ms": 75.52075296855345,
+            "median_ms": 73.135132,
+            "p95_ms": 86.1800506,
+            "max_ms": 94.791218
+          },
+          "dq_to_qbuf": {
+            "n": 477,
+            "mean_ms": 75.74497373794549,
+            "median_ms": 73.357675,
+            "p95_ms": 86.36374199999999,
+            "max_ms": 94.991884
+          },
+          "driver_timestamp_to_dq": {
+            "n": 477,
+            "mean_ms": 147.78984175681342,
+            "median_ms": 147.394784,
+            "p95_ms": 181.65463579999997,
+            "max_ms": 208.771202
+          },
+          "driver_timestamp_to_encode_done": {
+            "n": 477,
+            "mean_ms": 223.31059472536688,
+            "median_ms": 222.417392,
+            "p95_ms": 258.57853140000003,
+            "max_ms": 294.775419
+          },
+          "encode_done_to_qbuf": {
+            "n": 477,
+            "mean_ms": 0.22422076939203353,
+            "median_ms": 0.211458,
+            "p95_ms": 0.2920752,
+            "max_ms": 0.99225
+          }
+        },
+        "scope": "board-side observations; driver timestamp position requires BSP verification; not display latency",
+        "p95_method": "linear interpolation at 0.95*(n-1)",
+        "warmup_note": "warmup removed per epoch; overall DQ fps includes any intervening recovery time"
+      },
+      "cpu": {
+        "user_plus_system_ms": 11200.099,
+        "ms_per_completed_frame": 22.090925049309664,
+        "scope": "recorder process including startup/cleanup; metrics on; not system CPU or power"
+      },
+      "rss": {
+        "scope": "process RSS after ready and before stop; not total DMA memory",
+        "n": 34,
+        "first_kb": 40844,
+        "last_kb": 54836,
+        "min_kb": 40844,
+        "max_kb": 54836
+      },
+      "known_rga_probe_lines": 1,
+      "deliveries": 0
+    },
+    {
+      "name": "case-01-pipeline",
+      "frame": {
+        "schema": 1,
+        "rows": 573,
+        "completed": 573,
+        "incomplete": 0,
+        "warmup_per_epoch": 30,
+        "selected": 543,
+        "capture_epochs": [
+          1
+        ],
+        "driver_sequence_gaps": 0,
+        "driver_sequence_duplicates": 0,
+        "timestamp_sources": {
+          "monotonic/EOF-flag": 543
+        },
+        "driver_age_unavailable": 0,
+        "observed_dq_fps": 15.000356014215223,
+        "timings": {
+          "dq_to_encode_done": {
+            "n": 543,
+            "mean_ms": 17.98058223020258,
+            "median_ms": 17.579919,
+            "p95_ms": 22.2191109,
+            "max_ms": 25.406794
+          },
+          "dq_to_qbuf": {
+            "n": 543,
+            "mean_ms": 18.210648250460405,
+            "median_ms": 17.799085,
+            "p95_ms": 22.4895732,
+            "max_ms": 25.731419
+          },
+          "driver_timestamp_to_dq": {
+            "n": 543,
+            "mean_ms": 19.62076212338858,
+            "median_ms": 19.406582,
+            "p95_ms": 21.0517295,
+            "max_ms": 22.494944
+          },
+          "driver_timestamp_to_encode_done": {
+            "n": 543,
+            "mean_ms": 37.60134435359116,
+            "median_ms": 37.015416,
+            "p95_ms": 41.6545346,
+            "max_ms": 45.143705
+          },
+          "encode_done_to_qbuf": {
+            "n": 543,
+            "mean_ms": 0.23006602025782688,
+            "median_ms": 0.221666,
+            "p95_ms": 0.3156421999999998,
+            "max_ms": 0.538708
+          }
+        },
+        "scope": "board-side observations; driver timestamp position requires BSP verification; not display latency",
+        "p95_method": "linear interpolation at 0.95*(n-1)",
+        "warmup_note": "warmup removed per epoch; overall DQ fps includes any intervening recovery time"
+      },
+      "cpu": {
+        "user_plus_system_ms": 13075.23,
+        "ms_per_completed_frame": 22.81890052356021,
+        "scope": "recorder process including startup/cleanup; metrics on; not system CPU or power"
+      },
+      "rss": {
+        "scope": "process RSS after ready and before stop; not total DMA memory",
+        "n": 34,
+        "first_kb": 42180,
+        "last_kb": 58812,
+        "min_kb": 42180,
+        "max_kb": 58812
+      },
+      "known_rga_probe_lines": 1,
+      "deliveries": 0,
+      "pipeline": {
+        "meta": {
+          "schema": 1,
+          "eligible": 573,
+          "submitted": 573,
+          "replaced": 0,
+          "completed": 573,
+          "applied": 573,
+          "stale": 0,
+          "epoch_reject": 0,
+          "stored": 573,
+          "truncated": false,
+          "failed": false,
+          "max_result_age_ns": 200000000
+        },
+        "accepted_coverage": 1.0,
+        "timings": {
+          "dq_to_apply": {
+            "n": 543,
+            "mean_ms": 84.83196693001841,
+            "median_ms": 84.4553,
+            "p95_ms": 89.04738809999999,
+            "max_ms": 92.746509
+          },
+          "dq_to_infer_start": {
+            "n": 543,
+            "mean_ms": 4.242635259668508,
+            "median_ms": 4.172001,
+            "p95_ms": 4.348459,
+            "max_ms": 9.50221
+          },
+          "infer": {
+            "n": 543,
+            "mean_ms": 56.556010565377534,
+            "median_ms": 54.508713,
+            "p95_ms": 64.49051469999999,
+            "max_ms": 73.425341
+          },
+          "infer_done_to_apply": {
+            "n": 543,
+            "mean_ms": 24.033321104972377,
+            "median_ms": 25.368044,
+            "p95_ms": 29.2688408,
+            "max_ms": 34.40792
+          }
+        },
+        "inference_completion_hz": 14.999624626506465,
+        "dual_dq_instrumentation_max_difference_ns": 2041,
+        "gate": true
+      }
+    },
+    {
+      "name": "case-02-pipeline",
+      "frame": {
+        "schema": 1,
+        "rows": 574,
+        "completed": 574,
+        "incomplete": 0,
+        "warmup_per_epoch": 30,
+        "selected": 544,
+        "capture_epochs": [
+          1
+        ],
+        "driver_sequence_gaps": 0,
+        "driver_sequence_duplicates": 0,
+        "timestamp_sources": {
+          "monotonic/EOF-flag": 544
+        },
+        "driver_age_unavailable": 0,
+        "observed_dq_fps": 15.000307615286248,
+        "timings": {
+          "dq_to_encode_done": {
+            "n": 544,
+            "mean_ms": 18.038858143382352,
+            "median_ms": 17.627751500000002,
+            "p95_ms": 22.286120750000002,
+            "max_ms": 34.523462
+          },
+          "dq_to_qbuf": {
+            "n": 544,
+            "mean_ms": 18.26474472242647,
+            "median_ms": 17.846502,
+            "p95_ms": 22.55219305,
+            "max_ms": 35.229379
+          },
+          "driver_timestamp_to_dq": {
+            "n": 544,
+            "mean_ms": 19.65998663235294,
+            "median_ms": 19.359379,
+            "p95_ms": 21.13883595,
+            "max_ms": 22.52837
+          },
+          "driver_timestamp_to_encode_done": {
+            "n": 544,
+            "mean_ms": 37.698844775735296,
+            "median_ms": 37.086057999999994,
+            "p95_ms": 41.414766400000005,
+            "max_ms": 53.806487
+          },
+          "encode_done_to_qbuf": {
+            "n": 544,
+            "mean_ms": 0.22588657904411766,
+            "median_ms": 0.22020849999999997,
+            "p95_ms": 0.2923376500000001,
+            "max_ms": 0.705917
+          }
+        },
+        "scope": "board-side observations; driver timestamp position requires BSP verification; not display latency",
+        "p95_method": "linear interpolation at 0.95*(n-1)",
+        "warmup_note": "warmup removed per epoch; overall DQ fps includes any intervening recovery time"
+      },
+      "cpu": {
+        "user_plus_system_ms": 13191.028,
+        "ms_per_completed_frame": 22.980885017421603,
+        "scope": "recorder process including startup/cleanup; metrics on; not system CPU or power"
+      },
+      "rss": {
+        "scope": "process RSS after ready and before stop; not total DMA memory",
+        "n": 34,
+        "first_kb": 42180,
+        "last_kb": 58812,
+        "min_kb": 42180,
+        "max_kb": 58812
+      },
+      "known_rga_probe_lines": 1,
+      "deliveries": 0,
+      "pipeline": {
+        "meta": {
+          "schema": 1,
+          "eligible": 574,
+          "submitted": 574,
+          "replaced": 0,
+          "completed": 574,
+          "applied": 574,
+          "stale": 0,
+          "epoch_reject": 0,
+          "stored": 574,
+          "truncated": false,
+          "failed": false,
+          "max_result_age_ns": 200000000
+        },
+        "accepted_coverage": 1.0,
+        "timings": {
+          "dq_to_apply": {
+            "n": 544,
+            "mean_ms": 84.87998448529412,
+            "median_ms": 84.5364665,
+            "p95_ms": 88.84274035,
+            "max_ms": 101.881635
+          },
+          "dq_to_infer_start": {
+            "n": 544,
+            "mean_ms": 4.21947552757353,
+            "median_ms": 4.184834,
+            "p95_ms": 4.3613072,
+            "max_ms": 8.7725
+          },
+          "infer": {
+            "n": 544,
+            "mean_ms": 56.756331702205884,
+            "median_ms": 54.6840685,
+            "p95_ms": 64.41362925000001,
+            "max_ms": 73.704674
+          },
+          "infer_done_to_apply": {
+            "n": 544,
+            "mean_ms": 23.904177255514707,
+            "median_ms": 25.07094,
+            "p95_ms": 28.094736,
+            "max_ms": 43.317587
+          }
+        },
+        "inference_completion_hz": 14.99925219032182,
+        "dual_dq_instrumentation_max_difference_ns": 2333,
+        "gate": true
+      }
+    },
+    {
+      "name": "case-03-serial",
+      "frame": {
+        "schema": 1,
+        "rows": 506,
+        "completed": 506,
+        "incomplete": 0,
+        "warmup_per_epoch": 30,
+        "selected": 476,
+        "capture_epochs": [
+          1
+        ],
+        "driver_sequence_gaps": 69,
+        "driver_sequence_duplicates": 0,
+        "timestamp_sources": {
+          "monotonic/EOF-flag": 476
+        },
+        "driver_age_unavailable": 0,
+        "observed_dq_fps": 13.179933339302309,
+        "timings": {
+          "dq_to_encode_done": {
+            "n": 476,
+            "mean_ms": 75.48755530462185,
+            "median_ms": 73.311132,
+            "p95_ms": 85.57242475,
+            "max_ms": 94.248259
+          },
+          "dq_to_qbuf": {
+            "n": 476,
+            "mean_ms": 75.71546523319327,
+            "median_ms": 73.5143615,
+            "p95_ms": 85.788915,
+            "max_ms": 94.506384
+          },
+          "driver_timestamp_to_dq": {
+            "n": 476,
+            "mean_ms": 147.6584584642857,
+            "median_ms": 147.4538895,
+            "p95_ms": 181.91762699999998,
+            "max_ms": 201.928569
+          },
+          "driver_timestamp_to_encode_done": {
+            "n": 476,
+            "mean_ms": 223.14601376890755,
+            "median_ms": 222.9247985,
+            "p95_ms": 258.23498375,
+            "max_ms": 282.580089
+          },
+          "encode_done_to_qbuf": {
+            "n": 476,
+            "mean_ms": 0.22790992857142858,
+            "median_ms": 0.21510400000000002,
+            "p95_ms": 0.2993955,
+            "max_ms": 0.973292
+          }
+        },
+        "scope": "board-side observations; driver timestamp position requires BSP verification; not display latency",
+        "p95_method": "linear interpolation at 0.95*(n-1)",
+        "warmup_note": "warmup removed per epoch; overall DQ fps includes any intervening recovery time"
+      },
+      "cpu": {
+        "user_plus_system_ms": 11231.364000000001,
+        "ms_per_completed_frame": 22.19637154150198,
+        "scope": "recorder process including startup/cleanup; metrics on; not system CPU or power"
+      },
+      "rss": {
+        "scope": "process RSS after ready and before stop; not total DMA memory",
+        "n": 34,
+        "first_kb": 40832,
+        "last_kb": 54824,
+        "min_kb": 40832,
+        "max_kb": 54824
+      },
+      "known_rga_probe_lines": 1,
+      "deliveries": 0
+    },
+    {
+      "name": "resource-r0",
+      "frame": {
+        "schema": 1,
+        "rows": 3649,
+        "completed": 3649,
+        "incomplete": 0,
+        "warmup_per_epoch": 30,
+        "selected": 3619,
+        "capture_epochs": [
+          1
+        ],
+        "driver_sequence_gaps": 0,
+        "driver_sequence_duplicates": 0,
+        "timestamp_sources": {
+          "monotonic/EOF-flag": 3619
+        },
+        "driver_age_unavailable": 0,
+        "observed_dq_fps": 15.000332341442828,
+        "timings": {
+          "dq_to_encode_done": {
+            "n": 3619,
+            "mean_ms": 18.03195181155015,
+            "median_ms": 17.629793,
+            "p95_ms": 22.0503812,
+            "max_ms": 31.208628
+          },
+          "dq_to_qbuf": {
+            "n": 3619,
+            "mean_ms": 18.26250335092567,
+            "median_ms": 17.856126,
+            "p95_ms": 22.2806229,
+            "max_ms": 31.533836
+          },
+          "driver_timestamp_to_dq": {
+            "n": 3619,
+            "mean_ms": 19.653587626416137,
+            "median_ms": 19.38666,
+            "p95_ms": 21.1518182,
+            "max_ms": 26.085153
+          },
+          "driver_timestamp_to_encode_done": {
+            "n": 3619,
+            "mean_ms": 37.68553943796629,
+            "median_ms": 37.095212,
+            "p95_ms": 41.5164617,
+            "max_ms": 50.931707
+          },
+          "encode_done_to_qbuf": {
+            "n": 3619,
+            "mean_ms": 0.2305515393755181,
+            "median_ms": 0.223708,
+            "p95_ms": 0.3142124999999999,
+            "max_ms": 0.684833
+          }
+        },
+        "scope": "board-side observations; driver timestamp position requires BSP verification; not display latency",
+        "p95_method": "linear interpolation at 0.95*(n-1)",
+        "warmup_note": "warmup removed per epoch; overall DQ fps includes any intervening recovery time"
+      },
+      "cpu": {
+        "user_plus_system_ms": 82697.512,
+        "ms_per_completed_frame": 22.663061660728967,
+        "scope": "recorder process including startup/cleanup; metrics on; not system CPU or power"
+      },
+      "rss": {
+        "scope": "process RSS after ready and before stop; not total DMA memory",
+        "n": 231,
+        "first_kb": 42100,
+        "last_kb": 113664,
+        "min_kb": 42100,
+        "max_kb": 113664
+      },
+      "known_rga_probe_lines": 3,
+      "deliveries": 1,
+      "pipeline": {
+        "meta": {
+          "schema": 1,
+          "eligible": 3649,
+          "submitted": 3649,
+          "replaced": 0,
+          "completed": 3649,
+          "applied": 3649,
+          "stale": 0,
+          "epoch_reject": 0,
+          "stored": 3649,
+          "truncated": false,
+          "failed": false,
+          "max_result_age_ns": 200000000,
+          "preroll_ring_bytes": 67026945,
+          "preroll_ring_limit_bytes": 67108864
+        },
+        "accepted_coverage": 1.0,
+        "timings": {
+          "dq_to_apply": {
+            "n": 3619,
+            "mean_ms": 84.92262983586626,
+            "median_ms": 84.54805,
+            "p95_ms": 88.7742718,
+            "max_ms": 98.312385
+          },
+          "dq_to_infer_start": {
+            "n": 3619,
+            "mean_ms": 4.2552683782812935,
+            "median_ms": 4.158875,
+            "p95_ms": 4.3304051,
+            "max_ms": 19.233085
+          },
+          "infer": {
+            "n": 3619,
+            "mean_ms": 56.68986847250622,
+            "median_ms": 54.563547,
+            "p95_ms": 64.7219239,
+            "max_ms": 74.894591
+          },
+          "infer_done_to_apply": {
+            "n": 3619,
+            "mean_ms": 23.97749298507875,
+            "median_ms": 25.267378,
+            "p95_ms": 29.0392989,
+            "max_ms": 39.110504
+          }
+        },
+        "inference_completion_hz": 15.00047009246832,
+        "dual_dq_instrumentation_max_difference_ns": 40833,
+        "gate": true
+      },
+      "resource": {
+        "ready_window_s": 240.0083887820001,
+        "sigusr1_ignored": true,
+        "ring_capacity_bytes": 67108864,
+        "first_observed_99pct_seconds_after_ready": 136.46824004500013,
+        "after_99pct_rss": {
+          "n": 99,
+          "min_kb": 112872,
+          "max_kb": 113664,
+          "first_kb": 112872,
+          "last_kb": 113664
+        },
+        "final_60s_rss": {
+          "n": 58,
+          "min_kb": 113664,
+          "max_kb": 113664,
+          "first_kb": 113664,
+          "last_kb": 113664
+        },
+        "fd_first": 28,
+        "fd_last": 28,
+        "fd_peak": 30,
+        "trace_mapping": "ring line frames=N mapped to DQ timestamp of frame N-1, approximate logging instant",
+        "network_marker_warning": "finish request acknowledged late; marker interval is not actual VM client duration"
+      }
+    }
+  ],
+  "comparison": {
+    "serial_mean_fps": 13.178615436724787,
+    "pipeline_mean_fps": 15.000331814750735,
+    "fps_change_percent": 13.823275948620362,
+    "serial_cpu_ms_per_frame": 22.143596248766045,
+    "pipeline_cpu_ms_per_frame": 22.899963382737578,
+    "cpu_per_frame_change_percent": 3.41573755895086
+  },
+  "performance_binary_sha256": "4f7bc279910b0aeeacdd40ef3f538cfc32bcb337ffd3bd566b2c8367f33076e2",
+  "later_candidate_binary_sha256": "d87dee788a2829411770915fb0b11d4b75e0100778edb356d78acd2ee201fff1",
+  "later_changes": "SIGUSR1 isolation and preroll-ring observation; ABBA results belong to performance-r1"
+}

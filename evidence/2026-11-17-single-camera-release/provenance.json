@@ -1,0 +1,117 @@
+{
+  "date": "2026-11-17",
+  "format": "byte-identical CSV/meta export and selected structured results; no camera/phone imagery",
+  "files": [
+    {
+      "published": "abba/case-00-serial/frame-metrics.csv",
+      "original_local_path": "evidence/2026-11-17-detection-pipeline/board/case-00-serial/run/frame-metrics.csv",
+      "sha256": "b5384c44b6e8573c936bec3b2ab4a51e2e88685df5dfdd3465888cf010414a42",
+      "bytes": 48638
+    },
+    {
+      "published": "abba/case-00-serial/frame-metrics.csv.meta",
+      "original_local_path": "evidence/2026-11-17-detection-pipeline/board/case-00-serial/run/frame-metrics.csv.meta",
+      "sha256": "cb7934cae8aef1890db9d6afadcf69804db6dac9b6ca62f24b64cfb5e1c2e595",
+      "bytes": 150
+    },
+    {
+      "published": "abba/case-01-pipeline/frame-metrics.csv",
+      "original_local_path": "evidence/2026-11-17-detection-pipeline/board/case-01-pipeline/run/frame-metrics.csv",
+      "sha256": "94a4ec24da2d279d05c4baf252ad0d4ebf2c26e3453d1224a7f55ca43ac36a50",
+      "bytes": 54963
+    },
+    {
+      "published": "abba/case-01-pipeline/frame-metrics.csv.detect.csv",
+      "original_local_path": "evidence/2026-11-17-detection-pipeline/board/case-01-pipeline/run/frame-metrics.csv.detect.csv",
+      "sha256": "64b25d5fa335f56c2cd20fbeb9551e3bbfe5a6876ba7bf7f4967bb78c2e99054",
+      "bytes": 57055
+    },
+    {
+      "published": "abba/case-01-pipeline/frame-metrics.csv.detect.meta",
+      "original_local_path": "evidence/2026-11-17-detection-pipeline/board/case-01-pipeline/run/frame-metrics.csv.detect.meta",
+      "sha256": "9d488433d3d4ed161ea3a66f431101b86a5473a6959944494b1ac175c74ac8bc",
+      "bytes": 190
+    },
+    {
+      "published": "abba/case-01-pipeline/frame-metrics.csv.meta",
+      "original_local_path": "evidence/2026-11-17-detection-pipeline/board/case-01-pipeline/run/frame-metrics.csv.meta",
+      "sha256": "0e4824825604671b7fc62c5fe26fd60f62c6fb721e99f88c6a83c83a601c4bf8",
+      "bytes": 150
+    },
+    {
+      "published": "abba/case-02-pipeline/frame-metrics.csv",
+      "original_local_path": "evidence/2026-11-17-detection-pipeline/board/case-02-pipeline/run/frame-metrics.csv",
+      "sha256": "29a68433d097cb91ded6ec02afbb00822e924739aad12a15d7a5cd28dd10455f",
+      "bytes": 55059
+    },
+    {
+      "published": "abba/case-02-pipeline/frame-metrics.csv.detect.csv",
+      "original_local_path": "evidence/2026-11-17-detection-pipeline/board/case-02-pipeline/run/frame-metrics.csv.detect.csv",
+      "sha256": "8acddf541926b22eb6828bef5be7ec8f12bed9707bcb523208c49a0afab99c15",
+      "bytes": 57155
+    },
+    {
+      "published": "abba/case-02-pipeline/frame-metrics.csv.detect.meta",
+      "original_local_path": "evidence/2026-11-17-detection-pipeline/board/case-02-pipeline/run/frame-metrics.csv.detect.meta",
+      "sha256": "eb45c54e9a180acc84c6ae84f024f7eca3caced1601719b17611200ab1907a94",
+      "bytes": 190
+    },
+    {
+      "published": "abba/case-02-pipeline/frame-metrics.csv.meta",
+      "original_local_path": "evidence/2026-11-17-detection-pipeline/board/case-02-pipeline/run/frame-metrics.csv.meta",
+      "sha256": "f36d3757a04f936f97bbbf6360246b5ceb30586fd625fc29609d306bba671e4e",
+      "bytes": 150
+    },
+    {
+      "published": "abba/case-03-serial/frame-metrics.csv",
+      "original_local_path": "evidence/2026-11-17-detection-pipeline/board/case-03-serial/run/frame-metrics.csv",
+      "sha256": "e1981133a18b3aa5d5aad848355178d7044c14719d46e0bd502b6ecef208a978",
+      "bytes": 48541
+    },
+    {
+      "published": "abba/case-03-serial/frame-metrics.csv.meta",
+      "original_local_path": "evidence/2026-11-17-detection-pipeline/board/case-03-serial/run/frame-metrics.csv.meta",
+      "sha256": "b9e3c21ea9d0e837d2827f4f894cfc942dcdbb14dedf95efe36fb317d16cf234",
+      "bytes": 150
+    },
+    {
+      "published": "person/frame-metrics.csv",
+      "original_local_path": "evidence/2026-11-17-pipeline-person/board/round-r0/run/frame-metrics.csv",
+      "sha256": "98a7c01e5dd161343605377e009d2bc7e99ee1a1d9ff7fa826a8c12beaa93981",
+      "bytes": 158481
+    },
+    {
+      "published": "person/frame-metrics.csv.detect.csv",
+      "original_local_path": "evidence/2026-11-17-pipeline-person/board/round-r0/run/frame-metrics.csv.detect.csv",
+      "sha256": "2fb06a7cf3e321501a5bc150c16e95404d1fb47c20e15d205400c0e50c93204f",
+      "bytes": 166596
+    },
+    {
+      "published": "person/frame-metrics.csv.detect.meta",
+      "original_local_path": "evidence/2026-11-17-pipeline-person/board/round-r0/run/frame-metrics.csv.detect.meta",
+      "sha256": "ef5298e2f90e7cd930c6c17aa1b2e801c0c8767099c7e1ffdb3ef23ed08ca4a6",
+      "bytes": 261
+    },
+    {
+      "published": "person/frame-metrics.csv.meta",
+      "original_local_path": "evidence/2026-11-17-pipeline-person/board/round-r0/run/frame-metrics.csv.meta",
+      "sha256": "bf6fb839fc93d857b831c937ad84edc15e7b2653b249fb898ac066c4cafa552c",
+      "bytes": 153
+    }
+  ],
+  "summary_sources": [
+    {
+      "original_local_path": "evidence/2026-11-17-detection-pipeline/analysis-r1/summary.json",
+      "sha256": "6f4eab56e943d15839e38e07d166f6c8649e929890fab8fcccc6ed6353da7e07"
+    },
+    {
+      "original_local_path": "evidence/2026-11-17-pipeline-person/analysis-r0/summary.json",
+      "sha256": "b224f29daf99df9d16048c3272d4caefded389a2686a55819e66e877fd709e41"
+    },
+    {
+      "original_local_path": "evidence/2026-11-17-stage-analysis/calculations.json",
+      "sha256": "7860799779b2d04cfded926dd1a4c58dccce21bce284b8442d620d2103520fdf"
+    }
+  ],
+  "limitations": "Full local control logs and camera recordings are not included. File decode outcomes are recorded metadata, not independently re-decodable from this data-only export."
+}

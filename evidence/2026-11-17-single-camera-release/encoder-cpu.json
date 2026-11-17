@@ -1,0 +1,196 @@
+{
+  "scope": "recorder user+system time / completed frames; detector off; observations off; four runs per mode; startup/cleanup included",
+  "cases": [
+    {
+      "case": "cpu-00-copy",
+      "mode": "copy",
+      "frame_metrics": false,
+      "completed": 126,
+      "cpu_user_ms": 438.263,
+      "cpu_system_ms": 321.934,
+      "cpu_total_ms": 760.197,
+      "cpu_ms_per_completed": 6.033309523809524,
+      "input_copy_bytes": 391910400,
+      "client_frames": [
+        90,
+        90
+      ],
+      "delivery_frames": 78,
+      "file_decode_frames": [
+        78,
+        78
+      ]
+    },
+    {
+      "case": "cpu-01-dmabuf",
+      "mode": "dmabuf",
+      "frame_metrics": false,
+      "completed": 126,
+      "cpu_user_ms": 135.14,
+      "cpu_system_ms": 482.644,
+      "cpu_total_ms": 617.784,
+      "cpu_ms_per_completed": 4.903047619047619,
+      "input_copy_bytes": 0,
+      "client_frames": [
+        90,
+        90
+      ],
+      "delivery_frames": 78,
+      "file_decode_frames": [
+        78,
+        78
+      ]
+    },
+    {
+      "case": "cpu-02-dmabuf",
+      "mode": "dmabuf",
+      "frame_metrics": false,
+      "completed": 126,
+      "cpu_user_ms": 186.319,
+      "cpu_system_ms": 441.843,
+      "cpu_total_ms": 628.162,
+      "cpu_ms_per_completed": 4.9854126984126985,
+      "input_copy_bytes": 0,
+      "client_frames": [
+        90,
+        90
+      ],
+      "delivery_frames": 79,
+      "file_decode_frames": [
+        79,
+        79
+      ]
+    },
+    {
+      "case": "cpu-03-copy",
+      "mode": "copy",
+      "frame_metrics": false,
+      "completed": 129,
+      "cpu_user_ms": 536.955,
+      "cpu_system_ms": 207.459,
+      "cpu_total_ms": 744.414,
+      "cpu_ms_per_completed": 5.770651162790697,
+      "input_copy_bytes": 401241600,
+      "client_frames": [
+        90,
+        90
+      ],
+      "delivery_frames": 78,
+      "file_decode_frames": [
+        78,
+        78
+      ]
+    },
+    {
+      "case": "cpu-04-copy",
+      "mode": "copy",
+      "frame_metrics": false,
+      "completed": 126,
+      "cpu_user_ms": 347.948,
+      "cpu_system_ms": 396.397,
+      "cpu_total_ms": 744.345,
+      "cpu_ms_per_completed": 5.907500000000001,
+      "input_copy_bytes": 391910400,
+      "client_frames": [
+        90,
+        90
+      ],
+      "delivery_frames": 79,
+      "file_decode_frames": [
+        79,
+        79
+      ]
+    },
+    {
+      "case": "cpu-05-dmabuf",
+      "mode": "dmabuf",
+      "frame_metrics": false,
+      "completed": 126,
+      "cpu_user_ms": 155.638,
+      "cpu_system_ms": 442.765,
+      "cpu_total_ms": 598.403,
+      "cpu_ms_per_completed": 4.749230158730159,
+      "input_copy_bytes": 0,
+      "client_frames": [
+        90,
+        90
+      ],
+      "delivery_frames": 79,
+      "file_decode_frames": [
+        79,
+        79
+      ]
+    },
+    {
+      "case": "cpu-06-dmabuf",
+      "mode": "dmabuf",
+      "frame_metrics": false,
+      "completed": 126,
+      "cpu_user_ms": 179.523,
+      "cpu_system_ms": 449.974,
+      "cpu_total_ms": 629.497,
+      "cpu_ms_per_completed": 4.996007936507936,
+      "input_copy_bytes": 0,
+      "client_frames": [
+        90,
+        90
+      ],
+      "delivery_frames": 78,
+      "file_decode_frames": [
+        78,
+        78
+      ]
+    },
+    {
+      "case": "cpu-07-copy",
+      "mode": "copy",
+      "frame_metrics": false,
+      "completed": 123,
+      "cpu_user_ms": 367.331,
+      "cpu_system_ms": 324.618,
+      "cpu_total_ms": 691.9490000000001,
+      "cpu_ms_per_completed": 5.625601626016261,
+      "input_copy_bytes": 382579200,
+      "client_frames": [
+        90,
+        90
+      ],
+      "delivery_frames": 78,
+      "file_decode_frames": [
+        78,
+        78
+      ]
+    }
+  ],
+  "groups": {
+    "copy": {
+      "runs": 4,
+      "completed": 504,
+      "cpu_total_ms": 2940.905,
+      "weighted_cpu_ms_per_completed": 5.835128968253969,
+      "weighted_user_ms_per_completed": 3.3541607142857144,
+      "weighted_system_ms_per_completed": 2.480968253968254,
+      "per_run_cpu_ms_per_completed": [
+        6.033309523809524,
+        5.770651162790697,
+        5.907500000000001,
+        5.625601626016261
+      ]
+    },
+    "dmabuf": {
+      "runs": 4,
+      "completed": 504,
+      "cpu_total_ms": 2473.846,
+      "weighted_cpu_ms_per_completed": 4.908424603174603,
+      "weighted_user_ms_per_completed": 1.3028174603174603,
+      "weighted_system_ms_per_completed": 3.605607142857143,
+      "per_run_cpu_ms_per_completed": [
+        4.903047619047619,
+        4.9854126984126985,
+        4.749230158730159,
+        4.996007936507936
+      ]
+    }
+  },
+  "relative_reduction_percent": 15.881471859852677
+}

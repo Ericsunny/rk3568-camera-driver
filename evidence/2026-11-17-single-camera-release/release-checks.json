@@ -1,0 +1,138 @@
+{
+  "date": "2026-11-17",
+  "scope": "Linux host substitutes and static checks; no new board capture or deployment",
+  "environment": {
+    "kernel": "Linux 5.4.0-216-generic",
+    "gcc": "9.4.0",
+    "g++": "9.4.0",
+    "python": "3.8.10",
+    "ffmpeg": "4.2.7"
+  },
+  "rounds": [
+    {
+      "passed": false,
+      "steps": [
+        {
+          "name": "shell 语法检查(按 shebang 选 sh -n / bash -n,全部脚本)",
+          "command": "rc=0\nwhile IFS= read -r -d '' f; do\n  # 用脚本自己声明的解释器做语法检查: bash 脚本(如历史 bring-up 工具\n  # cpu_ab.sh 的 <<< 与 step2_verify.sh 的 >(tee))用 dash 的 sh -n\n  # 会假阳性 \"redirection unexpected\", 那不是语法错误\n  if head -1 \"$f\" | grep -q '^#!.*bash'; then C=\"bash -n\"; else C=\"sh -n\"; fi\n  if $C \"$f\"; then echo \"OK  $f ($C)\"; else echo \"FAIL $f ($C)\"; rc=1; fi\ndone < <(git ls-files -z '*.sh')\nexit $rc\n",
+          "rc": 0,
+          "seconds": 0.169,
+          "log": "step-00.log"
+        },
+        {
+          "name": "python 语法检查(py_compile)",
+          "command": "rc=0\nwhile IFS= read -r -d '' f; do\n  if python3 -m py_compile \"$f\"; then echo \"OK  $f\"; else echo \"FAIL $f\"; rc=1; fi\ndone < <(git ls-files -z '*.py')\nexit $rc\n",
+          "rc": 0,
+          "seconds": 2.307,
+          "log": "step-01.log"
+        },
+        {
+          "name": "C 纯 glibc 工具组语法检查(-fsyntax-only)",
+          "command": "rc=0\n# 仅纯 glibc 工具:不依赖板端 rockchip/MPP/RKNN 头(那些只能在板上编译)\nfor f in tools/focus_score.c tools/hdr_demo.c tools/st_burn.c \\\n         tools/regression/reg_switch.c tools/fi_probe.c tools/fi_test.c \\\n         tools/streamoff_test.c tools/tryfmt_test.c; do\n  [ -f \"$f\" ] || { echo \"FAIL missing expected source: $f\"; rc=1; continue; }\n  if gcc -fsyntax-only -Wall \"$f\" 2>warn.txt; then\n    echo \"OK  $f ($(wc -l < warn.txt) warnings)\"\n  else\n    echo \"FAIL $f\"; cat warn.txt; rc=1\n  fi\ndone\nexit $rc\n",
+          "rc": 0,
+          "seconds": 0.424,
+          "log": "step-02.log"
+        },
+        {
+          "name": "evrec 故障注入夹具主机集成测试(不访问设备)",
+          "command": "python3 tools/tests/test_evrec_preload.py",
+          "rc": 1,
+          "seconds": 0.729,
+          "log": "step-03.log"
+        },
+        {
+          "name": "补丁 unified diff 语法检查(不验证可应用性)",
+          "command": "for p in driver/patches/*.patch; do\n  [ -f \"$p\" ] || { echo \"FAIL no patch found: $p\"; exit 1; }\n  # 解析 hunk 行数及 diff 语法；目标源码不在 CI，不能验证适用性。\n  git apply --numstat \"$p\" || { echo \"FAIL patch format: $p\"; exit 1; }\n  echo \"OK  $p (syntax only)\"\ndone\n",
+          "rc": 0,
+          "seconds": 0.012,
+          "log": "step-04.log"
+        },
+        {
+          "name": "RAW10 统计合成数据测试(不访问设备)",
+          "command": "python3 tools/tests/test_raw10_stats.py",
+          "rc": 0,
+          "seconds": 0.577,
+          "log": "step-05.log"
+        },
+        {
+          "name": "mini3a 主机替身测试(不访问设备)",
+          "command": "python3 tools/tests/test_mini3a_host.py",
+          "rc": 0,
+          "seconds": 0.221,
+          "log": "step-06.log"
+        },
+        {
+          "name": "固定演示配置启动检查(不访问设备)",
+          "command": "python3 tools/tests/test_camera_demo_profile.py",
+          "rc": 0,
+          "seconds": 0.22,
+          "log": "step-07.log"
+        },
+        {
+          "name": "双路服务生命周期测试(主机替身，不访问设备)",
+          "command": "python3 tools/tests/test_dual_camera.py",
+          "rc": 0,
+          "seconds": 2.403,
+          "log": "step-08.log"
+        },
+        {
+          "name": "C++ 相机服务测试（主机替身，不访问设备）",
+          "command": "python3 tools/tests/test_resolve_camera_cpp.py\npython3 tools/tests/test_dual_camera_cpp.py\npython3 tools/tests/test_camera_cpp_service.py\n",
+          "rc": 0,
+          "seconds": 19.615,
+          "log": "step-09.log"
+        },
+        {
+          "name": "事件交付与协议读取测试(主机合成数据和替身)",
+          "command": "gcc -std=c11 -pthread -Wall -Wextra -Werror -fsanitize=address,undefined tools/tests/test_evrec_writer.c -o /tmp/test_evrec_writer\n/tmp/test_evrec_writer\npython3 tools/tests/test_evrec_async_event.py\npython3 tools/tests/test_evrec_preroll.py\npython3 tools/tests/test_evrec_nal_start.py\npython3 tools/tests/test_evrec_ring_bounds.py\npython3 tools/tests/test_recovery_rtsp_contract.py\npython3 tools/tests/test_evrec_host.py\npython3 tools/tests/test_evrec_dmabuf.py\npython3 tools/tests/test_rtsp_shutdown.py\npython3 tools/tests/test_evrec_model_contract.py\npython3 tools/tests/test_ov8858_controls.py\npython3 tools/tests/test_ov8858_interval.py\npython3 tools/tests/test_ov8858_enum.py\npython3 tools/tests/test_ov8858_hdr_ioctl.py\npython3 tools/tests/test_ov8858_iq_candidate.py\npython3 tools/tests/test_create_drc_iq_variant.py\npython3 tools/tests/test_analyze_isp_params_trace.py\npython3 tools/tests/test_resolve_camera.py\npython3 tools/tests/test_rtsp_check.py\npython3 tools/tests/test_h264_to_mp4.py\npython3 tools/tests/test_camera_service.py\n",
+          "rc": 1,
+          "seconds": 0.424,
+          "log": "step-10.log"
+        },
+        {
+          "name": "Bounded observations and detection pipeline (host substitutes)",
+          "command": "tmp=$(mktemp -d)\ngcc -O1 -g -Wall -Wextra -Werror -pthread -fsanitize=address,undefined -Itools tools/tests/test_evrec_pipeline.c -o \"$tmp/pipeline\"\n\"$tmp/pipeline\"\ngcc -O1 -g -Wall -Wextra -Werror -pthread -fsanitize=address,undefined -Itools tools/tests/test_evrec_metrics.c -o \"$tmp/metrics\"\n\"$tmp/metrics\" \"$tmp\"\npython3 tools/tests/test_evrec_detection_policy.py\npython3 tools/tests/test_frame_metrics.py\npython3 tools/tests/test_camera_baseline.py\npython3 evidence/2026-11-17-single-camera-release/verify.py",
+          "rc": 0,
+          "seconds": 1.008,
+          "log": "step-11.log"
+        }
+      ]
+    },
+    {
+      "passed": true,
+      "steps": [
+        {
+          "name": "evrec 故障注入夹具主机集成测试(不访问设备)",
+          "command": "python3 tools/tests/test_evrec_preload.py",
+          "rc": 0,
+          "seconds": 0.379,
+          "log": "step-00.log"
+        },
+        {
+          "name": "事件交付与协议读取测试(主机合成数据和替身)",
+          "command": "gcc -std=c11 -pthread -Wall -Wextra -Werror -fsanitize=address,undefined tools/tests/test_evrec_writer.c -o /tmp/test_evrec_writer\n/tmp/test_evrec_writer\npython3 tools/tests/test_evrec_async_event.py\npython3 tools/tests/test_evrec_preroll.py\npython3 tools/tests/test_evrec_nal_start.py\npython3 tools/tests/test_evrec_ring_bounds.py\npython3 tools/tests/test_recovery_rtsp_contract.py\npython3 tools/tests/test_evrec_host.py\npython3 tools/tests/test_evrec_dmabuf.py\npython3 tools/tests/test_rtsp_shutdown.py\npython3 tools/tests/test_evrec_model_contract.py\npython3 tools/tests/test_ov8858_controls.py\npython3 tools/tests/test_ov8858_interval.py\npython3 tools/tests/test_ov8858_enum.py\npython3 tools/tests/test_ov8858_hdr_ioctl.py\npython3 tools/tests/test_ov8858_iq_candidate.py\npython3 tools/tests/test_create_drc_iq_variant.py\npython3 tools/tests/test_analyze_isp_params_trace.py\npython3 tools/tests/test_resolve_camera.py\npython3 tools/tests/test_rtsp_check.py\npython3 tools/tests/test_h264_to_mp4.py\npython3 tools/tests/test_camera_service.py\n",
+          "rc": 0,
+          "seconds": 7.591,
+          "log": "step-01.log"
+        }
+      ]
+    }
+  ],
+  "effective_group_count": 12,
+  "effective_all_passed": true,
+  "initial_failure": "Two harnesses extracting evw_close lacked new trigger metadata declarations; compilation failed before assertions. Added declarations only; assertions unchanged; reran both failed groups.",
+  "optional_shellcheck": "Not run locally; non-blocking lint remains in GitHub workflow",
+  "data_recompute": {
+    "csv_meta_files": 16,
+    "encoder_cpu_reduction_percent": 15.881471859852681,
+    "serial_fps": 13.178615436724787,
+    "pipeline_fps": 15.000331814750735,
+    "person_p95_ms": 88.52140055,
+    "strict_two_cycle_protocol": false
+  },
+  "publication_checks": {
+    "sensitive_identifiers": 0,
+    "new_document_links_missing_from_index": 0,
+    "historical_helper_path_findings_resolved": 4
+  }
+}

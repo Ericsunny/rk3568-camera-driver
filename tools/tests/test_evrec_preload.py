@@ -51,6 +51,9 @@ static unsigned long g_ev_bytes;
 static double g_ev_first_ts = 1, g_ev_last_ts = 2, g_last_detect_ms = 1;
 static int g_ev_werr, g_events, g_max_events = 1;
 static int g_pre_seconds, g_post_seconds, g_ts_flags;
+static int g_detect_pipeline;
+static struct { unsigned seq, epoch; } g_event_trigger_source;
+static unsigned long long g_event_trigger_applied_ns;
 static double now_ms(int clock_id) { (void)clock_id; return 2000.0; }
 static long disk_free_mb(void) { return 1234; }
 static void evw_event_end(const char *reason) { (void)reason; g_events++; }

@@ -1,0 +1,164 @@
+{
+  "schema": 1,
+  "gates": {
+    "runtime_and_restore": true,
+    "video": true,
+    "detection": true,
+    "event_files": true,
+    "trigger_identity": true,
+    "natural_close": true,
+    "strict_two_cycle_protocol": false,
+    "supplemented_report_count": true
+  },
+  "frame": {
+    "schema": 1,
+    "rows": 1638,
+    "completed": 1638,
+    "incomplete": 0,
+    "warmup_per_epoch": 30,
+    "selected": 1608,
+    "capture_epochs": [
+      1
+    ],
+    "driver_sequence_gaps": 0,
+    "driver_sequence_duplicates": 0,
+    "timestamp_sources": {
+      "monotonic/EOF-flag": 1608
+    },
+    "driver_age_unavailable": 0,
+    "observed_dq_fps": 15.000388128368723,
+    "timings": {
+      "dq_to_encode_done": {
+        "n": 1608,
+        "mean_ms": 18.1936561579602,
+        "median_ms": 17.7355435,
+        "p95_ms": 21.43633555,
+        "max_ms": 27.274919
+      },
+      "dq_to_qbuf": {
+        "n": 1608,
+        "mean_ms": 18.428686868159204,
+        "median_ms": 17.9655025,
+        "p95_ms": 21.682356499999997,
+        "max_ms": 27.417836
+      },
+      "driver_timestamp_to_dq": {
+        "n": 1608,
+        "mean_ms": 19.613720777985076,
+        "median_ms": 19.3953525,
+        "p95_ms": 21.1336136,
+        "max_ms": 23.205919
+      },
+      "driver_timestamp_to_encode_done": {
+        "n": 1608,
+        "mean_ms": 37.80737693594527,
+        "median_ms": 37.201654500000004,
+        "p95_ms": 41.0140494,
+        "max_ms": 46.94705
+      },
+      "encode_done_to_qbuf": {
+        "n": 1608,
+        "mean_ms": 0.23503071019900498,
+        "median_ms": 0.228959,
+        "p95_ms": 0.34027279999999993,
+        "max_ms": 0.873084
+      }
+    },
+    "scope": "board-side observations; driver timestamp position requires BSP verification; not display latency",
+    "p95_method": "linear interpolation at 0.95*(n-1)",
+    "warmup_note": "warmup removed per epoch; overall DQ fps includes any intervening recovery time"
+  },
+  "pipeline_meta": {
+    "schema": 1,
+    "eligible": 1638,
+    "submitted": 1638,
+    "replaced": 0,
+    "completed": 1638,
+    "applied": 1638,
+    "stale": 0,
+    "epoch_reject": 0,
+    "stored": 1638,
+    "truncated": false,
+    "failed": false,
+    "max_result_age_ns": 200000000,
+    "preroll_ring_bytes": 54428534,
+    "preroll_ring_limit_bytes": 67108864
+  },
+  "accepted_coverage": 1.0,
+  "dq_to_apply_ms": {
+    "n": 1608,
+    "mean_ms": 85.36818645273632,
+    "median_ms": 84.7040495,
+    "p95_ms": 88.52140055,
+    "max_ms": 157.552474
+  },
+  "actual_ready_window_s": 105.94981781200113,
+  "known_rga_probe_lines": 7,
+  "not_measured": [
+    "physical entry/exit response",
+    "detection precision/recall",
+    "per-event exact physical action alignment",
+    "display latency"
+  ],
+  "events": [
+    {
+      "event_id": 1,
+      "segment_index": 0,
+      "close_reason": "target_left",
+      "frames": 193,
+      "trigger_source_seq": 554,
+      "trigger_execution_seq": 555,
+      "three_continuous_accepted_hits": true,
+      "trigger_application_identity": true,
+      "strict_decode_hash_and_counts": true,
+      "requested_preroll_ms": 3000,
+      "actual_preroll_ms": 3999.9,
+      "first_seq": 495,
+      "last_seq": 687,
+      "first_dq_ns": 31453272496302,
+      "last_qbuf_ns": 31466090121757,
+      "last_packet_qbuf_minus_last_hit_applied_ms": 2000.372993,
+      "post_timing_scope": "software observation around final packet QBUF; not file-close timestamp or physical exit"
+    },
+    {
+      "event_id": 2,
+      "segment_index": 0,
+      "close_reason": "target_left",
+      "frames": 111,
+      "trigger_source_seq": 717,
+      "trigger_execution_seq": 719,
+      "three_continuous_accepted_hits": true,
+      "trigger_application_identity": true,
+      "strict_decode_hash_and_counts": true,
+      "requested_preroll_ms": 3000,
+      "actual_preroll_ms": 3933.2,
+      "first_seq": 660,
+      "last_seq": 770,
+      "first_dq_ns": 31464271623574,
+      "last_qbuf_ns": 31471623377063,
+      "last_packet_qbuf_minus_last_hit_applied_ms": 2062.321124,
+      "post_timing_scope": "software observation around final packet QBUF; not file-close timestamp or physical exit"
+    },
+    {
+      "event_id": 3,
+      "segment_index": 0,
+      "close_reason": "target_left",
+      "frames": 173,
+      "trigger_source_seq": 979,
+      "trigger_execution_seq": 980,
+      "three_continuous_accepted_hits": true,
+      "trigger_application_identity": true,
+      "strict_decode_hash_and_counts": true,
+      "requested_preroll_ms": 3000,
+      "actual_preroll_ms": 3333.3,
+      "first_seq": 930,
+      "last_seq": 1102,
+      "first_dq_ns": 31482270973382,
+      "last_qbuf_ns": 31493755501411,
+      "last_packet_qbuf_minus_last_hit_applied_ms": 2000.730826,
+      "post_timing_scope": "software observation around final packet QBUF; not file-close timestamp or physical exit"
+    }
+  ],
+  "protocol_deviation": "An additional entry occurred outside the planned two cycles. Three events agree with the supplemented entry count; this is not a labeled accuracy experiment.",
+  "candidate_binary_sha256": "d87dee788a2829411770915fb0b11d4b75e0100778edb356d78acd2ee201fff1"
+}

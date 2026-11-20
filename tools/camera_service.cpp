@@ -1,6 +1,7 @@
 // Supervise evrec and deliver finished events without blocking capture.
 #include "camera_json.h"
 #include "camera_process.h"
+#include "camera_retention.h"
 #include <algorithm>
 #include <deque>
 #include <filesystem>
@@ -48,7 +49,19 @@ int main(int argc,char** argv) {
     pid_t recorder=-1, worker=-1; int recorder_status=0; bool reaped=false, failed=false, stopping=false;
     auto stop_at=Clock::now(), worker_at=Clock::now();
     std::deque<fs::path> pending; std::set<fs::path> seen;
+    const char* archive=std::getenv("CAMERA_RETENTION_ROOT");
+    pid_t cleaner=-1;
+    int archive_lock=-1;
+    unsigned sweep_seconds=0;
+    auto sweep_at=Clock::now();
+    fs::path delivering;
     try {
+        if(archive) {
+            sweep_seconds=retention::Policy{}.interval;
+            if(access((exe.parent_path()/"camera_retention").c_str(),X_OK))
+                throw std::runtime_error("missing camera_retention");
+            archive_lock=retention::enroll(archive,dir);
+        }
         recorder=spawn(command);
         std::ofstream pidfile(dir/"producer.pid");
         pidfile << recorder << '\n'; pidfile.close();
@@ -57,14 +70,19 @@ int main(int argc,char** argv) {
             std::vector<fs::path> entries;
             for(const auto& e:fs::directory_iterator(dir)) {
                 auto n=e.path().filename().string();
-                if(n.rfind("event",0)==0 && ends(n,".json") &&
-                   !ends(n,".delivery.json") && !ends(n,".pending.json") && !seen.count(e.path()))
-                    entries.push_back(e.path());
+                if(n.rfind("event",0)!=0 || !ends(n,".json") || ends(n,".delivery.json") ||
+                   ends(n,".pending.json") || seen.count(e.path())) continue;
+                if(archive) {
+                    auto receipt=e.path(); receipt.replace_extension(".delivery.json");
+                    auto intent=e.path(); intent.replace_extension(".retiring");
+                    if(fs::exists(receipt) || fs::exists(intent)) continue;
+                }
+                entries.push_back(e.path());
             }
             std::sort(entries.begin(),entries.end());
             for(const auto& p:entries) {
                 try { (void)parse_json(read_all(p)); }
-                catch(const std::exception&) { if(!final) continue; }
+                catch(const std::exception&) { if(!final || !fs::exists(p)) continue; }
                 if(pending.size()+(worker>0?1:0)>=32) throw std::runtime_error("delivery queue capacity exceeded");
                 pending.push_back(p); seen.insert(p);
             }
@@ -72,17 +90,26 @@ int main(int argc,char** argv) {
         auto step=[&]() {
             if(worker>0) {
                 int st=0; auto n=waitpid(worker,&st,WNOHANG);
-                if(n==worker) { if(status_code(st)) failed=true; worker=-1; }
+                if(n==worker) {
+                    worker=-1;
+                    if(status_code(st)) {
+                        failed=true;
+                        auto report=delivering; report.replace_extension(".delivery.json");
+                        if(archive && !fs::exists(report)) throw std::runtime_error("delivery failed without receipt");
+                    }
+                    if(archive) seen.erase(delivering);
+                }
                 else if(n<0 && errno!=EINTR) throw std::runtime_error("delivery wait failed");
                 else if(Clock::now()-worker_at>std::chrono::seconds(120)) {
                     std::cerr << "[delivery] worker timed out\n";
                     if(!terminate_group(worker)) throw std::runtime_error("delivery worker did not exit after kill");
                     worker=-1; failed=true;
+                    if(archive) throw std::runtime_error("managed delivery timed out");
                 }
             }
             if(worker<0 && !pending.empty()) {
-                auto item=pending.front(); pending.pop_front();
-                worker=spawn({delivery.string(),item.string()},-1,-1,true); worker_at=Clock::now();
+                delivering=pending.front(); pending.pop_front();
+                worker=spawn({delivery.string(),delivering.string()},-1,-1,true); worker_at=Clock::now();
             }
         };
         while(!reaped) {
@@ -92,8 +119,21 @@ int main(int argc,char** argv) {
             if(stop_signal && !stopping) { kill(recorder,SIGTERM); stopping=true; stop_at=Clock::now(); }
             if(stopping && Clock::now()-stop_at>std::chrono::seconds(20))
                 throw std::runtime_error("recorder did not stop; inspect device state");
+            if(cleaner>0) {
+                int code=0;
+                auto done=waitpid(cleaner,&code,WNOHANG);
+                if(done==cleaner) {
+                    cleaner=-1;
+                    if(status_code(code)) std::cerr << "[retention] pass failed; retry scheduled\n";
+                    sweep_at=Clock::now()+std::chrono::seconds(sweep_seconds);
+                } else if(done<0 && errno!=EINTR) throw std::runtime_error("retention wait failed");
+            }
+            if(archive && cleaner<0 && !stopping && Clock::now()>=sweep_at)
+                cleaner=spawn({(exe.parent_path()/"camera_retention").string(),archive},-1,-1,true);
             scan(false); step(); std::this_thread::sleep_for(std::chrono::milliseconds(200));
         }
+        if(cleaner>0 && !terminate_group(cleaner)) throw std::runtime_error("retention helper did not exit");
+        cleaner=-1;
         scan(true); auto deadline=Clock::now()+std::chrono::seconds(120);
         while(worker>0 || !pending.empty()) {
             if(Clock::now()>deadline) throw std::runtime_error("delivery shutdown deadline exceeded");
@@ -103,11 +143,17 @@ int main(int argc,char** argv) {
             auto n=e.path().filename().string();
             if(n.rfind("event",0)!=0) continue;
             if(ends(n,".part") || ends(n,".pending.json")) failed=true;
-            if(ends(n,".h264")) { auto metadata=e.path(); metadata.replace_extension(".json"); if(!fs::exists(metadata)) failed=true; }
+            if(ends(n,".h264")) {
+                auto metadata=e.path(); metadata.replace_extension(".json");
+                auto intent=e.path(); intent.replace_extension(".retiring");
+                if(!fs::exists(metadata) && !(archive && fs::exists(intent))) failed=true;
+            }
         }
+        if(archive_lock>=0) close(archive_lock);
         return failed ? 1 : status_code(recorder_status);
     } catch(const std::exception& e) {
         std::cerr << "[service] " << e.what() << '\n';
+        if(cleaner>0) terminate_group(cleaner);
         if(worker>0 && !terminate_group(worker))
             std::cerr << "[service] delivery worker PID " << worker << " is still alive\n";
         if(recorder>0 && !reaped) {

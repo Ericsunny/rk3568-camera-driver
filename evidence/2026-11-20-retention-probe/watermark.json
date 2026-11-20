@@ -1,0 +1,44 @@
+{
+  "config": {
+    "min_mb": 1000,
+    "hyst_mb": 1000
+  },
+  "rows": [
+    {
+      "ms": 0,
+      "offered_mib": 1000,
+      "allows_recording": 1,
+      "space_queries": 1
+    },
+    {
+      "ms": 10000,
+      "offered_mib": 999,
+      "allows_recording": 0,
+      "space_queries": 2
+    },
+    {
+      "ms": 11000,
+      "offered_mib": 2000,
+      "allows_recording": 0,
+      "space_queries": 2
+    },
+    {
+      "ms": 20000,
+      "offered_mib": 1999,
+      "allows_recording": 0,
+      "space_queries": 3
+    },
+    {
+      "ms": 30000,
+      "offered_mib": 2000,
+      "allows_recording": 1,
+      "space_queries": 4
+    },
+    {
+      "ms": 40000,
+      "offered_mib": -1,
+      "allows_recording": 1,
+      "space_queries": 5
+    }
+  ]
+}

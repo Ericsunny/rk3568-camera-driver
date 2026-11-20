@@ -44,6 +44,7 @@ __pycache__/
 /camera_demo
 /camera_service
 /camera_delivery
+/camera_retention
 /resolve_camera
 /run_dual_camera
 /ioctlspy.so

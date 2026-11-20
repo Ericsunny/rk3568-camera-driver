@@ -83,6 +83,7 @@ jobs:
           python3 tools/tests/test_resolve_camera_cpp.py
           python3 tools/tests/test_dual_camera_cpp.py
           python3 tools/tests/test_camera_cpp_service.py
+          python3 tools/tests/test_camera_retention.py
 
       - name: 事件交付与协议读取测试(主机合成数据和替身)
         run: |

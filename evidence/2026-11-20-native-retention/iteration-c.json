@@ -1,0 +1,53 @@
+{
+  "manual": {
+    "mode": "manual",
+    "service_exit": 0,
+    "captured": 153,
+    "completed": 153,
+    "sequence_breaks": 0,
+    "rtsp_frames": 90,
+    "accepted_results": 0,
+    "delivery": [
+      [
+        "complete",
+        90
+      ]
+    ],
+    "kernel_log_contiguous": true,
+    "kernel_alerts": []
+  },
+  "entrance_exit": 0,
+  "enrolled_next": "run-00000002",
+  "viewer_frames": 150,
+  "viewer_frames_at_unpin_and_observed_completion": [
+    11,
+    27
+  ],
+  "main_frames": 153,
+  "main_completed": 153,
+  "main_sequence_breaks": 0,
+  "side_accepted": 150,
+  "before": {
+    "supervisor": {
+      "fds": 4,
+      "rss_kib": 3160
+    },
+    "producer": {
+      "fds": 22,
+      "rss_kib": 21748
+    }
+  },
+  "after": {
+    "supervisor": {
+      "fds": 4,
+      "rss_kib": 3164
+    },
+    "producer": {
+      "fds": 21,
+      "rss_kib": 31844
+    }
+  },
+  "prior_receipt_group_removed": true,
+  "kernel_log_contiguous": true,
+  "kernel_alerts": []
+}

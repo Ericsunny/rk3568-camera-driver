@@ -1,0 +1,4 @@
+[retention] run "/var/tmp/ret-native-1120d/case1/archive/run-00000002"
+[retention] target unmet; protected or unowned data remains, managed_bytes=5709824
+[retention] reclaimed "/var/tmp/ret-native-1120d/case1/archive/run-00000001/event_20240618-064507-01" allocated_bytes=5640192
+[retention] target unmet; protected or unowned data remains, managed_bytes=77824

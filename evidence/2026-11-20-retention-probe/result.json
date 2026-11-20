@@ -1,0 +1,81 @@
+{
+  "kernel": "4.19.232",
+  "arch": "aarch64",
+  "samples": {
+    "001": [
+      [
+        {
+          "events": 1,
+          "allocated_bytes": 49152,
+          "rss_kib": 3032,
+          "fds": 3
+        },
+        {
+          "events": 2,
+          "allocated_bytes": 90112,
+          "rss_kib": 3032,
+          "fds": 3
+        },
+        {
+          "events": 3,
+          "allocated_bytes": 131072,
+          "rss_kib": 3032,
+          "fds": 3
+        },
+        {
+          "events": 4,
+          "allocated_bytes": 172032,
+          "rss_kib": 3032,
+          "fds": 3
+        }
+      ],
+      0
+    ],
+    "002": [
+      [
+        {
+          "events": 1,
+          "allocated_bytes": 49152,
+          "rss_kib": 2912,
+          "fds": 3
+        },
+        {
+          "events": 2,
+          "allocated_bytes": 90112,
+          "rss_kib": 2912,
+          "fds": 3
+        },
+        {
+          "events": 3,
+          "allocated_bytes": 131072,
+          "rss_kib": 2912,
+          "fds": 3
+        },
+        {
+          "events": 4,
+          "allocated_bytes": 172032,
+          "rss_kib": 2912,
+          "fds": 3
+        }
+      ],
+      0
+    ]
+  },
+  "allocated_before": 1191936,
+  "budget": 1019904,
+  "allocated_after": 1019904,
+  "reclaimed": 172032,
+  "retired": [
+    "001"
+  ],
+  "retained": [
+    "002",
+    "003",
+    "004",
+    "005",
+    "006",
+    "007"
+  ],
+  "second_pass_actions": 0,
+  "impossible_quota_protected": true
+}

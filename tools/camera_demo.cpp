@@ -1,5 +1,6 @@
 // Prepare and start a single camera service without a shell or Python runtime.
 #include "camera_process.h"
+#include "camera_retention.h"
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
@@ -148,7 +149,10 @@ int main(int argc,char** argv) {
         }
         for(const auto *tool:{"ffmpeg","ffprobe","sha256sum"})
             if(!executable_on_path(tool)) throw std::runtime_error(std::string("missing tool: ")+tool);
+        const char* archive=std::getenv("CAMERA_RETENTION_ROOT");
+        if(archive && dir==fs::path(archive)/"next") dir=retention::next_run(archive);
         if(mkdir(dir.c_str(),0700)) throw std::runtime_error("cannot create new run directory");
+        if(archive) std::cerr << "[retention] run " << dir << '\n';
         write_file(dir/"kernel.txt",checked({"uname","-a"},10));
         write_file(dir/"board-clock.txt",checked({"date","-u"},10));
         std::string sums=checked({"sha256sum","--",binary.string(),(root/"config/final-demo.env").string(),

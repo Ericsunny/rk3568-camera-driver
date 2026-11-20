@@ -1,0 +1,2 @@
+[retention] invalid retention watermarks or interval
+PASS native retention: admission, exclusion, pressure, protection, resume, idempotence

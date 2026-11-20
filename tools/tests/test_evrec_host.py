@@ -52,6 +52,9 @@ static double g_ev_first_ts, g_ev_last_ts, g_last_detect_ms = 1;
 static int g_ev_werr, fault, g_max_events = 1, g_events;
 static int g_pre_seconds, g_post_seconds, g_ts_flags;
 static int g_detect_pipeline;
+static unsigned g_event_side_generation;
+static const char *g_side_dev;
+static int g_side_available;
 static struct { unsigned seq, epoch; } g_event_trigger_source;
 static unsigned long long g_event_trigger_applied_ns;
 #define CLOCK_MONOTONIC 1
@@ -215,6 +218,7 @@ static int g_npu_w = 4, g_npu_h = 4;
 static struct { unsigned char *map[1]; unsigned stride; } cap;
 static struct { int index; unsigned sequence; } b;
 static int g_detect_pipeline, g_dp;
+static const char *g_side_dev;
 static unsigned g_capture_epoch;
 static uint64_t source_dq_ns, g_dp_eligible;
 static double cap_ms;
@@ -356,7 +360,7 @@ def main():
              EVENT_TEST.replace('SIGNAL_BLOCK', signal)
                        .replace('EXIT_BLOCK', exit_block)
                        .replace('NORMAL_CLOSE_BLOCK', normal_close))
-    caller = block('if (g_detect && frame_seq % g_det_every == 0) {', '\n#else')
+    caller = block('if (g_detect && !g_side_dev && frame_seq % g_det_every == 0) {', '\n#else')
     rga = (RGA_PRELUDE + function('static void letterbox_size(') + '\n' +
            function('static void pad_rgb(') + '\n' + function('static int rga_scale_to(') + '\n' +
            RGA_TEST.replace('RGA_CALLER_BLOCK', caller).replace('rga_scale(data, 4, 4, 4, -1)',

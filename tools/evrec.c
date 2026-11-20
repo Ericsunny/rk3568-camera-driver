@@ -96,6 +96,11 @@ static volatile sig_atomic_t g_stop;	/* SIGTERM: 优雅退出 */
 static const char *g_trig_path;
 static int g_osd;		/* --osd 烧 OSD; 默认关闭, 不加参数行为不变 */
 static int g_detect_pipeline, g_pipeline_selfcheck;
+static const char *g_side_dev;
+static int g_side_contiguous;
+static int g_side_poll;
+static unsigned g_event_side_generation;
+static int g_side_available;
 static unsigned g_capture_epoch;
 static struct ep_job g_dp_trigger_source, g_event_trigger_source;
 static uint64_t g_dp_trigger_applied_ns, g_event_trigger_applied_ns;
@@ -856,6 +861,23 @@ static int decode_yolov8(rknn_tensor_attr *oa, int8_t **od, struct dbox *res,
 		reg = od[s * 3 + 0];
 		cls = od[s * 3 + 1];
 		scr = od[s * 3 + 2];
+		/* The contiguous mode validates this fixed model's grids at startup. */
+		int8_t maxima[80 * 80];
+		uint8_t winners[80 * 80];
+		if (g_side_contiguous) {
+			int cells = gh * gw;
+			memcpy(maxima, cls, (size_t)cells);
+			memset(winners, 0, (size_t)cells);
+			for (c = 1; c < 80; ++c) {
+				const int8_t *plane = cls + (size_t)c * cells;
+				for (int pos = 0; pos < cells; ++pos) {
+					if (plane[pos] > maxima[pos]) {
+						maxima[pos] = plane[pos];
+						winners[pos] = (uint8_t)c;
+					}
+				}
+			}
+		}
 		for (y = 0; y < gh; y++) {
 			for (x = 0; x < gw; x++) {
 				float score, bestv = 0, conf, d[4] = { 0, 0, 0, 0 };
@@ -863,7 +885,10 @@ static int decode_yolov8(rknn_tensor_attr *oa, int8_t **od, struct dbox *res,
 
 				idx = y * gw + x;
 				score = (scr[idx] - ascr->zp) * ascr->scale;
-				for (c = 0; c < 80; c++) {
+				if (g_side_contiguous) {
+					float v = (maxima[idx] - acls->zp) * acls->scale;
+					if (v > 0) { bestv = v; best = winners[idx]; }
+				} else for (c = 0; c < 80; c++) {
 					float v = (cls[(size_t)c * gh * gw + idx] - acls->zp) *
 						  acls->scale;
 
@@ -1027,6 +1052,21 @@ static int npu_init(void)
 			ret = rknn_query(g_nctx, RKNN_QUERY_OUTPUT_ATTR, &g_out_attr[k],
 					 sizeof(g_out_attr[k]));
 			if (ret != RKNN_SUCC) { fprintf(stderr, "query out attr %u\n", k); return -1; }
+		}
+	}
+	if (g_side_contiguous) {
+		for (unsigned k = 0; k < g_nout; ++k) {
+			const rknn_tensor_attr *a = &g_out_attr[k];
+			unsigned grid = 80u >> (k / 3);
+			unsigned channels = k % 3 == 0 ? 64 : k % 3 == 1 ? 80 : 1;
+			if (a->n_dims != 4 || a->fmt != RKNN_TENSOR_NCHW ||
+			    a->type != RKNN_TENSOR_INT8 || a->qnt_type != RKNN_TENSOR_QNT_AFFINE_ASYMMETRIC ||
+			    !isfinite(a->scale) || a->scale <= 0 || a->dims[0] != 1 ||
+			    a->dims[1] != channels || a->dims[2] != grid || a->dims[3] != grid ||
+			    a->size != channels * grid * grid) {
+				fprintf(stderr, "unsupported selfpath output layout at %u\n", k);
+				return -1;
+			}
 		}
 	}
 	if (g_det_score < g_obj_thresh)
@@ -1260,6 +1300,7 @@ static void rga_to_rgb(void)
 
 #if defined(HAVE_RKNN) && defined(HAVE_RGA)
 #include "evrec_detect_pipeline.h"
+#include "evrec_selfpath.h"
 #endif
 
 /* ---------------- 环形缓冲 ---------------- */
@@ -1665,7 +1706,7 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 			"\"requested_pre_sec\":%d,\"requested_post_sec\":%d,"
 			"\"actual_preroll_ms\":%.1f,\"timestamp_source\":\"%s\","
 			"\"detection_pipeline\":%s,\"trigger_source_frame_seq\":%u,\"trigger_source_epoch\":%u,\"trigger_result_applied_ns\":%llu,"
-			"\"write_error\":%s}\n",
+			"\"detector_generation\":%u,\"write_error\":%s}\n",
 			g_ev_path, trig_seq, trig_ts, reason,
 			g_ev_bytes, g_ev_last_ts - g_ev_first_ts,
 			g_ev_event_id, g_ev_segment,
@@ -1676,7 +1717,7 @@ static int evw_close(const char *reason, unsigned trig_seq, double trig_ts)
 			g_ts_flags == 1 ? "v4l2-monotonic" : "dqbuf-monotonic",
 			g_detect_pipeline ? "true" : "false", g_event_trigger_source.seq, g_event_trigger_source.epoch,
 			(unsigned long long)g_event_trigger_applied_ns,
-			g_ev_werr ? "true" : "false") < 0) {
+			g_event_side_generation, g_ev_werr ? "true" : "false") < 0) {
 			fprintf(stderr, ">>> 写入 %s 失败: %s\n", jpath, strerror(errno));
 			failed = 1;
 		}
@@ -2000,6 +2041,9 @@ static void usage(void)
 "  --det-frames N    连续命中帧数才触发 (默认 3)\n"
 "  --detect-every N  每 N 个采集帧检测一次 (1..120, 默认 1)\n"
 "  --detect-pipeline 双RGB槽并行自动检测，要求detect/dmabuf/every=1；忽略SIGUSR1\n"
+"  --detect-selfpath DEV  同源 ISP 小图检测，副路独立重开，要求detect/dmabuf/every=1\n"
+"  --selfpath-contiguous  副路按 INT8 类别平面扫描\n"
+"  --selfpath-poll        主循环同时等待采集和副路结果\n"
 "  --pipeline-selfcheck 仅生成图像验证双槽输入，不打开摄像头\n"
 "  --obj-thresh F    objectness 阈值 (默认 0)\n"
 "  --rga-size WxH    RGA 缩放目标 (默认 640x360)\n"
@@ -2029,6 +2073,9 @@ static void usage(void)
 
 int main(int argc, char **argv)
 {
+#if defined(HAVE_RGA) && defined(HAVE_RKNN)
+	if (argc==9 && !strcmp(argv[1],"--selfpath-worker")) return side_worker(argv);
+#endif
 	const char *dev = "/dev/video5", *out = "/root/ev/ev";
 	int w = 1920, h = 1080, pre_sec = 3, post_sec = 2, kbps = 8000;
 	int fps = 30, gop = 0;
@@ -2059,7 +2106,7 @@ int main(int argc, char **argv)
 			"--rga-size", "--rtsp-ring", "--rtsp-ring-mb",
 			"--rtsp-clients", "--rtsp-deadline-s", "--ts-offset",
 			"--recover", "--fault-sim", "--rtp-trace", "--encoder-input", "--npu-input",
-			"--frame-metrics",
+			"--frame-metrics","--detect-selfpath",
 		};
 		size_t j;
 
@@ -2077,6 +2124,9 @@ int main(int argc, char **argv)
 
 	for (i = 1; i < argc; i++) {
 		if (!strcmp(argv[i], "--detect-pipeline")) g_detect_pipeline = 1;
+		else if (!strcmp(argv[i],"--detect-selfpath")) g_side_dev = argv[++i];
+		else if (!strcmp(argv[i],"--selfpath-contiguous")) g_side_contiguous = 1;
+		else if (!strcmp(argv[i],"--selfpath-poll")) g_side_poll = 1;
 		else if (!strcmp(argv[i], "--pipeline-selfcheck")) { g_pipeline_selfcheck = 1; g_detect_pipeline = 1; }
 		else if (!strcmp(argv[i], "-d")) dev = argv[++i];
 		else if (!strcmp(argv[i], "-w")) w = atoi(argv[++i]);
@@ -2174,7 +2224,11 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	if (g_detect_pipeline && (!g_detect || !g_npu_input_dmabuf || g_det_every != 1 || g_trig_path)) {
+	if (g_side_dev && (g_detect_pipeline || !strcmp(dev,g_side_dev))) return 1;
+	if (g_side_contiguous && !g_side_dev) { fprintf(stderr, "contiguous scan requires selfpath\n"); return 1; }
+	if (g_side_poll && !g_side_dev) { fprintf(stderr, "result poll requires selfpath\n"); return 1; }
+	if (g_side_dev) fprintf(stderr, "selfpath result wait=%s\n", g_side_poll ? "joint" : "frame");
+	if ((g_detect_pipeline || g_side_dev) && (!g_detect || !g_npu_input_dmabuf || g_det_every != 1 || g_trig_path)) {
 		fprintf(stderr, "pipeline requires detect, NPU dmabuf, every=1 and no manual trigger\n"); return 1;
 	}
 #if !defined(HAVE_RGA) || !defined(HAVE_RKNN)
@@ -2214,7 +2268,7 @@ int main(int argc, char **argv)
 	}
 
 	/* Experimental async mode attributes events to accepted detector results. */
-	signal(SIGUSR1, g_detect_pipeline ? SIG_IGN : on_sig);
+	signal(SIGUSR1, (g_detect_pipeline || g_side_dev) ? SIG_IGN : on_sig);
 	{	/* SIGTERM 用不带 SA_RESTART 的 sigaction:
 		 * 否则阻塞的 DQBUF 会被内核自动重启, 收不到 EINTR, 无法及时退出 */
 		struct sigaction sa;
@@ -2231,6 +2285,14 @@ int main(int argc, char **argv)
 	preroll_unready_since = t_start;
 
 #if defined(HAVE_RGA) && defined(HAVE_RKNN)
+	if (g_side_dev && g_frame_metrics_path) {
+		char *path = NULL;
+		if (asprintf(&path,"%s.side.csv",g_frame_metrics_path)<0) return 1;
+		side.log = evm_exclusive(path); free(path);
+		if (!side.log) return 1;
+		setvbuf(side.log,NULL,_IOLBF,0);
+		fputs("generation,packet_generation,driver_seq,stamp_ns,epoch,frame_seq,apply_ns,hit,score,result,ready_ns\n",side.log);
+	}
 	if (g_pipeline_selfcheck) {
 		int check;
 		if (rga_init() || npu_init()) { app_release(); return 1; }
@@ -2248,7 +2310,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 #ifdef HAVE_RGA
-	if (g_detect) {
+	if (g_detect && !g_side_dev) {
 		if (rga_init() < 0) {
 			app_release();
 			return 1;
@@ -2320,7 +2382,7 @@ int main(int argc, char **argv)
 	for (;;) {
 		struct v4l2_buffer b;
 		struct v4l2_plane pl;
-		struct pollfd capture_poll = { .fd = cap.fd, .events = POLLIN };
+		struct pollfd inputs[2] = {{ .fd = cap.fd, .events = POLLIN }, { .fd = -1, .events = POLLIN }};
 		MppFrame frame = NULL;
 		MppPacket pkt = NULL;
 		MppBuffer encoder_buffer;
@@ -2343,17 +2405,30 @@ int main(int argc, char **argv)
 			break;
 		}
 		{
-			int pr = poll(&capture_poll, 1, 200);
-			if (pr == 0 || (pr < 0 && errno == EINTR))
+			nfds_t count = 1;
+#if defined(HAVE_RKNN) && defined(HAVE_RGA)
+			if (g_side_poll && side.fd >= 0 && !side.pending) {
+				inputs[1].fd = side.fd;
+				count = 2;
+			}
+#endif
+			int pr = poll(inputs, count, 200);
+			if (pr < 0 && errno == EINTR)
 				continue;
-			if (pr < 0 || (capture_poll.revents & (POLLERR | POLLHUP | POLLNVAL))) {
+			if (pr < 0 || (inputs[0].revents & (POLLERR | POLLHUP | POLLNVAL))) {
 				if (pr < 0)
 					perror("capture poll");
 				else
-					fprintf(stderr, ">>> capture poll revents=0x%x\n", capture_poll.revents);
+					fprintf(stderr, ">>> capture poll revents=0x%x\n", inputs[0].revents);
 				goto link_fault;
 			}
-			if (!(capture_poll.revents & POLLIN))
+#if defined(HAVE_RKNN) && defined(HAVE_RGA)
+			if (g_side_poll && (inputs[1].revents || (!pr && side.pid > 0))) {
+				side_tick();
+				g_side_available = side.online;
+			}
+#endif
+			if (!(inputs[0].revents & POLLIN))
 				continue;
 		}
 		memset(&pl, 0, sizeof(pl));
@@ -2451,11 +2526,19 @@ int main(int argc, char **argv)
 		 * 多个包(SPS/PPS 单独成包等), 但包循环里只读 frame_seq, 所以
 		 * OSD 的 # 与 .json 的 seq 永远按源帧递增, 不会被包数带偏。 */
 		frame_seq = seq++;
+#if defined(HAVE_RGA) && defined(HAVE_RKNN)
+		if (g_side_dev) {
+			unsigned slot = b.sequence % 16;
+			side.latest_slot = slot;
+			side.history[slot].job = (struct ep_job){g_capture_epoch,frame_seq,b.sequence,source_dq_ns,cap_ms};
+			side.history[slot].stamp = g_ts_flags == 1 ? (uint64_t)b.timestamp.tv_sec*1000000000+b.timestamp.tv_usec*1000ULL : 0;
+		}
+#endif
 		/* 阶段计时: t_stage 从"送 RGA"起算, 编码段在取包循环结束后补上 */
 		t_stage = now_ms(CLOCK_MONOTONIC);
 #ifdef HAVE_RGA
 #ifdef HAVE_RKNN
-		if (g_detect && frame_seq % g_det_every == 0) {
+		if (g_detect && !g_side_dev && frame_seq % g_det_every == 0) {
 			int slot = -1, rga_rc;
 			if (g_detect_pipeline) {
 				g_dp_eligible++; slot = ep_reserve(&g_dp);
@@ -2667,11 +2750,12 @@ int main(int argc, char **argv)
 		}
 		evm_completed(&g_frame_metrics, metrics_row);
 #if defined(HAVE_RKNN) && defined(HAVE_RGA)
+		if (g_side_dev) { side_tick(); g_side_available = side.online; }
 		if (g_detect_pipeline && dp_drain()) { end_reason = "detection_error"; rc = 1; break; }
 #endif
 
 		/* 阶段耗时累计(仅 --detect): 编码段 = 拷入缓冲 + OSD + 送帧到取包 */
-		if (g_detect) {
+		if (g_detect && !g_side_dev) {
 			g_t_rga += t_rga;
 			g_t_npu += t_npu;
 			g_t_enc += now_ms(CLOCK_MONOTONIC) - t_stage;
@@ -2726,7 +2810,7 @@ int main(int argc, char **argv)
 			 * 已离场用 target_left, 水位不足用 disk_low
 			 * (max_duration 只是同时撞上的上限, 不是结束原因)。 */
 			int disk_block = alive && !disk_allow();
-			const char *reason = !alive ? "target_left"
+			const char *reason = !alive ? (g_side_dev && !g_side_available ? "detection_unavailable" : "target_left")
 			                   : disk_block ? "disk_low"
 			                   : "max_duration";
 			int keep = alive && !disk_block;
@@ -2803,7 +2887,10 @@ int main(int argc, char **argv)
 				/* P6: 触发帧 = 本次循环 DQBUF 到的那一帧(检测/触发
 				 * 文件/信号都在这一帧的循环里被看到); trig_ts 取该帧
 				 * 的环形时间戳(与 json 的 ts_ms 同源), 前后窗口不错位。 */
-				if (g_detect_pipeline) { g_event_trigger_source = g_dp_trigger_source; g_event_trigger_applied_ns = g_dp_trigger_applied_ns; }
+				if (g_detect_pipeline || g_side_dev) { g_event_trigger_source = g_dp_trigger_source; g_event_trigger_applied_ns = g_dp_trigger_applied_ns; }
+#if defined(HAVE_RKNN) && defined(HAVE_RGA)
+				if (g_side_dev) g_event_side_generation = side.generation;
+#endif
 				trig_seq = frame_seq;
 				trig_ts = ring_cnt > 0 ?
 					  ring_at(ring_cnt - 1)->ts_ms : ts - t_start;
@@ -2841,7 +2928,8 @@ int main(int argc, char **argv)
 		 * 检测漏帧不会把持续目标拆成碎事件。 */
 		if (g_ev_fp != NULL && g_last_detect_ms > 0 &&
 		    now_ms(CLOCK_MONOTONIC) - g_last_detect_ms > post_sec * 1000.0) {
-			if (evw_close("target_left", trig_seq, trig_ts) != 0 ||
+			const char *reason = g_side_dev && !g_side_available ? "detection_unavailable" : "target_left";
+			if (evw_close(reason, trig_seq, trig_ts) != 0 ||
 			    g_ev_werr) {
 				fprintf(stderr, ">>> 事件落盘失败\n");
 				rc = 1;
@@ -2851,7 +2939,7 @@ int main(int argc, char **argv)
 			 * 事件的 pre-roll 从这里取; g_streak 不清(目标仍在场时
 			 * streak 已在增长, 清零会漏事件)。
 			 * S4: 这里是 cooldown 唯一的置位点(target_left 收尾)。 */
-			evw_event_end("target_left");
+			evw_event_end(reason);
 			if (g_max_events && g_events >= g_max_events) {
 				reached_max = 1;
 				break;
@@ -2864,6 +2952,9 @@ link_fault:
 		/* 采集链路故障: 只重建 V4L2, MPP 编码器与 RTSP 服务端不动 */
 		{
 			int used;
+#if defined(HAVE_RKNN) && defined(HAVE_RGA)
+			if (g_side_dev) { side_retire(); g_side_available=0; }
+#endif
 
 			printf(">>> 链路故障, 开始恢复(上限 %d 次)\n", g_recover);
 			fflush(stdout);
@@ -2892,6 +2983,7 @@ link_fault:
 	/* P9: 检测开启时收尾打一行三阶段均值(每 5 s 也打过), 作为
 	 * "RGA+RKNN+编码三者串行 -> ~10 fps" 的可复核数字 */
 #if defined(HAVE_RKNN) && defined(HAVE_RGA)
+	if (g_side_dev) side_stop();
 	if (g_detect_pipeline && dp_stop()) { rc = 1; end_reason = "detection_error"; }
 #endif
 	stage_report();

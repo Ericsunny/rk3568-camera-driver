@@ -40,6 +40,7 @@ static unsigned char ev_buf[EV_BUF_CAP];
 static unsigned ev_bn, g_ev_event_id, g_ev_segment, g_ev_coalesced, g_ev_cdskip;
 static double g_ev_first_ts, g_ev_last_ts;
 static int g_detect_pipeline;
+static unsigned g_event_side_generation;
 static struct { unsigned seq, epoch; } g_event_trigger_source;
 static unsigned long long g_event_trigger_applied_ns;
 static struct evw_queue g_ev_queue = EVW_QUEUE_INITIALIZER;

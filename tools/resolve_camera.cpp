@@ -115,14 +115,18 @@ static bool query(const std::string &media, std::string &text) {
 
 int main(int argc, char **argv) {
     if (argc < 2 || (std::string(argv[1]) != "imx415-isp" && std::string(argv[1]) != "ov8858-isp")) {
-        std::cerr << "usage: resolve_camera imx415-isp|ov8858-isp [/dev/mediaN ...]\n"; return 2;
+        std::cerr << "usage: resolve_camera PROFILE [--selfpath] [/dev/mediaN ...]\n"; return 2;
     }
     const std::string profile(argv[1]);
     const std::string driver = profile == "imx415-isp" ? "rkisp-vir0" : "rkisp-vir1";
     const std::string sensor = profile == "imx415-isp" ? "imx415" : "ov8858";
     std::vector<std::string> media;
-    if (argc > 2) {
-        for (int i = 2; i < argc; ++i) media.emplace_back(argv[i]);
+    bool side = argc > 2 && std::string(argv[2]) == "--selfpath";
+    if (side && profile != "imx415-isp") return 2;
+    const std::string entity = side ? "rkisp_selfpath" : "rkisp_mainpath";
+    int first = side ? 3 : 2;
+    if (argc > first) {
+        for (int i = first; i < argc; ++i) media.emplace_back(argv[i]);
     } else {
         glob_t paths{};
         if (glob("/dev/media[0-9]*", 0, nullptr, &paths) == 0)
@@ -149,12 +153,12 @@ int main(int argc, char **argv) {
             if (bridges.size() == 1) starts = bridges;
         }
         auto path = reachable(graph, starts);
-        auto node = graph.nodes.find("rkisp_mainpath");
-        if (path.count("rkisp_mainpath") && node != graph.nodes.end() && !node->second.empty())
+        auto node = graph.nodes.find(entity);
+        if (path.count(entity) && node != graph.nodes.end() && !node->second.empty())
             candidates.emplace_back(graph.media, node->second);
     }
     if (candidates.size() != 1) {
-        std::cerr << "expected exactly one enabled sensor-to-ISP-mainpath graph; found " << candidates.size() << '\n'; return 1;
+        std::cerr << "expected exactly one enabled path to " << entity << "; found " << candidates.size() << '\n'; return 1;
     }
     std::cerr << profile << ": " << candidates[0].first << " -> " << candidates[0].second << '\n';
     std::cout << candidates[0].second << '\n';

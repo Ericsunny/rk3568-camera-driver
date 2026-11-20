@@ -1,0 +1,45 @@
+{
+  "main_complete": 363,
+  "fps": 15.002428590860914,
+  "main_epochs": 1,
+  "driver_sequence_gaps": 0,
+  "strict_rtsp_frames": 300,
+  "events": [
+    {
+      "first": 45,
+      "last": 140,
+      "frames": 96,
+      "close": "target_left",
+      "gen": 1,
+      "trigger_ns": 6972176298320,
+      "first_ns": 6968460475572,
+      "last_ns": 6974794029500,
+      "pixel_hashes_match": true
+    },
+    {
+      "first": 165,
+      "last": 251,
+      "frames": 87,
+      "close": "detection_unavailable",
+      "gen": 2,
+      "trigger_ns": 6979775918917,
+      "first_ns": 6976460744417,
+      "last_ns": 6982194283577,
+      "pixel_hashes_match": true
+    }
+  ],
+  "replay_positive_patterns": {
+    "old_gen_old_time": 19,
+    "current_gen_old_time": 19,
+    "old_gen_fresh_time": 19
+  },
+  "replay_new_events": 0,
+  "replay_accepted_positive": 0,
+  "accepted_by_generation": {
+    "1": 108,
+    "2": 100,
+    "3": 92
+  },
+  "kill_to_next_accept_ms": 773.272286,
+  "stop_to_next_accept_ms": 3289.216122
+}

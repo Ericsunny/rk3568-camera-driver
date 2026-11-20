@@ -52,6 +52,9 @@ static double g_ev_first_ts = 1, g_ev_last_ts = 2, g_last_detect_ms = 1;
 static int g_ev_werr, g_events, g_max_events = 1;
 static int g_pre_seconds, g_post_seconds, g_ts_flags;
 static int g_detect_pipeline;
+static unsigned g_event_side_generation;
+static const char *g_side_dev;
+static int g_side_available;
 static struct { unsigned seq, epoch; } g_event_trigger_source;
 static unsigned long long g_event_trigger_applied_ns;
 static double now_ms(int clock_id) { (void)clock_id; return 2000.0; }

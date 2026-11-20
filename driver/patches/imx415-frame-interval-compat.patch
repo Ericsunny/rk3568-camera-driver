@@ -1,0 +1,171 @@
+diff --git a/drivers/media/i2c/imx415.c b/drivers/media/i2c/imx415.c
+index 20e37c4..6e98013 100644
+--- a/drivers/media/i2c/imx415.c
++++ b/drivers/media/i2c/imx415.c
+@@ -37,6 +37,7 @@
+ #include <linux/delay.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/i2c.h>
++#include <linux/list.h>
+ #include <linux/module.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/regulator/consumer.h>
+@@ -2899,12 +2900,28 @@ static int __maybe_unused imx415_runtime_suspend(struct device *dev)
+ }
+ 
+ #ifdef CONFIG_VIDEO_V4L2_SUBDEV_API
++struct imx415_interval_session {
++	struct list_head node;
++	struct v4l2_subdev_pad_config *cfg;
++	u32 next;
++};
++
++/* The V4L2 core owns cfg until it calls close on this open file. */
++static LIST_HEAD(imx415_interval_sessions);
++static DEFINE_MUTEX(imx415_interval_lock);
++
+ static int imx415_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
+ {
+ 	struct imx415 *imx415 = to_imx415(sd);
+ 	struct v4l2_mbus_framefmt *try_fmt =
+ 				v4l2_subdev_get_try_format(sd, fh->pad, 0);
+ 	const struct imx415_mode *def_mode = &imx415->supported_modes[0];
++	struct imx415_interval_session *session;
++
++	session = kzalloc(sizeof(*session), GFP_KERNEL);
++	if (!session)
++		return -ENOMEM;
++	session->cfg = fh->pad;
+ 
+ 	mutex_lock(&imx415->mutex);
+ 	/* Initialize try_fmt */
+@@ -2912,29 +2929,112 @@ static int imx415_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
+ 	try_fmt->height = def_mode->height;
+ 	try_fmt->code = def_mode->bus_fmt;
+ 	try_fmt->field = V4L2_FIELD_NONE;
+-
+ 	mutex_unlock(&imx415->mutex);
+-	/* No crop or compose */
++
++	mutex_lock(&imx415_interval_lock);
++	list_add(&session->node, &imx415_interval_sessions);
++	mutex_unlock(&imx415_interval_lock);
+ 
+ 	return 0;
+ }
++
++static int imx415_close(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
++{
++	struct imx415_interval_session *session;
++
++	mutex_lock(&imx415_interval_lock);
++	list_for_each_entry(session, &imx415_interval_sessions, node) {
++		if (session->cfg == fh->pad) {
++			list_del(&session->node);
++			kfree(session);
++			break;
++		}
++	}
++	mutex_unlock(&imx415_interval_lock);
++	return 0;
++}
++#endif
++
++static bool imx415_interval_matches(const struct imx415_mode *mode,
++				  const struct v4l2_subdev_frame_interval_enum *fie)
++{
++	return mode->bus_fmt == fie->code && mode->width == fie->width &&
++	       mode->height == fie->height;
++}
++
++static bool imx415_legacy_interval(struct imx415 *imx415,
++				  struct v4l2_subdev_pad_config *cfg,
++				  const struct v4l2_subdev_frame_interval_enum *fie)
++{
++	bool legacy = false;
++#ifdef CONFIG_VIDEO_V4L2_SUBDEV_API
++	struct imx415_interval_session *session;
++
++	mutex_lock(&imx415_interval_lock);
++	list_for_each_entry(session, &imx415_interval_sessions, node) {
++		if (session->cfg != cfg)
++			continue;
++
++		/* RKAIQ starts with a zeroed TRY request and advances only index. */
++		if (fie->which == V4L2_SUBDEV_FORMAT_TRY) {
++			if (!fie->index) {
++				legacy = !fie->code && !fie->width && !fie->height &&
++					 !fie->interval.numerator && !fie->interval.denominator;
++			} else if (fie->index == session->next) {
++				const struct imx415_mode *previous =
++					&imx415->supported_modes[fie->index - 1];
++
++				legacy = imx415_interval_matches(previous, fie) &&
++					 previous->max_fps.numerator == fie->interval.numerator &&
++					 previous->max_fps.denominator == fie->interval.denominator;
++			}
++		}
++		session->next = legacy && fie->index < imx415->cfg_num ?
++				fie->index + 1 : 0;
++		break;
++	}
++	mutex_unlock(&imx415_interval_lock);
+ #endif
++	return legacy;
++}
+ 
+ static int imx415_enum_frame_interval(struct v4l2_subdev *sd,
+ 	struct v4l2_subdev_pad_config *cfg,
+ 	struct v4l2_subdev_frame_interval_enum *fie)
+ {
+ 	struct imx415 *imx415 = to_imx415(sd);
++	const struct imx415_mode *mode;
++	u32 index = fie->index;
++	u32 i;
+ 
+-	if (fie->index >= imx415->cfg_num)
++	if (fie->pad || (fie->which != V4L2_SUBDEV_FORMAT_TRY &&
++			 fie->which != V4L2_SUBDEV_FORMAT_ACTIVE))
+ 		return -EINVAL;
+ 
+-	fie->code = imx415->supported_modes[fie->index].bus_fmt;
+-	fie->width = imx415->supported_modes[fie->index].width;
+-	fie->height = imx415->supported_modes[fie->index].height;
+-	fie->interval = imx415->supported_modes[fie->index].max_fps;
+-	fie->reserved[0] = imx415->supported_modes[fie->index].hdr_mode;
+-	return 0;
++	if (imx415_legacy_interval(imx415, cfg, fie)) {
++		if (index >= imx415->cfg_num)
++			return -EINVAL;
++		mode = &imx415->supported_modes[index];
++		fie->code = mode->bus_fmt;
++		fie->width = mode->width;
++		fie->height = mode->height;
++		fie->interval = mode->max_fps;
++		fie->reserved[0] = mode->hdr_mode;
++		return 0;
++	}
++
++	for (i = 0; i < imx415->cfg_num; i++) {
++		mode = &imx415->supported_modes[i];
++		if (!imx415_interval_matches(mode, fie))
++			continue;
++		if (index == 0) {
++			fie->interval = mode->max_fps;
++			return 0;
++		}
++		index--;
++	}
++
++	return -EINVAL;
+ }
+ 
+ #define CROP_START(SRC, DST) (((SRC) - (DST)) / 2 / 4 * 4)
+@@ -2995,6 +3095,7 @@ static const struct dev_pm_ops imx415_pm_ops = {
+ #ifdef CONFIG_VIDEO_V4L2_SUBDEV_API
+ static const struct v4l2_subdev_internal_ops imx415_internal_ops = {
+ 	.open = imx415_open,
++	.close = imx415_close,
+ };
+ #endif
+ 

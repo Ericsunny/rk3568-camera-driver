@@ -62,11 +62,16 @@ static bool executable_on_path(const std::string& name) {
 }
 int main(int argc,char** argv) {
     if(argc!=4 || (std::string(argv[1])!="imx415-isp" && std::string(argv[1])!="ov8858-isp") ||
-       (std::string(argv[2])!="manual" && std::string(argv[2])!="detect") || !fs::path(argv[3]).is_absolute()) {
-        std::cerr << "usage: camera_demo imx415-isp|ov8858-isp manual|detect ABSOLUTE_NEW_DIRECTORY\n"; return 2;
+       (std::string(argv[2])!="manual" && std::string(argv[2])!="detect" && std::string(argv[2])!="entrance") || !fs::path(argv[3]).is_absolute()) {
+        std::cerr << "usage: camera_demo PROFILE entrance|manual|detect ABSOLUTE_NEW_DIRECTORY\n"; return 2;
     }
     try {
         std::string profile=argv[1], mode=argv[2]; fs::path dir=argv[3];
+        const bool entrance = mode == "entrance";
+        if (entrance) {
+            if (profile != "imx415-isp") throw std::runtime_error("entrance requires imx415-isp");
+            mode = "detect";
+        }
         fs::path root=env("CAMERA_ROOT",fs::canonical("/proc/self/exe").parent_path().string());
         std::map<std::string,std::string> cfg;
         load(root/"config/final-demo.env",cfg); load(root/("config/"+profile+".env"),cfg);
@@ -83,6 +88,16 @@ int main(int argc,char** argv) {
         if(mode!="detect" && npu=="dmabuf") throw std::runtime_error("NPU_INPUT=dmabuf requires detect mode");
         std::string interval=env("DETECT_EVERY","1"); number(interval,1,120,"DETECT_EVERY");
         std::string pipeline=env("DETECT_PIPELINE","0"); number(pipeline,0,1,"DETECT_PIPELINE");
+        const char *side_default = entrance ? "1" : "0";
+        std::string selfpath=env("DETECT_SELFPATH",side_default); number(selfpath,0,1,"DETECT_SELFPATH");
+        std::string contiguous=env("SELFPATH_CONTIGUOUS",side_default); number(contiguous,0,1,"SELFPATH_CONTIGUOUS");
+        std::string result_poll=env("SELFPATH_POLL",side_default); number(result_poll,0,1,"SELFPATH_POLL");
+        if (entrance && (encoder!="dmabuf" || selfpath!="1" || contiguous!="1" || result_poll!="1"))
+            throw std::runtime_error("entrance requires shared encoder input, selfpath, contiguous scan and joint poll");
+        if(result_poll=="1" && selfpath!="1") throw std::runtime_error("SELFPATH_POLL requires DETECT_SELFPATH");
+        if(contiguous=="1" && selfpath!="1") throw std::runtime_error("SELFPATH_CONTIGUOUS requires DETECT_SELFPATH");
+        if(selfpath=="1" && (profile!="imx415-isp" || mode!="detect" || pipeline!="0" || npu!="dmabuf" || interval!="1"))
+            throw std::runtime_error("DETECT_SELFPATH requires imx415-isp detect, dmabuf, every=1 and DETECT_PIPELINE=0");
         if(pipeline=="1" && (mode!="detect" || npu!="dmabuf" || interval!="1"))
             throw std::runtime_error("DETECT_PIPELINE=1 requires detect, NPU_INPUT=dmabuf and DETECT_EVERY=1");
         std::string metrics=env("FRAME_METRICS");
@@ -107,6 +122,16 @@ int main(int argc,char** argv) {
         if(pipeline=="1" && helptext.find("--detect-pipeline")==std::string::npos)
             throw std::runtime_error("evrec does not support detection pipeline");
         auto video=trim(checked({(root/"resolve_camera").string(),profile},15));
+        std::string side;
+        if(selfpath=="1") {
+            if(result_poll=="1" && helptext.find("--selfpath-poll")==std::string::npos)
+                throw std::runtime_error("missing selfpath result polling support");
+            if(contiguous=="1" && helptext.find("--selfpath-contiguous")==std::string::npos)
+                throw std::runtime_error("missing contiguous scan support");
+            if(helptext.find("--detect-selfpath")==std::string::npos) throw std::runtime_error("missing selfpath support");
+            side=trim(checked({(root/"resolve_camera").string(),profile,"--selfpath"},15));
+            if(side.empty() || side==video) throw std::runtime_error("invalid selfpath");
+        }
         struct stat st{}; if(stat(video.c_str(),&st) || !S_ISCHR(st.st_mode)) throw std::runtime_error("invalid capture device: "+video);
         auto aiq=run({"pgrep","-f","^/usr/bin/rkaiq_3A_server([[:space:]]|$)"},10);
         std::istringstream aiq_lines(aiq.out); std::string line; int count=0;
@@ -141,6 +166,9 @@ int main(int argc,char** argv) {
             args.insert(args.end(),{"--detect","--model",cfg["MODEL"],"--det-score",cfg["DET_SCORE"],"--det-frames",cfg["DET_FRAMES"]});
             if(interval!="1") args.insert(args.end(),{"--detect-every",interval});
             if(pipeline=="1") args.push_back("--detect-pipeline");
+            if(!side.empty()) args.insert(args.end(),{"--detect-selfpath",side});
+            if(contiguous=="1") args.push_back("--selfpath-contiguous");
+            if(result_poll=="1") args.push_back("--selfpath-poll");
             if(npu=="dmabuf") args.insert(args.end(),{"--npu-input","dmabuf"});
         } else args.insert(args.end(),{"--trigger",(dir/"trigger").string()});
         std::string recorded; for(const auto& a:args) recorded+=a+"\n"; write_file(dir/"argv.txt",recorded);

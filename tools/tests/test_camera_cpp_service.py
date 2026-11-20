@@ -139,8 +139,8 @@ while True: time.sleep(.05)
         root = tmp / 'mock root'
         root.mkdir()
         shutil.copytree(ROOT / 'config', root / 'config')
-        executable(root / 'resolve_camera', "print('/dev/null')\n")
-        executable(root / 'evrec', "print('--encoder-input --npu-input --detect-every --frame-metrics --detect-pipeline')\n")
+        executable(root / 'resolve_camera', "import sys\nprint('/dev/zero' if '--selfpath' in sys.argv else '/dev/null')\n")
+        executable(root / 'evrec', "print('--encoder-input --npu-input --detect-every --frame-metrics --detect-pipeline --detect-selfpath --selfpath-contiguous --selfpath-poll')\n")
         executable(root / 'camera_service', "import pathlib,sys\npathlib.Path(sys.argv[1], 'service-argv').write_text('\\n'.join(sys.argv[2:]))\n")
         executable(root / 'camera_delivery', "pass\n")
         fakebin = tmp / 'bin'
@@ -183,6 +183,18 @@ while True: time.sleep(.05)
                                 env=dict(env, DETECT_PIPELINE='1'), capture_output=True, text=True)
         assert result.returncode == 0, (result.stdout, result.stderr)
         assert '--detect-pipeline' in (pipeline / 'argv.txt').read_text().splitlines()
+        entrance = tmp / 'entrance'
+        result = subprocess.run([str(tmp/'camera_demo'), 'imx415-isp', 'entrance', str(entrance)],
+                                env=env, capture_output=True, text=True)
+        assert result.returncode == 0, result.stderr
+        args = (entrance / 'argv.txt').read_text().splitlines()
+        assert args[args.index('--detect-selfpath') + 1] == '/dev/zero'
+        assert {'--selfpath-contiguous', '--selfpath-poll', '--detect'} <= set(args)
+        assert '--detect-pipeline' not in args
+        conflict = tmp / 'conflict'
+        result = subprocess.run([str(tmp/'camera_demo'), 'imx415-isp', 'entrance', str(conflict)],
+                                env=dict(env, SELFPATH_POLL='0'), capture_output=True, text=True)
+        assert result.returncode != 0 and not conflict.exists()
         for name, mode, extra in [('manual-pipeline','manual',{}),
                                   ('sampled-pipeline','detect',{'DETECT_EVERY':'2'}),
                                   ('copy-pipeline','detect',{'NPU_INPUT':'copy'})]:

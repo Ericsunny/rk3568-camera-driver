@@ -48,13 +48,16 @@ TOOLS := reg_switch fi_probe fi_test streamoff_test tryfmt_test \
 
 APP_BIN := evrec camd camera_demo camera_service camera_delivery resolve_camera run_dual_camera
 
-.PHONY: all tools apps spy clean
+.PHONY: all tools apps entrance spy clean
 
 all: tools apps spy
 
 tools: $(TOOLS) hdr_demo
 
 apps: $(APP_BIN)
+
+# Single IMX415 service and its runtime helpers.
+entrance: camera_demo resolve_camera camera_service camera_delivery evrec
 
 spy: ioctlspy.so
 
@@ -68,7 +71,7 @@ fi_probe fi_test streamoff_test tryfmt_test focus_score st_burn: %: tools/%.c
 hdr_demo: tools/hdr_demo.c
 	$(CC) $(CFLAGS) -std=gnu99 -o $@ $< -lm
 
-evrec: tools/evrec.c tools/evrec_writer.h tools/evrec_metrics.h tools/evrec_pipeline.h tools/evrec_detect_pipeline.h tools/rtsp_hub.c
+evrec: tools/evrec.c tools/evrec_writer.h tools/evrec_metrics.h tools/evrec_pipeline.h tools/evrec_detect_pipeline.h tools/evrec_selfpath.h tools/rtsp_hub.c tools/rtsp_hub.h
 	$(CC) $(CFLAGS) $(PTH) $(DEFS) $(INCS) -o $@ tools/evrec.c tools/rtsp_hub.c $(APP_LIBS)
 
 camd: tools/camd.c

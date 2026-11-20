@@ -2,9 +2,11 @@
 
 ## 当前主服务
 
+推荐入口为 `camera_demo imx415-isp entrance`。从[发布验收与复现命令](../evidence/2026-11-20-entrance-release/README.md)可进入副路 A/B、故障与重新构建数据。
+
 - [架构与数据链路](overview/architecture.md)：硬件/控制通路、进程、线程、所有权和失败行为。
 - [运行与配置](overview/final-system.md)：依赖、默认值、入口、观测和停止。
-- [性能与场景结果](improvement/project-review.md)：两项对照、人员事件、新鲜度与限制。
+- [早期双缓冲与编码共享结果](improvement/project-review.md)：两项对照、人员事件、新鲜度与限制。
 - [可复算数据](../evidence/2026-11-17-single-camera-release/README.md)：CSV/meta、摘要和来源哈希。
 - [源码验证范围](acceptance/source-status.md) · [改进记录](improvement/README.md)
 

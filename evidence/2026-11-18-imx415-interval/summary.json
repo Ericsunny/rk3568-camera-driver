@@ -1,0 +1,37 @@
+{
+  "archive_sha256": "88c2054b3574e1a2763984553cd46d7bff44ba9e75555eaefa64a38bcb0cb18a",
+  "verified_archive_members": 46,
+  "baseline_probe": {
+    "cases": 27,
+    "passed": 12
+  },
+  "candidate_probe": {
+    "cases": 27,
+    "passed": 27
+  },
+  "tool_fps": {
+    "3864x2192": 15.0,
+    "1944x1096": 60.0
+  },
+  "stream_runs": {
+    "stream-baseline": {
+      "completed_frames": 249,
+      "driver_sequence_gaps": 0,
+      "strict_rtsp_decoded_frames": 150
+    },
+    "stream-first": {
+      "completed_frames": 246,
+      "driver_sequence_gaps": 0,
+      "strict_rtsp_decoded_frames": 150
+    },
+    "stream-reopen": {
+      "completed_frames": 249,
+      "driver_sequence_gaps": 0,
+      "strict_rtsp_decoded_frames": 150
+    }
+  },
+  "candidate_3a_start_events": 2,
+  "candidate_3a_stop_events": 2,
+  "default_kernel_restored": "#62",
+  "restored_capture_format": "1920x1080 NV12"
+}

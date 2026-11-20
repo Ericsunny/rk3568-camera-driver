@@ -31,3 +31,7 @@ python3 tools/tests/test_imx415_optional_global.py /path/to/kernel/drivers/media
 ```
 
 此测试不访问真实相机，也不代替内核编译和板测。
+
+## IMX415 帧间隔枚举兼容
+
+`imx415-frame-interval-compat.patch` 根据显式指定的媒体总线格式和尺寸枚举帧间隔。同一打开句柄上的全零 TRY 起始请求及连续回传序列保留现役 rkaiq 的模式发现约定。补丁适用于本项目 #62 BSP 的 `drivers/media/i2c/imx415.c`，先用 `patch --dry-run -p1` 核对上下文。#64 临时引导通过两种尺寸查询、3A 启动和两次 1080p/15 FPS 单路采流。默认 Image 当前为 #62。[针对性查询与实流回归结果](../../evidence/2026-11-18-imx415-interval/summary.json)

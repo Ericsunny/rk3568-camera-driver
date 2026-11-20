@@ -26,6 +26,7 @@ struct dbox { float x1,y1,x2,y2,score; int cls; };
 #define NMS_THRESH 0.45f
 static float g_obj_thresh=0.35f;
 static int g_no_obj_mul=1;
+static int g_side_contiguous;
 '''
 test=r'''
 static void require(int ok) { if (!ok) exit(1); }
@@ -57,6 +58,10 @@ int main(void) {
     n=decode_yolov8(attr,data,result,8,&peak);require(n==2); /* different classes survive overlap */
     cls[1][56]=0;cls[1][0]=90;
     n=decode_yolov8(attr,data,result,8,&peak);require(n==1 && result[0].cls==0 && result[0].score>.89f);
+    struct dbox expected=result[0];
+    g_side_contiguous=1;
+    cls[1][56]=90; /* Equal class scores: prefer the first channel. */
+    n=decode_yolov8(attr,data,result,8,&peak);require(n==1 && !memcmp(result,&expected,sizeof(expected)));
     puts("letterbox, RGB padding, class confidence and class-aware NMS: PASS");
     return 0;
 }

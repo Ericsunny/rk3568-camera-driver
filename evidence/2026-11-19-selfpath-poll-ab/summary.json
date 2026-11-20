@@ -1,0 +1,274 @@
+{
+  "perf0-A": {
+    "total": 354,
+    "accepted": 351,
+    "completed": 354,
+    "gaps": 0,
+    "repeats": 0,
+    "decisions": {
+      "accepted": 351
+    },
+    "events": 0,
+    "worker_starts": 1,
+    "viewer_frames": 322,
+    "viewer_rc": 0,
+    "service_rc": 0,
+    "apply_offset_from_source": {
+      "1": 271
+    },
+    "ready_during_main_buffer_hold": 0,
+    "missing_full_run": [
+      0,
+      1,
+      353
+    ],
+    "seconds": 18.08198815,
+    "frames": 271,
+    "matches": 271,
+    "encoded": 271,
+    "hits": 0,
+    "fps": 15.000345375452097,
+    "age": {
+      "p50": 100.383964,
+      "p95": 105.10840049999999
+    },
+    "ready": {
+      "p50": 67.828455,
+      "p95": 76.4067335
+    },
+    "wait": {
+      "p50": 32.537754,
+      "p95": 37.849795500000006
+    },
+    "main_cpu": {
+      "ms_per_frame": 4.022140221402214,
+      "one_core_pct": 6.02809818786437
+    },
+    "side_cpu": {
+      "ms_per_frame": 10.70110701107011,
+      "one_core_pct": 16.0380593989052
+    },
+    "combined_cpu": {
+      "ms_per_frame": 14.723247232472325,
+      "one_core_pct": 22.06615758676957
+    }
+  },
+  "perf1-B": {
+    "total": 354,
+    "accepted": 351,
+    "completed": 354,
+    "gaps": 0,
+    "repeats": 0,
+    "decisions": {
+      "accepted": 351
+    },
+    "events": 0,
+    "worker_starts": 1,
+    "viewer_frames": 322,
+    "viewer_rc": 0,
+    "service_rc": 0,
+    "apply_offset_from_source": {
+      "0": 271
+    },
+    "ready_during_main_buffer_hold": 0,
+    "missing_full_run": [
+      0,
+      1,
+      353
+    ],
+    "seconds": 18.04983548,
+    "frames": 271,
+    "matches": 271,
+    "encoded": 271,
+    "hits": 0,
+    "fps": 14.99983752259328,
+    "age": {
+      "p50": 68.063879,
+      "p95": 75.52731449999999
+    },
+    "ready": {
+      "p50": 67.815411,
+      "p95": 75.26073149999999
+    },
+    "wait": {
+      "p50": 0.174708,
+      "p95": 0.4202915
+    },
+    "main_cpu": {
+      "ms_per_frame": 4.169741697416974,
+      "one_core_pct": 6.260444873595047
+    },
+    "side_cpu": {
+      "ms_per_frame": 10.44280442804428,
+      "one_core_pct": 15.678813267499102
+    },
+    "combined_cpu": {
+      "ms_per_frame": 14.612546125461254,
+      "one_core_pct": 21.93925814109415
+    }
+  },
+  "perf2-B": {
+    "total": 354,
+    "accepted": 351,
+    "completed": 354,
+    "gaps": 0,
+    "repeats": 0,
+    "decisions": {
+      "accepted": 351
+    },
+    "events": 0,
+    "worker_starts": 1,
+    "viewer_frames": 321,
+    "viewer_rc": 0,
+    "service_rc": 0,
+    "apply_offset_from_source": {
+      "0": 271
+    },
+    "ready_during_main_buffer_hold": 0,
+    "missing_full_run": [
+      0,
+      1,
+      353
+    ],
+    "seconds": 18.103332361,
+    "frames": 271,
+    "matches": 271,
+    "encoded": 271,
+    "hits": 0,
+    "fps": 14.999931861976187,
+    "age": {
+      "p50": 68.0896,
+      "p95": 77.1179485
+    },
+    "ready": {
+      "p50": 67.914139,
+      "p95": 76.835761
+    },
+    "wait": {
+      "p50": 0.171792,
+      "p95": 0.3630005
+    },
+    "main_cpu": {
+      "ms_per_frame": 4.132841328413284,
+      "one_core_pct": 6.1867062796284715
+    },
+    "side_cpu": {
+      "ms_per_frame": 11.180811808118081,
+      "one_core_pct": 16.737250024352022
+    },
+    "combined_cpu": {
+      "ms_per_frame": 15.313653136531364,
+      "one_core_pct": 22.923956303980493
+    }
+  },
+  "perf3-A": {
+    "total": 357,
+    "accepted": 354,
+    "completed": 357,
+    "gaps": 0,
+    "repeats": 0,
+    "decisions": {
+      "accepted": 354
+    },
+    "events": 0,
+    "worker_starts": 1,
+    "viewer_frames": 323,
+    "viewer_rc": 0,
+    "service_rc": 0,
+    "apply_offset_from_source": {
+      "1": 271
+    },
+    "ready_during_main_buffer_hold": 0,
+    "missing_full_run": [
+      0,
+      1,
+      356
+    ],
+    "seconds": 18.055849689,
+    "frames": 271,
+    "matches": 271,
+    "encoded": 271,
+    "hits": 0,
+    "fps": 14.999709192304717,
+    "age": {
+      "p50": 100.279164,
+      "p95": 104.5096845
+    },
+    "ready": {
+      "p50": 68.041793,
+      "p95": 77.206947
+    },
+    "wait": {
+      "p50": 32.179295,
+      "p95": 36.696046
+    },
+    "main_cpu": {
+      "ms_per_frame": 4.059040590405904,
+      "one_core_pct": 6.092208447382807
+    },
+    "side_cpu": {
+      "ms_per_frame": 11.033210332103321,
+      "one_core_pct": 16.559730234249628
+    },
+    "combined_cpu": {
+      "ms_per_frame": 15.092250922509226,
+      "one_core_pct": 22.651938681632434
+    }
+  },
+  "person0-B": {
+    "total": 769,
+    "accepted": 766,
+    "completed": 769,
+    "gaps": 0,
+    "repeats": 0,
+    "decisions": {
+      "accepted": 766
+    },
+    "events": 1,
+    "worker_starts": 1,
+    "viewer_frames": 735,
+    "viewer_rc": 0,
+    "service_rc": 0,
+    "delivery": {
+      "frames": 250,
+      "first": 405,
+      "last": 654,
+      "trigger": 458,
+      "idr": true,
+      "close": "target_left",
+      "seconds": 16.5996,
+      "positive_score": 0.561755,
+      "generation": 1,
+      "pixel_hashes_equal": true,
+      "file_hashes_match_receipt": true
+    }
+  },
+  "person1-A": {
+    "total": 727,
+    "accepted": 724,
+    "completed": 727,
+    "gaps": 0,
+    "repeats": 0,
+    "decisions": {
+      "accepted": 724
+    },
+    "events": 1,
+    "worker_starts": 1,
+    "viewer_frames": 692,
+    "viewer_rc": 0,
+    "service_rc": 0,
+    "delivery": {
+      "frames": 238,
+      "first": 375,
+      "last": 612,
+      "trigger": 428,
+      "idr": true,
+      "close": "target_left",
+      "seconds": 15.7996,
+      "positive_score": 0.832948,
+      "generation": 1,
+      "pixel_hashes_equal": true,
+      "file_hashes_match_receipt": true
+    }
+  }
+}

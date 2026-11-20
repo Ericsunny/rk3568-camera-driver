@@ -1,5 +1,7 @@
 # 源码与验证范围
 
+当前交付入口 `camera_demo imx415-isp entrance` 在 #62 上验证。主路共享 NV12 编码，副路独立进程负责逐帧检测；源码、启动参数、帧记录和候选 #64 的边界见[发布验收](../../evidence/2026-11-20-entrance-release/README.md)。以下双槽线程数据对应显式选择的早期对照。
+
 [架构](../overview/architecture.md) · [量化结果](../improvement/project-review.md)。源码、构建、部署和板端证明分别记录。
 
 | 模块 | 当前实现 | 覆盖与边界 |
